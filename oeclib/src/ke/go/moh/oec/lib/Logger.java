@@ -54,7 +54,7 @@ public class Logger {
     }
 
     public static void info(String className, String msg) {
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
     }
 
     public static void info(String className, String msg, Throwable e) {

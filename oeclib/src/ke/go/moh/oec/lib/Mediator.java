@@ -265,7 +265,7 @@ public class Mediator implements IService {
      */
     private Object sendData(MessageType messageType, Object data, String messageId, String destination) {
         String ipAddressPort = getIpAddressPort(destination);
-        if (ipAddressPort != null) {
+        if (ipAddressPort == null) {
             /*
              * This is an error in our routing mechanism. We have a desination
              * address, but we were unable to translate it into an IP address
@@ -325,6 +325,21 @@ public class Mediator implements IService {
 
     /**
      * Gets IP address and port (next hop from here) for a destination
+     * <p>
+     * The IP address and port corresponding to a destination address is found
+     * in properties for this application starting with "IPAddressPort."
+     * If the full address is not found, then we look for successively
+     * higher levels in the address name, where levels are separated by
+     * dots. Finally we look for the catch-all entry "IPAddressPort.*"
+     * to which we forward any otherwise-unresolved address.
+     * <p>
+     * For example, if the address to find is "aa.bb.cc", we will look
+     * for the following properties in this order until we find a value:
+     * <p>
+     * IpAddressPort.aa.bb.cc   <br>
+     * IpAddressPort.aa.bb      <br>
+     * IpAddressPort.aa         <br>
+     * IpAddressPort.*          <br>
      *
      * @param destination where the message is to be sent
      * @return IP address:port to which to forward the message.
@@ -332,7 +347,40 @@ public class Mediator implements IService {
      * or the destination address cannot be translated to IP + port.
      */
     private String getIpAddressPort(String destination) {
-        throw new UnsupportedOperationException();
+        final String propertyPrefix = "IPAddressPort.";
+        /*
+         * If the destination is us, return null. This means that
+         * we don't have to go to the network to find the address;
+         * the address is our own.
+         */
+        if (destination.equals(getProperty("Instance.Address"))) {
+            return null;
+        }
+        /*
+         * Check for an explicit entry for this destination address.
+         */
+        String returnValue = getProperty(propertyPrefix + destination);
+        /*
+         * If there was no entry for the whole address, try successively
+         * shorter strings by chopping off the end from the last '.' character.
+         */
+        while (returnValue == null) {
+            int i = destination.lastIndexOf('.');
+            /*
+             * If there are no more segments to chop, try for
+             * the catch-all wildcard entry.
+             */
+            if (i < 0) {
+                returnValue = getProperty(propertyPrefix + "*");
+                break;
+            }
+            /*
+             * Chop the string and look for the next higher level.
+             */
+            destination = destination.substring(0, i);
+            returnValue = getProperty(propertyPrefix + destination);
+        }
+        return returnValue;
     }
 
     /**
