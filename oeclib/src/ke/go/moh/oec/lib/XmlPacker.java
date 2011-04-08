@@ -1,22 +1,27 @@
-/*
- * Copyright (C) 2011 International Training & Education Center for Health (I-TECH)
- * Contact information can be found at <http://www.go2itech.org/>
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
  *
- * This file is part of OpenEMRConnect.
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
  *
- * OpenEMRConnect is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
  *
- * OpenEMRConnect is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The Original Code is OpenEMRConnect.
  *
- * You should have received a copy of the GNU General Public License
- * along with OpenEMRConnect.  If not, see <http://www.gnu.org/licenses/>.
- */
+ * The Initial Developer of the Original Code is International Training &
+ * Education Center for Health (I-TECH) <http://www.go2itech.org/>
+ *
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
 import com.sun.org.apache.xalan.internal.xsltc.DOM;

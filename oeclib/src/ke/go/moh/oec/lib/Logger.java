@@ -24,6 +24,13 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
+import ke.go.moh.oec.LogEntry;
+import java.util.logging.Level;
+
+import ke.go.moh.oec.RequestTypeId;
+import java.util.Date;
+//import org.apache.log4j.Logger;
+
 /**
  * [Gitau to provide a description.]
  *
@@ -38,42 +45,72 @@ public class Logger {
      * @param msg
      */
     public static void error(String className, String msg) {
-        throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.SEVERE, msg);
+        sendLoggerMessage("ERROR", className, msg, null);
     }
 
     public static void error(String className, String msg, Throwable e) {
-        throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.SEVERE, msg, e);
+        sendLoggerMessage("ERROR", className, msg, e);
     }
 
     public static void warn(String className, String msg) {
-        throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.WARNING, msg);
+        sendLoggerMessage("WARN", className, msg, null);
     }
 
     public static void warn(String className, String msg, Throwable e) {
-        throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.WARNING, msg, e);
+        sendLoggerMessage("WARN", className, msg, e);
     }
 
     public static void info(String className, String msg) {
-        //throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.INFO, msg);
+        sendLoggerMessage("INFO", className, msg, null);
     }
 
     public static void info(String className, String msg, Throwable e) {
-        throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.INFO, msg, e);
+        sendLoggerMessage("INFO", className, msg, e);
     }
 
     public static void debug(String className, String msg) {
-        throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.FINE, msg);
     }
 
     public static void debug(String className, String msg, Throwable e) {
-        throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.FINE, msg, e);
     }
 
     public static void trace(String className, String msg) {
-        throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.FINEST, msg);
     }
 
     public static void trace(String className, String msg, Throwable e) {
-        throw new UnsupportedOperationException();
+        java.util.logging.Logger.getLogger(className).log(Level.FINEST, msg, e);
+    }
+
+    private static void sendLoggerMessage(String severity, String className, String msg, Throwable e) {
+        LogEntry logEntry = new LogEntry();
+        logEntry.setClassName(className);
+        logEntry.setDateTime(new Date());
+        logEntry.setSeverity(severity);
+        logEntry.setInstanceName(Mediator.getProperty("Instance.Name"));
+        String m = msg;
+
+        if (e != null) {
+            StackTraceElement[] s = e.getStackTrace();
+            int levelCount = s.length;
+            if (levelCount > 3) {
+                levelCount = 3;
+            }
+            for (int i = 0; i < levelCount; i++) {
+                m = m + ";  " + s[i].getClassName() + "." + s[i].getMethodName() + ", line " + s[i].getLineNumber();
+            }
+        }
+        logEntry.setMessage(m);
+
+        Mediator mediator = new Mediator();
+        mediator.getData(RequestTypeId.SEND_LOG_ENTRY, (Object) logEntry);
     }
 }

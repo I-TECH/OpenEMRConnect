@@ -24,7 +24,13 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
-import ke.go.moh.oec.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import ke.go.moh.oec.IService;
+import ke.go.moh.oec.Person;
+import ke.go.moh.oec.RequestTypeId;
 import java.io.FileInputStream;
 import java.util.Date;
 import java.util.Properties;
@@ -104,9 +110,13 @@ public class Mediator implements IService {
         httpService = new HttpService(this);
         queueManager = new QueueManager(httpService);
         xmlPacker = new XmlPacker();
-        httpService.start();
+        try {
+            httpService.start();
+        } catch (IOException ex) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
         queueManager.start();
-        Logger.info(Mediator.class.getName(), "OpenEMRConnect library services started.");
+        Logger.getLogger(Mediator.class.getName()).log(Level.INFO, "OpenEMRConnect library services started.");
     }
 
     /**
@@ -118,9 +128,13 @@ public class Mediator implements IService {
      * Call this method last, after you are through using the services.
      */
     public void stop() {
-        Logger.info(Mediator.class.getName(), "OpenEMRConnect library services stopped.");
+        Logger.getLogger(Mediator.class.getName()).log(Level.INFO, "OpenEMRConnect library services stopped.");
         queueManager.stop();
-        httpService.stop();
+        try {
+            httpService.stop();
+        } catch (IOException ex) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -140,8 +154,8 @@ public class Mediator implements IService {
                  * We somehow failed to open our default propoerties file.
                  * This should not happen. It should always be there.
                  */
-                Logger.error(Mediator.class.getName(),
-                        "getProperty() Can't open '" + propertiesFileName + "'");
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                        "getProperty() Can''t open ''{0}''", propertiesFileName);
             }
         }
         return properties.getProperty(propertyName);
@@ -192,7 +206,8 @@ public class Mediator implements IService {
              * called with a request type ID that is not found as a request
              * in our MessageType list.
              */
-            Logger.error(Mediator.class.getName(), "getData() - Message type not found for Request type ID '" + requestTypeId + "'");
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                        "getData() - Message type not found for Request type ID ''{0}''", requestTypeId);
             return null;
         }
         /*
@@ -207,7 +222,9 @@ public class Mediator implements IService {
         }
         Object returnData = null;
         if (destination == null) {
-            Logger.error(Mediator.class.getName(), "getData() - Destination not found for Request type '" + messageType.getRequestTypeId() + "'");
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                    "getData() - Destination not found for Request type ''{0}''",
+                    messageType.getRequestTypeId());
         } else {
             /*
              * Generate a new request ID, and send the request to the server.
@@ -271,7 +288,8 @@ public class Mediator implements IService {
              * address, but we were unable to translate it into an IP address
              * and port number combination.
              */
-            Logger.error(Mediator.class.getName(), "getData() - Routing address not found for '" + destination + "'");
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                        "getData() - Routing address not found for ''{0}''", destination);
             return null;
         }
         /*
@@ -412,8 +430,9 @@ public class Mediator implements IService {
                  * but the router has returned a IP address/port for the
                  * destination that is not us. Somehing funny is happening.
                  */
-                Logger.error(Mediator.class.getName(), "Message destination '" + destination
-                        + "' matches our own name, but router returns IP Address/port of '" + ipAddressPort + "'");
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                        "Message destination ''{0}'' matches our own name, but router returns IP Address/port of ''{1}''",
+                        new Object[]{destination, ipAddressPort});
             }
         } else {    // If the message is not addressed to us:
             if (ipAddressPort == null) {
@@ -421,8 +440,9 @@ public class Mediator implements IService {
                  * The message destination does not match our own,
                  * and the router is not giving us an IP Port/Address for it.
                  */
-                Logger.error(Mediator.class.getName(), "IP Address/port not found for message with destination '"
-                        + destination + "', our instance address is '" + ourInstanceAddress + "'");
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                        "IP Address/port not found for message with destination ''{0}'', our instance address is ''{1}''",
+                        new Object[]{destination, ourInstanceAddress});
             } else {
                 /*
                  * The message destination does not match our own,
@@ -503,16 +523,18 @@ public class Mediator implements IService {
                              * The requesting source has sent us back a message (a response to the response.)
                              * We did not expect this.
                              */
-                        Logger.warn(Mediator.class.getName(), "After returning a response to requestTypeId " + messageType.getRequestTypeId()
-                                + " from source '" + unpackedMessage.getSource() + "', the source returned more data back to us!");
+                Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
+                        "After returning a response to requestTypeId {0} from source ''{1}'', the source returned more data back to us!",
+                        new Object[]{messageType.getRequestTypeId(), unpackedMessage.getSource()});
                         }
                     } else {
                         /*
                          * This appears to be an error in our MessageType registry. We have a MessageType
                          * entry for the message we received, but there is no response message type.
                          */
-                        Logger.warn(Mediator.class.getName(), "Message type for requestTypeId " + messageType.getRequestTypeId()
-                                + " does not reference a return message type.");
+                        Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
+                                "Message type for requestTypeId {0} does not reference a return message type.",
+                                messageType.getRequestTypeId());
                     }
                 }
             } else {
@@ -521,8 +543,9 @@ public class Mediator implements IService {
                  * an unsolicited message -- at least a message that was not a reply we were
                  * waiting for.
                  */
-                Logger.warn(Mediator.class.getName(), "Unsolicited message with request type " + messageType.getRequestTypeId()
-                        + " received from '" + unpackedMessage.getSource() + "'. No user callback is registered.");
+                Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
+                        "Unsolicited message with request type {0} received from ''{1}''. No user callback is registered.",
+                        new Object[]{messageType.getRequestTypeId(), unpackedMessage.getSource()});
             }
         } else {
             /*
@@ -535,8 +558,9 @@ public class Mediator implements IService {
              *
              * Or this could be an error of some sort.
              */
-            Logger.warn(Mediator.class.getName(), "Unsolicited message with XML root '" + messageType.getRootXmlTag()
-                    + "' received from '" + unpackedMessage.getSource() + "', but it isn't registered as a request.");
+                Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
+                        "Unsolicited message with XML root ''{0}'' received from ''{1}'', but it isn''t registered as a request.",
+                        new Object[]{messageType.getRootXmlTag(), unpackedMessage.getSource()});
         }
     }
 
@@ -567,14 +591,19 @@ public class Mediator implements IService {
              * A message has been forwarded too many times, exceeding the maximum hop count.
              * This may indicate a routing loop between two or more systems.
              */
-            Logger.error(Mediator.class.getName(), "sendMessage() - Hop count " + hopCount
-                    + " exceeds maximum hop count " + MAX_HOP_COUNT
-                    + " for destination '" + destination
-                    + "', routed to '" + ipAddressPort + "'");
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                    "sendMessage() - Hop count {0} exceeds maximum hop count {1} for destination ''{2}'', routed to ''{3}''",
+                    new Object[]{hopCount, MAX_HOP_COUNT, destination, ipAddressPort});
         } else if (toBeQueued) {
             queueManager.enqueue(message, ipAddressPort, destination, hopCount);
         } else {
-            httpService.send(message, ipAddressPort, destination, toBeQueued, hopCount); // (toBeQueued = false)
+            try {
+                httpService.send(message, ipAddressPort, destination, toBeQueued, hopCount); // (toBeQueued = false)
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 

@@ -24,6 +24,11 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Offers a store-and-forward queueing facility to send messages to a
  * network destination. If the message cannot be sent immediately, it is
@@ -86,7 +91,13 @@ class QueueManager implements Runnable {
      * @param hopCount current hop count (to encode in URL.)
      */
     protected void enqueue(String message, String IPAddressPort, String destination, int hopCount) {
-        httpService.send(message, IPAddressPort, destination, true, hopCount);
+        try {
+            httpService.send(message, IPAddressPort, destination, true, hopCount);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
