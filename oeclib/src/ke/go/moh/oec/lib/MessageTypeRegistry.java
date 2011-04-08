@@ -45,7 +45,7 @@ class MessageTypeRegistry {
     /**
      * Find Person response
      */
-    private static final MessageType findPersonResponse = new MessageType(
+    protected static final MessageType findPersonResponse = new MessageType(
             0, // No request type (this message is only a response).
             null, // No response type (this mssage does not have a response to answer it).
             "PRPA_IN201306UV02", //HL7 Patient Registry Find Candidates Query Response
@@ -54,7 +54,7 @@ class MessageTypeRegistry {
     /**
      * Find Person (MPI) request
      */
-    private static final MessageType findPersonMpi = new MessageType(
+    protected static final MessageType findPersonMpi = new MessageType(
             RequestTypeId.FIND_PERSON_MPI,
             findPersonResponse,
             "PRPA_IN201305UV02", //HL7 Patient Registry Find Candidates Query
@@ -63,7 +63,7 @@ class MessageTypeRegistry {
     /**
      * Find Person (LPI) request
      */
-    private static final MessageType findPersonLpi = new MessageType(
+    protected static final MessageType findPersonLpi = new MessageType(
             RequestTypeId.FIND_PERSON_LPI,
             findPersonResponse,
             "PRPA_IN201305UV02", //HL7 Patient Registry Find Candidates Query
@@ -72,7 +72,7 @@ class MessageTypeRegistry {
     /**
      * Create Person (MPI) request
      */
-    private static final MessageType createPersonMpi = new MessageType(
+    protected static final MessageType createPersonMpi = new MessageType(
             RequestTypeId.CREATE_PERSON_MPI,
             null, // No response to this message.
             "PRPA_IN201311UV02", //HL7 Patient Registry Add Request
@@ -81,7 +81,7 @@ class MessageTypeRegistry {
     /**
      * Find Person (LPI) request
      */
-    private static final MessageType createPersonLpi = new MessageType(
+    protected static final MessageType createPersonLpi = new MessageType(
             RequestTypeId.CREATE_PERSON_LPI,
             null, // No response to this message.
             "PRPA_IN201311UV02", //HL7 Patient Registry Add Request
@@ -90,7 +90,7 @@ class MessageTypeRegistry {
     /**
      * Modify Person (MPI) request
      */
-    private static final MessageType modifyPersonMpi = new MessageType(
+    protected static final MessageType modifyPersonMpi = new MessageType(
             RequestTypeId.MODIFY_PERSON_MPI,
             null, // No response to this message.
             "PRPA_IN201314UV02", //HL7 Patient Registry Revise Request
@@ -99,7 +99,7 @@ class MessageTypeRegistry {
     /**
      * Modify Person (LPI) request
      */
-    private static final MessageType modifyPersonLpi = new MessageType(
+    protected static final MessageType modifyPersonLpi = new MessageType(
             RequestTypeId.MODIFY_PERSON_LPI,
             null, // No response to this message.
             "PRPA_IN201314UV02", //HL7 Patient Registry Revise Request
@@ -108,7 +108,7 @@ class MessageTypeRegistry {
     /**
      * Set Clinical Document
      */
-    private static final MessageType setClinicalDocument = new MessageType(
+    protected static final MessageType setClinicalDocument = new MessageType(
             RequestTypeId.SET_CLINICAL_DOCUMENT,
             null, // No response to this message.
             "ClinicalDocument", //HL7 Patient Registry Revise Request
@@ -117,7 +117,7 @@ class MessageTypeRegistry {
     /**
      * Get Clinical Document (from HDSS)
      */
-    private static final MessageType getClinicalDocumentHdss = new MessageType(
+    protected static final MessageType getClinicalDocumentHdss = new MessageType(
             RequestTypeId.GET_CLINICAL_DOCUMENT_HDSS,
             setClinicalDocument, // Respond with setClinicalDocument message
             "(tbd)", // XML root tag To Be Defined
@@ -126,7 +126,7 @@ class MessageTypeRegistry {
     /**
      * Get Clinical Document (from Clinical Document Store)
      */
-    private static final MessageType getClinicalDocumentCds = new MessageType(
+    protected static final MessageType getClinicalDocumentCds = new MessageType(
             RequestTypeId.GET_CLINICAL_DOCUMENT_HDSS,
             setClinicalDocument, // Respond with setClinicalDocument message
             "(tbd)", // XML root tag To Be Defined
@@ -135,7 +135,7 @@ class MessageTypeRegistry {
     /**
      * Send Log Entry
      */
-    private static final MessageType sendLogEntry = new MessageType(
+    protected static final MessageType sendLogEntry = new MessageType(
             RequestTypeId.SEND_LOG_ENTRY,
             null, // No response to this message.
             "(tbd)", // XML root tag To Be Defined

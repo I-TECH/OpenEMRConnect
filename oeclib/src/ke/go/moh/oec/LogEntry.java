@@ -1,27 +1,22 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1
+/*
+ * Copyright (C) 2011 International Training & Education Center for Health (I-TECH)
+ * Contact information can be found at <http://www.go2itech.org/>
  *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
+ * This file is part of OpenEMRConnect.
  *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
+ * OpenEMRConnect is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * The Original Code is OpenEMRConnect.
+ * OpenEMRConnect is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * The Initial Developer of the Original Code is International Training &
- * Education Center for Health (I-TECH) <http://www.go2itech.org/>
- *
- * Portions created by the Initial Developer are Copyright (C) 2011
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * ***** END LICENSE BLOCK ***** */
+ * You should have received a copy of the GNU General Public License
+ * along with OpenEMRConnect.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package ke.go.moh.oec;
 
 import java.util.Date;
@@ -48,6 +43,8 @@ public class LogEntry {
     private String message;
     /** Name of the class making the log entry. */
     private String className;
+    /** Name of the instance (program) making the log entry. */
+    private String instance;
     /**
      * Name of the instance (running program) making the log entry.
      * For example, "Siaya TB Reception".
@@ -93,4 +90,13 @@ public class LogEntry {
     public void setSeverity(String severity) {
         this.severity = severity;
     }
+
+    public String getInstance() {
+        return instance;
+    }
+
+    public void setInstance(String instance) {
+        this.instance = instance;
+    }
+
 }
