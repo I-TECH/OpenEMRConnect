@@ -55,6 +55,10 @@ public class Person {
     private String sex;
     /** The person's date of birth. */
     private Date birthdate;
+    /** The person's date of death (if any). */
+    private Date deathdate;
+    /** Whether a person is living at the moment: 0 = N/A, 1 = Yes, 2 = No */
+    private int aliveStatus;
     /** The first (or given) name of the person's mother. */
     private String mothersFirstName;
     /** The middle (Luo: juok) name of the person's mother. */
@@ -76,12 +80,12 @@ public class Person {
     /** The name of the village in which the person lives. */
     private String villageName;
     /**
-     * The person's marital status, one of the values:
-     *      Married Polygamous,
-     *      Married Monogamous,
-     *      Divorced,
-     *      Widowed,
-     *      Cohabitating,
+     * The person's marital status, one of the following values:
+     *      Married Polygamous
+     *      Married Monogamous
+     *      Divorced
+     *      Widowed
+     *      Cohabitating
      *      Single
      */
     private String maritalStatusType;
@@ -107,6 +111,22 @@ public class Person {
 
     public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public Date getDeathdate() {
+        return deathdate;
+    }
+
+    public void setDeathdate(Date deathdate) {
+        this.deathdate = deathdate;
+    }
+
+    public int getAliveStatus() {
+        return aliveStatus;
+    }
+
+    public void setAliveStatus(int aliveStatus) {
+        this.aliveStatus = aliveStatus;
     }
 
     public String getClanName() {
