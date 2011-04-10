@@ -43,10 +43,10 @@ public class RequestTypeId {
      * with FIND_PERSON_MPI, the <code>requestData</code> parameter object
      * and the returned object are follows:
      * <p>
-     * <code>requestData</code>: {@link Person} object, filled
+     * <code>requestData</code>: {@link PersonRequest} object, filled
      * with any person attribute(s) to search for.
      * <p>
-     * returns: <code>List<{@link Person}></code> - Zero or more search
+     * returns: {@link PersonResponse} - Zero or more search
      * results matching (exactly or approximately) the search parameters.
      */
     public final static int FIND_PERSON_MPI = 1;
@@ -57,10 +57,10 @@ public class RequestTypeId {
      * with FIND_PERSON_LPI, the <code>requestData</code> parameter object
      * and the returned object are follows:
      * <p>
-     * <code>requestData</code>: {@link Person} object, filled
+     * <code>requestData</code>: {@link PersonRequest} object, filled
      * with any person attribute(s) to search for.
      * <p>
-     * returns: <code>List<{@link Person}></code> - Zero or more search
+     * returns: {@link PersonResponse} - Zero or more search
      * results matching (exactly or approximately) the search parameters.
      */
     public final static int FIND_PERSON_LPI = 2;
@@ -71,7 +71,7 @@ public class RequestTypeId {
      * with CREATE_PERSON_MPI, the <code>requestData</code> parameter object
      * and the returned object are follows:
      * <p>
-     * <code>requestData</code>: {@link Person} object, filled
+     * <code>requestData</code>: {@link PersonRequest} object, filled
      * with the attribute to assign to the new person.
      * <p>
      * returns: <code>null</code>
@@ -84,7 +84,7 @@ public class RequestTypeId {
      * with CREATE_PERSON_LPI, the <code>requestData</code> parameter object
      * and the returned object are follows:
      * <p>
-     * <code>requestData</code>: {@link Person} object, filled
+     * <code>requestData</code>: {@link PersonRequest} object, filled
      * with the attribute to assign to the new person.
      * <p>
      * returns: <code>null</code>
@@ -97,7 +97,7 @@ public class RequestTypeId {
      * with MODIFY_PERSON_MPI, the <code>requestData</code> parameter object
      * and the returned object are follows:
      * <p>
-     * <code>requestData</code>: {@link Person} object, filled
+     * <code>requestData</code>: {@link PersonRequest} object, filled
      * with the changed attribute(s) to assign to the existing person.
      * <p>
      * returns: <code>null</code>
@@ -110,26 +110,12 @@ public class RequestTypeId {
      * with MODIFY_PERSON_LPI, the <code>requestData</code> parameter object
      * and the returned object are follows:
      * <p>
-     * <code>requestData</code>: {@link Person} object, filled
+     * <code>requestData</code>: {@link PersonRequest} object, filled
      * with the changed attribute(s) to assign to the existing person.
      * <p>
      * returns: <code>null</code>
      */
     public final static int MODIFY_PERSON_LPI = 6;
-    /**
-     * Requests from the HDSS a clinical document for the person.
-     * <p>
-     * When calling {@link IService#getData(int, java.lang.Object)}
-     * with GET_CLINICAL_DOCUMENT_HDSS, the <code>requestData</code>
-     * parameter object and the returned object are follows:
-     * <p>
-     * <code>requestData</code>: {@link Person} object, identifying
-     * the person whose clinical document is requested.
-     * <p>
-     * returns: {@link ClinicalDocument} - The clinical document containing
-     * clinical information for the person.
-     */
-    public final static int GET_CLINICAL_DOCUMENT_HDSS = 7;
     /**
      * Requests from the local Clinical Document Store a clinical document
      * for the person.
@@ -138,28 +124,27 @@ public class RequestTypeId {
      * with GET_CLINICAL_DOCUMENT_CDS, the <code>requestData</code>
      * parameter object and the returned object are follows:
      * <p>
-     * <code>requestData</code>: {@link Person} object, identifying
+     * <code>requestData</code>: {@link PersonRequest} object, identifying
+     * the person whose clinical document is requested.
+     * <p>
+     * returns: {@link PersonResponse} - The clinical document containing
+     * clinical information for the person.
+     */
+    public final static int NOTIFY_PERSON_REVISED = 7;
+    /**
+     * Requests data about the person from the HDSS.
+     * <p>
+     * When calling {@link IService#getData(int, java.lang.Object)}
+     * with GET_CLINICAL_DOCUMENT_HDSS, the <code>requestData</code>
+     * parameter object and the returned object are follows:
+     * <p>
+     * <code>requestData</code>: {@link PersonRequest} object, identifying
      * the person whose clinical document is requested.
      * <p>
      * returns: {@link ClinicalDocument} - The clinical document containing
      * clinical information for the person.
      */
-    public final static int GET_CLINICAL_DOCUMENT_CDS = 8;
-    /**
-     * Transmits a {@link ClinicalDocument}. This can be either in response to
-     * a get clinical document request, or as a proactive notification when
-     * clinical information has changed.
-     * <p>
-     * When calling {@link IService#getData(int, java.lang.Object)}
-     * with SET_CLINICAL_DOCUMENT, the <code>requestData</code>
-     * parameter object and the returned object are follows:
-     * <p>
-     * <code>requestData</code>: {@link ClinicalDocument} - The clinical
-     * document containing clinical information for the person.
-     * <p>
-     * returns: <code>null</code>
-     */
-    public final static int SET_CLINICAL_DOCUMENT = 9;
+    public final static int GET_PERSON_DATA_HDSS = 8;
     /**
      * Transmits a log entry to the logging server.
      * <p>

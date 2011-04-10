@@ -76,7 +76,7 @@ class MessageTypeRegistry {
             RequestTypeId.CREATE_PERSON_MPI,
             null, // No response to this message.
             "PRPA_IN201311UV02", //HL7 Patient Registry Add Request
-            "ke.go.moh.mpi", // The Local Person List (relative to where we are now.)
+            "ke.go.moh.mpi", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Find Person (LPI) request
@@ -94,7 +94,7 @@ class MessageTypeRegistry {
             RequestTypeId.MODIFY_PERSON_MPI,
             null, // No response to this message.
             "PRPA_IN201314UV02", //HL7 Patient Registry Revise Request
-            "ke.go.moh.mpi", // The Local Person List (relative to where we are now.)
+            "ke.go.moh.mpi", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Modify Person (LPI) request
@@ -108,29 +108,20 @@ class MessageTypeRegistry {
     /**
      * Set Clinical Document
      */
-    protected static final MessageType setClinicalDocument = new MessageType(
-            RequestTypeId.SET_CLINICAL_DOCUMENT,
+    protected static final MessageType notifyPersonRevised = new MessageType(
+            RequestTypeId.NOTIFY_PERSON_REVISED,
             null, // No response to this message.
-            "ClinicalDocument", //HL7 Patient Registry Revise Request
-            null, // No default destination
+            "PRPA_IN201302UV02", //HL7 Patient Registry Record Revised
+            "ke.go.moh.mpi", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Get Clinical Document (from HDSS)
      */
-    protected static final MessageType getClinicalDocumentHdss = new MessageType(
-            RequestTypeId.GET_CLINICAL_DOCUMENT_HDSS,
-            setClinicalDocument, // Respond with setClinicalDocument message
-            "(tbd)", // XML root tag To Be Defined
+    protected static final MessageType getPersonDataHdss = new MessageType(
+            RequestTypeId.GET_PERSON_DATA_HDSS,
+            findPersonResponse,
+            "PRPA_IN201305UV02", //HL7 Patient Registry Find Candidates Query
             "org.kemri.kisumu.hdss", // The HDSS companion
-            true); // Store and forward if it doesn't send immediately
-    /**
-     * Get Clinical Document (from Clinical Document Store)
-     */
-    protected static final MessageType getClinicalDocumentCds = new MessageType(
-            RequestTypeId.GET_CLINICAL_DOCUMENT_HDSS,
-            setClinicalDocument, // Respond with setClinicalDocument message
-            "(tbd)", // XML root tag To Be Defined
-            ".cds", // The HDSS companion
             true); // Store and forward if it doesn't send immediately
     /**
      * Send Log Entry
@@ -138,8 +129,8 @@ class MessageTypeRegistry {
     protected static final MessageType sendLogEntry = new MessageType(
             RequestTypeId.SEND_LOG_ENTRY,
             null, // No response to this message.
-            "(tbd)", // XML root tag To Be Defined
-            ".cds", // The HDSS companion
+            "LogEntry", // XML root tag To Be Defined
+            "ke.go.moh.loggingServer", // The Logging Server
             true); // Store and forward if it doesn't send immediately
     /**
      * List of all OpenEMRConnect message types. This list can be searched
@@ -153,9 +144,8 @@ class MessageTypeRegistry {
             createPersonLpi,
             modifyPersonMpi,
             modifyPersonLpi,
-            setClinicalDocument,
-            getClinicalDocumentHdss,
-            getClinicalDocumentCds,
+            notifyPersonRevised,
+            getPersonDataHdss,
             sendLogEntry);
 
     /**

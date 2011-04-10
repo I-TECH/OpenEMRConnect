@@ -79,6 +79,10 @@ public class Person {
     private String compoundHeadLastName;
     /** The name of the village in which the person lives. */
     private String villageName;
+    /** The name of the village in which the person previously lived most recently. */
+    private String previousVillageName;
+    /** Date of most recent move between villages */
+    private String lastMoveDate;
     /**
      * The person's marital status, one of the following values:
      *      Married Polygamous
@@ -96,6 +100,15 @@ public class Person {
      * null = They have not been asked.
      */
     private String consentSigned;
+    /** Expected Delivery Date if pregnant */
+    private Date expectedDeliveryDate;
+    /** Date at which the most recent pregnancy was ended */
+    private Date pregnancyEndDate;
+    /** Most recent pregnancy outcome, one of the following values:
+     *       Live birth
+     *       Still birth
+     */
+    private String pregnancyOutcome;
     /** Information for the person's most recent regular clinic visit (if any) */
     private Visit lastRegularVisit;
     /** Information for the person's most recent one-off clinic visit (if any) */
@@ -104,22 +117,8 @@ public class Person {
     private List<PersonIdentifier> personIdentifierList;
     /** A list containing each {@link Fingerprint} taken from this person. */
     private List<Fingerprint> fingerprintList;
-
-    public Date getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(Date birthdate) {
-        this.birthdate = birthdate;
-    }
-
-    public Date getDeathdate() {
-        return deathdate;
-    }
-
-    public void setDeathdate(Date deathdate) {
-        this.deathdate = deathdate;
-    }
+    /** A list of household members */
+    private List<Person> householdMembers;
 
     public int getAliveStatus() {
         return aliveStatus;
@@ -127,6 +126,14 @@ public class Person {
 
     public void setAliveStatus(int aliveStatus) {
         this.aliveStatus = aliveStatus;
+    }
+
+    public Date getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(Date birthdate) {
+        this.birthdate = birthdate;
     }
 
     public String getClanName() {
@@ -169,6 +176,22 @@ public class Person {
         this.consentSigned = consentSigned;
     }
 
+    public Date getDeathdate() {
+        return deathdate;
+    }
+
+    public void setDeathdate(Date deathdate) {
+        this.deathdate = deathdate;
+    }
+
+    public Date getExpectedDeliveryDate() {
+        return expectedDeliveryDate;
+    }
+
+    public void setExpectedDeliveryDate(Date expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
+    }
+
     public String getFathersFirstName() {
         return fathersFirstName;
     }
@@ -207,6 +230,22 @@ public class Person {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public List<Person> getHouseholdMembers() {
+        return householdMembers;
+    }
+
+    public void setHouseholdMembers(List<Person> householdMembers) {
+        this.householdMembers = householdMembers;
+    }
+
+    public String getLastMoveDate() {
+        return lastMoveDate;
+    }
+
+    public void setLastMoveDate(String lastMoveDate) {
+        this.lastMoveDate = lastMoveDate;
     }
 
     public String getLastName() {
@@ -295,6 +334,30 @@ public class Person {
 
     public void setPersonIdentifierList(List<PersonIdentifier> personIdentifierList) {
         this.personIdentifierList = personIdentifierList;
+    }
+
+    public Date getPregnancyEndDate() {
+        return pregnancyEndDate;
+    }
+
+    public void setPregnancyEndDate(Date pregnancyEndDate) {
+        this.pregnancyEndDate = pregnancyEndDate;
+    }
+
+    public String getPregnancyOutcome() {
+        return pregnancyOutcome;
+    }
+
+    public void setPregnancyOutcome(String pregnancyOutcome) {
+        this.pregnancyOutcome = pregnancyOutcome;
+    }
+
+    public String getPreviousVillageName() {
+        return previousVillageName;
+    }
+
+    public void setPreviousVillageName(String previousVillageName) {
+        this.previousVillageName = previousVillageName;
     }
 
     public String getSex() {

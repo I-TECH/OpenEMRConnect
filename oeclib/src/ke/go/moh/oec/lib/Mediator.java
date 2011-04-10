@@ -34,6 +34,7 @@ import ke.go.moh.oec.RequestTypeId;
 import java.io.FileInputStream;
 import java.util.Date;
 import java.util.Properties;
+import ke.go.moh.oec.PersonRequest;
 
 /**
  * Mediator between OEC clients and services to forward requests
@@ -211,13 +212,15 @@ public class Mediator implements IService {
             return null;
         }
         /*
-         * Find the destination name.
+         * Find the destination address. This is usually the default destination
+         * address for the message type. However allow our caller in some
+         * situations to override this default address.
          */
         String destination = messageType.getDefaultDestination();
-        if (requestTypeId == RequestTypeId.SET_CLINICAL_DOCUMENT) {
-            destination = getClinicalDestination((Person) requestData);
-            if (destination.length() == 0) {
-                return null;        // No error - set Clinical Document but person is not a known patient at a clinic.
+        if (messageType == MessageTypeRegistry.notifyPersonRevised) {
+            PersonRequest pr = (PersonRequest)requestData;
+            if (pr.getDestinationAddress() != null) {
+                destination = pr.getDestinationAddress();
             }
         }
         Object returnData = null;
