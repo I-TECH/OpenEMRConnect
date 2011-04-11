@@ -64,13 +64,11 @@ class XmlPacker {
     /**
      * Packs a data object into a HL7 XML string.
      *
-     * @param messageType type of message we are packing - see {@link(MessageTypeRepository)}
-     * @param data object containing data to be packed into the message
-     * @param messageID code to put into this message to identify it
+     * @param m message to be packed
      * @return the packed XML in a string
      */
-    protected String pack(MessageType messageType, Object data, String messageID) {
-        Document doc = makeDocument(messageType, data, messageID);
+    protected String pack(Message m) {
+        Document doc = makeDocument(m);
         String xml = packDocument(doc);
         return xml;
     }
@@ -78,21 +76,25 @@ class XmlPacker {
     /**
      * Packs a data object into HL7 DOM Document structure.
      *
-     * @param messageType type of message we are packing - see {@link(MessageTypeRepository)}
-     * @param data object containing data to be packed into the message
-     * @param messageID code to put into this message to identify it
+     * @param m message to be packed
      * @return DOM Document structure
      */
-    protected Document makeDocument(MessageType messageType, Object requestData, String messageId) {
+    protected Document makeDocument(Message m) {
         Document doc = null;
-        if (messageType == MessageTypeRegistry.sendLogEntry) {
-            doc = makeSendLogEntry((LogEntry) requestData, messageId);
+        if (m.getMessageType() == MessageTypeRegistry.sendLogEntry) {
+            doc = makeSendLogEntry(m);
         }
         return doc;
     }
 
-    private Document makeSendLogEntry(LogEntry logEntry, String messageId) {
-
+    /**
+     * Make a Document of a Send Log Entry request
+     *
+     * @param m message to be packed
+     * @return DOM Document structure
+     */
+    private Document makeSendLogEntry(Message m) {
+		LogEntry logEntry = (LogEntry)m.getData();
         //Create instance of DocumentBuilderFactory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         //Get the DocumentBuilder
@@ -114,7 +116,7 @@ class XmlPacker {
         root.appendChild(sourceElement);
         //to get the value of the severity element
         Element messageIdElement = doc.createElement("messageId");
-        messageIdElement.setNodeValue(messageId);
+        messageIdElement.setNodeValue(m.getMessageId());
         root.appendChild(messageIdElement);
         //to get the value of the severity element
         Element severityElement = doc.createElement("severity");
@@ -174,10 +176,10 @@ class XmlPacker {
      * @param xml String containing XML request message
      * @return unpacked message data
      */
-    protected UnpackedMessage unpack(String xml) {
+    protected Message unpack(String xml) {
         Document doc = parseXml(xml);
-        UnpackedMessage unpackedMessage = decodeDocument(doc);
-        return unpackedMessage;
+        Message m = decodeDocument(doc);
+        return m;
     }
 
     /**
@@ -210,24 +212,24 @@ class XmlPacker {
      * @param doc the DOM Document structure to decode
      * @return unpacked message data
      */
-    protected UnpackedMessage decodeDocument(Document doc) {
-        UnpackedMessage um = null;
+    protected Message decodeDocument(Document doc) {
+        Message m = null;
         MessageTypeRegistry messageTypeRegistry = new MessageTypeRegistry();
         Element rootElement = doc.getDocumentElement();
         String rootElementName = rootElement.getTagName();
         MessageType messageType = messageTypeRegistry.find(rootElementName);
 
         if (messageType == MessageTypeRegistry.sendLogEntry) {
-            um = decodeSendLogEntry(doc);
+            m = decodeSendLogEntry(doc);
         }
-        um.setMessageType(messageType);
-        return um;
+        m.setMessageType(messageType);
+        return m;
     }
 
-    private UnpackedMessage decodeSendLogEntry(Document doc) {
-        UnpackedMessage um = new UnpackedMessage();
+    private Message decodeSendLogEntry(Document doc) {
+        Message m = new Message();
         LogEntry logEntry = new LogEntry();
-        um.setReturnData(logEntry);
+        m.setData(logEntry);
 //         logEntry.(doc.getElementsByTagName("source").item(0).getNodeValue());
 //         logEntry.setClassName(doc.getElementsByTagName("messageId").item(0).getNodeValue());
         logEntry.setSeverity(doc.getElementsByTagName("severity").item(0).getNodeValue());
@@ -235,7 +237,7 @@ class XmlPacker {
         logEntry.setDateTime(parseDateTime(doc.getElementsByTagName("dateTime").item(0).getNodeValue()));
         logEntry.setMessage(doc.getElementsByTagName("message").item(0).getNodeValue());
         logEntry.setInstance(doc.getElementsByTagName("instance").item(0).getNodeValue());
-        return um;
+        return m;
     }
 
     private Date parseDateTime(String sDate) {

@@ -49,7 +49,8 @@ class MessageTypeRegistry {
             0, // No request type (this message is only a response).
             null, // No response type (this mssage does not have a response to answer it).
             "PRPA_IN201306UV02", //HL7 Patient Registry Find Candidates Query Response
-            null, // No default destination
+            null, // No default destination address
+            null, // No default destination name
             false); // Don't store and forward if it doesn't go immediately
     /**
      * Find Person (MPI) request
@@ -59,6 +60,7 @@ class MessageTypeRegistry {
             findPersonResponse,
             "PRPA_IN201305UV02", //HL7 Patient Registry Find Candidates Query
             "ke.go.moh.mpi", // The Master Person List
+            "Master Person Index", // The Master Person List
             false); // Don't store and forward if it doesn't go immediately
     /**
      * Find Person (LPI) request
@@ -68,6 +70,7 @@ class MessageTypeRegistry {
             findPersonResponse,
             "PRPA_IN201305UV02", //HL7 Patient Registry Find Candidates Query
             ".lpi", // The Local Person List (relative to where we are now.)
+			"Local Person Index", // The Local Person List
             false); // Don't store and forward if it doesn't go immediately
     /**
      * Create Person (MPI) request
@@ -77,6 +80,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             "PRPA_IN201311UV02", //HL7 Patient Registry Add Request
             "ke.go.moh.mpi", // The Master Person List
+            "Master Person Index", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Find Person (LPI) request
@@ -86,6 +90,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             "PRPA_IN201311UV02", //HL7 Patient Registry Add Request
             ".lpi", // The Local Person List (relative to where we are now.)
+			"Local Person Index", // The Local Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Modify Person (MPI) request
@@ -95,6 +100,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             "PRPA_IN201314UV02", //HL7 Patient Registry Revise Request
             "ke.go.moh.mpi", // The Master Person List
+            "Master Person Index", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Modify Person (LPI) request
@@ -104,6 +110,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             "PRPA_IN201314UV02", //HL7 Patient Registry Revise Request
             ".lpi", // The Local Person List (relative to where we are now.)
+			"Local Person Index", // The Local Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Set Clinical Document
@@ -113,6 +120,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             "PRPA_IN201302UV02", //HL7 Patient Registry Record Revised
             "ke.go.moh.mpi", // The Master Person List
+            "Master Person Index", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Get Clinical Document (from HDSS)
@@ -122,6 +130,7 @@ class MessageTypeRegistry {
             findPersonResponse,
             "PRPA_IN201305UV02", //HL7 Patient Registry Find Candidates Query
             "org.kemri.kisumu.hdss", // The HDSS companion
+			"Kisumu HDSS Companion", // The HDSS companion
             true); // Store and forward if it doesn't send immediately
     /**
      * Send Log Entry
@@ -131,6 +140,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             "LogEntry", // XML root tag To Be Defined
             "ke.go.moh.loggingServer", // The Logging Server
+			"Logging Server", // The Logging Server
             true); // Store and forward if it doesn't send immediately
     /**
      * List of all OpenEMRConnect message types. This list can be searched

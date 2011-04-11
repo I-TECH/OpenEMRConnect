@@ -42,13 +42,21 @@ public class PersonRequest {
      */
     private String requestReference;
     /**
-     * Destination address where to send this request. In most cases
+     * Address of the destination to send this request to. In most cases
      * this is null because the OEC library will determine the request
      * destination address based on the request type. However in the
      * case of a proactive notification of revised person information,
      * the requester may specify where to send the revised person data.
      */
     private String destinationAddress;
+    /**
+     * Name of the destination to send this request to. In most cases
+     * this is null because the OEC library will determine the request
+     * destination address based on the request type. However in the
+     * case of a proactive notification of revised person information,
+     * the requester may specify where to send the revised person data.
+     */
+    private String destinationName;
 	/**
 	 * Match algorithm to use. One of the following values:
 	 * <p>
@@ -66,6 +74,14 @@ public class PersonRequest {
 
 	public void setDestinationAddress(String destinationAddress) {
 		this.destinationAddress = destinationAddress;
+	}
+
+	public String getDestinationName() {
+		return destinationName;
+	}
+
+	public void setDestinationName(String destinationName) {
+		this.destinationName = destinationName;
 	}
 
 	public String getMatchAlgorithm() {
@@ -91,5 +107,6 @@ public class PersonRequest {
 	public void setRequestReference(String requestReference) {
 		this.requestReference = requestReference;
 	}
+
 	
 }
