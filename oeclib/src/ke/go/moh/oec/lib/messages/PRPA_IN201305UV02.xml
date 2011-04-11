@@ -196,19 +196,19 @@
 					<semanticsText>LivingSubject.LeftHandMiddleFingerprint</semanticsText>
 				</livingSubjectId>
 				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.1.3" extension="(Hex fingerprint template)"/>
+					<value root="1.3.6.1.4.1.150.2474.11.1.7.3" extension="(Hex fingerprint template)"/>
 					<semanticsText>LivingSubject.LeftHandRingFingerprint</semanticsText>
 				</livingSubjectId>
 				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.1.4" extension="(Hex fingerprint template)"/>
+					<value root="1.3.6.1.4.1.150.2474.11.1.7.4" extension="(Hex fingerprint template)"/>
 					<semanticsText>LivingSubject.RightHandIndexFingerprint</semanticsText>
 				</livingSubjectId>
 				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.1.5" extension="(Hex fingerprint template)"/>
+					<value root="1.3.6.1.4.1.150.2474.11.1.7.5" extension="(Hex fingerprint template)"/>
 					<semanticsText>LivingSubject.RightHandMiddleFingerprint</semanticsText>
 				</livingSubjectId>
 				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.1.6" extension="(Hex fingerprint template)"/>
+					<value root="1.3.6.1.4.1.150.2474.11.1.7.6" extension="(Hex fingerprint template)"/>
 					<semanticsText>LivingSubject.RightHandRingFingerprint</semanticsText>
 				</livingSubjectId>
 			</parameterList>
