@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- HL7 Patient Registry Find Candidates Query -->
+<!-- PERSON SEARCH message format -->
+<!-- HL7 Patient Registry Find Candidates Query, PRPA_IN201305UV02 -->
 <!-- Adapted from IHE_ITI_Suppl_PIX_PDQ_HL7v3_Rev2-1_TI_2010-08-10.pdf -->
 <!-- This file is a template used for the above-named message.
      XML Comments are included liberally in this template.
@@ -135,18 +136,22 @@
 					<semanticsText>LivingSubject.compoundHeadLastName</semanticsText>
 				</livingSubjectId>
 				<!-- Marital status types:
-				     Married Polygamous
-				     Married Monogamous
-				     Divorced
-				     Widowed
-				     Cohabitating
-				     Single -->
+				     marriedPolygamous
+				     marriedMonogamous
+				     divorced
+				     widowed
+				     cohabitating
+				     single -->
 				<livingSubjectId>
 					<value root="1.3.6.1.4.1.150.2474.11.1.4.13" extension="Married Monogamous"/>
 					<semanticsText>LivingSubject.maritalStatusType</semanticsText>
 				</livingSubjectId>
 				<livingSubjectId>
 					<value root="1.3.6.1.4.1.150.2474.11.1.4.14" extension="Siaya"/>
+					<semanticsText>LivingSubject.consentSigned</semanticsText>
+				</livingSubjectId>
+				<livingSubjectId>
+					<value root="1.3.6.1.4.1.150.2474.11.1.4.15" extension="Siaya"/>
 					<semanticsText>LivingSubject.villageName</semanticsText>
 				</livingSubjectId>
 				<livingSubjectId>

@@ -37,29 +37,38 @@ package ke.go.moh.oec;
  */
 public class PersonIdentifier {
 
-    /**
-     * The type of person identifier, for example "KEMRI/CDC Kisumu DSS ID"
-     * or "CCC Universal Patient Identifier".
-     */
-    private String identifierType;
-    /**
-     * The value of the person identifier, for example "12345-67890".
-     */
-    private String identifier;
+	public enum Type {
 
-    public String getIdentifier() {
-        return identifier;
-    }
+		patientRegistryId,
+		masterPatientRegistryId,
+		cccUniqueId,
+		cccLocalId,
+		kisumuHdssId
+	}
+	
+	/**
+	 * The type of person identifier.
+	 */
+	private Type identifierType;
+	/**
+	 * The value of the person identifier, for example "12345-67890".
+	 */
+	private String identifier;
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
+	public String getIdentifier() {
+		return identifier;
+	}
 
-    public String getIdentifierType() {
-        return identifierType;
-    }
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
 
-    public void setIdentifierType(String identifierType) {
-        this.identifierType = identifierType;
-    }
+	public Type getIdentifierType() {
+		return identifierType;
+	}
+
+	public void setIdentifierType(Type identifierType) {
+		this.identifierType = identifierType;
+	}
+
 }

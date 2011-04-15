@@ -92,8 +92,6 @@ public class Mediator implements IService {
     private QueueManager queueManager;
     /** Instance to pack and unpack XML */
     private XmlPacker xmlPacker;
-    /** Instance to retrieve message types */
-    private MessageTypeRegistry messageTypeRegistry;
     /**
      * Reference to our caller's callbackObject that implements
      * {@link IService#getData(int, java.lang.Object)}.
@@ -105,7 +103,6 @@ public class Mediator implements IService {
     static Properties properties = null;
 
     public Mediator() {
-        messageTypeRegistry = new MessageTypeRegistry();
         httpService = new HttpService(this);
         queueManager = new QueueManager(httpService);
         xmlPacker = new XmlPacker();
@@ -196,10 +193,12 @@ public class Mediator implements IService {
      */
     public Object getData(int requestTypeId, Object requestData) {
 		Message m = new Message();
+		m.setData(requestData);
+		
         /*
          * Determine the Type of message we are to send.
          */
-        MessageType messageType = messageTypeRegistry.find(requestTypeId);
+        MessageType messageType = MessageTypeRegistry.find(requestTypeId);
 		m.setMessageType(messageType);
         if (messageType == null) {
             /*
@@ -213,12 +212,13 @@ public class Mediator implements IService {
         }
         /*
          * Find the destination address and name. This is usually the default
-         * destination for the message type. However allow our caller in some
-         * situations to override this default destination.
+         * destination for the message type. However if our caller is passing
+		 * us <code>PersonRequest</code> data, they may choose to explicitly
+		 * specify the destination rather than leaving it to the default.
          */
         m.setDestinationAddress(messageType.getDefaultDestinationAddress());
         m.setDestinationName(messageType.getDefaultDestinationName());
-        if (messageType == MessageTypeRegistry.notifyPersonRevised) {
+		if (requestData.getClass() == PersonRequest.class) {
             PersonRequest pr = (PersonRequest)requestData;
             if (pr.getDestinationAddress() != null) {
                 m.setDestinationAddress(pr.getDestinationAddress());
@@ -305,7 +305,7 @@ public class Mediator implements IService {
         /*
          * Send the message.
          */
-        sendMessage(xml, ipAddressPort, m.getMessageId(), 1, messageType.isToBeQueued());
+        sendMessage(xml, ipAddressPort, m.getDestinationAddress(), 1, messageType.isToBeQueued());
         /*
          * If we expect a response to this message, wait for the response.
          */
@@ -324,7 +324,7 @@ public class Mediator implements IService {
      * @param m message we are expecting a response to
      */
     private synchronized void registerRequest(Message m) {
-        throw new UnsupportedOperationException();
+        //TO DO: Write the contents
     }
 
     /**

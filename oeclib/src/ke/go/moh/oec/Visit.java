@@ -46,8 +46,23 @@ public class Visit {
 
     /** The date on which the patient visited the health care facility. */
     private Date visitDate;
-    /** The facility visited by the patient. */
-    private String facilityName;
-    /** The instance (reception station within the facility) where the patient was seen. */
-    private String instanceAddress;
+    /** The application address (reception station within a facility) where the patient was seen. */
+    private String address;
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public Date getVisitDate() {
+		return visitDate;
+	}
+
+	public void setVisitDate(Date visitDate) {
+		this.visitDate = visitDate;
+	}
+
 }

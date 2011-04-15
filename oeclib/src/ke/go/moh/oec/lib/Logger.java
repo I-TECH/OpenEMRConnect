@@ -111,6 +111,6 @@ public class Logger {
         logEntry.setMessage(m);
 
         Mediator mediator = new Mediator();
-        mediator.getData(RequestTypeId.SEND_LOG_ENTRY, (Object) logEntry);
+        mediator.getData(RequestTypeId.LOG_ENTRY, (Object) logEntry);
     }
 }

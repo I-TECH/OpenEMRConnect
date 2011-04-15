@@ -117,11 +117,10 @@ public class RequestTypeId {
      */
     public final static int MODIFY_PERSON_LPI = 6;
     /**
-     * Requests from the local Clinical Document Store a clinical document
-     * for the person.
+     * Notifies of a change in person registry information.
      * <p>
      * When calling {@link IService#getData(int, java.lang.Object)}
-     * with GET_CLINICAL_DOCUMENT_CDS, the <code>requestData</code>
+     * with NOTIFY_PERSON_CHANGED, the <code>requestData</code>
      * parameter object and the returned object are follows:
      * <p>
      * <code>requestData</code>: {@link PersonRequest} object, identifying
@@ -130,12 +129,12 @@ public class RequestTypeId {
      * returns: {@link PersonResponse} - The clinical document containing
      * clinical information for the person.
      */
-    public final static int NOTIFY_PERSON_REVISED = 7;
+    public final static int NOTIFY_PERSON_CHANGED = 7;
     /**
      * Requests data about the person from the HDSS.
      * <p>
      * When calling {@link IService#getData(int, java.lang.Object)}
-     * with GET_CLINICAL_DOCUMENT_HDSS, the <code>requestData</code>
+     * with FIND_PERSON_HDSS, the <code>requestData</code>
      * parameter object and the returned object are follows:
      * <p>
      * <code>requestData</code>: {@link PersonRequest} object, identifying
@@ -144,12 +143,12 @@ public class RequestTypeId {
      * returns: {@link ClinicalDocument} - The clinical document containing
      * clinical information for the person.
      */
-    public final static int GET_PERSON_DATA_HDSS = 8;
+    public final static int FIND_PERSON_HDSS = 8;
     /**
      * Transmits a log entry to the logging server.
      * <p>
      * When calling {@link IService#getData(int, java.lang.Object)}
-     * with SEND_LOG_ENTRY, the <code>requestData</code>
+     * with LOG_ENTRY, the <code>requestData</code>
      * parameter object and the returned object are follows:
      * <p>
      * <code>requestData</code>: {@link LogEntry} - The information
@@ -157,5 +156,5 @@ public class RequestTypeId {
      * <p>
      * returns: <code>null</code>
      */
-    public final static int SEND_LOG_ENTRY = 1000;
+    public final static int LOG_ENTRY = 1000;
 }
