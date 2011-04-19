@@ -136,7 +136,7 @@ class HttpService {
      */
     protected void stop() throws IOException {
         int port = 0;
-        // throw new UnsupportedOperationException("Not supported yet.");
+        // throw a new UnsupportedOperationException("Not supported yet.");
         InetSocketAddress addr = new InetSocketAddress(port);
         HttpServer server = HttpServer.create(addr, 0);
         server.createContext("/", new Handler(mediator));
