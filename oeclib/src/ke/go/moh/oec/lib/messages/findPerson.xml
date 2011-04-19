@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- PERSON SEARCH message format -->
+<!-- FIND PERSON message format -->
 <!-- HL7 Patient Registry Find Candidates Query, PRPA_IN201305UV02 -->
 <!-- Adapted from IHE_ITI_Suppl_PIX_PDQ_HL7v3_Rev2-1_TI_2010-08-10.pdf -->
 <!-- This file is a template used for the above-named message.

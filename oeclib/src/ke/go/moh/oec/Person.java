@@ -61,8 +61,9 @@ public class Person {
 	}
 
 	public enum PregnancyOutcome {
-		liveBirth,
-		stillBirth
+		stillBirth,
+		singleBirth,
+		multipleBirths
 	}
 
 	/**
