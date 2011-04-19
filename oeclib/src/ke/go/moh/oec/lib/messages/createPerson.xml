@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- PERSON ADD message format -->
+<!-- CREATE PERSON message format -->
 <!-- HL7 Patient Registry Add Request, PRPA_IN201311UV02 -->
 <!-- This file is a template used for the above-named message.
      XML Comments are included liberally in this template.

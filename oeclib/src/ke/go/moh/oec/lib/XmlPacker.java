@@ -38,10 +38,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import ke.go.moh.oec.Person.Sex;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import java.util.Date;
-import java.util.List;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -59,8 +59,10 @@ import org.xml.sax.SAXException;
 /**
  * Packs message data into XML strings, and unpacks XML strings into message data.
  * <p>
- * Note that all the methods in this class start with "pack" and "unpack"
- * depending on which kind of processing they are used for.
+ * Note that all the methods in this class start with "pack", "unpack" or
+ * "common". "pack" methods are used only for packing XML messages. "unpack"
+ * methods are used only for unpacking XML messages. "common" methods are
+ * used by both.
  *
  * @author Purity Chemutai
  * @author Jim Grace
@@ -266,7 +268,7 @@ class XmlPacker {
 		if (p == null) {
 			p = new Person();
 		}
-		// TO DO: pack person name
+		packPersonName(e, p);
 		packAttribute(e, "administrativeGenderCode", "code", packEnum(p.getSex()));
 		packAttribute(e, "birthTime", "value", packDate(p.getBirthdate()));
 		packAttribute(e, "deceasedTime", "value", packDate(p.getDeathdate()));
@@ -306,6 +308,56 @@ class XmlPacker {
 	}
 
 	/**
+	 * Packs a person's name. The first and middle names are packed in two
+	 * consecutive &lt;given&gt; nodes. The last name is packed in the &lt;family&gt; node.
+	 * If none of the names are present, remove the whole &lt;name&gt; tag.
+	 * Otherwise, remove the tag for any part of the name that is not present.
+	 * The exception to this is if the first name is absent and the middle name
+	 * is present, keep the first &lt;given&gt; node, but pack it with an
+	 * empty string. That way the middle name will still go in the second &lt;given&gt; tag.
+	 * @param e head of the <code>Document</code> subtree in which this person is to be packed
+	 * @param p person data to pack into the subtree
+	 */
+	private void packPersonName(Element e, Person p) {
+		Element eName = (Element) e.getElementsByTagName("name").item(0);
+		/*
+		 * If all three names are null, remove the whole <name> subtree.
+		 */
+		if (p.getFirstName() == null && p.getMiddleName() == null && p.getLastName() == null) {
+			packRemoveNode(eName);
+		} else {
+			/* First name and middle name are both stored as <given> nodes. */
+			NodeList givenList = eName.getElementsByTagName("given");
+			/*
+			 * Pack the first name.
+			 */
+			if (p.getFirstName() != null) {
+				givenList.item(0).setNodeValue(p.getFirstName());
+			} else if (p.getMiddleName() != null) {
+				/*
+				 * First name is null but middle name is not. Set first name to the
+				 * empty string so middle name can still be the second <given> node.
+				 */
+				givenList.item(0).setNodeValue("");
+			} else {
+				packRemoveNode(givenList.item(0));
+			}
+			/*
+			 * Pack the middle name.
+			 */
+			if (p.getMiddleName() != null) {
+				givenList.item(1).setNodeValue(p.getMiddleName());
+			} else {
+				packRemoveNode(givenList.item(0));
+			}
+			/*
+			 * Pack the last name.
+			 */
+			packElementValue(eName, "family", p.getLastName());
+		}
+	}
+
+	/**
 	 * Packs visit information into a person subtree of a <code>Document</code>
 	 * 
 	 * @param e head of the <code>Document</code> subtree in which this person is to be packed
@@ -337,7 +389,7 @@ class XmlPacker {
 	 * @param type the person identifier type
 	 */
 	private void packPersonIdentifier(Element subtree, Person p, String oidPersonIdentifier, PersonIdentifier.Type type) {
-		Element idElement = packGetId(subtree, oidPersonIdentifier);
+		Element idElement = commonGetId(subtree, oidPersonIdentifier);
 		boolean idTypeFound = false;
 		if (p.getPersonIdentifierList() != null) {
 			for (PersonIdentifier pi : p.getPersonIdentifierList()) {
@@ -372,7 +424,7 @@ class XmlPacker {
 	 * @param type the fingerprint type
 	 */
 	private void packFingerprint(Element subtree, Person p, String oidFingerprint, Fingerprint.Type type) {
-		Element fpElement = packGetId(subtree, oidFingerprint);
+		Element fpElement = commonGetId(subtree, oidFingerprint);
 		boolean fpTypeFound = false;
 		if (p.getFingerprintList() != null) {
 			for (Fingerprint f : p.getFingerprintList()) {
@@ -441,33 +493,13 @@ class XmlPacker {
 	 * @param value the value to assign to the id tag, or null if the id tag should be removed.
 	 */
 	private void packId(Element subtree, String name, String value) {
-		Element id = packGetId(subtree, name);
+		Element id = commonGetId(subtree, name);
 		if (value != null) {
 			Node aExtension = id.getAttributeNode("extension");
 			aExtension.setNodeValue(value);
 		} else {
 			packRemoveNode(id);
 		}
-	}
-
-	/**
-	 * Finds an &lt;id&gt; tag with a given "root" attribute value,
-	 * or <code>null</code> if not found.
-	 *
-	 * @param subtree head of the subtree in which to search
-	 * @param name root attribute value to search for
-	 * @return
-	 */
-	private Element packGetId(Element subtree, String name) {
-		NodeList idList = subtree.getElementsByTagName("id");
-		for (int i = 0; i < idList.getLength(); i++) {
-			Element id = (Element) idList.item(i);
-			Node aRoot = id.getAttributeNode("root");
-			if (aRoot != null && aRoot.getNodeValue().equals(name)) {
-				return id;
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -722,30 +754,30 @@ class XmlPacker {
 	 * @return unpacked message data
 	 */
 	protected Message unpackDocument(Document doc) {
-		Message m = null;
-		String rootXmlTag = doc.getDocumentElement().getTagName();
-		MessageType messageType = MessageTypeRegistry.find(rootXmlTag);
+		Message m = new Message();
+		Element root = doc.getDocumentElement();
+		String rootName = root.getTagName();
+		MessageType messageType = MessageTypeRegistry.find(rootName);
+		m.setMessageType(messageType);
 
 		switch (messageType.getTemplateType()) {
 			case findPerson:
-				m = unpackFindPerson(doc);
+				unpackFindPerson(m, root);
 				break;
 
 			case findPersonResponse:
-				m = unpackFindPersonResponse(doc);
+				unpackFindPersonResponse(m, root);
 				break;
 
 			case createPerson: // Uses unpackGenericPersonMessage(), below.
 			case modifyPerson: // Uses unpackGenericPersonMessage(), below.
 			case notifyPersonChanged:
-				m = unpackGenericPersonMessage(doc);
+				unpackGenericPersonMessage(m, root);
 				break;
 
 			case logEntry:
-				m = unpackLogEntry(doc);
+				unpackLogEntry(m, root);
 		}
-
-		m.setMessageType(messageType);
 		return m;
 	}
 
@@ -761,39 +793,152 @@ class XmlPacker {
 	 * MODIFY PERSON <br>
 	 * NOTIFY PERSON CHANGED
 	 *
-	 * @param doc the person changes <code>Document</code> parsed from XML
-	 * @return the person changes message data
+	 * @param m the message contents to fill in
+	 * @param e root node of the person message <code>Document</code> parsed from XML
 	 */
-	private Message unpackGenericPersonMessage(Document doc) {
-		Message m = new Message();
-		// TO DO: Do the work
-		return m;
+	private void unpackGenericPersonMessage(Message m, Element e) {
+		unpackGenericPersonMessage(m, e);
+		Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
+		unpackPerson(m, ePerson);
+		// TO DO: Finish the work
 	}
 
 	/**
 	 * Unpacks a find person request <code>Document</code> into message data.
 	 * Uses HL7 Patient Registry Find Candidates Query, PRPA_IN201305UV02.
 	 *
-	 * @param doc the search terms <code>Document</code> parsed from XML
-	 * @return the search terms message data
+	 * @param m the message contents to fill in
+	 * @param e root of the person message <code>Document</code> parsed from XML
 	 */
-	private Message unpackFindPerson(Document doc) {
-		Message m = new Message();
+	private void unpackFindPerson(Message m, Element e) {
 		// TO DO: Do the work
-		return m;
 	}
 
 	/**
 	 * Unpacks a find person response <code>Document</code> into message data.
 	 * Uses HL7 Patient Registry Find Candidates Query Response, PRPA_IN201306UV02.
 	 *
-	 * @param doc the person candidates <code>Document</code> parsed from XML
-	 * @return the person candidates message data
+	 * @param m the message contents to fill in
+	 * @param e root of the person message <code>Document</code> parsed from XML
 	 */
-	private Message unpackFindPersonResponse(Document doc) {
-		Message m = new Message();
+	private void unpackFindPersonResponse(Message m, Element e) {
 		// TO DO: Do the work
-		return m;
+	}
+
+	/**
+	 * Unpacks a standard HL7 message header into message data.
+	 *
+	 * @param m the message contents to fill in
+	 * @param e root of the person message <code>Document</code> parsed from XML
+	 */
+	private void unpackHl7Header(Message m, Element e) {
+		m.setMessageId(unpackId(e, OID_MESSAGE_ID));
+		Element receiver = (Element) e.getElementsByTagName("receiver").item(0);
+		if (receiver != null) {
+			m.setDestinationAddress(unpackId(receiver, OID_APPLICATION_ADDRESS));
+			m.setDestinationName(unpackElementValue(receiver, "name"));
+		}
+		Element sender = (Element) e.getElementsByTagName("sender").item(0);
+		if (sender != null) {
+			m.setSourceAddress(unpackId(sender, OID_APPLICATION_ADDRESS));
+			m.setSourceName(unpackElementValue(sender, "name"));
+		}
+	}
+
+	/**
+	 * Unpacks a person subtree into message data
+	 *
+	 * @param m the message contents to fill in
+	 * @param e head of the <code>Document</code> subtree in which this person is found
+	 */
+	private void unpackPerson(Message m, Element e) {
+		Person p = new Person();
+		m.setData(p);
+		unpackPersonName(p, e);
+		p.setSex((Sex) unpackEnum(Person.Sex.values(), unpackAttribute(e, "administrativeGenderCode", "code")));
+		p.setBirthdate(unpackDate(unpackAttribute(e, "birthTime", "value")));
+		p.setDeathdate(unpackDate(unpackAttribute(e, "deceasedTime", "value")));
+		p.setOtherName(unpackId(e, OID_OTHER_NAME));
+		p.setClanName(unpackId(e, OID_CLAN_NAME));
+
+		// TO DO: finish unpacking the person object
+	}
+
+	/**
+	 * Unpacks a person name into a <code>Person</code> object.
+	 *
+	 * @param p the person data into which to put the person name.
+	 * @param e head of the <code>Document</code> subtree in which this person is found
+	 */
+	private void unpackPersonName(Person p, Element e) {
+		Element eName = (Element) e.getElementsByTagName("name").item(0);
+		if (eName != null) {
+			NodeList givenList = eName.getElementsByTagName("given");
+			if (givenList.getLength() > 0) {
+				p.setFirstName(givenList.item(0).getNodeValue());
+				if (givenList.getLength() > 1) {
+					p.setMiddleName(givenList.item(1).getNodeValue());
+				}
+			}
+			p.setLastName(unpackElementValue(eName, "family"));
+		}
+	}
+
+	/**
+	 * Unpacks data from an element attribute in the <code>Document</code>.
+	 *
+	 * @param subtree Document subtree in which to look for the element
+	 * @param name name of the element from which to unpack the value
+	 * @param attribute name of the element attribute containing the value
+	 * @return the attribute value. If the element was not found, returns null.
+	 */
+	private String unpackAttribute(Element subtree, String name, String attribute) {
+		Element e = (Element) subtree.getElementsByTagName(name).item(0);
+		if (e != null) {
+			Node attr = e.getAttributeNode(attribute);
+			if (attr != null) {
+				return attr.getNodeValue();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Unpacks data from an element value.
+	 *
+	 * @param subtree Document subtree in which to look for the element
+	 * @param name name of the element from which to unpack the value
+	 * @return value value of the element. If the element was not found,
+	 * returns null.
+	 */
+	private String unpackElementValue(Element subtree, String name) {
+		Element e = (Element) subtree.getElementsByTagName(name).item(0);
+		if (e != null) {
+			return e.getNodeValue();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Unpacks an element of the form &lt;id root="name", extension="value"&gt;.
+	 * <p>
+	 * If the element is found, returns the value of the extension attribute
+	 * of the matching &lt;id&gt; node. If the element is not found, returns null
+	 *
+	 * @param subtree head of subtree within which to look for the id element.
+	 * @param name the root attribute value for the id element we are looking for.
+	 * @return value of the extension attribute, or null if tag not found.
+	 */
+	private String unpackId(Element subtree, String name) {
+		Element id = commonGetId(subtree, name);
+		if (id != null) {
+			Node aExtension = id.getAttributeNode("extension");
+			if (aExtension != null) {
+				return aExtension.getNodeValue();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -803,16 +948,14 @@ class XmlPacker {
 	 * @param doc the log entry <code>Document</code> parsed from XML
 	 * @return the log entry message data
 	 */
-	private Message unpackLogEntry(Document doc) {
-		Message m = new Message();
+	private void unpackLogEntry(Message m, Element root) {
 		LogEntry logEntry = new LogEntry();
 		m.setData(logEntry);
-		logEntry.setSeverity(doc.getElementsByTagName("severity").item(0).getNodeValue());
-		logEntry.setClassName(doc.getElementsByTagName("class").item(0).getNodeValue());
-		logEntry.setDateTime(unpackDateTime(doc.getElementsByTagName("dateTime").item(0).getNodeValue()));
-		logEntry.setMessage(doc.getElementsByTagName("message").item(0).getNodeValue());
-		logEntry.setInstance(doc.getElementsByTagName("instance").item(0).getNodeValue());
-		return m;
+		logEntry.setSeverity(root.getElementsByTagName("severity").item(0).getNodeValue());
+		logEntry.setClassName(root.getElementsByTagName("class").item(0).getNodeValue());
+		logEntry.setDateTime(unpackDateTime(root.getElementsByTagName("dateTime").item(0).getNodeValue()));
+		logEntry.setMessage(root.getElementsByTagName("message").item(0).getNodeValue());
+		logEntry.setInstance(root.getElementsByTagName("instance").item(0).getNodeValue());
 	}
 
 	/**
@@ -830,18 +973,78 @@ class XmlPacker {
 	}
 
 	/**
-	 * Unpacks a <code>String</code> date and time into a <code>Date</code>.
+	 * Given a string and a set of enumerated values, find which enumerated
+	 * member has a name matching the string.
 	 *
-	 * @param sDate contains date and time
+	 * @param values the set of enumerated values in which to search
+	 * @param text text to match against the value names
+	 * @return the enumerated value if there was a match, otherwise null
+	 */
+	private Enum unpackEnum(Enum[] values, String text) {
+		for (Enum e : values) {
+			if (e.name().equalsIgnoreCase(text)) {
+				return e;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Unpacks a <code>String</code> date into a <code>Date</code>
+	 *
+	 * @param sDate contains the date in <code>String</code> format
+	 * @return the date in <code>Date</code> format
+	 */
+	private Date unpackDate(String sDate) {
+		Date date = null;
+		try {
+			date = SIMPLE_DATE_FORMAT.parse(sDate);
+		} catch (ParseException ex) {
+			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return date;
+	}
+
+	/**
+	 * Unpacks a <code>String</code> date and time into a <code>Date</code>
+	 *
+	 * @param sDateTime contains date and time
 	 * @return the date and time in <code>Date</code> format
 	 */
-	private Date unpackDateTime(String sDate) {
+	private Date unpackDateTime(String sDateTime) {
 		Date dateTime = null;
 		try {
-			dateTime = SIMPLE_DATE_TIME_FORMAT.parse(sDate);
+			dateTime = SIMPLE_DATE_TIME_FORMAT.parse(sDateTime);
 		} catch (ParseException ex) {
 			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		return dateTime;
+	}
+
+	/*
+	 * ---------------------------------------------------------------------------------------
+	 *
+	 *                       C  O  M  M  O  N        M  E  T  H  O  D  S
+	 *
+	 * ---------------------------------------------------------------------------------------
+	 */
+	/**
+	 * Finds an &lt;id&gt; element with a given "root" attribute value,
+	 * or <code>null</code> if not found.
+	 *
+	 * @param subtree head of the subtree in which to search
+	 * @param name root attribute value to search for
+	 * @return the element if found, otherwise null
+	 */
+	private Element commonGetId(Element subtree, String name) {
+		NodeList idList = subtree.getElementsByTagName("id");
+		for (int i = 0; i < idList.getLength(); i++) {
+			Element id = (Element) idList.item(i);
+			Node aRoot = id.getAttributeNode("root");
+			if (aRoot != null && aRoot.getNodeValue().equals(name)) {
+				return id;
+			}
+		}
+		return null;
 	}
 }
