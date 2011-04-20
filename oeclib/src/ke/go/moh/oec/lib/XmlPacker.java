@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -38,10 +39,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import ke.go.moh.oec.Person.Sex;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import java.util.Date;
+import java.util.List;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -96,6 +97,7 @@ class XmlPacker {
 	private static final String OID_EXPECTED_DELIVERY_DATE = OID_ROOT + "4.18";
 	private static final String OID_PREGNANCY_END_DATE = OID_ROOT + "4.19";
 	private static final String OID_PREGNANCY_OUTCOME = OID_ROOT + "4.20";
+	private static final String OID_SITE_NAME = OID_ROOT + "4.21";
 	private static final String OID_PATIENT_REGISTRY_ID = OID_ROOT + "5.1";
 	private static final String OID_MASTER_PATIENT_REGISTRY_ID = OID_ROOT + "5.2";
 	private static final String OID_CCC_UNIVERSAL_UNIQUE_ID = OID_ROOT + "5.3";
@@ -269,9 +271,9 @@ class XmlPacker {
 			p = new Person();
 		}
 		packPersonName(e, p);
-		packAttribute(e, "administrativeGenderCode", "code", packEnum(p.getSex()));
-		packAttribute(e, "birthTime", "value", packDate(p.getBirthdate()));
-		packAttribute(e, "deceasedTime", "value", packDate(p.getDeathdate()));
+		packElementAttribute(e, "administrativeGenderCode", "code", packEnum(p.getSex()));
+		packElementAttribute(e, "birthTime", "value", packDate(p.getBirthdate()));
+		packElementAttribute(e, "deceasedTime", "value", packDate(p.getDeathdate()));
 		packId(e, OID_OTHER_NAME, p.getOtherName());
 		packId(e, OID_CLAN_NAME, p.getClanName());
 		packId(e, OID_ALIVE_STATUS, packEnum(p.getAliveStatus()));
@@ -294,17 +296,17 @@ class XmlPacker {
 		packId(e, OID_PREGNANCY_OUTCOME, packEnum(p.getPregnancyOutcome()));
 		packVisit(e, p.getLastRegularVisit(), OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE);
 		packVisit(e, p.getLastOneOffVisit(), OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE);
-		packPersonIdentifier(e, p, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
-		packPersonIdentifier(e, p, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
-		packPersonIdentifier(e, p, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
-		packPersonIdentifier(e, p, OID_CCC_LOCAL_PATIENT_ID, PersonIdentifier.Type.cccLocalId);
-		packPersonIdentifier(e, p, KISUMU_HDSS_ID, PersonIdentifier.Type.kisumuHdssId);
-		packFingerprint(e, p, OID_FINGERPRINT_LEFT_INDEX, Fingerprint.Type.leftIndexFinger);
-		packFingerprint(e, p, OID_FINGERPRINT_LEFT_MIDDLE, Fingerprint.Type.leftMiddleFinger);
-		packFingerprint(e, p, OID_FINGERPRINT_LEFT_RING, Fingerprint.Type.leftRingFinger);
-		packFingerprint(e, p, OID_FINGERPRINT_RIGHT_INDEX, Fingerprint.Type.rightIndexFinger);
-		packFingerprint(e, p, OID_FINGERPRINT_RIGHT_MIDDLE, Fingerprint.Type.rightMiddleFinger);
-		packFingerprint(e, p, OID_FINGERPRINT_RIGHT_RING, Fingerprint.Type.rightRingFinger);
+		packPersonIdentifiers(e, p, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
+		packPersonIdentifiers(e, p, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
+		packPersonIdentifiers(e, p, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
+		packPersonIdentifiers(e, p, OID_CCC_LOCAL_PATIENT_ID, PersonIdentifier.Type.cccLocalId);
+		packPersonIdentifiers(e, p, KISUMU_HDSS_ID, PersonIdentifier.Type.kisumuHdssId);
+		packFingerprints(e, p, OID_FINGERPRINT_LEFT_INDEX, Fingerprint.Type.leftIndexFinger);
+		packFingerprints(e, p, OID_FINGERPRINT_LEFT_MIDDLE, Fingerprint.Type.leftMiddleFinger);
+		packFingerprints(e, p, OID_FINGERPRINT_LEFT_RING, Fingerprint.Type.leftRingFinger);
+		packFingerprints(e, p, OID_FINGERPRINT_RIGHT_INDEX, Fingerprint.Type.rightIndexFinger);
+		packFingerprints(e, p, OID_FINGERPRINT_RIGHT_MIDDLE, Fingerprint.Type.rightMiddleFinger);
+		packFingerprints(e, p, OID_FINGERPRINT_RIGHT_RING, Fingerprint.Type.rightRingFinger);
 	}
 
 	/**
@@ -388,19 +390,23 @@ class XmlPacker {
 	 * @param oidPersonIdentifier the XML template OID for this person identifier type
 	 * @param type the person identifier type
 	 */
-	private void packPersonIdentifier(Element subtree, Person p, String oidPersonIdentifier, PersonIdentifier.Type type) {
+	private void packPersonIdentifiers(Element subtree, Person p, String oidPersonIdentifier, PersonIdentifier.Type type) {
 		Element idElement = commonGetId(subtree, oidPersonIdentifier);
+		if (idElement == null) {
+			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
+					"PersonIdentifier type {0}, OID {1} was not found in the template XML file.",
+					new Object[]{type.name(), oidPersonIdentifier});
+			return;
+		}
 		boolean idTypeFound = false;
 		if (p.getPersonIdentifierList() != null) {
 			for (PersonIdentifier pi : p.getPersonIdentifierList()) {
 				if (pi.getIdentifierType() == type && pi.getIdentifier() != null) {
 					Element e = idElement;
 					if (idTypeFound) {
-						e = (Element) idElement.cloneNode(true);
-						idElement.getParentNode().appendChild(e);
+						e = packCloneElement(idElement);
 					}
-					Node aExtension = e.getAttributeNode("extension");
-					aExtension.setNodeValue(pi.getIdentifier());
+					packAttribute(e, "extension", pi.getIdentifier());
 					idTypeFound = true;
 				}
 			}
@@ -415,27 +421,36 @@ class XmlPacker {
 	 * <p>
 	 * Searches through through the person data for all fingerprints of the given type.
 	 * The first such fingerprint replaces the template value. Subsequent fingerprints
-	 * are inserted into clones of the template value. If there is no fingerprint of this type,
-	 * the template for fingerprints of this type is removed.
+	 * of the same type are inserted into clones of the template value. If there is no
+	 * fingerprint of this type, the template for fingerprints of this type is removed.
+	 * <p>
+	 * Note that we don't really expect multiple fingerprints of the same type in the
+	 * same message. But the list of fingerprints in the <code>Person</code> object
+	 * allows for this possibility, as does the XML message template. So this
+	 * method also allows for this possibility.
 	 * 
 	 * @param subtree head of the <code>Document</code> subtree in which this person is to be packed
 	 * @param p person information containing the list of identifiers
 	 * @param oidFingerprint the XML template OID for this fingerprint type
 	 * @param type the fingerprint type
 	 */
-	private void packFingerprint(Element subtree, Person p, String oidFingerprint, Fingerprint.Type type) {
+	private void packFingerprints(Element subtree, Person p, String oidFingerprint, Fingerprint.Type type) {
 		Element fpElement = commonGetId(subtree, oidFingerprint);
+		if (fpElement == null) {
+			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
+					"Fingerprint type {0}, OID {1} was not found in the template XML file.",
+					new Object[]{type.name(), oidFingerprint});
+			return;
+		}
 		boolean fpTypeFound = false;
 		if (p.getFingerprintList() != null) {
 			for (Fingerprint f : p.getFingerprintList()) {
 				if (f.getFingerprintType() == type && f.getTemplate() != null) {
 					Element e = fpElement;
 					if (fpTypeFound) {
-						e = (Element) fpElement.cloneNode(true);
-						fpElement.getParentNode().appendChild(e);
+						e = packCloneElement(fpElement);
 					}
-					Node aExtension = e.getAttributeNode("extension");
-					aExtension.setNodeValue(packByteArray(f.getTemplate()));
+					packAttribute(e, "extension", packByteArray(f.getTemplate()));
 					fpTypeFound = true;
 				}
 			}
@@ -446,7 +461,42 @@ class XmlPacker {
 	}
 
 	/**
-	 * Packs data into an element attribute in the <code>Document</code>.
+	 * Clones an element for packing additional values. Adds the element
+	 * as a new child to the same parent, placing it just after the
+	 * element that is cloned. If there is white space preceeding the
+	 * element to be cloned, that white space is also cloned, to
+	 * preserve formatting.
+	 *
+	 * @param e
+	 * @return
+	 */
+	private Element packCloneElement(Element e) {
+		Element clone = (Element) e.cloneNode(true);
+		Node parent = e.getParentNode();
+		Node previous = e.getPreviousSibling();
+		Node next = e.getNextSibling();
+		Node whiteSpace = null;
+		if (previous != null
+				&& previous.getNodeType() == Node.TEXT_NODE
+				&& previous.getNodeValue().trim().length() == 0) {
+			whiteSpace = previous.cloneNode(false); // deep clone not needed for whitespace
+		}
+		if (next != null) {
+			if (whiteSpace != null) {
+				parent.insertBefore(whiteSpace, next);
+			}
+			parent.insertBefore(clone, next);
+		} else {
+			if (whiteSpace != null) {
+				parent.appendChild(whiteSpace);
+			}
+			parent.appendChild(clone);
+		}
+		return clone;
+	}
+
+	/**
+	 * Packs data into a named attribute of a named element.
 	 *
 	 * @param subtree Document subtree in which to look for the element
 	 * @param name name of the element in which to pack the value
@@ -454,9 +504,32 @@ class XmlPacker {
 	 * @param value value to place in the attribute. If null, the element
 	 * is removed from the template.
 	 */
-	private void packAttribute(Element subtree, String name, String attribute, String value) {
+	private void packElementAttribute(Element subtree, String name, String attribute, String value) {
 		Element e = (Element) subtree.getElementsByTagName(name).item(0);
+		if (e == null) {
+			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
+					"packElementAttribute() could not find element {0} (with attribute {1}) in the template XML file.",
+					new Object[]{name, attribute});
+			return;
+		}
+		packAttribute(e, attribute, value);
+	}
+
+	/**
+	 * Packs data into a named attribute of a given element.
+	 *
+	 * @param e the element whose attribute we are to pack
+	 * @param attribute the name of the attribute to pack
+	 * @param value the value to put in the attribute
+	 */
+	private void packAttribute(Element e, String attribute, String value) {
 		Node attr = e.getAttributeNode(attribute);
+		if (attr == null) {
+			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
+					"packAttribute() could not find attribute {0} on element {1} in the template XML file.",
+					new Object[]{attribute, e.getNodeName()});
+			return;
+		}
 		if (value != null) {
 			attr.setNodeValue(value);
 		} else {
@@ -474,6 +547,11 @@ class XmlPacker {
 	 */
 	private void packElementValue(Element subtree, String name, String value) {
 		Element e = (Element) subtree.getElementsByTagName(name).item(0);
+		if (e == null) {
+			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
+					"packElementValue() could not find element{0}", name);
+			return;
+		}
 		if (value != null) {
 			e.setNodeValue(value);
 		} else {
@@ -494,12 +572,12 @@ class XmlPacker {
 	 */
 	private void packId(Element subtree, String name, String value) {
 		Element id = commonGetId(subtree, name);
-		if (value != null) {
-			Node aExtension = id.getAttributeNode("extension");
-			aExtension.setNodeValue(value);
-		} else {
-			packRemoveNode(id);
+		if (id == null) {
+			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
+					"packId() could not find ID with root attribute {0} in the XML template file", name);
+			return;
 		}
+		packAttribute(id, "extension", value);
 	}
 
 	/**
@@ -797,10 +875,9 @@ class XmlPacker {
 	 * @param e root node of the person message <code>Document</code> parsed from XML
 	 */
 	private void unpackGenericPersonMessage(Message m, Element e) {
-		unpackGenericPersonMessage(m, e);
+		unpackHl7Header(m, e);
 		Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
 		unpackPerson(m, ePerson);
-		// TO DO: Finish the work
 	}
 
 	/**
@@ -855,13 +932,43 @@ class XmlPacker {
 		Person p = new Person();
 		m.setData(p);
 		unpackPersonName(p, e);
-		p.setSex((Sex) unpackEnum(Person.Sex.values(), unpackAttribute(e, "administrativeGenderCode", "code")));
-		p.setBirthdate(unpackDate(unpackAttribute(e, "birthTime", "value")));
-		p.setDeathdate(unpackDate(unpackAttribute(e, "deceasedTime", "value")));
+		p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackElementAttribute(e, "administrativeGenderCode", "code")));
+		p.setBirthdate(unpackDate(unpackElementAttribute(e, "birthTime", "value")));
+		p.setDeathdate(unpackDate(unpackElementAttribute(e, "deceasedTime", "value")));
 		p.setOtherName(unpackId(e, OID_OTHER_NAME));
 		p.setClanName(unpackId(e, OID_CLAN_NAME));
-
-		// TO DO: finish unpacking the person object
+		p.setAliveStatus((Person.AliveStatus) unpackEnum(Person.AliveStatus.values(), unpackId(e, OID_ALIVE_STATUS)));
+		p.setMothersFirstName(unpackId(e, OID_CLAN_NAME));
+		p.setMothersFirstName(unpackId(e, OID_MOTHERS_FIRST_NAME));
+		p.setMothersMiddleName(unpackId(e, OID_MOTHERS_MIDDLE_NAME));
+		p.setMothersLastName(unpackId(e, OID_MOTHERS_LAST_NAME));
+		p.setFathersFirstName(unpackId(e, OID_FATHERS_FIRST_NAME));
+		p.setFathersMiddleName(unpackId(e, OID_FATHERS_MIDDLE_NAME));
+		p.setFathersLastName(unpackId(e, OKD_FATHERS_LAST_NAME));
+		p.setCompoundHeadFirstName(unpackId(e, OID_COMPOUND_HEAD_FIRST_NAME));
+		p.setCompoundHeadMiddleName(unpackId(e, OID_COMPOUND_HEAD_MIDDLE_NAME));
+		p.setCompoundHeadLastName(unpackId(e, OID_COMPOUND_HEAD_LAST_NAME));
+		p.setMaritalStatus((Person.MaritalStatus) unpackEnum(Person.MaritalStatus.values(), unpackId(e, OID_MARITAL_STATUS)));
+		p.setConsentSigned((Person.ConsentSigned) unpackEnum(Person.ConsentSigned.values(), unpackId(e, OID_CONSENT_SIGNED)));
+		p.setVillageName(unpackId(e, OID_VILAGE_NAME));
+		p.setPreviousVillageName(unpackId(e, OID_PREVIOUS_VILLAGE_NAME));
+		p.setLastMoveDate(unpackDate(unpackId(e, OID_LAST_MOVE_DATE)));
+		p.setExpectedDeliveryDate(unpackDate(unpackId(e, OID_EXPECTED_DELIVERY_DATE)));
+		p.setPregnancyEndDate(unpackDate(unpackId(e, OID_PREGNANCY_END_DATE)));
+		p.setPregnancyOutcome((Person.PregnancyOutcome) unpackEnum(Person.PregnancyOutcome.values(), unpackId(e, OID_PREGNANCY_OUTCOME)));
+		p.setLastRegularVisit(unpackVisit(e, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE));
+		p.setLastOneOffVisit(unpackVisit(e, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE));
+		unpackPersonIdentifiers(p, e, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
+		unpackPersonIdentifiers(p, e, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
+		unpackPersonIdentifiers(p, e, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
+		unpackPersonIdentifiers(p, e, OID_CCC_LOCAL_PATIENT_ID, PersonIdentifier.Type.cccLocalId);
+		unpackPersonIdentifiers(p, e, KISUMU_HDSS_ID, PersonIdentifier.Type.kisumuHdssId);
+		unpackFingerprints(p, e, OID_FINGERPRINT_LEFT_INDEX, Fingerprint.Type.leftIndexFinger);
+		unpackFingerprints(p, e, OID_FINGERPRINT_LEFT_MIDDLE, Fingerprint.Type.leftMiddleFinger);
+		unpackFingerprints(p, e, OID_FINGERPRINT_LEFT_RING, Fingerprint.Type.leftRingFinger);
+		unpackFingerprints(p, e, OID_FINGERPRINT_RIGHT_INDEX, Fingerprint.Type.rightIndexFinger);
+		unpackFingerprints(p, e, OID_FINGERPRINT_RIGHT_MIDDLE, Fingerprint.Type.rightMiddleFinger);
+		unpackFingerprints(p, e, OID_FINGERPRINT_RIGHT_RING, Fingerprint.Type.rightRingFinger);
 	}
 
 	/**
@@ -885,22 +992,136 @@ class XmlPacker {
 	}
 
 	/**
-	 * Unpacks data from an element attribute in the <code>Document</code>.
+	 * Unpacks visit information into a <code>Visit</code>. If any of the
+	 * visit information is present, allocates a <code>Visit</code> object
+	 * and sets the information into the object. If none of the visit
+	 * information is present, returns <code>null</code>.
+	 *
+	 * @param e head of the <code>Document</code> subtree in which this visit is found
+	 * @param oidVisitAddress OID for the XML id tag containing the visit address
+	 * @param oidVisitDate OID for the XML id tag containing the visit date
+	 * @return v unpacked visit data
+	 */
+	private Visit unpackVisit(Element e, String oidVisitAddress, String oidVisitDate) {
+		Visit v = null;
+		String address = unpackId(e, oidVisitAddress);
+		Date visitDate = unpackDate(unpackId(e, oidVisitDate));
+		if (address != null || visitDate != null) {
+			v = new Visit();
+			v.setAddress(address);
+			v.setVisitDate(visitDate);
+		}
+		return v;
+	}
+
+	/**
+	 * Unpacks all person identifiers of a given type.
+	 * <p>
+	 * Searches through all the person identifiers in a <code>Document</code> subtree
+	 * to find identifiers of the given type. For each such identifier, allocates
+	 * a <code>PersonIdentifier</code> object and attaches it to the <code>Person</code> object.
+	 *
+	 * @param p person information
+	 * @param e head of the <code>Document</code> subtree in which
+	 * these person identifiers are to be found
+	 * @param oidPersonIdentifier the XML template OID for this person identifier type
+	 * @param type the person identifier type
+	 */
+	private void unpackPersonIdentifiers(Person p, Element e, String oidPersonIdentifier, PersonIdentifier.Type type) {
+		List<Element> idList = unpackGetIdList(e, oidPersonIdentifier);
+		for (Element id : idList) {
+			PersonIdentifier pi = new PersonIdentifier();
+			pi.setIdentifier(unpackAttribute(id, "extension"));
+			pi.setIdentifierType(type);
+			if (p.getPersonIdentifierList() == null) {
+				p.setPersonIdentifierList(new ArrayList<PersonIdentifier>());
+			}
+			p.getPersonIdentifierList().add(pi);
+		}
+	}
+
+	/**
+	 * Unpacks all fingerprints of a given type.
+	 * <p>
+	 * Searches through all the person identifiers in a <code>Document</code> subtree
+	 * to find identifiers of the given type. For each such identifier, allocates
+	 * a <code>PersonIdentifier</code> object and attaches it to the <code>Person</code> object.
+	 * <p>
+	 * Note that we don't really expect multiple fingerprints of the same type in the
+	 * same message. But the list of fingerprints in the <code>Person</code> object
+	 * allows for this possibility, as does the XML message template. So this
+	 * method also allows for this possibility.
+	 *
+	 * @param p person information
+	 * @param e head of the <code>Document</code> subtree in which
+	 * these fingerprints are to be found
+	 * @param oidFingerprint the XML template OID for this fingerprint type
+	 * @param type fingerprint type
+	 */
+	private void unpackFingerprints(Person p, Element e, String oidFingerprint, Fingerprint.Type type) {
+		List<Element> idList = unpackGetIdList(e, oidFingerprint);
+		for (Element id : idList) {
+			Fingerprint f = new Fingerprint();
+			f.setTemplate(unpackByteArray(unpackAttribute(id, "extension")));
+			f.setFingerprintType(type);
+			if (p.getFingerprintList() == null) {
+				p.setFingerprintList(new ArrayList<Fingerprint>());
+			}
+			p.getFingerprintList().add(f);
+		}
+	}
+
+	/**
+	 * Finds a list of &lt;id&gt; elements with a given "root" attribute value.
+	 *
+	 * @param subtree head of the subtree in which to search
+	 * @param name root attribute value to search for
+	 * @return the list of elements (empty list if none are found)
+	 */
+	private List<Element> unpackGetIdList(Element subtree, String name) {
+		NodeList idList = subtree.getElementsByTagName("id");
+		List<Element> returnList = new ArrayList<Element>();
+		for (int i = 0; i < idList.getLength(); i++) {
+			Element id = (Element) idList.item(i);
+			Node aRoot = id.getAttributeNode("root");
+			if (aRoot != null && aRoot.getNodeValue().equals(name)) {
+				returnList.add(id);
+			}
+		}
+		return returnList;
+	}
+
+	/**
+	 * Unpacks data from a named attribute of a named element.
 	 *
 	 * @param subtree Document subtree in which to look for the element
 	 * @param name name of the element from which to unpack the value
 	 * @param attribute name of the element attribute containing the value
 	 * @return the attribute value. If the element was not found, returns null.
 	 */
-	private String unpackAttribute(Element subtree, String name, String attribute) {
+	private String unpackElementAttribute(Element subtree, String name, String attribute) {
 		Element e = (Element) subtree.getElementsByTagName(name).item(0);
 		if (e != null) {
-			Node attr = e.getAttributeNode(attribute);
-			if (attr != null) {
-				return attr.getNodeValue();
-			}
+			return unpackAttribute(e, attribute);
+		} else {
+			return null;
 		}
-		return null;
+	}
+
+	/**
+	 * Unpacks data from a named attribute of a given element.
+	 *
+	 * @param e element from which to unpack the data
+	 * @param attribute attribute in which to find the data
+	 * @return value of the attribute, or null if the attribute was not present.
+	 * 
+	 */	private String unpackAttribute(Element e, String attribute) {
+		Node attr = e.getAttributeNode(attribute);
+		if (attr != null) {
+			return attr.getNodeValue();
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -962,12 +1183,16 @@ class XmlPacker {
 	 * Unpacks a hexidecimal-encoded string into a binary byte array.
 	 *
 	 * @param hex the hexidecimal string to unpack
-	 * @return the resulting binary byte array
+	 * @return the resulting binary byte array.
+	 * Returns null if the hex string was null.
 	 */
 	private byte[] unpackByteArray(String hex) {
-		byte[] bytes = new byte[hex.length() / 2];
-		for (int i = 0; i < hex.length(); i += 2) {
-			bytes[i / 2] = (byte) Integer.parseInt(hex.substring(i, i + 2), 16);
+		byte[] bytes = null;
+		if (hex != null) {
+			bytes = new byte[hex.length() / 2];
+			for (int i = 0; i < hex.length(); i += 2) {
+				bytes[i / 2] = (byte) Integer.parseInt(hex.substring(i, i + 2), 16);
+			}
 		}
 		return bytes;
 	}
@@ -993,16 +1218,19 @@ class XmlPacker {
 	 * Unpacks a <code>String</code> date into a <code>Date</code>
 	 *
 	 * @param sDate contains the date in <code>String</code> format
-	 * @return the date in <code>Date</code> format
+	 * @return the date in <code>Date</code> format.
+	 * Returns null if the date string was null.
 	 */
 	private Date unpackDate(String sDate) {
-		Date date = null;
-		try {
-			date = SIMPLE_DATE_FORMAT.parse(sDate);
-		} catch (ParseException ex) {
-			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
+		Date returnDate = null;
+		if (sDate != null) {
+			try {
+				returnDate = SIMPLE_DATE_FORMAT.parse(sDate);
+			} catch (ParseException ex) {
+				Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
-		return date;
+		return returnDate;
 	}
 
 	/**
@@ -1010,15 +1238,18 @@ class XmlPacker {
 	 *
 	 * @param sDateTime contains date and time
 	 * @return the date and time in <code>Date</code> format
+	 * Returns null if the date and time string was null.
 	 */
 	private Date unpackDateTime(String sDateTime) {
-		Date dateTime = null;
-		try {
-			dateTime = SIMPLE_DATE_TIME_FORMAT.parse(sDateTime);
-		} catch (ParseException ex) {
-			Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
+		Date returnDateTime = null;
+		if (sDateTime != null) {
+			try {
+				returnDateTime = SIMPLE_DATE_TIME_FORMAT.parse(sDateTime);
+			} catch (ParseException ex) {
+				Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
-		return dateTime;
+		return returnDateTime;
 	}
 
 	/*
