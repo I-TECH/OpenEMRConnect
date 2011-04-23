@@ -87,7 +87,7 @@ public class Person {
     private Date birthdate;
     /** The person's date of death (if any). */
     private Date deathdate;
-    /** Whether a person is living at the moment: 0 = N/A, 1 = Yes, 2 = No */
+    /** Whether a person is living at the moment: 0 = N/A, 1 = Yes, 2 = No (only used as a person search term) */
     private AliveStatus aliveStatus;
     /** The first (or given) name of the person's mother. */
     private String mothersFirstName;
@@ -107,6 +107,8 @@ public class Person {
     private String compoundHeadMiddleName;
     /** The last (or family) name of the head of the person's compound. */
     private String compoundHeadLastName;
+    /** The name of the site from which a remote visiting patient comes (only used as a person search term.) */
+    private String siteName;
     /** The name of the village in which the person lives. */
     private String villageName;
     /** The name of the village in which the person previously lived most recently. */
@@ -135,7 +137,7 @@ public class Person {
     /** A list containing each {@link Fingerprint} taken from this person. */
     private List<Fingerprint> fingerprintList;
     /** A list of household members */
-    private List<Person> householdMembers;
+    private List<RelatedPerson> householdMembers;
 
 	public AliveStatus getAliveStatus() {
 		return aliveStatus;
@@ -249,11 +251,11 @@ public class Person {
 		this.firstName = firstName;
 	}
 
-	public List<Person> getHouseholdMembers() {
+	public List<RelatedPerson> getHouseholdMembers() {
 		return householdMembers;
 	}
 
-	public void setHouseholdMembers(List<Person> householdMembers) {
+	public void setHouseholdMembers(List<RelatedPerson> householdMembers) {
 		this.householdMembers = householdMembers;
 	}
 
@@ -383,6 +385,14 @@ public class Person {
 
 	public void setSex(Sex sex) {
 		this.sex = sex;
+	}
+
+	public String getSiteName() {
+		return siteName;
+	}
+
+	public void setSiteName(String siteName) {
+		this.siteName = siteName;
 	}
 
 	public String getVillageName() {
