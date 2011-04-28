@@ -51,11 +51,11 @@ public interface IService {
      * When the OEC library receives a request destined for this server, it
      * unpacks the HL7 message, and delivers it to the object's getData method.
      * To accomplish this, the server first registers the object to receive
-     * requests using {@link ke.go.moh.oec.lib.Mediator#registerCallback}
+     * requests using {@link edu.uw.itech.oec.lib.Mediator#registerCallback}
      *
-     * @param requestTypeId type of request; constant from class {@link RequestTypeId}
-     * @param requestData request data; see {@link RequestTypeId} Field Detail for descriptions
-     * @return return data; see {@link RequestTypeId} Field Detail for descriptions
+     * @param requestType type of request; constant from class {@link RequestType}
+     * @param requestData request data; see {@link RequestType} Field Detail for descriptions
+     * @return return data; see {@link RequestType} Field Detail for descriptions
      */
     public Object getData(int requestTypeId, Object requestData);
 }

@@ -30,7 +30,7 @@ package ke.go.moh.oec.lib;
  * @author Jim Grace
  */
 class Message {
-	/** Type of the message - see <code>MessageTypeRegistry</code> */
+	/** Type of the message - see {@link(MessageTypeRepository)} */
 	private MessageType messageType;
 	/** User data contents of the message */
 	private Object data;

@@ -143,7 +143,10 @@ class HttpService {
         server.setExecutor(Executors.newCachedThreadPool());
         server.stop(port);
     }
-
+	/**
+	 * The handler class below implements the HttpHandler interface properties and is called up to process
+	 * HTTP exchanges.
+	 */
     private class Handler implements HttpHandler {
 
         private Mediator mediator = null;
@@ -162,11 +165,6 @@ class HttpService {
 
                 responseHeaders.set("Content-Type", "text/plain");
                 exchange.sendResponseHeaders(200, 0);
-                /*Byte Stream is the lowest level of data representation.
-                First we use the "exchange.getRequestBody" method to obtain the inputstream which is a byte stream
-                format of the data. We then use InputStreamReader reader to convert the byte inputstream byte code into
-                character streams. The InputStreamReader is then wrapped around a BufferedReader to enable reading line by line
-                 */
                 BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
                 String s1 = "";
                 while (true) {
@@ -196,11 +194,6 @@ class HttpService {
                 responseHeaders.set("Content-Type", "text/plain");
                 exchange.sendResponseHeaders(200, 0);
                 OutputStream responseBody = exchange.getResponseBody();
-                /*Byte Stream is the lowest level of data representation.
-                First we use the "exchange.getRequestBody" method to obtain the inputstream which is a byte stream
-                format of the data. We then use InputStreamReader reader to convert the byte inputstream byte code into
-                character streams. The InputStreamReader is then wrapped around a BufferedReader to enable reading line by line
-                 */
                 BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
                 String st;
                 String request = "";

@@ -180,7 +180,7 @@ class MessageTypeRegistry {
     /**
      * Finds a message type based on the request type ID (integer).
      *
-     * @param requestTypeId request type to search for
+     * @param requestType request type to search for
      * @return <code>MessageType</code>, or <code>null</code> if not found.
      */
     protected static MessageType find(int requestTypeId) {
@@ -199,7 +199,7 @@ class MessageTypeRegistry {
      * In this case, the first such message type will be returned. This should
      * be good enough for our purposes.
      *
-     * @param rootXmlTag message root XML tag to search for
+     * @param xmlTag message root XML tag to search for
      * @return <code>MessageType</code>, or <code>null</code> if not found.
      */
     protected static MessageType find(String rootXmlTag) {
