@@ -218,7 +218,7 @@ public class Mediator implements IService {
          */
         m.setDestinationAddress(messageType.getDefaultDestinationAddress());
         m.setDestinationName(messageType.getDefaultDestinationName());
-		if (requestData.getClass() == PersonRequest.class) {
+		if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest)requestData;
             if (pr.getDestinationAddress() != null) {
                 m.setDestinationAddress(pr.getDestinationAddress());
@@ -261,7 +261,7 @@ public class Mediator implements IService {
      * @return the new request ID.
      */
     private synchronized String generateMessageId() {
-        long milliseconds = (new Date()).getTime();
+        long milliseconds = new Date().getTime();
         return Long.toString(milliseconds) + Long.toString(messageSequenceNumber++);
     }
 

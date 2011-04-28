@@ -52,6 +52,7 @@ import javax.xml.transform.stream.StreamResult;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
+import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.RelatedPerson;
 import ke.go.moh.oec.Visit;
 import org.w3c.dom.Node;
@@ -211,7 +212,13 @@ class XmlPacker {
 		Element root = doc.getDocumentElement();
 		packHl7Header(root, m);
 		Element personNode = (Element) root.getElementsByTagName("patient").item(0);
-		Person p = (Person) m.getData();
+		if ( ! (m.getData() instanceof PersonRequest)) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+					"packGenericPersonMessage() - Expected data class PersonRequest, got {0}",
+					m.getData().getClass().getName());
+		}
+		PersonRequest personRequest = (PersonRequest) m.getData();
+		Person p = personRequest.getPerson();
 		packPerson(personNode, p);
 		return doc;
 	}
@@ -229,7 +236,13 @@ class XmlPacker {
 		packHl7Header(root, m);
 		// The rest of what we want is in the subtree under <queryByParameter>
 		Element q = (Element) root.getElementsByTagName("queryByParameter").item(0);
-		Person p = (Person) m.getData();
+		if ( ! (m.getData() instanceof PersonRequest)) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+					"packFindPersonMessage() - Expected data class PersonRequest, got {0}",
+					m.getData().getClass().getName());
+		}
+		PersonRequest personRequest = (PersonRequest) m.getData();
+		Person p = personRequest.getPerson();
 		packPersonName(q, p, "livingSubjectName");
 		packLivingSubjectAttribute(q, "livingSubjectAdministrativeGender", "code", packEnum(p.getSex()));
 		packLivingSubjectAttribute(q, "livingSubjectBirthTime", "value", packDate(p.getBirthdate()));
@@ -948,6 +961,11 @@ class XmlPacker {
 	 * @return DOM Document structure
 	 */
 	private Document packLogEntryMessage(Message m) {
+		if ( ! (m.getData() instanceof LogEntry)) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+					"packLogEntryMessage() - Expected data class LogEntry, got {0}",
+					m.getData().getClass().getName());
+		}
 		LogEntry logEntry = (LogEntry) m.getData();
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); // Create instance of DocumentBuilderFactory
 		DocumentBuilder db = null; 		// Get the DocumentBuilder
