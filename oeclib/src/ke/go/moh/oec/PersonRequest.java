@@ -32,13 +32,21 @@ package ke.go.moh.oec;
 public class PersonRequest {
 
     /** The <code>Person</code> data for this request. */
-    private String person;
+    private Person person;
     /**
-     * A request reference number. This is not normally
-     * supplied by the original client when making the request.
-     * But it is supplied to the server when the request is delivered
-     * to the server. It may also be specified by the caller
+     * A request reference number. This is not
+     * supplied by the client when making a new request.
+     * But it is always supplied by the library to the server when the
+	 * request is delivered to the server. It may also be specified by the caller
 	 * in order to associate a request with an earlier request.
+	 * <p>
+	 * For example, a client would specify the reference number from
+	 * a prior person search when making a subsequent call relating
+	 * to the same search. It is also supplied by the client when taking
+	 * action such as add person or modify person, based on the results
+	 * of a previous find person. This lets the server know which person
+	 * was chosen (or, in the event of ADD PERSON, that no person was
+	 * chosen from the search results.)
      */
     private String requestReference;
     /**
@@ -92,11 +100,11 @@ public class PersonRequest {
 		this.matchAlgorithm = matchAlgorithm;
 	}
 
-	public String getPerson() {
+	public Person getPerson() {
 		return person;
 	}
 
-	public void setPerson(String person) {
+	public void setPerson(Person person) {
 		this.person = person;
 	}
 

@@ -52,6 +52,11 @@ import javax.xml.transform.stream.StreamResult;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
+<<<<<<< HEAD
+=======
+import ke.go.moh.oec.PersonRequest;
+import ke.go.moh.oec.RelatedPerson;
+>>>>>>> jongitau/master
 import ke.go.moh.oec.Visit;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -210,7 +215,13 @@ class XmlPacker {
 		Element root = doc.getDocumentElement();
 		packHl7Header(root, m);
 		Element personNode = (Element) root.getElementsByTagName("patient").item(0);
-		Person p = (Person) m.getData();
+		if ( ! (m.getData() instanceof PersonRequest)) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+					"packGenericPersonMessage() - Expected data class PersonRequest, got {0}",
+					m.getData().getClass().getName());
+		}
+		PersonRequest personRequest = (PersonRequest) m.getData();
+		Person p = personRequest.getPerson();
 		packPerson(personNode, p);
 		return doc;
 	}
@@ -226,7 +237,50 @@ class XmlPacker {
 		Document doc = packTemplate(m);
 		Element root = doc.getDocumentElement();
 		packHl7Header(root, m);
+<<<<<<< HEAD
 		// Pack the message
+=======
+		// The rest of what we want is in the subtree under <queryByParameter>
+		Element q = (Element) root.getElementsByTagName("queryByParameter").item(0);
+		if ( ! (m.getData() instanceof PersonRequest)) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+					"packFindPersonMessage() - Expected data class PersonRequest, got {0}",
+					m.getData().getClass().getName());
+		}
+		PersonRequest personRequest = (PersonRequest) m.getData();
+		Person p = personRequest.getPerson();
+		packPersonName(q, p, "livingSubjectName");
+		packLivingSubjectAttribute(q, "livingSubjectAdministrativeGender", "code", packEnum(p.getSex()));
+		packLivingSubjectAttribute(q, "livingSubjectBirthTime", "value", packDate(p.getBirthdate()));
+		packLivingSubjectAttribute(q, "livingSubjectDeceasedTime", "value", packDate(p.getDeathdate()));
+		packLivingSubjectId(q, OID_OTHER_NAME, p.getOtherName());
+		packLivingSubjectId(q, OID_CLAN_NAME, p.getClanName());
+		packLivingSubjectId(q, OID_ALIVE_STATUS, packEnum(p.getAliveStatus())); // (Used only on findPerson.)
+		packLivingSubjectId(q, OID_MOTHERS_FIRST_NAME, p.getMothersFirstName());
+		packLivingSubjectId(q, OID_MOTHERS_MIDDLE_NAME, p.getMothersMiddleName());
+		packLivingSubjectId(q, OID_MOTHERS_LAST_NAME, p.getMothersLastName());
+		packLivingSubjectId(q, OID_FATHERS_FIRST_NAME, p.getFathersFirstName());
+		packLivingSubjectId(q, OID_FATHERS_MIDDLE_NAME, p.getFathersMiddleName());
+		packLivingSubjectId(q, OKD_FATHERS_LAST_NAME, p.getFathersLastName());
+		packLivingSubjectId(q, OID_COMPOUND_HEAD_FIRST_NAME, p.getCompoundHeadFirstName());
+		packLivingSubjectId(q, OID_COMPOUND_HEAD_MIDDLE_NAME, p.getCompoundHeadMiddleName());
+		packLivingSubjectId(q, OID_COMPOUND_HEAD_LAST_NAME, p.getCompoundHeadLastName());
+		packLivingSubjectId(q, OID_MARITAL_STATUS, packEnum(p.getMaritalStatus()));
+		packLivingSubjectId(q, OID_CONSENT_SIGNED, packEnum(p.getConsentSigned()));
+		packLivingSubjectId(q, OID_SITE_NAME, p.getSiteName()); // (Used only on findPerson.)
+		packLivingSubjectId(q, OID_VILAGE_NAME, p.getVillageName());
+		packLivingSubjectPersonIdentifiers(q, p, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
+		packLivingSubjectPersonIdentifiers(q, p, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
+		packLivingSubjectPersonIdentifiers(q, p, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
+		packLivingSubjectPersonIdentifiers(q, p, OID_CCC_LOCAL_PATIENT_ID, PersonIdentifier.Type.cccLocalId);
+		packLivingSubjectPersonIdentifiers(q, p, KISUMU_HDSS_ID, PersonIdentifier.Type.kisumuHdssId);
+		packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_LEFT_INDEX, Fingerprint.Type.leftIndexFinger);
+		packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_LEFT_MIDDLE, Fingerprint.Type.leftMiddleFinger);
+		packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_LEFT_RING, Fingerprint.Type.leftRingFinger);
+		packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_RIGHT_INDEX, Fingerprint.Type.rightIndexFinger);
+		packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_RIGHT_MIDDLE, Fingerprint.Type.rightMiddleFinger);
+		packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_RIGHT_RING, Fingerprint.Type.rightRingFinger);
+>>>>>>> jongitau/master
 		return doc;
 	}
 
@@ -684,7 +738,16 @@ class XmlPacker {
 	 * @param m message to be packed
 	 * @return DOM Document structure
 	 */
+<<<<<<< HEAD
 	private Document packLogEntry(Message m) {
+=======
+	private Document packLogEntryMessage(Message m) {
+		if ( ! (m.getData() instanceof LogEntry)) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+					"packLogEntryMessage() - Expected data class LogEntry, got {0}",
+					m.getData().getClass().getName());
+		}
+>>>>>>> jongitau/master
 		LogEntry logEntry = (LogEntry) m.getData();
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); // Create instance of DocumentBuilderFactory
 		DocumentBuilder db = null; 		// Get the DocumentBuilder
