@@ -41,7 +41,11 @@ public class RelatedPerson {
 
 	/** Type of relationship to the primary person. */
 	private Relation relation;
-	/** Information about the related person. */
+	/**
+	 * Information about the related person.
+	 * Data supplied for the related person should include
+	 * three names, date of birth and sex.
+	 */
 	private Person person;
 
 	public Person getPerson() {
