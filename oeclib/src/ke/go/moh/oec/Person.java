@@ -113,12 +113,21 @@ public class Person {
 	private String compoundHeadLastName;		// Need from HDSS add/modify
 	/** The name of the site from which a remote visiting patient comes (only used as a person search term.) */
 	private String siteName;
-	/** The name of the village in which the person lives. */
+	/**
+	 * The name of the village in which the person lives.
+	 * If the person moves outside the HDSS area to a known location or area,
+	 * the HDSS should provide here the name of the place to which they moved.
+	 * If the person moves outside the HDSS area to an unknown location,
+	 * the village name should be null.
+	 */
 	private String villageName;		// Need from HDSS add/modify
 	/** The name of the village in which the person previously lived most recently. */
 	private String previousVillageName;
-	/** Date of most recent move between villages */
-	private Date lastMoveDate;		// Need from HDSS add/modify
+	/**
+	 * Date of most recent move between villages.
+	 * Only needed from the HDSS when the villageName changes.
+	 */
+	private Date lastMoveDate;		// Need from HDSS modify
 	/** The person's marital status */
 	private MaritalStatus maritalStatus;		// Need from HDSS add/modify
 	/** Has the person given consent for HDSS data to be transfered to clinics? */
@@ -141,7 +150,7 @@ public class Person {
 	/** A list containing each {@link Fingerprint} taken from this person. */
 	private List<Fingerprint> fingerprintList;		// Need from HDSS add/modify (HDSS ID only)
 	/** A list of household members */
-	private List<RelatedPerson> householdMembers;	// Need on HDSS query response
+	private List<RelatedPerson> householdMembers;	// Need on HDSS findPerson query response
 
 	public AliveStatus getAliveStatus() {
 		return aliveStatus;
