@@ -126,11 +126,11 @@ public class Mediator implements IService {
     public void stop() {
         Logger.getLogger(Mediator.class.getName()).log(Level.INFO, "OpenEMRConnect library services stopped.");
         queueManager.stop();
-        try {
-            httpService.stop();
-        } catch (IOException ex) {
-            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        try {
+//            httpService.stop();
+//        } catch (IOException ex) {
+//            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     /**

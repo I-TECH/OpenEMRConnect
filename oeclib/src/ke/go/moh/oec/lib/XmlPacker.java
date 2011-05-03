@@ -437,7 +437,7 @@ class XmlPacker {
 
 	/**
 	 * Packs visit information into a person subtree of a <code>Document</code>
-	 * 
+	 *
 	 * @param e head of the <code>Document</code> subtree in which this person is to be packed
 	 * @param v visit information to pack
 	 * @param oidVisitAddress OID for the XML id tag containing the visit address
@@ -862,7 +862,7 @@ class XmlPacker {
 	 * to this class, in the "messages/" package relative to the package
 	 * storing the current class. In other words, the XML message template files
 	 * are packed into the .jar file containing this class.
-	 * 
+	 *
 	 * @param m message to load the template for
 	 * @return the loaded template <code>Document</code>
 	 */
@@ -930,7 +930,7 @@ class XmlPacker {
 	 * node is on the line by itself. It also removes any white space
 	 * before the node if the node is on the end of the line after
 	 * another node.
-	 * 
+	 *
 	 * @param n
 	 * @return the number of nodes removed (1 if only the node was removed,
 	 * 2 if a whitespace-only text node before it was also removed.)
@@ -989,7 +989,7 @@ class XmlPacker {
 
 	/**
 	 * Packs a value into a new <code>Element</code>, and links it to a parent <code>Element</code>.
-	 * 
+	 *
 	 * @param doc the document we are packing into
 	 * @param parent parent element for our new element
 	 * @param elementName name of the new element to create
@@ -1578,7 +1578,7 @@ class XmlPacker {
 	 * @param e element from which to unpack the data
 	 * @param attribute attribute in which to find the data
 	 * @return value of the attribute, or null if the attribute was not present.
-	 * 
+	 *
 	 */
 	private String unpackAttribute(Element e, String attribute) {
 		Node attr = e.getAttributeNode(attribute);
