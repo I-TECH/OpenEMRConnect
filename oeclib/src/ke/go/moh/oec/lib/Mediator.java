@@ -218,7 +218,7 @@ public class Mediator implements IService {
          */
         m.setDestinationAddress(messageType.getDefaultDestinationAddress());
         m.setDestinationName(messageType.getDefaultDestinationName());
-		if (requestData.getClass() == PersonRequest.class) {
+		if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest)requestData;
             if (pr.getDestinationAddress() != null) {
                 m.setDestinationAddress(pr.getDestinationAddress());
@@ -261,7 +261,7 @@ public class Mediator implements IService {
      * @return the new request ID.
      */
     private synchronized String generateMessageId() {
-        long milliseconds = (new Date()).getTime();
+        long milliseconds = new Date().getTime();
         return Long.toString(milliseconds) + Long.toString(messageSequenceNumber++);
     }
 
@@ -406,10 +406,10 @@ public class Mediator implements IService {
      * IP address to which we should forward this message, than forward it
      * on its way. Otherwise we will unpack and process it locally.
      *
-     * @param message the body of the HTTP message received
+     * @param xml the body of the HTTP message received
      * @param destination the ultimate message destination (from the URL)
      * @param hopCount the forwarding hop count (from the URL)
-     * @param storeAndForward the indicator of whether this message should be stored and forwarded (from the URL)
+     * @param toBeQueued the indicator of whether this message should be stored and forwarded (from the URL)
      */
     protected void processReceivedMessage(String xml, String destination, int hopCount, boolean toBeQueued) {
         String ourInstanceAddress = getProperty("Instance.Address");
@@ -495,9 +495,6 @@ public class Mediator implements IService {
      * was not the response to a request that we were waiting for.
      *
      * @param m the unpacked message information.
-     * @param data unpacked message data that we received.
-     * @param requestID requestID found in the message we received.
-     * @param source message address where the message came from.
      */
     private void processUnsolicitedMessage(Message m) {
         MessageType messageType = m.getMessageType(); // For convenience below (code readability).

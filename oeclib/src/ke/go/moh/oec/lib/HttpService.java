@@ -133,10 +133,17 @@ class HttpService {
         final int delaySeconds = 0;
         server.stop(delaySeconds);
     }
+<<<<<<< HEAD
 /**
  * The handler class below implements the HttpHandler interface properties and is called up to process
  * HTTP exchanges.
  */
+=======
+	/**
+	 * The handler class below implements the HttpHandler interface properties and is called up to process
+	 * HTTP exchanges.
+	 */
+>>>>>>> jongitau/master
     private class Handler implements HttpHandler {
 
         private Mediator mediator = null;
@@ -156,6 +163,7 @@ class HttpService {
 
             //mediator.processReceivedMessage()
             String requestMethod = exchange.getRequestMethod();
+<<<<<<< HEAD
             URI uri = exchange.getRequestURI();
             String query = uri.getQuery();
             for (String param : query.split("&")) {
@@ -168,6 +176,51 @@ class HttpService {
                     toBeQueued = Boolean.parseBoolean(pair[1]);
                 }
             }
+=======
+            //Check for request type is it "GET" or "POST"
+            if (requestMethod.equalsIgnoreCase("GET")) {
+                Headers responseHeaders = exchange.getResponseHeaders();
+
+                responseHeaders.set("Content-Type", "text/plain");
+                exchange.sendResponseHeaders(200, 0);
+                BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+                String s1 = "";
+                while (true) {
+                    String s2 = br.readLine();
+                    if (s2 == null) {
+                        break;
+                    }
+                    s1 = s1 + s2;
+                }
+                System.out.println("request body = " + s1);
+
+                OutputStream responseBody = exchange.getResponseBody();
+                Headers requestHeaders = exchange.getRequestHeaders();
+                Set<String> keySet = requestHeaders.keySet();
+                Iterator<String> iter = keySet.iterator();
+                while (iter.hasNext()) {
+                    String key = iter.next();
+                    List values = requestHeaders.get(key);
+                    String s = key + " = " + values.toString() + "\n";
+                    System.out.println(s);
+                    responseBody.write(s.getBytes());
+                }
+                responseBody.close();
+            } else if (requestMethod.equalsIgnoreCase("POST")) {
+                Headers responseHeaders = exchange.getResponseHeaders();
+
+                responseHeaders.set("Content-Type", "text/plain");
+                exchange.sendResponseHeaders(200, 0);
+                OutputStream responseBody = exchange.getResponseBody();
+                BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+                String st;
+                String request = "";
+                while ((st = br.readLine()) != null) {
+                    request = request + st + "\n";
+                }
+                System.out.println("Request Body: ");
+                System.out.println(request);
+>>>>>>> jongitau/master
 
             BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
             String st;
