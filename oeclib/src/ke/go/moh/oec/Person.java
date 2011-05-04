@@ -151,268 +151,279 @@ public class Person {
 	private List<Fingerprint> fingerprintList;		// Need from HDSS add/modify (HDSS ID only)
 	/** A list of household members */
 	private List<RelatedPerson> householdMembers;	// Need on HDSS findPerson query response
+    /** Used on a findPerson response: there was a fingerprint match for this candidate. */
+    private boolean fingerprintMatched;
+
+    public AliveStatus getAliveStatus() {
+        return aliveStatus;
+    }
+
+    public void setAliveStatus(AliveStatus aliveStatus) {
+        this.aliveStatus = aliveStatus;
+    }
+
+    public Date getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(Date birthdate) {
+        this.birthdate = birthdate;
+    }
+
+    public String getClanName() {
+        return clanName;
+    }
+
+    public void setClanName(String clanName) {
+        this.clanName = clanName;
+    }
+
+    public String getCompoundHeadFirstName() {
+        return compoundHeadFirstName;
+    }
+
+    public void setCompoundHeadFirstName(String compoundHeadFirstName) {
+        this.compoundHeadFirstName = compoundHeadFirstName;
+    }
+
+    public String getCompoundHeadLastName() {
+        return compoundHeadLastName;
+    }
+
+    public void setCompoundHeadLastName(String compoundHeadLastName) {
+        this.compoundHeadLastName = compoundHeadLastName;
+    }
+
+    public String getCompoundHeadMiddleName() {
+        return compoundHeadMiddleName;
+    }
+
+    public void setCompoundHeadMiddleName(String compoundHeadMiddleName) {
+        this.compoundHeadMiddleName = compoundHeadMiddleName;
+    }
+
+    public ConsentSigned getConsentSigned() {
+        return consentSigned;
+    }
+
+    public void setConsentSigned(ConsentSigned consentSigned) {
+        this.consentSigned = consentSigned;
+    }
+
+    public Date getDeathdate() {
+        return deathdate;
+    }
+
+    public void setDeathdate(Date deathdate) {
+        this.deathdate = deathdate;
+    }
+
+    public Date getExpectedDeliveryDate() {
+        return expectedDeliveryDate;
+    }
+
+    public void setExpectedDeliveryDate(Date expectedDeliveryDate) {
+        this.expectedDeliveryDate = expectedDeliveryDate;
+    }
+
+    public String getFathersFirstName() {
+        return fathersFirstName;
+    }
+
+    public void setFathersFirstName(String fathersFirstName) {
+        this.fathersFirstName = fathersFirstName;
+    }
+
+    public String getFathersLastName() {
+        return fathersLastName;
+    }
+
+    public void setFathersLastName(String fathersLastName) {
+        this.fathersLastName = fathersLastName;
+    }
+
+    public String getFathersMiddleName() {
+        return fathersMiddleName;
+    }
+
+    public void setFathersMiddleName(String fathersMiddleName) {
+        this.fathersMiddleName = fathersMiddleName;
+    }
+
+    public List<Fingerprint> getFingerprintList() {
+        return fingerprintList;
+    }
+
+    public void setFingerprintList(List<Fingerprint> fingerprintList) {
+        this.fingerprintList = fingerprintList;
+    }
+
+    public boolean isFingerprintMatched() {
+        return fingerprintMatched;
+    }
+
+    public void setFingerprintMatched(boolean fingerprintMatched) {
+        this.fingerprintMatched = fingerprintMatched;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public List<RelatedPerson> getHouseholdMembers() {
+        return householdMembers;
+    }
+
+    public void setHouseholdMembers(List<RelatedPerson> householdMembers) {
+        this.householdMembers = householdMembers;
+    }
+
+    public Date getLastMoveDate() {
+        return lastMoveDate;
+    }
+
+    public void setLastMoveDate(Date lastMoveDate) {
+        this.lastMoveDate = lastMoveDate;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Visit getLastOneOffVisit() {
+        return lastOneOffVisit;
+    }
+
+    public void setLastOneOffVisit(Visit lastOneOffVisit) {
+        this.lastOneOffVisit = lastOneOffVisit;
+    }
+
+    public Visit getLastRegularVisit() {
+        return lastRegularVisit;
+    }
+
+    public void setLastRegularVisit(Visit lastRegularVisit) {
+        this.lastRegularVisit = lastRegularVisit;
+    }
+
+    public MaritalStatus getMaritalStatus() {
+        return maritalStatus;
+    }
+
+    public void setMaritalStatus(MaritalStatus maritalStatus) {
+        this.maritalStatus = maritalStatus;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
 
-	public AliveStatus getAliveStatus() {
-		return aliveStatus;
-	}
+    public String getMothersFirstName() {
+        return mothersFirstName;
+    }
 
-	public void setAliveStatus(AliveStatus aliveStatus) {
-		this.aliveStatus = aliveStatus;
-	}
+    public void setMothersFirstName(String mothersFirstName) {
+        this.mothersFirstName = mothersFirstName;
+    }
 
-	public Date getBirthdate() {
-		return birthdate;
-	}
+    public String getMothersLastName() {
+        return mothersLastName;
+    }
 
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
-	}
+    public void setMothersLastName(String mothersLastName) {
+        this.mothersLastName = mothersLastName;
+    }
 
-	public String getClanName() {
-		return clanName;
-	}
+    public String getMothersMiddleName() {
+        return mothersMiddleName;
+    }
 
-	public void setClanName(String clanName) {
-		this.clanName = clanName;
-	}
+    public void setMothersMiddleName(String mothersMiddleName) {
+        this.mothersMiddleName = mothersMiddleName;
+    }
 
-	public String getCompoundHeadFirstName() {
-		return compoundHeadFirstName;
-	}
+    public String getOtherName() {
+        return otherName;
+    }
 
-	public void setCompoundHeadFirstName(String compoundHeadFirstName) {
-		this.compoundHeadFirstName = compoundHeadFirstName;
-	}
+    public void setOtherName(String otherName) {
+        this.otherName = otherName;
+    }
 
-	public String getCompoundHeadLastName() {
-		return compoundHeadLastName;
-	}
+    public String getPersonGuid() {
+        return personGuid;
+    }
 
-	public void setCompoundHeadLastName(String compoundHeadLastName) {
-		this.compoundHeadLastName = compoundHeadLastName;
-	}
+    public void setPersonGuid(String personGuid) {
+        this.personGuid = personGuid;
+    }
 
-	public String getCompoundHeadMiddleName() {
-		return compoundHeadMiddleName;
-	}
+    public List<PersonIdentifier> getPersonIdentifierList() {
+        return personIdentifierList;
+    }
 
-	public void setCompoundHeadMiddleName(String compoundHeadMiddleName) {
-		this.compoundHeadMiddleName = compoundHeadMiddleName;
-	}
+    public void setPersonIdentifierList(List<PersonIdentifier> personIdentifierList) {
+        this.personIdentifierList = personIdentifierList;
+    }
 
-	public ConsentSigned getConsentSigned() {
-		return consentSigned;
-	}
+    public Date getPregnancyEndDate() {
+        return pregnancyEndDate;
+    }
 
-	public void setConsentSigned(ConsentSigned consentSigned) {
-		this.consentSigned = consentSigned;
-	}
+    public void setPregnancyEndDate(Date pregnancyEndDate) {
+        this.pregnancyEndDate = pregnancyEndDate;
+    }
 
-	public Date getDeathdate() {
-		return deathdate;
-	}
+    public PregnancyOutcome getPregnancyOutcome() {
+        return pregnancyOutcome;
+    }
 
-	public void setDeathdate(Date deathdate) {
-		this.deathdate = deathdate;
-	}
+    public void setPregnancyOutcome(PregnancyOutcome pregnancyOutcome) {
+        this.pregnancyOutcome = pregnancyOutcome;
+    }
 
-	public Date getExpectedDeliveryDate() {
-		return expectedDeliveryDate;
-	}
+    public String getPreviousVillageName() {
+        return previousVillageName;
+    }
 
-	public void setExpectedDeliveryDate(Date expectedDeliveryDate) {
-		this.expectedDeliveryDate = expectedDeliveryDate;
-	}
+    public void setPreviousVillageName(String previousVillageName) {
+        this.previousVillageName = previousVillageName;
+    }
 
-	public String getFathersFirstName() {
-		return fathersFirstName;
-	}
+    public Sex getSex() {
+        return sex;
+    }
 
-	public void setFathersFirstName(String fathersFirstName) {
-		this.fathersFirstName = fathersFirstName;
-	}
+    public void setSex(Sex sex) {
+        this.sex = sex;
+    }
 
-	public String getFathersLastName() {
-		return fathersLastName;
-	}
+    public String getSiteName() {
+        return siteName;
+    }
 
-	public void setFathersLastName(String fathersLastName) {
-		this.fathersLastName = fathersLastName;
-	}
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
 
-	public String getFathersMiddleName() {
-		return fathersMiddleName;
-	}
+    public String getVillageName() {
+        return villageName;
+    }
 
-	public void setFathersMiddleName(String fathersMiddleName) {
-		this.fathersMiddleName = fathersMiddleName;
-	}
+    public void setVillageName(String villageName) {
+        this.villageName = villageName;
+    }
 
-	public List<Fingerprint> getFingerprintList() {
-		return fingerprintList;
-	}
-
-	public void setFingerprintList(List<Fingerprint> fingerprintList) {
-		this.fingerprintList = fingerprintList;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public List<RelatedPerson> getHouseholdMembers() {
-		return householdMembers;
-	}
-
-	public void setHouseholdMembers(List<RelatedPerson> householdMembers) {
-		this.householdMembers = householdMembers;
-	}
-
-	public Date getLastMoveDate() {
-		return lastMoveDate;
-	}
-
-	public void setLastMoveDate(Date lastMoveDate) {
-		this.lastMoveDate = lastMoveDate;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public Visit getLastOneOffVisit() {
-		return lastOneOffVisit;
-	}
-
-	public void setLastOneOffVisit(Visit lastOneOffVisit) {
-		this.lastOneOffVisit = lastOneOffVisit;
-	}
-
-	public Visit getLastRegularVisit() {
-		return lastRegularVisit;
-	}
-
-	public void setLastRegularVisit(Visit lastRegularVisit) {
-		this.lastRegularVisit = lastRegularVisit;
-	}
-
-	public MaritalStatus getMaritalStatus() {
-		return maritalStatus;
-	}
-
-	public void setMaritalStatus(MaritalStatus maritalStatus) {
-		this.maritalStatus = maritalStatus;
-	}
-
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-	public String getMothersFirstName() {
-		return mothersFirstName;
-	}
-
-	public void setMothersFirstName(String mothersFirstName) {
-		this.mothersFirstName = mothersFirstName;
-	}
-
-	public String getMothersLastName() {
-		return mothersLastName;
-	}
-
-	public void setMothersLastName(String mothersLastName) {
-		this.mothersLastName = mothersLastName;
-	}
-
-	public String getMothersMiddleName() {
-		return mothersMiddleName;
-	}
-
-	public void setMothersMiddleName(String mothersMiddleName) {
-		this.mothersMiddleName = mothersMiddleName;
-	}
-
-	public String getOtherName() {
-		return otherName;
-	}
-
-	public void setOtherName(String otherName) {
-		this.otherName = otherName;
-	}
-
-	public String getPersonGuid() {
-		return personGuid;
-	}
-
-	public void setPersonGuid(String personGuid) {
-		this.personGuid = personGuid;
-	}
-
-	public List<PersonIdentifier> getPersonIdentifierList() {
-		return personIdentifierList;
-	}
-
-	public void setPersonIdentifierList(List<PersonIdentifier> personIdentifierList) {
-		this.personIdentifierList = personIdentifierList;
-	}
-
-	public Date getPregnancyEndDate() {
-		return pregnancyEndDate;
-	}
-
-	public void setPregnancyEndDate(Date pregnancyEndDate) {
-		this.pregnancyEndDate = pregnancyEndDate;
-	}
-
-	public PregnancyOutcome getPregnancyOutcome() {
-		return pregnancyOutcome;
-	}
-
-	public void setPregnancyOutcome(PregnancyOutcome pregnancyOutcome) {
-		this.pregnancyOutcome = pregnancyOutcome;
-	}
-
-	public String getPreviousVillageName() {
-		return previousVillageName;
-	}
-
-	public void setPreviousVillageName(String previousVillageName) {
-		this.previousVillageName = previousVillageName;
-	}
-
-	public Sex getSex() {
-		return sex;
-	}
-
-	public void setSex(Sex sex) {
-		this.sex = sex;
-	}
-
-	public String getSiteName() {
-		return siteName;
-	}
-
-	public void setSiteName(String siteName) {
-		this.siteName = siteName;
-	}
-
-	public String getVillageName() {
-		return villageName;
-	}
-
-	public void setVillageName(String villageName) {
-		this.villageName = villageName;
-	}
 }

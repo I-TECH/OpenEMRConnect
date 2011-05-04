@@ -340,7 +340,8 @@ public class Mediator implements IService {
      * @return data object to return to our caller, or null if timed out.
      */
     private Object waitForResponse(Message m) {
-        throw new UnsupportedOperationException();
+        //TO DO: Write the contents
+        return null;
     }
 
     /**
