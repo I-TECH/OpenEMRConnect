@@ -51,6 +51,7 @@ import java.io.Writer;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.util.concurrent.Executors;
 
 class HttpService {
@@ -60,6 +61,7 @@ class HttpService {
      * requests.
      */
     private Mediator mediator = null;
+    HttpServer server;
 
     /**
      * Constructor to set {@link Mediator} callback object
@@ -68,10 +70,6 @@ class HttpService {
      */
     protected HttpService(Mediator mediator) {
         this.mediator = mediator;
-    }
-
-    private HttpService() {
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
@@ -85,48 +83,45 @@ class HttpService {
      * @return true if message was sent and HTTP response received, otherwise false
      */
     protected boolean send(String message, String ipAddressPort, String destination, boolean toBeQueued, int hopCount) throws MalformedURLException, IOException {
-        boolean success = false;
+        boolean returnStatus = false;
         //   throw new UnsupportedOperationException();
-        /**
-         * Starts listening for HTTP messages.
-         * <p>
-         * For each message received, call mediator.processReceivedMessage()
-         */
+        String url = "http://" + ipAddressPort + "/oecmessage?destination="
+                + destination + "&tobequeued=" + toBeQueued + "&hopcount=" + hopCount;
+
         try {
             /*Code thats performing a task should be placed in the try catch statement especially in the try part*/
-            new HttpService().send(message, ipAddressPort, destination, toBeQueued, hopCount);
-            URLConnection connection = new URL(ipAddressPort).openConnection();
+            URLConnection connection = new URL(url).openConnection();
             connection.setDoOutput(true);
             Writer output = new OutputStreamWriter(connection.getOutputStream());
             output.write(message);
             output.close();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String str = "";
-            String s;
-            while ((s = br.readLine()) != null) {
-                str = str + s + "\n";
+            while (br.readLine() != null) {
+                //content not required, just acknowlegment that message was received.
             }
-            success = true;
+            returnStatus = true;
         } catch (MalformedURLException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, null, ex);
+//            There was some transmission error we return false.
         }
-        return success;
+        return returnStatus;
     }
 
     /**
-     *
-     * @param port
+     * Starts listening for HTTP messages.
+     * <p>
+     * For each message received, call mediator.processReceivedMessage()
      * @throws IOException
      */
     protected void start() throws IOException {
         //throw new UnsupportedOperationException("Not supported yet.");
-        int port = 0;
+        int port = Integer.parseInt(Mediator.getProperty("HTTPHandler.ListenPort"));
         InetSocketAddress addr = new InetSocketAddress(port);
-        HttpServer server = HttpServer.create(addr, 0);
-        server.createContext("/", (HttpHandler) new Handler(mediator));
+        server = HttpServer.create(addr, 0);
+        server.createContext("/oecmessage", (HttpHandler) new Handler(mediator));
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
     }
@@ -134,96 +129,62 @@ class HttpService {
     /**
      * Stops listening for HTTP messages.
      */
-    protected void stop() throws IOException {
-        int port = 0;
-        // throw a new UnsupportedOperationException("Not supported yet.");
-        InetSocketAddress addr = new InetSocketAddress(port);
-        HttpServer server = HttpServer.create(addr, 0);
-        server.createContext("/", new Handler(mediator));
-        server.setExecutor(Executors.newCachedThreadPool());
-        server.stop(port);
+    protected void stop() {
+        final int delaySeconds = 0;
+        server.stop(delaySeconds);
     }
-
+/**
+ * The handler class below implements the HttpHandler interface properties and is called up to process
+ * HTTP exchanges.
+ */
     private class Handler implements HttpHandler {
 
         private Mediator mediator = null;
 
-        protected Handler(Mediator mediator) {
+        private Handler(Mediator mediator) {
             this.mediator = mediator;
         }
-
+/**
+ * 
+ * @param exchange
+ * @throws IOException
+ */
         public void handle(HttpExchange exchange) throws IOException {
+            String destination = null;
+            boolean toBeQueued = false;
+            int hopCount = 0;
 
             //mediator.processReceivedMessage()
             String requestMethod = exchange.getRequestMethod();
-            //Check for request type is it "GET" or "POST"
-            if (requestMethod.equalsIgnoreCase("GET")) {
-                Headers responseHeaders = exchange.getResponseHeaders();
-
-                responseHeaders.set("Content-Type", "text/plain");
-                exchange.sendResponseHeaders(200, 0);
-                /*Byte Stream is the lowest level of data representation.
-                First we use the "exchange.getRequestBody" method to obtain the inputstream which is a byte stream
-                format of the data. We then use InputStreamReader reader to convert the byte inputstream byte code into
-                character streams. The InputStreamReader is then wrapped around a BufferedReader to enable reading line by line
-                 */
-                BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-                String s1 = "";
-                while (true) {
-                    String s2 = br.readLine();
-                    if (s2 == null) {
-                        break;
-                    }
-                    s1 = s1 + s2;
+            URI uri = exchange.getRequestURI();
+            String query = uri.getQuery();
+            for (String param : query.split("&")) {
+                String[] pair = param.split("=");
+                if (pair[0].equals("destination")) {
+                    destination = pair[1];
+                } else if (pair[0].equals("hopcount")) {
+                    hopCount = Integer.parseInt(pair[1]);
+                } else if (pair[0].equals("tobequeued")) {
+                    toBeQueued = Boolean.parseBoolean(pair[1]);
                 }
-                System.out.println("request body = " + s1);
-
-                OutputStream responseBody = exchange.getResponseBody();
-                Headers requestHeaders = exchange.getRequestHeaders();
-                Set<String> keySet = requestHeaders.keySet();
-                Iterator<String> iter = keySet.iterator();
-                while (iter.hasNext()) {
-                    String key = iter.next();
-                    List values = requestHeaders.get(key);
-                    String s = key + " = " + values.toString() + "\n";
-                    System.out.println(s);
-                    responseBody.write(s.getBytes());
-                }
-                responseBody.close();
-            } else if (requestMethod.equalsIgnoreCase("POST")) {
-                Headers responseHeaders = exchange.getResponseHeaders();
-
-                responseHeaders.set("Content-Type", "text/plain");
-                exchange.sendResponseHeaders(200, 0);
-                OutputStream responseBody = exchange.getResponseBody();
-                /*Byte Stream is the lowest level of data representation.
-                First we use the "exchange.getRequestBody" method to obtain the inputstream which is a byte stream
-                format of the data. We then use InputStreamReader reader to convert the byte inputstream byte code into
-                character streams. The InputStreamReader is then wrapped around a BufferedReader to enable reading line by line
-                 */
-                BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-                String st;
-                String request = "";
-                while ((st = br.readLine()) != null) {
-                    request = request + st + "\n";
-                }
-                System.out.println("Request Body: ");
-                System.out.println(request);
-
-                /***********************/
-                Headers requestHeaders = exchange.getRequestHeaders();
-                Set<String> keySet = requestHeaders.keySet();
-                Iterator<String> iter = keySet.iterator();
-                while (iter.hasNext()) {
-                    String key = iter.next();
-                    List values = requestHeaders.get(key);
-                    String s = key + " = " + values.toString() + "\n";
-                    System.out.println(s);
-                    responseBody.write(s.getBytes());
-                }
-                responseBody.close();
             }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+            String st;
+            String request = "";
+            while ((st = br.readLine()) != null) {
+                request = request + st + "\n";
+            }
+            mediator.processReceivedMessage(request, destination, hopCount, toBeQueued);
+            //The two lines below can be uncommented and used for debugging to print out test data.
+            //            System.out.println("Request Body: ");
+            //            System.out.println(request);
+            /***********************/
+            Headers responseHeaders = exchange.getResponseHeaders();
+            responseHeaders.set("Content-Type", "text/plain");
+            exchange.sendResponseHeaders(200, 0);
+            OutputStream responseBody = exchange.getResponseBody();
+            responseBody.close();
         }
     }
 }
-
