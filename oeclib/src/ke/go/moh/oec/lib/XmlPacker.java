@@ -410,13 +410,13 @@ class XmlPacker {
 			 * Pack the first name.
 			 */
 			if (p.getFirstName() != null) {
-				givenList.item(0).setNodeValue(p.getFirstName());
+				givenList.item(0).setTextContent(p.getFirstName());
 			} else if (p.getMiddleName() != null) {
 				/*
 				 * First name is null but middle name is not. Set first name to the
 				 * empty string so middle name can still be the second <given> node.
 				 */
-				givenList.item(0).setNodeValue("");
+				givenList.item(0).setTextContent("");
 			} else {
 				packRemoveNode(givenList.item(0));
 			}
@@ -424,7 +424,7 @@ class XmlPacker {
 			 * Pack the middle name.
 			 */
 			if (p.getMiddleName() != null) {
-				givenList.item(1).setNodeValue(p.getMiddleName());
+				givenList.item(1).setTextContent(p.getMiddleName());
 			} else {
 				packRemoveNode(givenList.item(0));
 			}
@@ -797,7 +797,7 @@ class XmlPacker {
 			return;
 		}
 		if (value != null) {
-			e.setNodeValue(value);
+			e.setTextContent(value);
 		} else {
 			packRemoveNode(e);
 		}
