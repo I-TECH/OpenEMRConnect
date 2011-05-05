@@ -410,25 +410,27 @@ class XmlPacker {
             NodeList givenList = eName.getElementsByTagName("given");
             /*
              * Pack the first name.
+             * If the first name is not present, we will take care of that
+             * later, when we know if we have a middle name.
              */
             if (p.getFirstName() != null) {
                 givenList.item(0).setTextContent(p.getFirstName());
-            } else if (p.getMiddleName() != null) {
-                /*
-                 * First name is null but middle name is not. Set first name to the
-                 * empty string so middle name can still be the second <given> node.
-                 */
-                givenList.item(0).setTextContent("");
-            } else {
-                packRemoveNode(givenList.item(0));
             }
             /*
              * Pack the middle name.
+             * If the first name was null, then either make it empty (if there was a middle name)
+             * or remove it completedly (if we are also removing the middle name.)
              */
             if (p.getMiddleName() != null) {
                 givenList.item(1).setTextContent(p.getMiddleName());
+                if (p.getFirstName() == null) {
+                    givenList.item(0).setTextContent("");
+                }
             } else {
-                packRemoveNode(givenList.item(0));
+                packRemoveNode(givenList.item(1));
+                if (p.getFirstName() == null) {
+                    packRemoveNode(givenList.item(0));
+                }
             }
             /*
              * Pack the last name.
