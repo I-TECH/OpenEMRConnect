@@ -126,11 +126,11 @@ public class Mediator implements IService {
     public void stop() {
         Logger.getLogger(Mediator.class.getName()).log(Level.INFO, "OpenEMRConnect library services stopped.");
         queueManager.stop();
-//        try {
-//            httpService.stop();
-//        } catch (IOException ex) {
-//            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        try {
+            httpService.stop();
+        } catch (IOException ex) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -151,9 +151,7 @@ public class Mediator implements IService {
                  * This should not happen. It should always be there.
                  */
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                        "getProperty() Can''t open ''{0}'' -- Please create the properties file if it doesn't exist and then restart the app",
-                        propertiesFileName);
-                System.exit(1);
+                        "getProperty() Can''t open ''{0}''", propertiesFileName);
             }
         }
         return properties.getProperty(propertyName);
@@ -194,41 +192,34 @@ public class Mediator implements IService {
      * @return object containing response data resulting from the request, or null if none
      */
     public Object getData(int requestTypeId, Object requestData) {
-        Message m = new Message();
-        m.setData(requestData);
-        m.setSourceAddress(getProperty("Instance.Address"));
-        m.setSourceName(getProperty("Instance.Name"));
-
+		Message m = new Message();
+		m.setData(requestData);
+		
         /*
          * Determine the Type of message we are to send.
          */
         MessageType messageType = MessageTypeRegistry.find(requestTypeId);
-        m.setMessageType(messageType);
+		m.setMessageType(messageType);
         if (messageType == null) {
             /*
              * This is most likely an error on the part of our caller. We were
              * called with a request type ID that is not found as a request
              * in our MessageType list.
              */
-            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                    "getData() - Message type not found for Request type ID ''{0}''", requestTypeId);
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                        "getData() - Message type not found for Request type ID ''{0}''", requestTypeId);
             return null;
         }
         /*
          * Find the destination address and name. This is usually the default
          * destination for the message type. However if our caller is passing
-         * us <code>PersonRequest</code> data, they may choose to explicitly
-         * specify the destination rather than leaving it to the default.
+		 * us <code>PersonRequest</code> data, they may choose to explicitly
+		 * specify the destination rather than leaving it to the default.
          */
         m.setDestinationAddress(messageType.getDefaultDestinationAddress());
         m.setDestinationName(messageType.getDefaultDestinationName());
-<<<<<<< HEAD
 		if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest)requestData;
-=======
-        if (requestData instanceof PersonRequest) {
-            PersonRequest pr = (PersonRequest) requestData;
->>>>>>> victorwere/master
             if (pr.getDestinationAddress() != null) {
                 m.setDestinationAddress(pr.getDestinationAddress());
             }
@@ -289,7 +280,7 @@ public class Mediator implements IService {
      * @return object containing response data from the request
      */
     private Object sendData(Message m) {
-        MessageType messageType = m.getMessageType(); // For handy reference.
+		MessageType messageType = m.getMessageType(); // For handy reference.
         String ipAddressPort = getIpAddressPort(m.getDestinationAddress());
         if (ipAddressPort == null) {
             /*
@@ -297,8 +288,8 @@ public class Mediator implements IService {
              * address, but we were unable to translate it into an IP address
              * and port number combination.
              */
-            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                    "getData() - Routing address not found for ''{0}''", m.getDestinationAddress());
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                        "getData() - Routing address not found for ''{0}''", m.getDestinationAddress());
             return null;
         }
         /*
@@ -345,8 +336,7 @@ public class Mediator implements IService {
      * @return data object to return to our caller, or null if timed out.
      */
     private Object waitForResponse(Message m) {
-        //TO DO: Write the contents
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -466,7 +456,7 @@ public class Mediator implements IService {
     /**
      * Process a HTTP message that is destined for us. We have already determined that it
      * is not a message that we are just routing through to somewhere else.
-     *
+     * 
      * @param xml the message received from the HTTP listener.
      */
     private void processLocalMessage(String xml) {
@@ -519,12 +509,12 @@ public class Mediator implements IService {
                 Object responseData = myCallbackObject.getData(messageType.getRequestTypeId(), m.getData());
                 if (responseData != null) {
                     if (messageType.getResponseMessageType() != null) {
-                        Message response = new Message();
-                        response.setMessageType(messageType.getResponseMessageType());
-                        response.setData(m.getMessageId());
-                        response.setDestinationAddress(m.getSourceAddress());
-                        response.setDestinationName(m.getSourceName());
-                        response.setMessageId(m.getMessageId());
+						Message response = new Message();
+						response.setMessageType(messageType.getResponseMessageType());
+						response.setData(m.getMessageId());
+						response.setDestinationAddress(m.getSourceAddress());
+						response.setDestinationName(m.getSourceName());
+						response.setMessageId(m.getMessageId());
                         Object responseToResponseData = sendData(response);
                         if (responseToResponseData != null) {
                             /*
@@ -533,9 +523,9 @@ public class Mediator implements IService {
                              * The requesting source has sent us back a message (a response to the response.)
                              * We did not expect this.
                              */
-                            Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
-                                    "After returning a response to requestTypeId {0} from source ''{1}'', the source returned more data back to us!",
-                                    new Object[]{messageType.getRequestTypeId(), m.getSourceAddress()});
+                Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
+                        "After returning a response to requestTypeId {0} from source ''{1}'', the source returned more data back to us!",
+                        new Object[]{messageType.getRequestTypeId(), m.getSourceAddress()});
                         }
                     } else {
                         /*
@@ -568,9 +558,9 @@ public class Mediator implements IService {
              *
              * Or this could be an error of some sort.
              */
-            Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
-                    "Unsolicited message with XML root ''{0}'' received from ''{1}'', but it isn''t registered as a request.",
-                    new Object[]{messageType.getRootXmlTag(), m.getSourceAddress()});
+                Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
+                        "Unsolicited message with XML root ''{0}'' received from ''{1}'', but it isn''t registered as a request.",
+                        new Object[]{messageType.getRootXmlTag(), m.getSourceAddress()});
         }
     }
 
@@ -588,7 +578,7 @@ public class Mediator implements IService {
      * routing loop. Then we see whether the message should be sent
      * with our without the queueing mechanism for storing and forwarding.
      * Then we send it.
-     *
+     * 
      * @param xml the XML packed message to send
      * @param ipAddressPort IP address and port to which to send the message
      * @param destination ultimate destination address for this message

@@ -222,13 +222,8 @@ public class Mediator implements IService {
          */
         m.setDestinationAddress(messageType.getDefaultDestinationAddress());
         m.setDestinationName(messageType.getDefaultDestinationName());
-<<<<<<< HEAD
-		if (requestData instanceof PersonRequest) {
-            PersonRequest pr = (PersonRequest)requestData;
-=======
         if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest) requestData;
->>>>>>> victorwere/master
             if (pr.getDestinationAddress() != null) {
                 m.setDestinationAddress(pr.getDestinationAddress());
             }
