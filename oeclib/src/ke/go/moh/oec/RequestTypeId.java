@@ -123,11 +123,10 @@ public class RequestTypeId {
      * with NOTIFY_PERSON_CHANGED, the <code>requestData</code>
      * parameter object and the returned object are follows:
      * <p>
-     * <code>requestData</code>: {@link PersonRequest} object, identifying
-     * the person whose clinical document is requested.
+     * <code>requestData</code>: {@link PersonRequest} object, containing
+     * the identity of the person and the changed data for the person.
      * <p>
-     * returns: {@link PersonResponse} - The clinical document containing
-     * clinical information for the person.
+     * returns: <code>null</code>
      */
     public final static int NOTIFY_PERSON_CHANGED = 7;
     /**

@@ -44,15 +44,7 @@ public class PersonResponse {
      * simply indicates that the operation completed successfully, whether
      * or not any matching entries were found.
      */
-    private boolean isSuccessful;
-
-    public boolean isIsSuccessful() {
-        return isSuccessful;
-    }
-
-    public void setIsSuccessful(boolean isSuccessful) {
-        this.isSuccessful = isSuccessful;
-    }
+    private boolean successful;
 
     public List<Person> getPersonList() {
         return personList;
@@ -60,6 +52,14 @@ public class PersonResponse {
 
     public void setPersonList(List<Person> personList) {
         this.personList = personList;
+    }
+
+    public boolean isSuccessful() {
+        return successful;
+    }
+
+    public void setSuccessful(boolean successful) {
+        this.successful = successful;
     }
     
 }

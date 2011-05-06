@@ -151,88 +151,6 @@ public class Person {
 	private List<Fingerprint> fingerprintList;		// Need from HDSS add/modify (HDSS ID only)
 	/** A list of household members */
 	private List<RelatedPerson> householdMembers;	// Need on HDSS findPerson query response
-<<<<<<< HEAD
-
-	public AliveStatus getAliveStatus() {
-		return aliveStatus;
-	}
-
-	public void setAliveStatus(AliveStatus aliveStatus) {
-		this.aliveStatus = aliveStatus;
-	}
-
-	public Date getBirthdate() {
-		return birthdate;
-	}
-
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
-	}
-
-	public String getClanName() {
-		return clanName;
-	}
-
-	public void setClanName(String clanName) {
-		this.clanName = clanName;
-	}
-
-	public String getCompoundHeadFirstName() {
-		return compoundHeadFirstName;
-	}
-
-	public void setCompoundHeadFirstName(String compoundHeadFirstName) {
-		this.compoundHeadFirstName = compoundHeadFirstName;
-	}
-
-	public String getCompoundHeadLastName() {
-		return compoundHeadLastName;
-	}
-
-	public void setCompoundHeadLastName(String compoundHeadLastName) {
-		this.compoundHeadLastName = compoundHeadLastName;
-	}
-
-	public String getCompoundHeadMiddleName() {
-		return compoundHeadMiddleName;
-	}
-
-	public void setCompoundHeadMiddleName(String compoundHeadMiddleName) {
-		this.compoundHeadMiddleName = compoundHeadMiddleName;
-	}
-
-	public ConsentSigned getConsentSigned() {
-		return consentSigned;
-	}
-
-	public void setConsentSigned(ConsentSigned consentSigned) {
-		this.consentSigned = consentSigned;
-	}
-
-	public Date getDeathdate() {
-		return deathdate;
-	}
-
-	public void setDeathdate(Date deathdate) {
-		this.deathdate = deathdate;
-	}
-
-	public Date getExpectedDeliveryDate() {
-		return expectedDeliveryDate;
-	}
-
-	public void setExpectedDeliveryDate(Date expectedDeliveryDate) {
-		this.expectedDeliveryDate = expectedDeliveryDate;
-	}
-
-	public String getFathersFirstName() {
-		return fathersFirstName;
-	}
-
-	public void setFathersFirstName(String fathersFirstName) {
-		this.fathersFirstName = fathersFirstName;
-	}
-=======
     /** Used on a findPerson response: there was a fingerprint match for this candidate. */
     private boolean fingerprintMatched;
 
@@ -331,7 +249,6 @@ public class Person {
     public void setFathersMiddleName(String fathersMiddleName) {
         this.fathersMiddleName = fathersMiddleName;
     }
->>>>>>> victorwere/master
 
     public List<Fingerprint> getFingerprintList() {
         return fingerprintList;
@@ -365,15 +282,6 @@ public class Person {
         this.householdMembers = householdMembers;
     }
 
-<<<<<<< HEAD
-	public List<RelatedPerson> getHouseholdMembers() {
-		return householdMembers;
-	}
-
-	public void setHouseholdMembers(List<RelatedPerson> householdMembers) {
-		this.householdMembers = householdMembers;
-	}
-=======
     public Date getLastMoveDate() {
         return lastMoveDate;
     }
@@ -381,7 +289,6 @@ public class Person {
     public void setLastMoveDate(Date lastMoveDate) {
         this.lastMoveDate = lastMoveDate;
     }
->>>>>>> victorwere/master
 
     public String getLastName() {
         return lastName;
@@ -511,23 +418,6 @@ public class Person {
         this.siteName = siteName;
     }
 
-<<<<<<< HEAD
-	public String getSiteName() {
-		return siteName;
-	}
-
-	public void setSiteName(String siteName) {
-		this.siteName = siteName;
-	}
-
-	public String getVillageName() {
-		return villageName;
-	}
-
-	public void setVillageName(String villageName) {
-		this.villageName = villageName;
-	}
-=======
     public String getVillageName() {
         return villageName;
     }
@@ -536,5 +426,4 @@ public class Person {
         this.villageName = villageName;
     }
 
->>>>>>> victorwere/master
 }

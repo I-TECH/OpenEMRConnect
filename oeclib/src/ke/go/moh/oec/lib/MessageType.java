@@ -61,11 +61,7 @@ class MessageType {
 	 *
 	 * @param requestTypeId RequestTypeId of the request message, or 0 if this message is only used as a response
 	 * @param responseMessageType MessageType of any expected response to this message, or 0 if this message is only used as a response
-<<<<<<< HEAD
-	 * @param templateType the type of XML message template used by this message.
-=======
 	 * @param templateType the type of XML message template used by this message
->>>>>>> victorwere/master
 	 * @param rootXmlTag The (HL7 V3) root XML tag that identifies this type of message when parsing
 	 * @param defaultDestinationAddress The default message destination address (if any) for this message, otherwise null
 	 * @param defaultDestinationName The default message destination address (if any) for this message, otherwise null
