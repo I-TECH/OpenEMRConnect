@@ -42,6 +42,11 @@ public class Fingerprint {
 		rightMiddleFinger,
 		rightRingFinger
 	}
+	
+	public enum TechnologyType {
+
+		griauleTemplate
+	}
 
     /** The type of fingerprint (which hand and which finger). */
     private Type fingerprintType;
@@ -53,7 +58,7 @@ public class Fingerprint {
      * In general, fingerprint templates collected using different
      * technologies cannot be compared.
      */
-    private String technologyType;
+    private TechnologyType technologyType;
     /** Date on which the fingerprint was collected. */
     private Date dateEntered;
     /** Date on which the fingerprint was changed. */
@@ -83,11 +88,11 @@ public class Fingerprint {
 		this.fingerprintType = fingerprintType;
 	}
 
-	public String getTechnologyType() {
+	public TechnologyType getTechnologyType() {
 		return technologyType;
 	}
 
-	public void setTechnologyType(String technologyType) {
+	public void setTechnologyType(TechnologyType technologyType) {
 		this.technologyType = technologyType;
 	}
 
