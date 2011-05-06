@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.util.Date;
 import java.util.Properties;
 import ke.go.moh.oec.PersonRequest;
+import ke.go.moh.oec.PersonResponse;
 
 /**
  * Mediator between OEC clients and services to forward requests
@@ -332,16 +333,23 @@ public class Mediator implements IService {
     }
 
     /**
-     * Waits for a response to our request message. When we get the
-     * response, return it to our caller. If there is no response message
-     * after a defined timeout period, return null.
+     * Waits for a response to our request message, if one is expected.
+     * When we get the response, return it to our caller. If there is no
+     * response message after a defined timeout period, return null.
      *
      * @param m message we are waiting for a response to
      * @return data object to return to our caller, or null if timed out.
      */
     private Object waitForResponse(Message m) {
-        //TO DO: Write the contents
-        return null;
+        Object returnData = null;
+        switch (m.getMessageType().getTemplateType()) {
+            case findPerson:
+                PersonResponse personResponse = new PersonResponse();
+                personResponse.setSuccessful(false);
+                returnData = personResponse;
+                //TO DO: Wait for response.
+        }
+        return returnData;
     }
 
     /**
