@@ -480,26 +480,10 @@ public class Mediator implements IService {
          *
          */
         Message m = xmlPacker.unpack(xml);
-        boolean responseDelivered = deliverResponse(m);
+        boolean responseDelivered = pendingQueue.findRequest(m);
         if (!responseDelivered) { // Was the message a response to a request that we just delivered?
             processUnsolicitedMessage(m);
         }
-    }
-
-    /**
-     * Deliver a response that we were waiting for. This method is called in the
-     * thread that was listening for HTTP messages. If the message matches one
-     * for which we are waiting, then wake up the thread waiting for the message
-     * and pass the response to it.
-     * <p>
-     * Otherwise, indicate that we were not waiting for this message.
-     *
-     * @param m the unpacked message information.
-     * @return true if we were waiting for the message and it was delivered,
-     * otherwise false.
-     */
-    private synchronized boolean deliverResponse(Message m) {
-        throw new UnsupportedOperationException();
     }
 
     /**
