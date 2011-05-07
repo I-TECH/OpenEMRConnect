@@ -37,7 +37,7 @@ import java.util.List;
  * the request thread will be woken, and the response will be returned to
  * the caller. If no matching response comes, a timer will time out and
  * wake the request thread. It will then return with no matching response.
- * 
+ *
  * @author Jim Grace
  */
 final class MessagePendingQueue implements Runnable {
@@ -79,7 +79,7 @@ final class MessagePendingQueue implements Runnable {
      * Notify the thread that is waiting for this queue entry.
      * This is done either because a response has been found to the request,
      * or we have timed out and given up waiting.
-     * 
+     *
      * @param e
      */
     private void notify(Entry e) {
