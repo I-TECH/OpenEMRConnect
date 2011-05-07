@@ -31,7 +31,9 @@ import java.util.logging.Logger;
 import ke.go.moh.oec.IService;
 import java.io.FileInputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
+import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
 
@@ -72,7 +74,10 @@ public class Mediator implements IService {
      * was initialized. The sequence number forms part of the message ID.
      */
     private static int messageSequenceNumber = 0;
-
+    /**
+     * The queue of messages we have sent, for which we expect a response.
+     */
+    private static MessagePendingQueue pendingQueue = new MessagePendingQueue();
     /*
      * Allocate objects that we will use for this instance of Mediator.
      * These are instance variables, so they will be thread safe in the
@@ -127,11 +132,7 @@ public class Mediator implements IService {
     public void stop() {
         Logger.getLogger(Mediator.class.getName()).log(Level.INFO, "OpenEMRConnect library services stopped.");
         queueManager.stop();
-//        try {
-//            httpService.stop();
-//        } catch (IOException ex) {
-//            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        httpService.stop();
     }
 
     /**
@@ -285,6 +286,7 @@ public class Mediator implements IService {
      * @return object containing response data from the request
      */
     private Object sendData(Message m) {
+        Object returnData = null;
         MessageType messageType = m.getMessageType(); // For handy reference.
         String ipAddressPort = getIpAddressPort(m.getDestinationAddress());
         if (ipAddressPort == null) {
@@ -304,51 +306,48 @@ public class Mediator implements IService {
         /*
          * If we may get a response to this message, add it to the list of responses we are expecting.
          */
+        MessagePendingQueue.Entry queueEntry = null;
         if (messageType.getResponseMessageType() != null) {
-            registerRequest(m);
+            queueEntry = pendingQueue.enqueue(m);
         }
         /*
          * Send the message.
          */
-        sendMessage(xml, ipAddressPort, m.getDestinationAddress(), 1, messageType.isToBeQueued());
+        boolean messageSent = sendMessage(xml, ipAddressPort, m.getDestinationAddress(), 1, messageType.isToBeQueued());
         /*
          * If we expect a response to this message, wait for the response.
+         * When we get the response, return it to our caller. If there is no
+         * response message after a defined timeout period, return null.
          */
-        Object returnData = null;
         if (messageType.getResponseMessageType() != null) {
-            returnData = waitForResponse(m);
+            Message responseMessage = null;
+            if (messageSent) {
+                responseMessage = pendingQueue.waitForResponse(queueEntry);
+            } else {
+                pendingQueue.dequeue(queueEntry);
+            }
+            MessageType.TemplateType templateType = m.getMessageType().getTemplateType();
+            switch (templateType) {
+                case findPerson:
+                    PersonResponse personResponse = new PersonResponse();
+                    returnData = personResponse;
+                    boolean success = (responseMessage != null);
+                    personResponse.setSuccessful(success);
+                    if (success) {
+                        personResponse.setPersonList((List<Person>) m.getData());
+                    }
+                    break;
+
+                default:
+                    Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                            "sendData() Message with requestId {0} and templateType {1} is expecting a response but not handled.",
+                            new Object[]{m.getMessageType().getRequestTypeId(), templateType.name()});
+                    break;
+            }
         }
         /*
          * Return.
          */
-        return returnData;
-    }
-
-    /**
-     * Adds this message to a list of messages for which we expect a response.
-     * @param m message we are expecting a response to
-     */
-    private synchronized void registerRequest(Message m) {
-        //TO DO: Write the contents
-    }
-
-    /**
-     * Waits for a response to our request message, if one is expected.
-     * When we get the response, return it to our caller. If there is no
-     * response message after a defined timeout period, return null.
-     *
-     * @param m message we are waiting for a response to
-     * @return data object to return to our caller, or null if timed out.
-     */
-    private Object waitForResponse(Message m) {
-        Object returnData = null;
-        switch (m.getMessageType().getTemplateType()) {
-            case findPerson:
-                PersonResponse personResponse = new PersonResponse();
-                personResponse.setSuccessful(false);
-                returnData = personResponse;
-                //TO DO: Wait for response.
-        }
         return returnData;
     }
 
@@ -597,8 +596,10 @@ public class Mediator implements IService {
      * @param destination ultimate destination address for this message
      * @param hopCount how many times this message has been sent
      * @param toBeQueued is this message to be queued for later if it can't be sent now?
+     * @return true if the message was queued or sent successfully (to the next hop), otherwise false
      */
-    private void sendMessage(String xml, String ipAddressPort, String destination, int hopCount, boolean toBeQueued) {
+    private boolean sendMessage(String xml, String ipAddressPort, String destination, int hopCount, boolean toBeQueued) {
+        boolean messageSent = false;
         if (hopCount > MAX_HOP_COUNT) {
             /*
              * A message has been forwarded too many times, exceeding the maximum hop count.
@@ -609,14 +610,16 @@ public class Mediator implements IService {
                     new Object[]{hopCount, MAX_HOP_COUNT, destination, ipAddressPort});
         } else if (toBeQueued) {
             queueManager.enqueue(xml, ipAddressPort, destination, hopCount);
+            messageSent = true;
         } else {
             try {
-                httpService.send(xml, ipAddressPort, destination, toBeQueued, hopCount); // (toBeQueued = false)
+                messageSent = httpService.send(xml, ipAddressPort, destination, toBeQueued, hopCount); // (toBeQueued = false)
             } catch (MalformedURLException ex) {
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        return messageSent;
     }
 }
