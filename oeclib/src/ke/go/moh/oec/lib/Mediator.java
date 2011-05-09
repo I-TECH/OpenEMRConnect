@@ -153,7 +153,7 @@ public class Mediator implements IService {
                  * This should not happen. It should always be there.
                  */
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                        "getProperty() Can''t open ''{0}'' -- Please create the properties file if it doesn't exist and then restart the app",
+                        "getProperty() Can''t open ''{0}'' -- Please create the properties file if it doesn''t exist and then restart the app",
                         propertiesFileName);
                 System.exit(1);
             }
