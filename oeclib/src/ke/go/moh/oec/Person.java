@@ -145,6 +145,8 @@ public class Person {
 	private Visit lastRegularVisit;
 	/** Information for the person's most recent one-off clinic visit (if any) */
 	private Visit lastOneOffVisit;
+	/** The score when matching this person in a person/patient index (returns with match results) */
+	private int matchScore;
 	/** A list containing each {@link PersonIdentifier} assigned to this person. */
 	private List<PersonIdentifier> personIdentifierList;		// Need from HDSS add/modify
 	/** A list containing each {@link Fingerprint} taken from this person. */
@@ -320,6 +322,14 @@ public class Person {
 
     public void setMaritalStatus(MaritalStatus maritalStatus) {
         this.maritalStatus = maritalStatus;
+    }
+
+    public int getMatchScore() {
+        return matchScore;
+    }
+
+    public void setMatchScore(int matchScore) {
+        this.matchScore = matchScore;
     }
 
     public String getMiddleName() {

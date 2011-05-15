@@ -245,9 +245,9 @@ class XmlPacker {
         PersonRequest personRequest = (PersonRequest) m.getData();
         Person p = personRequest.getPerson();
         packPersonName(q, p, "livingSubjectName");
-        packLivingSubjectAttribute(q, "livingSubjectAdministrativeGender", "code", packEnum(p.getSex()));
-        packLivingSubjectAttribute(q, "livingSubjectBirthTime", "value", packDate(p.getBirthdate()));
-        packLivingSubjectAttribute(q, "livingSubjectDeceasedTime", "value", packDate(p.getDeathdate()));
+        packTagValueAttribute(q, "livingSubjectAdministrativeGender", "code", packEnum(p.getSex()));
+        packTagValueAttribute(q, "livingSubjectBirthTime", "value", packDate(p.getBirthdate()));
+        packTagValueAttribute(q, "livingSubjectDeceasedTime", "value", packDate(p.getDeathdate()));
         packLivingSubjectId(q, OID_OTHER_NAME, p.getOtherName());
         packLivingSubjectId(q, OID_CLAN_NAME, p.getClanName());
         packLivingSubjectId(q, OID_ALIVE_STATUS, packEnum(p.getAliveStatus())); // (Used only on findPerson.)
@@ -310,11 +310,22 @@ class XmlPacker {
                 elementList.add(packCloneElement(subject));
             }
             for (int i = 0; i < personList.size(); i++) { // From 1st person (index 0) ondwards...
-                packPerson(elementList.get(i), personList.get(i));
-                packRelatedPersons(elementList.get(i), personList.get(i));
+                packCandidate(elementList.get(i), personList.get(i));
             }
         }
         return doc;
+    }
+
+    /**
+     * Packs one of the candidates to return in a FindPerson response message.
+     *
+     * @param e top element of the subtree to contain the details for the candidate.
+     * @param p candidate person information.
+     */
+    private void packCandidate(Element e, Person p) {
+        packPerson(e, p);
+        packRelatedPersons(e, p);
+        packTagValueAttribute(e, "queryMatchObservation", "value", Integer.toString(p.getMatchScore()));
     }
 
     /**
@@ -327,10 +338,10 @@ class XmlPacker {
         packId(root, OID_MESSAGE_ID, m.getMessageId());
         Element receiver = (Element) root.getElementsByTagName("receiver").item(0);
         packId(receiver, OID_APPLICATION_ADDRESS, m.getDestinationAddress());
-        packElementValue(receiver, "name", m.getDestinationName());
+        packTagValue(receiver, "name", m.getDestinationName());
         Element sender = (Element) root.getElementsByTagName("sender").item(0);
         packId(sender, OID_APPLICATION_ADDRESS, m.getSourceAddress());
-        packElementValue(sender, "name", m.getSourceName());
+        packTagValue(sender, "name", m.getSourceName());
     }
 
     /**
@@ -343,9 +354,9 @@ class XmlPacker {
             p = new Person();
         }
         packPersonName(e, p, "name");
-        packElementAttribute(e, "administrativeGenderCode", "code", packEnum(p.getSex()));
-        packElementAttribute(e, "birthTime", "value", packDate(p.getBirthdate()));
-        packElementAttribute(e, "deceasedTime", "value", packDate(p.getDeathdate()));
+        packTagAttribute(e, "administrativeGenderCode", "code", packEnum(p.getSex()));
+        packTagAttribute(e, "birthTime", "value", packDate(p.getBirthdate()));
+        packTagAttribute(e, "deceasedTime", "value", packDate(p.getDeathdate()));
         packId(e, OID_OTHER_NAME, p.getOtherName());
         packId(e, OID_CLAN_NAME, p.getClanName());
         packId(e, OID_ALIVE_STATUS, packEnum(p.getAliveStatus()));
@@ -435,7 +446,7 @@ class XmlPacker {
             /*
              * Pack the last name.
              */
-            packElementValue(eName, "family", p.getLastName());
+            packTagValue(eName, "family", p.getLastName());
         }
     }
 
@@ -656,14 +667,14 @@ class XmlPacker {
             for (int i = 0; i < householdMembers.size(); i++) { // From 1st person (index 0) ondwards...
                 Element e = elementList.get(i);
                 RelatedPerson rp = householdMembers.get(i);
-                packElementAttribute(e, "code", "value", packEnum(rp.getRelation()));
+                packTagAttribute(e, "code", "value", packEnum(rp.getRelation()));
                 Person per = rp.getPerson();
                 if (per == null) {
                     per = new Person(); // Empty person, so items below will be empty but avoid nullpointer.
                 }
                 packPersonName(e, per, "name");
-                packElementAttribute(e, "administrativeGenderCode", "code", packEnum(per.getSex()));
-                packElementAttribute(e, "birthTime", "value", packDate(per.getBirthdate()));
+                packTagAttribute(e, "administrativeGenderCode", "code", packEnum(per.getSex()));
+                packTagAttribute(e, "birthTime", "value", packDate(per.getBirthdate()));
             }
         }
     }
@@ -704,37 +715,40 @@ class XmlPacker {
     }
 
     /**
-     * Packs data into a named attribute of a livingSubject... construct.
-     * <p>
-     * This is used to pack data on behalf of findPerson into a subtree
-     * of the following form:
-     * <p>
-     * &lt;livingSubjectXxx&gt; <br>
-     *    &lt;value yyy=userValue&gt; <br>
-     *    &lt;semanticsText&gt;LivingSubject.xxx&lt;/semanticsText&gt; <br>
-     * &lt;/livingSubjectXxx&gt;
-     * <p>
-     * where livingSubjectXxx is the name of the top element in this subtree
-     * and yyy is the name of the attribute to receive the value.
+     * Packs an attribute of a block's value element.
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <(tag)>
+     *         ...
+     *         <value (attribute)=(value)/>
+     *         ...
+     *     </(tag)>
+     *     ....
+     * </subtree>
+     * } </pre>
+     * Finds the "value" element within the block and inserts the
+     * value into the named attribute.
      *
      * @param subtree Document subtree in which to look for the element
-     * @param name name of the element under which to pack the value
+     * @param tag name of the element under which to pack the value
      * @param attribute name of the element attribute to receive the value
      * @param value value to place in the attribute. If null, the element
      * is removed from the template.
      */
-    private void packLivingSubjectAttribute(Element subtree, String name, String attribute, String value) {
-        Element e = (Element) subtree.getElementsByTagName(name).item(0);
+    private void packTagValueAttribute(Element subtree, String tag, String attribute, String value) {
+        Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e == null) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "packLivingSubjectAttribute() could not find element {0} in the template XML file.", name);
+                    "packLivingSubjectAttribute() could not find element {0} in the template XML file.", tag);
             return;
         }
         if (value != null) {
             Element v = (Element) e.getElementsByTagName("value").item(0);
             if (v == null) {
                 Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                        "packLivingSubjectAttribute() could not find ''value'' element under tag {0} in the template XML file.", name);
+                        "packLivingSubjectAttribute() could not find ''value'' element under tag {0} in the template XML file.", tag);
                 return;
             }
             packAttribute(v, attribute, value);
@@ -744,28 +758,42 @@ class XmlPacker {
     }
 
     /**
-     * Packs data into a named attribute of a named element.
-     *
+     * Packs a value into an attribute of a tag.
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <(tag) (attribute)=(value)/>
+     *     ....
+     * </subtree>
+     * } </pre>
+     * or removes the element if the value is null.
+     * 
      * @param subtree Document subtree in which to look for the element
-     * @param name name of the element in which to pack the value
+     * @param tag name of the element in which to pack the value
      * @param attribute name of the element attribute to receive the value
      * @param value value to place in the attribute. If null, the element
      * is removed from the template.
      */
-    private void packElementAttribute(Element subtree, String name, String attribute, String value) {
-        Element e = (Element) subtree.getElementsByTagName(name).item(0);
+    private void packTagAttribute(Element subtree, String tag, String attribute, String value) {
+        Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e == null) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packElementAttribute() could not find element {0} (with attribute {1}) in the template XML file.",
-                    new Object[]{name, attribute});
+                    new Object[]{tag, attribute});
             return;
         }
         packAttribute(e, attribute, value);
     }
 
     /**
-     * Packs data into a named attribute of a given element.
-     *
+     * Packs data into an element's attribute value:
+     * <pre>
+     * {@code
+     * <tag (attribute)=(value)/>
+     * } </pre>
+     * or removes the element if the value is null.
+     * 
      * @param e the element whose attribute we are to pack
      * @param attribute the name of the attribute to pack
      * @param value the value to put in the attribute
@@ -786,18 +814,29 @@ class XmlPacker {
     }
 
     /**
-     * Packs data into the value of an element.
+     * Packs data into the value of an element, by element tag.
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <(tag)>
+     *         (value)
+     *     </(tag)>
+     *     ....
+     * </subtree>
+     * } </pre>
+     * or removes the element if the value is null.
      *
      * @param subtree Document subtree in which to look for the element
-     * @param name name of the element in which to pack the value
+     * @param tag name of the element in which to pack the value
      * @param value value to pack in the element. If null, the element
      * is removed from the template.
      */
-    private void packElementValue(Element subtree, String name, String value) {
-        Element e = (Element) subtree.getElementsByTagName(name).item(0);
+    private void packTagValue(Element subtree, String tag, String value) {
+        Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e == null) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "packElementValue() could not find element{0}", name);
+                    "packElementValue() could not find element{0}", tag);
             return;
         }
         if (value != null) {
@@ -808,50 +847,63 @@ class XmlPacker {
     }
 
     /**
-     * Packs an element of the form &lt;id root="name", extension="value"&gt;.
-     * <p>
-     * If value is not null, inserts the value into the extension attribute
-     * of the matching &lt;id&gt; node. If the value is null, it removes
-     * the &lt;id&gt; node from the template.
+     * Packs a value into the extension attribute of an id tag, by OID.
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <id root=(oid) extension=(value)>
+     *     ....
+     * </subtree>
+     * } </pre>
+     * or removes the id tag if the value is null.
      *
      * @param subtree head of subtree within which to look for the id element.
-     * @param name the root attribute value for the id element we are looking for.
+     * @param oid the root attribute value for the id element we are looking for.
      * @param value the value to assign to the id tag, or null if the id tag should be removed.
      */
-    private void packId(Element subtree, String name, String value) {
-        Element id = commonGetId(subtree, name);
+    private void packId(Element subtree, String oid, String value) {
+        Element id = commonGetId(subtree, oid);
         if (id == null) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "packId() could not find ID with root attribute {0} in the XML template file", name);
+                    "packId() could not find ID with root attribute {0} in the XML template file", oid);
             return;
         }
         packAttribute(id, "extension", value);
     }
 
     /**
-     * Packs a livingSubjectId subtree. This subtree takes the following form:
-     * <p>
-     * &lt;livingSubjectId&gt; <br>
-     *    &lt;value root="OID" extension="value"/&gt; <br>
-     *    &lt;semanticsText&gt;LivingSubject.xxx&lt;/semanticsText&gt; <br>
-     * &lt;/livingSubjectId&gt;
-     *
+     * Packs a livingSubjectId subtree.
+     * Searches for a block matching the passed (oid) value:
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <livingSubjectId>
+     *         <value root="(oid)" extension="(value)">
+     *         <semanticsText>LivingSubject.xxx</semanticsText>
+     *     </livingSubjectId>
+     *     ....
+     * </subtree>
+     * } </pre>
+     * Inserts (value) into the block, or deletes the block if the supplied (value) is null.
+     * 
      * @param subtree head of subtree within which to look for the id element.
-     * @param name the root attribute value for the id element we are looking for.
-     * @param value the value to assign to the id tag, or null if the id tag should be removed.
+     * @param oid the root attribute value for the id element we are looking for.
+     * @param value the value to assign inside the livingSubjectId block, or null if the block should be removed.
      */
-    private void packLivingSubjectId(Element subtree, String name, String value) {
-        Element id = commonGetLivingSubjectId(subtree, name);
+    private void packLivingSubjectId(Element subtree, String oid, String value) {
+        Element id = commonGetLivingSubjectId(subtree, oid);
         if (id == null) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "packLivingSubjectId() could not find livingSubjectId with root attribute {0} in the XML template file", name);
+                    "packLivingSubjectId() could not find livingSubjectId with root attribute {0} in the XML template file", oid);
             return;
         }
         if (value != null) {
             Element v = (Element) id.getElementsByTagName("value").item(0);
             if (v == null) {
                 Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                        "packLivingSubjectAttribute() could not find ''value'' element under tag {0} in the template XML file.", name);
+                        "packLivingSubjectAttribute() could not find ''value'' element under tag {0} in the template XML file.", oid);
                 return;
             }
             packAttribute(v, "extension", value);
@@ -1180,9 +1232,9 @@ class XmlPacker {
         Person p = new Person();
         m.setData(p);
         unpackPerson(p, ePerson);
-        p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackLivingSubjectAttribute(e, "livingSubjectAdministrativeGender", "code")));
-        p.setBirthdate(unpackDate(unpackLivingSubjectAttribute(e, "livingSubjectBirthTime", "value")));
-        p.setDeathdate(unpackDate(unpackLivingSubjectAttribute(e, "livingSubjectDeceasedTime", "value")));
+        p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
+        p.setBirthdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectBirthTime", "value")));
+        p.setDeathdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectDeceasedTime", "value")));
 
         // TODO: Finish the code.
     }
@@ -1200,9 +1252,9 @@ class XmlPacker {
         Person p = new Person();
         m.setData(p);
         unpackPersonName(p, q, "livingSubjectName");
-        p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackLivingSubjectAttribute(e, "livingSubjectAdministrativeGender", "code")));
-        p.setBirthdate(unpackDate(unpackLivingSubjectAttribute(e, "livingSubjectBirthTime", "value")));
-        p.setDeathdate(unpackDate(unpackLivingSubjectAttribute(e, "livingSubjectDeceasedTime", "value")));
+        p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
+        p.setBirthdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectBirthTime", "value")));
+        p.setDeathdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectDeceasedTime", "value")));
         p.setOtherName(unpackLivingSubjectId(q, OID_OTHER_NAME));
         p.setClanName(unpackLivingSubjectId(q, OID_CLAN_NAME));
         p.setAliveStatus((Person.AliveStatus) unpackEnum(Person.AliveStatus.values(), unpackLivingSubjectId(q, OID_ALIVE_STATUS)));
@@ -1248,11 +1300,22 @@ class XmlPacker {
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Person p = new Person();
                 Element el = (Element) nodeList.item(i);
-                unpackPerson(p, el);
-                unpackRelatedPersons(p, el);
+                unpackCandidate(p, el);
                 personList.add(p);
             }
         }
+    }
+
+    /**
+     * Unpack a candidate in a findPerson response.
+     * 
+     * @param p the person data to fill in
+     * @param e head of the <code>Document</code> subtree in which this person is found
+     */
+    private void unpackCandidate(Person p, Element e) {
+        unpackPerson(p, e);
+        unpackRelatedPersons(p, e);
+        p.setMatchScore(unpackInt(unpackTagValueAttribute(e, "queryMatchObservation", "value")));
     }
 
     /**
@@ -1271,13 +1334,13 @@ class XmlPacker {
                 relatedPersonList.add(rp);
                 Element el = (Element) nodeList.item(i);
                 // Set the type of relation:
-                rp.setRelation((RelatedPerson.Relation) unpackEnum(RelatedPerson.Relation.values(), unpackElementAttribute(el, "code", "value")));
+                rp.setRelation((RelatedPerson.Relation) unpackEnum(RelatedPerson.Relation.values(), unpackTagAttribute(el, "code", "value")));
                 // Set the details of the new person:
                 Person per = new Person();
                 rp.setPerson(per);
                 unpackPersonName(per, el, "name");
-                per.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackElementAttribute(e, "administrativeGenderCode", "code")));
-                per.setBirthdate(unpackDate(unpackElementAttribute(e, "birthTime", "value")));
+                per.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagAttribute(e, "administrativeGenderCode", "code")));
+                per.setBirthdate(unpackDate(unpackTagAttribute(e, "birthTime", "value")));
             }
         }
     }
@@ -1293,12 +1356,12 @@ class XmlPacker {
         Element receiver = (Element) e.getElementsByTagName("receiver").item(0);
         if (receiver != null) {
             m.setDestinationAddress(unpackId(receiver, OID_APPLICATION_ADDRESS));
-            m.setDestinationName(unpackElementValue(receiver, "name"));
+            m.setDestinationName(unpackTagValue(receiver, "name"));
         }
         Element sender = (Element) e.getElementsByTagName("sender").item(0);
         if (sender != null) {
             m.setSourceAddress(unpackId(sender, OID_APPLICATION_ADDRESS));
-            m.setSourceName(unpackElementValue(sender, "name"));
+            m.setSourceName(unpackTagValue(sender, "name"));
         }
     }
 
@@ -1310,9 +1373,9 @@ class XmlPacker {
      */
     private void unpackPerson(Person p, Element e) {
         unpackPersonName(p, e, "name");
-        p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackElementAttribute(e, "administrativeGenderCode", "code")));
-        p.setBirthdate(unpackDate(unpackElementAttribute(e, "birthTime", "value")));
-        p.setDeathdate(unpackDate(unpackElementAttribute(e, "deceasedTime", "value")));
+        p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagAttribute(e, "administrativeGenderCode", "code")));
+        p.setBirthdate(unpackDate(unpackTagAttribute(e, "birthTime", "value")));
+        p.setDeathdate(unpackDate(unpackTagAttribute(e, "deceasedTime", "value")));
         p.setOtherName(unpackId(e, OID_OTHER_NAME));
         p.setClanName(unpackId(e, OID_CLAN_NAME));
         p.setAliveStatus((Person.AliveStatus) unpackEnum(Person.AliveStatus.values(), unpackId(e, OID_ALIVE_STATUS)));
@@ -1368,7 +1431,7 @@ class XmlPacker {
                     p.setMiddleName(givenList.item(1).getNodeValue());
                 }
             }
-            p.setLastName(unpackElementValue(eName, "family"));
+            p.setLastName(unpackTagValue(eName, "family"));
         }
     }
 
@@ -1556,14 +1619,22 @@ class XmlPacker {
     }
 
     /**
-     * Unpacks data from a named attribute of a named element.
+     * Unpacks an element's attribute value, by element tag.
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <(tag) (attribute)=(value)/>
+     *     ....
+     * </subtree>
+     * } </pre>
      *
      * @param subtree Document subtree in which to look for the element
      * @param name name of the element from which to unpack the value
      * @param attribute name of the element attribute containing the value
      * @return the attribute value. If the element was not found, returns null.
      */
-    private String unpackElementAttribute(Element subtree, String name, String attribute) {
+    private String unpackTagAttribute(Element subtree, String name, String attribute) {
         Element e = (Element) subtree.getElementsByTagName(name).item(0);
         if (e != null) {
             return unpackAttribute(e, attribute);
@@ -1573,16 +1644,27 @@ class XmlPacker {
     }
 
     /**
-     * Unpacks data from a named attribute of the value element
-     * under a LivingSubjectXxx element.
+     * Unpacks an attribute of a block's value element.
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <(tag)>
+     *         ...
+     *         <value (attribute)=(value)/>
+     *         ...
+     *     </(tag)>
+     *     ....
+     * </subtree>
+     * } </pre>
      *
-     * @param subtree Document subtree in which to look for the element
-     * @param name name of the element from which to unpack the value
+     * @param subtree Document subtree in which to look for the block
+     * @param tag name of the block from which to unpack the value
      * @param attribute name of the element attribute containing the value
      * @return the attribute value. If the element was not found, returns null.
      */
-    private String unpackLivingSubjectAttribute(Element subtree, String name, String attribute) {
-        Element e = (Element) subtree.getElementsByTagName(name).item(0);
+    private String unpackTagValueAttribute(Element subtree, String tag, String attribute) {
+        Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e != null) {
             Element v = (Element) e.getElementsByTagName("value").item(0);
             if (v != null) {
@@ -1593,10 +1675,14 @@ class XmlPacker {
     }
 
     /**
-     * Unpacks data from a named attribute of a given element.
+     * Unpacks an element's attribute value:
+     * <pre>
+     * {@code
+     * <tag (attribute)=(value)/>
+     * } </pre>
      *
-     * @param e element from which to unpack the data
-     * @param attribute attribute in which to find the data
+     * @param e element from which to unpack the attribute
+     * @param attribute name of the attribute in which to find the value
      * @return value of the attribute, or null if the attribute was not present.
      *
      */
@@ -1611,14 +1697,24 @@ class XmlPacker {
 
     /**
      * Unpacks data from an element value.
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <(tag)>
+     *         (value)
+     *     </(tag)>
+     *     ....
+     * </subtree>
+     * } </pre>
      *
      * @param subtree Document subtree in which to look for the element
-     * @param name name of the element from which to unpack the value
+     * @param tag name of the element from which to unpack the value
      * @return value value of the element. If the element was not found,
      * returns null.
      */
-    private String unpackElementValue(Element subtree, String name) {
-        Element e = (Element) subtree.getElementsByTagName(name).item(0);
+    private String unpackTagValue(Element subtree, String tag) {
+        Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e != null) {
             return e.getNodeValue();
         } else {
@@ -1627,17 +1723,23 @@ class XmlPacker {
     }
 
     /**
-     * Unpacks an element of the form &lt;id root="name", extension="value"&gt;.
+     * Unpacks the extension value of an id tag, by OID.
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <id root=(oid) extension=(value)>
+     *     ....
+     * </subtree>
+     * } </pre>
      * <p>
-     * If the element is found, returns the value of the extension attribute
-     * of the matching &lt;id&gt; node. If the element is not found, returns null
      *
      * @param subtree head of subtree within which to look for the id element.
-     * @param name the root attribute value for the id element we are looking for.
+     * @param oid the root attribute value for the id element we are looking for.
      * @return value of the extension attribute, or null if tag not found.
      */
-    private String unpackId(Element subtree, String name) {
-        Element id = commonGetId(subtree, name);
+    private String unpackId(Element subtree, String oid) {
+        Element id = commonGetId(subtree, oid);
         if (id != null) {
             Node aExtension = id.getAttributeNode("extension");
             if (aExtension != null) {
@@ -1648,22 +1750,28 @@ class XmlPacker {
     }
 
     /**
-     * Unpacks a livingSubjectId subtree. This subtree takes the following form:
-     * <p>
-     * &lt;livingSubjectId&gt; <br>
-     *    &lt;value root="OID" extension="value"/&gt; <br>
-     *    &lt;semanticsText&gt;LivingSubject.xxx&lt;/semanticsText&gt; <br>
-     * &lt;/livingSubjectId&gt;
-     * <p>
-     * If the element is found, returns the value of the extension attribute
-     * of the matching &lt;id&gt; node. If the element is not found, returns null
+     * Unpacks a livingSubjectId subtree.
+     * Searches for a block matching the passed (oid) value:
+     * <pre>
+     * {@code
+     * <subtree>
+     *     ....
+     *     <livingSubjectId>
+     *         <value root="(oid)" extension="(value)">
+     *         <semanticsText>LivingSubject.xxx</semanticsText>
+     *     </livingSubjectId>
+     *     ....
+     * </subtree>
+     * }
+     *</pre>
+     * Returns the extension value if found, or null if not.
      *
      * @param subtree head of subtree within which to look for the livingSubjectId element.
-     * @param name the root attribute value for the id element we are looking for.
+     * @param oid the root attribute value for the id element we are looking for.
      * @return value of the extension attribute, or null if tag not found.
      */
-    private String unpackLivingSubjectId(Element subtree, String name) {
-        Element id = commonGetLivingSubjectId(subtree, name);
+    private String unpackLivingSubjectId(Element subtree, String oid) {
+        Element id = commonGetLivingSubjectId(subtree, oid);
         if (id != null) {
             Element v = (Element) id.getElementsByTagName("value").item(0);
             if (v != null) {
@@ -1729,10 +1837,28 @@ class XmlPacker {
     }
 
     /**
+     * Parse a string to a integer value. If the string is null, return zero.
+     *
+     * @param text text to parse into an integer.
+     * @return the integer value if could be parsed, otherwise zero.
+     */
+    private int unpackInt(String text) {
+        int returnInt = 0;
+        if (text != null) {
+            try {
+                returnInt = Integer.parseInt(text);
+            } catch (NumberFormatException ex) {
+                Logger.getLogger(XmlPacker.class.getName()).log(Level.WARNING, "Can't parses integer '" + text + "'", ex);
+            }
+        }
+        return returnInt;
+    }
+
+    /**
      * Parse a string to a boolean value. If the string is null, return false.
      *
      * @param text text to parse into a boolean.
-     * @return the enumerated value if there was a match, otherwise null
+     * @return the boolean value if is true, otherwise return false
      */
     private boolean unpackBoolean(String text) {
         return Boolean.parseBoolean(text);
@@ -1784,19 +1910,23 @@ class XmlPacker {
      * ---------------------------------------------------------------------------------------
      */
     /**
-     * Finds an &lt;id&gt; element with a given "root" attribute value,
+     * Finds an id element with a given root OID attribute value,
      * or <code>null</code> if not found.
+     * <pre>
+     * {@code
+     * <id root=(oid) ...>
+     * } </pre>
      *
      * @param subtree head of the subtree in which to search
-     * @param name root attribute value to search for
+     * @param oid root attribute value to search for
      * @return the element if found, otherwise null
      */
-    private Element commonGetId(Element subtree, String name) {
+    private Element commonGetId(Element subtree, String oid) {
         NodeList idList = subtree.getElementsByTagName("id");
         for (int i = 0; i < idList.getLength(); i++) {
             Element id = (Element) idList.item(i);
             Node aRoot = id.getAttributeNode("root");
-            if (aRoot != null && aRoot.getNodeValue().equals(name)) {
+            if (aRoot != null && aRoot.getNodeValue().equals(oid)) {
                 return id;
             }
         }
@@ -1804,22 +1934,27 @@ class XmlPacker {
     }
 
     /**
-     * Finds an &lt;livingSubjectId&gt; element containing a &lt;value&gt; element
-     * with a given "root" attribute value,
-     * or <code>null</code> if not found.
+     * Finds a livingSubjectId element matching a root attribute OID value.
+     * <pre>
+     * {@code
+     * <livingSubjectId>
+     *     <value root="(oid)" ...>
+     *     <semanticsText>LivingSubject.xxx</semanticsText>
+     * </livingSubjectId>
+     * } </pre>
      *
      * @param subtree head of the subtree in which to search
-     * @param name root attribute value to search for
+     * @param oid root attribute value to search for
      * @return the element if found, otherwise null
      */
-    private Element commonGetLivingSubjectId(Element subtree, String name) {
+    private Element commonGetLivingSubjectId(Element subtree, String oid) {
         NodeList idList = subtree.getElementsByTagName("livingSubjectId");
         for (int i = 0; i < idList.getLength(); i++) {
             Element id = (Element) idList.item(i);
             Element eVal = (Element) id.getElementsByTagName("value").item(0);
             if (eVal != null) {
                 Node aRoot = eVal.getAttributeNode("root");
-                if (aRoot != null && aRoot.getNodeValue().equals(name)) {
+                if (aRoot != null && aRoot.getNodeValue().equals(oid)) {
                     return id;
                 }
             }
