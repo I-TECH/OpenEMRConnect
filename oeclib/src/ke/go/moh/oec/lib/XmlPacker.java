@@ -619,7 +619,7 @@ class XmlPacker {
         Element fpElement = commonGetLivingSubjectId(subtree, oidFingerprint);
         if (fpElement == null) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "Fingerprint type {0}, OID {1} was not found in the template XML file.",
+                    "LivingSubject Fingerprint type {0}, OID {1} was not found in the template XML file.",
                     new Object[]{type.name(), oidFingerprint});
             return;
         }
@@ -634,7 +634,7 @@ class XmlPacker {
                     Element v = (Element) e.getElementsByTagName("value").item(0);
                     if (v == null) {
                         Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                                "Fingerprint type {0}, OID {1} had no value element in the template XML file.",
+                                "LivingSubject Fingerprint type {0}, OID {1} had no value element in the template XML file.",
                                 new Object[]{type.name(), oidFingerprint});
                         return;
                     }
@@ -741,14 +741,14 @@ class XmlPacker {
         Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e == null) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "packLivingSubjectAttribute() could not find element {0} in the template XML file.", tag);
+                    "packTagValueAttribute() could not find element {0} in the template XML file.", tag);
             return;
         }
         if (value != null) {
             Element v = (Element) e.getElementsByTagName("value").item(0);
             if (v == null) {
                 Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                        "packLivingSubjectAttribute() could not find ''value'' element under tag {0} in the template XML file.", tag);
+                        "packTagValueAttribute() could not find ''value'' element under tag {0} in the template XML file.", tag);
                 return;
             }
             packAttribute(v, attribute, value);
@@ -779,7 +779,7 @@ class XmlPacker {
         Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e == null) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "packElementAttribute() could not find element {0} (with attribute {1}) in the template XML file.",
+                    "packTagAttribute() could not find element {0} (with attribute {1}) in the template XML file.",
                     new Object[]{tag, attribute});
             return;
         }
@@ -836,7 +836,7 @@ class XmlPacker {
         Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e == null) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "packElementValue() could not find element{0}", tag);
+                    "packTagValue() could not find element{0}", tag);
             return;
         }
         if (value != null) {
@@ -903,7 +903,7 @@ class XmlPacker {
             Element v = (Element) id.getElementsByTagName("value").item(0);
             if (v == null) {
                 Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                        "packLivingSubjectAttribute() could not find ''value'' element under tag {0} in the template XML file.", oid);
+                        "packLivingSubjectId() could not find ''value'' element under tag {0} in the template XML file.", oid);
                 return;
             }
             packAttribute(v, "extension", value);
@@ -1848,7 +1848,7 @@ class XmlPacker {
             try {
                 returnInt = Integer.parseInt(text);
             } catch (NumberFormatException ex) {
-                Logger.getLogger(XmlPacker.class.getName()).log(Level.WARNING, "Can't parses integer '" + text + "'", ex);
+                Logger.getLogger(XmlPacker.class.getName()).log(Level.WARNING, "Can't parse integer '" + text + "'", ex);
             }
         }
         return returnInt;
