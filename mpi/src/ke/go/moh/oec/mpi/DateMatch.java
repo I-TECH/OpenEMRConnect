@@ -1,0 +1,132 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is OpenEMRConnect.
+ *
+ * The Initial Developer of the Original Code is International Training &
+ * Education Center for Health (I-TECH) <http://www.go2itech.org/>
+ *
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
+package ke.go.moh.oec.mpi;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+/**
+ * Represents a date value for matching.
+ *
+ * @author Jim Grace
+ */
+public class DateMatch {
+
+    private static final SimpleDateFormat yearFormat = new SimpleDateFormat("y");
+    private static final SimpleDateFormat monthFormat = new SimpleDateFormat("M");
+    private static final SimpleDateFormat dayFormat = new SimpleDateFormat("d");
+    private static long baseDate;
+    private static int today = 0;
+    private Date date = null;
+    private int year = 0;
+    private int yearMonth = 0;
+    private int yearMonthDay = 0;
+
+    /**
+     * Construct a DateMatch from a Date.
+     * <p>
+     * Information about the date is extracted and stored ahead of time for quick matching.
+     * For dates coming from the database, this information is extracted when all the
+     * database values are loaded into memory. Then a database value can be compared
+     * more quickly with multiple searches. For dates coming from the search terms,
+     * this information is extracted before comparing the search terms with all
+     * the database values. Then a search term can be compared more quickly with
+     * multiple database values.
+     *
+     * @param d The date that will be matched with.
+     */
+    public DateMatch(Date d) {
+        date = d;
+        if (d != null) {
+            year = Integer.parseInt(yearFormat.format(d));
+            yearMonth = year * 12 + Integer.parseInt(dayFormat.format(d));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(d);
+            long time = calendar.getTimeInMillis();
+            yearMonthDay = (int) ((time - baseDate) / (24 * 60 * 60 * 1000));
+        }
+    }
+
+    /**
+     * Sets the current day, to be used in computing ages from a date
+     * until today. This method should be called at least once a day
+     * before any search is done that day. For convenience, it may just be
+     * called before any search.
+     * <p>
+     * The current day is set to the number of days since January 1, 1800.
+     */
+    synchronized public static void setToday() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(1800, 1, 1);
+        baseDate = calendar.getTimeInMillis();
+        calendar.setTime(new Date());
+        long todayDate = calendar.getTimeInMillis();
+        today = (int) ((todayDate - baseDate) / (24 * 60 * 60 * 1000));
+    }
+
+    /**
+     * Compare two dates and compute the score of their relative match.
+     * An exact match scores 100. A match within the same month scores 90.
+     * A match within the same year scores 80.
+     * <p>
+     * Dates that are not within the same year are scored as follows:
+     * The "age" of a date is defined as the amount of time from the date
+     * to today (just as the current age of a person is the amount of time
+     * from their birthdate to today.) The relative difference in age is computed
+     * as a fraction of the absolute difference in age divided by the
+     * large of the two ages. Then a score is computed in the scale of 0-70
+     * according to this fraction.
+     *
+     * @param s Scorecard in which to add the result.
+     * @param dm Contains the date to match against.
+     */
+    public void score(Scorecard s, DateMatch dm) {
+        if (date != null && dm.date != null) {
+            if (yearMonthDay == dm.yearMonthDay) {
+                s.addScore(100);
+            } else if (yearMonth == dm.yearMonth) {
+                s.addScore(90);
+            } else if (yearMonthDay == dm.yearMonthDay) {
+                s.addScore(80);
+            } else {
+                int maxDate = dm.yearMonthDay;
+                int minDate = yearMonthDay;
+                if (yearMonthDay > maxDate) {
+                    maxDate = yearMonthDay;
+                    minDate = dm.yearMonthDay;
+                }
+                int diff = maxDate - minDate;
+                int age = today - minDate;
+                if (age >= 0 && diff < age) {
+                    int score = 70 * (age / (age - diff));
+                    s.addScore(score);
+                } else {
+                    s.addScore(0);
+                }
+            }
+        }
+    }
+}
