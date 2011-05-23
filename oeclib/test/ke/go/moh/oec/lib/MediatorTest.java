@@ -1,31 +1,11 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is OpenEMRConnect.
- *
- * The Initial Developer of the Original Code is International Training &
- * Education Center for Health (I-TECH) <http://www.go2itech.org/>
- *
- * Portions created by the Initial Developer are Copyright (C) 2011
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *
- * ***** END LICENSE BLOCK ***** */
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package ke.go.moh.oec.lib;
 
-import java.util.List;
 import ke.go.moh.oec.RequestTypeId;
+import java.util.List;
 import ke.go.moh.oec.PersonResponse;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonRequest;
@@ -36,15 +16,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author Jim Grace
  */
-public class TestMediator {
+public class MediatorTest {
+    
+    public MediatorTest() {
+    }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -53,21 +32,38 @@ public class TestMediator {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
-
+    
     @Before
     public void setUp() {
     }
-
+    
     @After
     public void tearDown() {
     }
 
     /**
-     * Test of getData method, of class Mpi.
+     * Test of getProperty method, of class Mediator.
+     */
+    @Test
+    public void testGetProperty() {
+        System.out.println("getProperty");
+        String propertyName = "Instance.Name";
+        String expResult = "Siaya TB Reception";
+        String result = Mediator.getProperty(propertyName);
+        assertEquals(expResult, result);
+        
+        propertyName = "HTTPHandler.ListenPort";
+        expResult = "9724";
+        result = Mediator.getProperty(propertyName);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * FindPerson test of getData method, of class Mediator.
      */
     @Test
     public void testFindPerson() {
-        System.out.println("testFindPerson -- remote calls to MPI");
+        System.out.println("getData - findPerson");
         String instanceName = Mediator.getProperty("Instance.Name");
         System.out.println("Instance.Name = '" + instanceName + "'");
         Mediator mediator = new Mediator();
@@ -101,6 +97,5 @@ public class TestMediator {
         Person p0 = pList.get(0);
         int score = p0.getMatchScore();
         assertEquals(score, 100);
-
     }
 }

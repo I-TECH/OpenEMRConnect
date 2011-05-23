@@ -24,33 +24,23 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
-import ke.go.moh.oec.lib.Mediator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import ke.go.moh.oec.Person;
+import ke.go.moh.oec.PersonRequest;
 
 /**
- * Initializes and invokes the MPI.
  *
  * @author Jim Grace
  */
-public class Main {
+public class ModifyPerson {
 
-    /**
-     * Creates a new MPI and a new Mediator, and links them to each other.
-     * <p>
-     * Then sleep "forever" to allow them to do their processing.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        Thread.currentThread().setName("Mpi"); // For identification while debugging
-        Mpi mpi = new Mpi();
-        Mediator.registerCallback(mpi);
-
-        Mediator mediator = new Mediator();
-        while (true) {
-            try {
-                Thread.sleep(Long.MAX_VALUE);
-            } catch (InterruptedException ex) {
-            }
+    public void modify(PersonList personList, PersonRequest req) {
+        Person p = req.getPerson();
+        if (p == null) {
+            Logger.getLogger(ModifyPerson.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person data.");
+            return;
         }
+        // TO DO: Finish code
     }
 }

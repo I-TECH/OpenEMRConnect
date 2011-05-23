@@ -24,33 +24,35 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
-import ke.go.moh.oec.lib.Mediator;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Initializes and invokes the MPI.
  *
  * @author Jim Grace
  */
-public class Main {
+public class PersonList {
+    
+    private List<PersonMatch> personList = new ArrayList<PersonMatch>();
+    private Map<String,PersonMatch> personMap = new HashMap<String,PersonMatch>();
 
-    /**
-     * Creates a new MPI and a new Mediator, and links them to each other.
-     * <p>
-     * Then sleep "forever" to allow them to do their processing.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        Thread.currentThread().setName("Mpi"); // For identification while debugging
-        Mpi mpi = new Mpi();
-        Mediator.registerCallback(mpi);
-
-        Mediator mediator = new Mediator();
-        while (true) {
-            try {
-                Thread.sleep(Long.MAX_VALUE);
-            } catch (InterruptedException ex) {
-            }
-        }
+    public boolean add(PersonMatch personMatch) {
+        boolean returnValue = personList.add(personMatch);
+        personMap.put(personMatch.getPerson().getPersonGuid(), personMatch);
+        return returnValue;
+    }
+    
+    public int size() {
+        return personList.size();
+    }
+    
+    public PersonMatch get(int index) {
+        return personList.get(index);
+    }
+    
+    public PersonMatch get(String personGuid) {
+        return personMap.get(personGuid);
     }
 }

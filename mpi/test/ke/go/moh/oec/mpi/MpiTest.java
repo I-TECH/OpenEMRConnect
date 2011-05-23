@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ke.go.moh.oec.mpi;
 
 import java.util.List;
@@ -48,7 +47,7 @@ public class MpiTest {
      */
     @Test
     public void testFindPerson() {
-        System.out.println("testFindPerson -- local calls to MPI");
+        System.out.println("testFindPerson");
         Mpi.setTestQueryLimit(10);
         // slows things down: Mpi.setTestOrderBy("person_id");
         Mpi mpi = new Mpi();
@@ -62,6 +61,7 @@ public class MpiTest {
         PersonResponse pr;
 
         // Clan name that will not be found
+        System.out.println("testFindPerson - Clan name that will not be found");
         p.setClanName("ThisClanNameWillNotBeFound");
         result = mpi.getData(requestTypeId, requestData);
         assertNotNull(result);
@@ -71,6 +71,7 @@ public class MpiTest {
         assertNull(pr.getPersonList());
 
         // Clan name having 4 matches in the first 10 people
+        System.out.println("testFindPerson - Clan name returning 4 matches");
         p.setClanName("KONYANGO");
         result = mpi.getData(requestTypeId, requestData);
         assertNotNull(result);
@@ -84,8 +85,5 @@ public class MpiTest {
         Person p0 = pList.get(0);
         int score = p0.getMatchScore();
         assertEquals(score, 100);
-
     }
-
-
 }

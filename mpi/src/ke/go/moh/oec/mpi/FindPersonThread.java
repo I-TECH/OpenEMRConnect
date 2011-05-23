@@ -35,7 +35,7 @@ import java.util.List;
 public class FindPersonThread implements Runnable {
 
     /** The list of person identities in memory against which we will search for candidates. */
-    private List<PersonMatch> personMatchList;
+    private PersonList personList;
     /** The search terms we will look for. */
     private PersonMatch searchTerms;
     /** The set of candidates we will add to. */
@@ -45,8 +45,8 @@ public class FindPersonThread implements Runnable {
     /** The starting index of the person identifier list in which this thread will look. */
     private int endIndex;
 
-    public FindPersonThread(List<PersonMatch> personMatchList, PersonMatch searchTerms, CandidateSet candidateSet, int startIndex, int endIndex) {
-        this.personMatchList = personMatchList;
+    public FindPersonThread(PersonList personList, PersonMatch searchTerms, CandidateSet candidateSet, int startIndex, int endIndex) {
+        this.personList = personList;
         this.searchTerms = searchTerms;
         this.candidateSet = candidateSet;
         this.startIndex = startIndex;
@@ -87,7 +87,7 @@ public class FindPersonThread implements Runnable {
          * (Note: loop from startIndex to endIndex INCLUSIVE.)
          */
         for (int i = startIndex; i <= endIndex; i++) {
-            PersonMatch pm = personMatchList.get(i);
+            PersonMatch pm = personList.get(i);
             Scorecard s = searchTerms.scorePersonMatch(pm);
             List<FingerprintMatch> fMatchList = pm.getFingerprintMatchList();
             if (fSearchList != null && fMatchList != null) {

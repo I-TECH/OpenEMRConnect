@@ -53,6 +53,7 @@ import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
+import ke.go.moh.oec.PersonResponse;
 import ke.go.moh.oec.RelatedPerson;
 import ke.go.moh.oec.Visit;
 import org.w3c.dom.Node;
@@ -289,7 +290,8 @@ class XmlPacker {
         Document doc = packTemplate(m);
         Element root = doc.getDocumentElement();
         packHl7Header(root, m);
-        List<Person> personList = (List<Person>) m.getData();
+        PersonResponse pr = (PersonResponse) m.getData();
+        List<Person> personList = pr.getPersonList();
         /*
          * Find the <subject> subtree in the template. If there are no person results returned, remove it.
          * If there is one result, pack it into the template. If there are more than one results,
@@ -301,7 +303,7 @@ class XmlPacker {
          * have more properties filled in than others.
          */
         Element subject = (Element) root.getElementsByTagName("subject").item(0);
-        if (personList.isEmpty()) {
+        if (personList == null || personList.isEmpty()) {
             packRemoveNode(subject);
         } else {
             List<Element> elementList = new ArrayList<Element>();
@@ -1229,8 +1231,10 @@ class XmlPacker {
     private void unpackGenericPersonMessage(Message m, Element e) {
         unpackHl7Header(m, e);
         Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
+        PersonRequest pr = new PersonRequest();
         Person p = new Person();
-        m.setData(p);
+        pr.setPerson(p);
+        m.setData(pr);
         unpackPerson(p, ePerson);
         p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
         p.setBirthdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectBirthTime", "value")));
@@ -1249,8 +1253,10 @@ class XmlPacker {
     private void unpackFindPersonMessage(Message m, Element e) {
         unpackHl7Header(m, e);
         Element q = (Element) e.getElementsByTagName("queryByParameter").item(0);
+        PersonRequest pr = new PersonRequest();
         Person p = new Person();
-        m.setData(p);
+        pr.setPerson(p);
+        m.setData(pr);
         unpackPersonName(p, q, "livingSubjectName");
         p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
         p.setBirthdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectBirthTime", "value")));
@@ -1295,8 +1301,10 @@ class XmlPacker {
         unpackHl7Header(m, e);
         NodeList nodeList = e.getElementsByTagName("subject");
         if (nodeList.getLength() != 0) {
+            PersonResponse pr = new PersonResponse();
             List<Person> personList = new ArrayList<Person>();
-            m.setData(personList);
+            pr.setPersonList(personList);
+            m.setData(pr);
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Person p = new Person();
                 Element el = (Element) nodeList.item(i);

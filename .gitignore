@@ -33,6 +33,8 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-# JavaDoc #
+# NetBeans #
 ###########
-*/dist/JavaDoc/*
+*/nbproject/*
+*/build/*
+*/dist/*

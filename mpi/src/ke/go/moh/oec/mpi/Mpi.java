@@ -31,7 +31,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
@@ -39,7 +41,6 @@ import ke.go.moh.oec.IService;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
-import ke.go.moh.oec.PersonResponse;
 import ke.go.moh.oec.RequestTypeId;
 
 /**
@@ -49,9 +50,9 @@ import ke.go.moh.oec.RequestTypeId;
  */
 public class Mpi implements IService {
 
-    private static int testQueryLimit = 0;
+    private static int testQueryLimit = 10;
     private static String testOrderBy = null;
-    private List<PersonMatch> personMatchList = new ArrayList<PersonMatch>();
+    private PersonList personList = new PersonList();
     private static Level loggerLevel = Level.INFO;
     private static final Logger logger = Logger.getLogger(Mpi.class.getName());
 
@@ -125,7 +126,7 @@ public class Mpi implements IService {
      *
      * @return The connection.
      */
-    private Connection dbConnect() {
+    public static Connection dbConnect() {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection("jdbc:mysql://localhost/mpi", "root", "root");
@@ -144,7 +145,7 @@ public class Mpi implements IService {
      * @param sql The SQL query.
      * @return the results of the query, in ResultSet form.
      */
-    private ResultSet query(Connection conn, String sql) {
+    public static ResultSet query(Connection conn, String sql) {
         Mpi.getLogger().log(Level.FINE, "Mpi.query({0})", sql);
         ResultSet rs = null;
         try {
@@ -152,10 +153,41 @@ public class Mpi implements IService {
             rs = stmt.executeQuery();
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
-                    "Error executing " + sql, ex);
+                    "Error executing SQL Query " + sql, ex);
             System.exit(1);
         }
         return rs;
+    }
+
+    /**
+     * Executes any SQL statement on a database connection.
+     *
+     * @param conn The Connection to use.
+     * @param sql The SQL statement.
+     * @return true if first result is a ResultSet.
+     */
+    public static boolean execute(Connection conn, String sql) {
+        Mpi.getLogger().log(Level.FINE, "Mpi.query({0})", sql);
+        boolean returnValue = false;
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            returnValue = stmt.execute();
+        } catch (SQLException ex) {
+            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
+                    "Error executing SQL statement " + sql, ex);
+            System.exit(1);
+        }
+        return returnValue;
+    }
+
+    public static String quote(String s) {
+        if (s == null) {
+            s = "null";
+        } else {
+            s = s.replace("'", "''");
+            s = s.replace("\\", "\\\\");
+        }
+        return s;
     }
 
     /**
@@ -221,7 +253,7 @@ public class Mpi implements IService {
                 p.setFingerprintList(loadFingerprintList(listConn, dbPersonId));
                 PersonMatch per = new PersonMatch(p);
                 per.setDbPersonId(dbPersonId);
-                personMatchList.add(per);
+                personList.add(per);
             }
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
@@ -356,13 +388,13 @@ public class Mpi implements IService {
      * @param requestData Data for the request
      * @return Return data.
      */
-    public Object getData(int requestTypeId, Object requestData) {
+    public synchronized Object getData(int requestTypeId, Object requestData) {
         Object returnData = null;
         switch (requestTypeId) {
             case RequestTypeId.FIND_PERSON_MPI:
             case RequestTypeId.FIND_PERSON_LPI:
                 FindPerson findPerson = new FindPerson();
-                returnData = findPerson.find(personMatchList, (PersonRequest) requestData);
+                returnData = findPerson.find(personList, (PersonRequest) requestData);
                 break;
 
             case RequestTypeId.CREATE_PERSON_MPI:

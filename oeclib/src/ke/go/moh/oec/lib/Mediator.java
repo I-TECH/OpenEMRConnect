@@ -162,18 +162,6 @@ public class Mediator implements IService {
     }
 
     /**
-     * Authenticates a user to use the system. Returns true if the username
-     * and password are valid and the user is authorized to use this system.
-     *
-     * @param username the username to be authenticated.
-     * @param password the password to be authenticated.
-     * @return a boolean value indicating authentication success or failure.
-     */
-    public static boolean authenticate(String username, String password) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Registers a listener to receive data requests
      *
      * This method is used by server software to register an object supporting
@@ -285,7 +273,7 @@ public class Mediator implements IService {
      * @param m message to be sent
      * @return object containing response data from the request
      */
-    private Object sendData(Message m) {
+    protected Object sendData(Message m) {
         Object returnData = null;
         MessageType messageType = m.getMessageType(); // For handy reference.
         String ipAddressPort = getIpAddressPort(m.getDestinationAddress());
@@ -433,7 +421,11 @@ public class Mediator implements IService {
                  * and we do not find a different IP address/port for the
                  * message destination. It is really destined for us. Process it.
                  */
-                processLocalMessage(xml);
+                Message m = xmlPacker.unpack(xml);
+                boolean responseDelivered = pendingQueue.findRequest(m);
+                if (!responseDelivered) { // Was the message a response to a request that we just delivered?
+                    processUnsolicitedMessage(m);
+                }
             } else {
                 /*
                  * The message destination matches our own instance address
@@ -466,27 +458,6 @@ public class Mediator implements IService {
     }
 
     /**
-     * Process a HTTP message that is destined for us. We have already determined that it
-     * is not a message that we are just routing through to somewhere else.
-     *
-     * @param xml the message received from the HTTP listener.
-     */
-    private void processLocalMessage(String xml) {
-        /*
-         * Unpack the XML message.
-         *
-         * Check to see if this message is a response we are waiting for.
-         * If so, deliver it. If not, process this as an unsolicited message.
-         *
-         */
-        Message m = xmlPacker.unpack(xml);
-        boolean responseDelivered = pendingQueue.findRequest(m);
-        if (!responseDelivered) { // Was the message a response to a request that we just delivered?
-            processUnsolicitedMessage(m);
-        }
-    }
-
-    /**
      * Process an unsolicited message. We have already determined that this
      * was not the response to a request that we were waiting for.
      *
@@ -496,43 +467,9 @@ public class Mediator implements IService {
         MessageType messageType = m.getMessageType(); // For convenience below (code readability).
         if (messageType.getRequestTypeId() != 0) { // Does this message have a request ID?
             if (myCallbackObject != null) { // Yes. Did the user register a callback routine?
-                /*
-                 * The message type is allowed to be unsolicited, and our caller has registered a callback routine.
-                 * So deliver the message to our user.
-                 * Then see if any response is returned.
-                 * If a response is returned, and it is expected, deliver the response back to the original requesting source.
-                 */
-                Object responseData = myCallbackObject.getData(messageType.getRequestTypeId(), m.getData());
-                if (responseData != null) {
-                    if (messageType.getResponseMessageType() != null) {
-                        Message response = new Message();
-                        response.setMessageType(messageType.getResponseMessageType());
-                        response.setData(m.getMessageId());
-                        response.setDestinationAddress(m.getSourceAddress());
-                        response.setDestinationName(m.getSourceName());
-                        response.setMessageId(m.getMessageId());
-                        Object responseToResponseData = sendData(response);
-                        if (responseToResponseData != null) {
-                            /*
-                             * We have delivered a request to the server, and it has given us back a response.
-                             * We have delivered the response back to the original requesting source.
-                             * The requesting source has sent us back a message (a response to the response.)
-                             * We did not expect this.
-                             */
-                            Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
-                                    "After returning a response to requestTypeId {0} from source ''{1}'', the source returned more data back to us!",
-                                    new Object[]{messageType.getRequestTypeId(), m.getSourceAddress()});
-                        }
-                    } else {
-                        /*
-                         * This appears to be an error in our MessageType registry. We have a MessageType
-                         * entry for the message we received, but there is no response message type.
-                         */
-                        Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
-                                "Message type for requestTypeId {0} does not reference a return message type.",
-                                messageType.getRequestTypeId());
-                    }
-                }
+                CallbackThread c = new CallbackThread(this, myCallbackObject, m);
+                Thread t = new Thread(c);
+                t.start();
             } else {
                 /*
                  * The user has not defined a callback routine. Meanwhile, someone sent us

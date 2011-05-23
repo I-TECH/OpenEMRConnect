@@ -1,11 +1,32 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is OpenEMRConnect.
+ *
+ * The Initial Developer of the Original Code is International Training &
+ * Education Center for Health (I-TECH) <http://www.go2itech.org/>
+ *
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Person;
@@ -30,7 +51,7 @@ public class FindPerson {
      * @param req Request containing the search terms to look for.
      * @return The response data to the request.
      */
-    public PersonResponse find(List<PersonMatch> personMatchList, PersonRequest req) {
+    public Object find(PersonList personList, PersonRequest req) {
         PersonResponse resp = new PersonResponse();
         Person p = req.getPerson();
         if (p == null) {
@@ -41,7 +62,7 @@ public class FindPerson {
         CandidateSet candidateSet = new CandidateSet();
         DateMatch.setToday();
 
-        int personMatchCount = personMatchList.size();
+        int personMatchCount = personList.size();
         int threadCount = MAX_THREAD_COUNT;
         if (threadCount > personMatchCount) {
             threadCount = personMatchCount;
@@ -55,7 +76,7 @@ public class FindPerson {
             if (endIndex >= personMatchCount) {
                 endIndex = personMatchCount - 1;
             }
-            FindPersonThread fpt = new FindPersonThread(personMatchList, searchTerms, candidateSet, startIndex, endIndex);
+            FindPersonThread fpt = new FindPersonThread(personList, searchTerms, candidateSet, startIndex, endIndex);
             Thread t = new Thread(fpt);
             threadArray.add(t);
             t.start();

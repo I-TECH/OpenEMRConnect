@@ -22,35 +22,8 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.mpi;
-
-import ke.go.moh.oec.lib.Mediator;
-
 /**
- * Initializes and invokes the MPI.
- *
- * @author Jim Grace
+ * Contains the Master Patient Index module.
+ * This code may also be deployed as a Local Patient Index.
  */
-public class Main {
-
-    /**
-     * Creates a new MPI and a new Mediator, and links them to each other.
-     * <p>
-     * Then sleep "forever" to allow them to do their processing.
-     *
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        Thread.currentThread().setName("Mpi"); // For identification while debugging
-        Mpi mpi = new Mpi();
-        Mediator.registerCallback(mpi);
-
-        Mediator mediator = new Mediator();
-        while (true) {
-            try {
-                Thread.sleep(Long.MAX_VALUE);
-            } catch (InterruptedException ex) {
-            }
-        }
-    }
-}
+package ke.go.moh.oec.mpi;
