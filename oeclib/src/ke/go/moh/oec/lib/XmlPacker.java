@@ -55,7 +55,9 @@ import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
 import ke.go.moh.oec.RelatedPerson;
+import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.Visit;
+import ke.go.moh.oec.Work;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -190,6 +192,14 @@ class XmlPacker {
 
             case logEntry:
                 doc = packLogEntryMessage(m);
+                break;
+            /** added on 19th may, 2011
+            To handle work_message */
+            case getWork: // Uses packWorkMessage(m)
+            case workDone: // Uses packWorkMessage(m)
+            case reassignWork://Uses packWorkMessage(m)
+                doc = packWorkMessage(m);
+                break;
         }
         return doc;
     }
@@ -222,6 +232,44 @@ class XmlPacker {
         PersonRequest personRequest = (PersonRequest) m.getData();
         Person p = personRequest.getPerson();
         packPerson(personNode, p);
+        return doc;
+    }
+
+    /**
+     *
+     *
+     * Several of the Work-related messages use the same formatting
+     * rules, even though the templates differ only on the root tag.
+     *
+     * These messages are:
+     * <p>
+     * GET WORK <br>
+     * WORK DONE <br>
+     * REASSIGN WORK
+     * @param m notification message contents to pack
+     * @return packed notification messages
+     */
+    private Document packWorkMessage(Message m) {
+
+        Work work = (Work) m.getData();
+        // Create instance of DocumentBuilderFactory
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        // Get the DocumentBuilder
+        DocumentBuilder db = null;
+        try {
+            db = dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Document doc = db.newDocument(); // Create a blank Document
+        MessageType messageType = m.getMessageType();
+        String rootName = messageType.getRootXmlTag();//get's the root tag
+        Element root = doc.createElement(rootName);
+        doc.appendChild(root); // Root element is child of the Document
+        packNewElement(doc, root, "sourceAddress", work.getSourceAddress());
+        packNewElement(doc, root, "notificationId", work.getNotificationId());
+        packNewElement(doc, root, "reassignAddress", work.getReassignAddress());
+
         return doc;
     }
 
@@ -1036,7 +1084,7 @@ class XmlPacker {
         Element root = doc.createElement("LogEntry"); // Create the root element
         doc.appendChild(root); // Root element is child of the Document
         packNewElement(doc, root, "sourceAddress", Mediator.getProperty("Instance.Address"));
-        packNewElement(doc, root, "sourceAddress", Mediator.getProperty("Instance.Name"));
+        packNewElement(doc, root, "sourceName", Mediator.getProperty("Instance.Name"));
         packNewElement(doc, root, "messageId", m.getMessageId());
         packNewElement(doc, root, "severity", logEntry.getSeverity());
         packNewElement(doc, root, "class", logEntry.getClassName());
@@ -1047,6 +1095,7 @@ class XmlPacker {
 
     /**
      * Packs a value into a new <code>Element</code>, and links it to a parent <code>Element</code>.
+     * If the value is null , the new element is not added
      *
      * @param doc the document we are packing into
      * @param parent parent element for our new element
@@ -1054,9 +1103,11 @@ class XmlPacker {
      * @param value value of the new element to create
      */
     private void packNewElement(Document doc, Element parent, String elementName, String value) {
-        Element element = doc.createElement(elementName);
-        element.setNodeValue(value);
-        parent.appendChild(element);
+        if (value != null) {
+            Element element = doc.createElement(elementName);
+            element.setNodeValue(value);
+            parent.appendChild(element);
+        }
     }
 
     /**
@@ -1209,6 +1260,13 @@ class XmlPacker {
 
             case logEntry:
                 unpackLogEntryMessage(m, root);
+                break;
+//@pchemutai added on 19th May 2011 to handle Work messages'
+            case getWork: //Uses unpackWorkMessage(), below.
+            case workDone://Uses unpackWorkMessage(), below.
+            case reassignWork://Uses unpackWorkMessage(), below.
+                unpackWorkMessage(m, root);
+                break;
         }
         return m;
     }
@@ -1231,10 +1289,8 @@ class XmlPacker {
     private void unpackGenericPersonMessage(Message m, Element e) {
         unpackHl7Header(m, e);
         Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
-        PersonRequest pr = new PersonRequest();
         Person p = new Person();
-        pr.setPerson(p);
-        m.setData(pr);
+        m.setData(p);
         unpackPerson(p, ePerson);
         p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
         p.setBirthdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectBirthTime", "value")));
@@ -1810,9 +1866,24 @@ class XmlPacker {
     }
 
     /**
-     * Unpacks a hexidecimal-encoded string into a binary byte array.
+     * Unpacks a Work message <code>Document</code> into message data.
+     * Uses Work message type.
      *
-     * @param hex the hexidecimal string to unpack
+     * @param m the message contents to fill in
+     * @param e root of the person message <code>Document</code> parsed from XML
+     */
+    private void unpackWorkMessage(Message m, Element e) {
+        Work work = new Work();
+        m.setData(work);
+        work.setSourceAddress(e.getElementsByTagName("sourceAddress").item(0).getNodeValue());
+        work.setSourceAddress(e.getElementsByTagName("notificationId").item(0).getNodeValue());
+        work.setSourceAddress(e.getElementsByTagName("reassignAddress").item(0).getNodeValue());
+    }
+
+    /**
+     * Unpacks a hexadecimal-encoded string into a binary byte array.
+     *
+     * @param hex the hexadecimal string to unpack
      * @return the resulting binary byte array.
      * Returns null if the hex string was null.
      */

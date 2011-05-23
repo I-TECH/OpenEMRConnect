@@ -156,4 +156,14 @@ public class RequestTypeId {
      * returns: <code>null</code>
      */
     public final static int LOG_ENTRY = 1000;
+    /**Request for the pending work or alerts to be processed when the
+    reception program starts **/
+    public final static int GET_WORK = 1001;
+    /**Request for the checking out the work or alerts which
+     * have been processed. This comes after the successful processing of the alerts
+    or work on the reception program **/
+    public final static int WORK_DONE = 1002;
+    /**Request for forwarding the work or alerts which have been
+     * processed.Therefore it redirects information into the CDS **/
+    public final static int REASSIGN_WORK = 1003;
 }

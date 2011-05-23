@@ -30,6 +30,8 @@ package ke.go.moh.oec.lib;
  * during message processing.
  *
  * @author Jim Grace
+ * @author Pchemutai
+ * added getwork, workdone, reassignwork
  */
 class MessageType {
 
@@ -39,7 +41,10 @@ class MessageType {
 		findPersonResponse,
 		createPerson,
 		modifyPerson,
-		logEntry
+		logEntry,
+                getWork,
+                workDone,
+                reassignWork
 	}
 	/** RequestTypeId of the request message, or 0 if this message is only used as a response. */
 	private int requestTypeId;
