@@ -318,6 +318,7 @@ public class Mediator implements IService {
         Object returnData = null;
         MessageType messageType = m.getMessageType(); // For handy reference.
         String ipAddressPort = getIpAddressPort(m.getDestinationAddress());
+        m.setIpAddressPort(ipAddressPort);
         if (ipAddressPort == null) {
             /*
              * This is an error in our routing mechanism. We have a desination
@@ -332,6 +333,7 @@ public class Mediator implements IService {
          * Pack the data into the XML message.
          */
         String xml = xmlPacker.pack(m);
+        m.setXml(xml); 
         /*
          * If we may get a response to this message, add it to the list of responses we are expecting.
          */
@@ -342,7 +344,8 @@ public class Mediator implements IService {
         /*
          * Send the message.
          */
-        boolean messageSent = sendMessage(xml, ipAddressPort, m.getDestinationAddress(), 1, messageType.isToBeQueued());
+        m.setHopCount(1); // This will be the first hop.
+        boolean messageSent = sendMessage(m);
         /*
          * If we expect a response to this message, wait for the response.
          * When we get the response, return it to our caller. If there is no
@@ -452,17 +455,18 @@ public class Mediator implements IService {
      * @param hopCount the forwarding hop count (from the URL)
      * @param toBeQueued the indicator of whether this message should be stored and forwarded (from the URL)
      */
-    protected void processReceivedMessage(String xml, String destination, int hopCount, boolean toBeQueued) {
+    protected void processReceivedMessage(Message m) {
         String ourInstanceAddress = getProperty("Instance.Address");
-        String ipAddressPort = getIpAddressPort(destination);
-        if (destination.equals(ourInstanceAddress)) { // If the message is addressed to us:
+        String destinationAddress = m.getDestinationAddress();
+        String ipAddressPort = getIpAddressPort(destinationAddress);
+        if (destinationAddress.equals(ourInstanceAddress)) { // If the message is addressed to us:
             if (ipAddressPort == null) {
                 /*
                  * The message destination matches our own instance address
                  * and we do not find a different IP address/port for the
                  * message destination. It is really destined for us. Process it.
                  */
-                Message m = xmlPacker.unpack(xml);
+                xmlPacker.unpack(m);
                 boolean responseDelivered = pendingQueue.findRequest(m);
                 if (!responseDelivered) { // Was the message a response to a request that we just delivered?
                     processUnsolicitedMessage(m);
@@ -475,7 +479,7 @@ public class Mediator implements IService {
                  */
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                         "Message destination ''{0}'' matches our own name, but router returns IP Address/port of ''{1}''",
-                        new Object[]{destination, ipAddressPort});
+                        new Object[]{destinationAddress, ipAddressPort});
             }
         } else {    // If the message is not addressed to us:
             if (ipAddressPort == null) {
@@ -485,7 +489,7 @@ public class Mediator implements IService {
                  */
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                         "IP Address/port not found for message with destination ''{0}'', our instance address is ''{1}''",
-                        new Object[]{destination, ourInstanceAddress});
+                        new Object[]{destinationAddress, ourInstanceAddress});
             } else {
                 /*
                  * The message destination does not match our own,
@@ -493,7 +497,11 @@ public class Mediator implements IService {
                  * It is not destined for us, so we will pass it though
                  * to its destination.
                  */
-                sendMessage(xml, ipAddressPort, destination, hopCount + 1, toBeQueued);
+                m.setIpAddressPort(ipAddressPort);
+                int hopCount = m.getHopCount();
+                hopCount++;
+                m.setHopCount(hopCount);
+                sendMessage(m);
             }
         }
     }
@@ -560,22 +568,22 @@ public class Mediator implements IService {
      * @param toBeQueued is this message to be queued for later if it can't be sent now?
      * @return true if the message was queued or sent successfully (to the next hop), otherwise false
      */
-    private boolean sendMessage(String xml, String ipAddressPort, String destination, int hopCount, boolean toBeQueued) {
+    private boolean sendMessage(Message m) {
         boolean messageSent = false;
-        if (hopCount > MAX_HOP_COUNT) {
+        if (m.getHopCount() > MAX_HOP_COUNT) {
             /*
              * A message has been forwarded too many times, exceeding the maximum hop count.
              * This may indicate a routing loop between two or more systems.
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                     "sendMessage() - Hop count {0} exceeds maximum hop count {1} for destination ''{2}'', routed to ''{3}''",
-                    new Object[]{hopCount, MAX_HOP_COUNT, destination, ipAddressPort});
-        } else if (toBeQueued) {
-            queueManager.enqueue(xml, ipAddressPort, destination, hopCount);
+                    new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getIpAddressPort()});
+        } else if (m.isToBeQueued()) {
+            queueManager.enqueue(m);
             messageSent = true;
         } else {
             try {
-                messageSent = httpService.send(xml, ipAddressPort, destination, toBeQueued, hopCount); // (toBeQueued = false)
+                messageSent = httpService.send(m); // (toBeQueued = false)
             } catch (MalformedURLException ex) {
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {

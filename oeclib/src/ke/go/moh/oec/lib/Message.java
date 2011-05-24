@@ -30,88 +30,137 @@ package ke.go.moh.oec.lib;
  * @author Jim Grace
  */
 class Message {
-	/** Type of the message - see {@link MessageTypeRegistry} */
-	private MessageType messageType;
-	/** User data contents of the message */
-	private Object data;
-	/**
+
+    /** Type of the message - see {@link MessageTypeRegistry} */
+    private MessageType messageType;
+    /** User data contents of the message */
+    private Object data;
+    /**
      * Identifier of the message.
      * In the case of a new client request, this is a newly-generated message ID.
      * In the case of a server response to a request, this is the original
      * message ID from the request.
-	 */
-	private String messageId;
-	/** Address of the message source application */
-	private String sourceAddress;
-	/** Name of the message destination application */
-	private String sourceName;
-	/**
-	 * Address of the message destination application. In the case
+     */
+    private String messageId;
+    /** Address of the message source application */
+    private String sourceAddress;
+    /** Name of the message destination application */
+    private String sourceName;
+    /**
+     * Address of the message destination application. In the case
      * of a server response to a request, this is address of the sender who
      * originally made the request.
-	 */
-	private String destinationAddress;
-	/**
-	 * Name of the message destination application. In the case
+     */
+    private String destinationAddress;
+    /**
+     * Name of the message destination application. In the case
      * of a server response to a request, this is name of the sender who
      * originally made the request.
-	 */
-	private String destinationName;
+     */
+    private String destinationName;
+    /**
+     * IP Address and port on which this message will be sent,
+     * as a String of the form "address:port".
+     */
+    private String ipAddressPort;
+    /**
+     * Count of how many systems have sent this message so far.
+     */
+    private int hopCount;
+    /**
+     * Is this message to be queued for storing and forwarding?
+     */
+    private boolean toBeQueued;
+    /**
+     * The message in XML form.
+     */
+    private String xml;
 
-	public Object getData() {
-		return data;
-	}
+    public Object getData() {
+        return data;
+    }
 
-	public void setData(Object data) {
-		this.data = data;
-	}
+    public void setData(Object data) {
+        this.data = data;
+    }
 
-	public String getDestinationAddress() {
-		return destinationAddress;
-	}
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
 
-	public void setDestinationAddress(String destinationAddress) {
-		this.destinationAddress = destinationAddress;
-	}
+    public void setDestinationAddress(String destinationAddress) {
+        this.destinationAddress = destinationAddress;
+    }
 
-	public String getDestinationName() {
-		return destinationName;
-	}
+    public String getDestinationName() {
+        return destinationName;
+    }
 
-	public void setDestinationName(String destinationName) {
-		this.destinationName = destinationName;
-	}
+    public void setDestinationName(String destinationName) {
+        this.destinationName = destinationName;
+    }
 
-	public String getMessageId() {
-		return messageId;
-	}
+    public int getHopCount() {
+        return hopCount;
+    }
 
-	public void setMessageId(String messageId) {
-		this.messageId = messageId;
-	}
+    public void setHopCount(int hopCount) {
+        this.hopCount = hopCount;
+    }
 
-	public MessageType getMessageType() {
-		return messageType;
-	}
+    public String getIpAddressPort() {
+        return ipAddressPort;
+    }
 
-	public void setMessageType(MessageType messageType) {
-		this.messageType = messageType;
-	}
+    public void setIpAddressPort(String ipAddressPort) {
+        this.ipAddressPort = ipAddressPort;
+    }
 
-	public String getSourceAddress() {
-		return sourceAddress;
-	}
+    public String getMessageId() {
+        return messageId;
+    }
 
-	public void setSourceAddress(String sourceAddress) {
-		this.sourceAddress = sourceAddress;
-	}
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
 
-	public String getSourceName() {
-		return sourceName;
-	}
+    public MessageType getMessageType() {
+        return messageType;
+    }
 
-	public void setSourceName(String sourceName) {
-		this.sourceName = sourceName;
-	}
+    public void setMessageType(MessageType messageType) {
+        this.messageType = messageType;
+    }
 
+    public String getSourceAddress() {
+        return sourceAddress;
+    }
+
+    public void setSourceAddress(String sourceAddress) {
+        this.sourceAddress = sourceAddress;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+    }
+
+    public boolean isToBeQueued() {
+        return toBeQueued;
+    }
+
+    public void setToBeQueued(boolean toBeQueued) {
+        this.toBeQueued = toBeQueued;
+    }
+
+    public String getXml() {
+        return xml;
+    }
+
+    public void setXml(String xml) {
+        this.xml = xml;
+    }
 }

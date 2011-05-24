@@ -90,9 +90,9 @@ class QueueManager implements Runnable {
      * @param destination ultimate message destination (to encode in URL.)
      * @param hopCount current hop count (to encode in URL.)
      */
-    protected void enqueue(String message, String IPAddressPort, String destination, int hopCount) {
+    protected void enqueue(Message m) {
         try {
-            httpService.send(message, IPAddressPort, destination, true, hopCount);
+            httpService.send(m);
         } catch (MalformedURLException ex) {
             Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

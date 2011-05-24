@@ -1201,10 +1201,9 @@ class XmlPacker {
      * @param xml String containing XML request message
      * @return unpacked message data
      */
-    protected Message unpack(String xml) {
-        Document doc = unpackXml(xml);
-        Message m = unpackDocument(doc);
-        return m;
+    protected void unpack(Message m) {
+        Document doc = unpackXml(m.getXml());
+        unpackDocument(m, doc);
     }
 
     /**
@@ -1236,8 +1235,7 @@ class XmlPacker {
      * @param doc the DOM Document structure to decode
      * @return unpacked message data
      */
-    protected Message unpackDocument(Document doc) {
-        Message m = new Message();
+    protected void unpackDocument(Message m, Document doc) {
         Element root = doc.getDocumentElement();
         String rootName = root.getTagName();
         MessageType messageType = MessageTypeRegistry.find(rootName);
@@ -1268,7 +1266,6 @@ class XmlPacker {
                 unpackWorkMessage(m, root);
                 break;
         }
-        return m;
     }
 
     /**

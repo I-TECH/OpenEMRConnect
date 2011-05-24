@@ -36,9 +36,6 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.MalformedURLException;
@@ -82,20 +79,21 @@ class HttpService {
      * @param hopCount is the count of hops to detect routing loops (encode in URL)
      * @return true if message was sent and HTTP response received, otherwise false
      */
-    protected boolean send(String message, String ipAddressPort, String destination, boolean toBeQueued, int hopCount) throws MalformedURLException, IOException {
+    protected boolean send(Message m) throws MalformedURLException, IOException {
         boolean returnStatus = false;
         //   throw new UnsupportedOperationException();
-        String url = "http://" + ipAddressPort + "/oecmessage?destination="
-                + destination + "&tobequeued=" + toBeQueued + "&hopcount=" + hopCount;
+        String url = "http://" + m.getIpAddressPort() + "/oecmessage?destination="
+                + m.getDestinationAddress() + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount();
+        String xml = m.getXml();
         Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Sending to {0}", url);
-        Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message \n{0}", message);
+        Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message \n{0}", xml);
 
         try {
             /*Code thats performing a task should be placed in the try catch statement especially in the try part*/
             URLConnection connection = new URL(url).openConnection();
             connection.setDoOutput(true);
             Writer output = new OutputStreamWriter(connection.getOutputStream());
-            output.write(message);
+            output.write(xml);
             output.close();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -106,7 +104,8 @@ class HttpService {
         } catch (MalformedURLException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            if (ex.getMessage().equals("Premature EOF")) {
+            if (ex.getMessage().equals("Premature EOF")
+                    || ex.getMessage().equals("Unexpected end of file from server")) {
                 returnStatus = true; // We expect End of File at some point
             } else {
                 Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, null, ex);
@@ -159,74 +158,48 @@ class HttpService {
          * @throws IOException
          */
         public void handle(HttpExchange exchange) throws IOException {
-            String destination = null;
-            boolean toBeQueued = false;
-            int hopCount = 0;
-
-            //mediator.processReceivedMessage()
+            Message m = new Message();
+            /*
+             * Unpack the URL.
+             */
             String requestMethod = exchange.getRequestMethod();
             URI uri = exchange.getRequestURI();
             String query = uri.getQuery();
             for (String param : query.split("&")) {
                 String[] pair = param.split("=");
                 if (pair[0].equals("destination")) {
-                    destination = pair[1];
+                    m.setDestinationAddress(pair[1]);
                 } else if (pair[0].equals("hopcount")) {
-                    hopCount = Integer.parseInt(pair[1]);
+                    m.setHopCount(Integer.parseInt(pair[1]));
                 } else if (pair[0].equals("tobequeued")) {
-                    toBeQueued = Boolean.parseBoolean(pair[1]);
+                    m.setToBeQueued(Boolean.parseBoolean(pair[1]));
                 }
             }
-            //Check for request type is it "GET" or "POST"
-            if (requestMethod.equalsIgnoreCase("GET")) {
-                Headers responseHeaders = exchange.getResponseHeaders();
-
-                responseHeaders.set("Content-Type", "text/plain");
-                exchange.sendResponseHeaders(200, 0);
-                BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-                String s1 = "";
-                while (true) {
-                    String s2 = br.readLine();
-                    if (s2 == null) {
-                        break;
-                    }
-                    s1 = s1 + s2;
-                }
-                System.out.println("request body = " + s1);
-
-                OutputStream responseBody = exchange.getResponseBody();
-                Headers requestHeaders = exchange.getRequestHeaders();
-                Set<String> keySet = requestHeaders.keySet();
-                Iterator<String> iter = keySet.iterator();
-                while (iter.hasNext()) {
-                    String key = iter.next();
-                    List values = requestHeaders.get(key);
-                    String s = key + " = " + values.toString() + "\n";
-                    System.out.println(s);
-                    responseBody.write(s.getBytes());
-                }
-                responseBody.close();
-            } else if (requestMethod.equalsIgnoreCase("POST")) {
-                Headers responseHeaders = exchange.getResponseHeaders();
-
-                responseHeaders.set("Content-Type", "text/plain");
-                exchange.sendResponseHeaders(200, 0);
-                OutputStream responseBody = exchange.getResponseBody();
-                BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-                String st;
-                String request = "";
-                while ((st = br.readLine()) != null) {
-                    request = request + st + "\n";
-                }
-
-                Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Received {0}", query);
-                Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message \n{0}", request);
-
-                mediator.processReceivedMessage(request, destination, hopCount, toBeQueued);
-                responseHeaders.set("Content-Type", "text/plain");
-                exchange.sendResponseHeaders(200, 0);
-                responseBody.close();
+            /*
+             * Read the content
+             */
+            BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+            String st;
+            String request = "";
+            while ((st = br.readLine()) != null) {
+                request = request + st + "\n";
             }
+            m.setXml(request);
+
+            Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Received {0}", query);
+            Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message \n{0}", request);
+            /*
+             * Process the message.
+             */
+            mediator.processReceivedMessage(m);
+            /*
+             * Acknoweldge to the sender that we received the message.
+             */
+            Headers responseHeaders = exchange.getResponseHeaders();
+            responseHeaders.set("Content-Type", "text/plain");
+            OutputStream responseBody = exchange.getResponseBody();
+            responseBody.close();
+            exchange.sendResponseHeaders(200, 0);
         }
     }
 }
