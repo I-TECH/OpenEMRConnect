@@ -31,9 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
@@ -42,6 +40,7 @@ import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.RequestTypeId;
+import ke.go.moh.oec.lib.Mediator;
 
 /**
  * Provides Master Patient Index (or Local Patient Index) services.
@@ -146,7 +145,7 @@ public class Mpi implements IService {
      * @return the results of the query, in ResultSet form.
      */
     public static ResultSet query(Connection conn, String sql) {
-        Mpi.getLogger().log(Level.FINE, "Mpi.query({0})", sql);
+        Mediator.getLogger(Mpi.class.getName()).log(Level.INFO, "Mpi query({0})", sql);
         ResultSet rs = null;
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -167,7 +166,7 @@ public class Mpi implements IService {
      * @return true if first result is a ResultSet.
      */
     public static boolean execute(Connection conn, String sql) {
-        Mpi.getLogger().log(Level.FINE, "Mpi.query({0})", sql);
+        Mpi.getLogger().log(Level.INFO, "Mpi.query({0})", sql);
         boolean returnValue = false;
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);

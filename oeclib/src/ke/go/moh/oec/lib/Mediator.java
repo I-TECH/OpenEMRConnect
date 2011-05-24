@@ -24,10 +24,13 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
 import ke.go.moh.oec.IService;
 import java.io.FileInputStream;
 import java.util.Date;
@@ -107,6 +110,7 @@ public class Mediator implements IService {
      * A copy of the properties from standard file location
      */
     static Properties properties = null;
+    static Level loggerLevel = null;
 
     public Mediator() {
         httpService = new HttpService(this);
@@ -122,7 +126,7 @@ public class Mediator implements IService {
     }
 
     /**
-     * Stop the OpenEMRConnect library services.
+     * Stops the OpenEMRConnect library services.
      *
      * This routine should be called for an orderly shut-down
      * of the Mediator library.
@@ -136,17 +140,54 @@ public class Mediator implements IService {
     }
 
     /**
+     * Gets a standard java.util.logging.Logger, set to the logging level property, if any.
+     * If the logging level property is not the default Level.INFO, the logging level
+     * is also changed in the root logging handler currently defined.
+     * 
+     * @param loggerName Name of the logger to create.
+     * @return The Logger requested.
+     */
+    public static Logger getLogger(String loggerName) {
+        if (loggerLevel == null) {
+            loggerLevel = Level.INFO; // Default unless changed below.
+            String loggerLevelName = getProperty("Logger.Level");
+            if (loggerLevelName != null) {
+                try {
+                    loggerLevel = Level.parse(loggerLevelName);
+                } catch (IllegalArgumentException ex) {
+                    Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
+                            "Logger.Level property ''{0}'' not a valid logger level.", loggerLevelName);
+                }
+                if (loggerLevel != Level.INFO) { // Need to change default handler level?
+                    LogManager m = LogManager.getLogManager();
+                    Logger rootLogger = m.getLogger("");
+                    Handler rootHandler = rootLogger.getHandlers()[0];
+                    rootHandler.setLevel(loggerLevel);
+                }
+            }
+        }
+        Logger logger = Logger.getLogger(loggerName);
+        logger.setLevel(loggerLevel);
+        return logger;
+    }
+
+    /**
      * Gets the value of a named property from a standard properties file.
      *
      * @param propertyName name of the property whose value we want
-     * @return the value of the requested property
+     * @return the value of the requested property,
+     * or null if the property is not found.
      */
     public static String getProperty(String propertyName) {
         if (properties == null) {
             properties = new Properties();
             final String propertiesFileName = "openemrconnect.properties";
+            File propFile = new File(propertiesFileName);
+            String propFilePath = propFile.getAbsolutePath();
+            System.out.println("Properties file = " + propFilePath);
             try {
-                properties.load(new FileInputStream(propertiesFileName));
+                FileInputStream fis = new FileInputStream(propFilePath);
+                properties.load(fis);
             } catch (Exception e) {
                 /*
                  * We somehow failed to open our default propoerties file.
@@ -154,7 +195,7 @@ public class Mediator implements IService {
                  */
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                         "getProperty() Can''t open ''{0}'' -- Please create the properties file if it doesn''t exist and then restart the app",
-                        propertiesFileName);
+                        propFilePath);
                 System.exit(1);
             }
         }
