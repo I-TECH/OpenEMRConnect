@@ -236,7 +236,7 @@ class XmlPacker {
     }
 
     /**
-     *
+     * Packs work messages.
      *
      * Several of the Work-related messages use the same formatting
      * rules, even though the templates differ only on the root tag.
