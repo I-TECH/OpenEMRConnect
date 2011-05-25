@@ -272,6 +272,7 @@ public class Mediator implements IService {
              * Generate a new request ID, and send the request to the server.
              */
             String messageId = generateMessageId();
+            m.setMessageId(messageId);
             returnData = sendData(m);
         }
         return returnData;
@@ -349,7 +350,7 @@ public class Mediator implements IService {
         /*
          * If we expect a response to this message, wait for the response.
          * When we get the response, return it to our caller. If there is no
-         * response message after a defined timeout period, return null.
+         * response message after a defined timeout period, return failure.
          */
         if (messageType.getResponseMessageType() != null) {
             Message responseMessage = null;
@@ -361,12 +362,14 @@ public class Mediator implements IService {
             MessageType.TemplateType templateType = m.getMessageType().getTemplateType();
             switch (templateType) {
                 case findPerson:
-                    PersonResponse personResponse = new PersonResponse();
-                    returnData = personResponse;
-                    boolean success = (responseMessage != null);
-                    personResponse.setSuccessful(success);
-                    if (success) {
-                        personResponse.setPersonList((List<Person>) m.getData());
+                    PersonResponse personResponse;
+                    if (responseMessage != null) {
+                        returnData = responseMessage.getData();
+                        personResponse = (PersonResponse) returnData;
+                        personResponse.setSuccessful(true);
+                    } else {
+                        personResponse = new PersonResponse();
+                        personResponse.setSuccessful(false);
                     }
                     break;
 
@@ -450,10 +453,7 @@ public class Mediator implements IService {
      * IP address to which we should forward this message, than forward it
      * on its way. Otherwise we will unpack and process it locally.
      *
-     * @param xml the body of the HTTP message received
-     * @param destination the ultimate message destination (from the URL)
-     * @param hopCount the forwarding hop count (from the URL)
-     * @param toBeQueued the indicator of whether this message should be stored and forwarded (from the URL)
+     * @param m Message received
      */
     protected void processReceivedMessage(Message m) {
         String ourInstanceAddress = getProperty("Instance.Address");
@@ -561,11 +561,7 @@ public class Mediator implements IService {
      * with our without the queueing mechanism for storing and forwarding.
      * Then we send it.
      *
-     * @param xml the XML packed message to send
-     * @param ipAddressPort IP address and port to which to send the message
-     * @param destination ultimate destination address for this message
-     * @param hopCount how many times this message has been sent
-     * @param toBeQueued is this message to be queued for later if it can't be sent now?
+     * @param m Message to send
      * @return true if the message was queued or sent successfully (to the next hop), otherwise false
      */
     private boolean sendMessage(Message m) {

@@ -706,7 +706,7 @@ class XmlPacker {
     private void packRelatedPersons(Element subtree, Person p) {
         Element eRelation = (Element) subtree.getElementsByTagName("personalRelationship").item(0);
         List<RelatedPerson> householdMembers = p.getHouseholdMembers();
-        if (householdMembers.isEmpty()) {
+        if (householdMembers == null || householdMembers.isEmpty()) {
             packRemoveNode(eRelation);
         } else {
             List<Element> elementList = new ArrayList<Element>();
@@ -1198,8 +1198,7 @@ class XmlPacker {
     /**
      * Unpacks a XML string into an object.
      *
-     * @param xml String containing XML request message
-     * @return unpacked message data
+     * @param m Message to unpack
      */
     protected void unpack(Message m) {
         Document doc = unpackXml(m.getXml());
@@ -1232,8 +1231,8 @@ class XmlPacker {
     /**
      * Unpacks a DOM Document structure into message data
      *
+     * @param m the message to unpack
      * @param doc the DOM Document structure to decode
-     * @return unpacked message data
      */
     protected void unpackDocument(Message m, Document doc) {
         Element root = doc.getDocumentElement();
@@ -1284,9 +1283,12 @@ class XmlPacker {
      * @param e root node of the person message <code>Document</code> parsed from XML
      */
     private void unpackGenericPersonMessage(Message m, Element e) {
+        PersonRequest personRequest = new PersonRequest();
+        m.setData(personRequest);
+        Person p = new Person();
+        personRequest.setPerson(p);
         unpackHl7Header(m, e);
         Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
-        Person p = new Person();
         m.setData(p);
         unpackPerson(p, ePerson);
         p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
@@ -1304,12 +1306,12 @@ class XmlPacker {
      * @param e root of the person message <code>Document</code> parsed from XML
      */
     private void unpackFindPersonMessage(Message m, Element e) {
+        PersonRequest personRequest = new PersonRequest();
+        m.setData(personRequest);
+        Person p = new Person();
+        personRequest.setPerson(p);
         unpackHl7Header(m, e);
         Element q = (Element) e.getElementsByTagName("queryByParameter").item(0);
-        PersonRequest pr = new PersonRequest();
-        Person p = new Person();
-        pr.setPerson(p);
-        m.setData(pr);
         unpackPersonName(p, q, "livingSubjectName");
         p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
         p.setBirthdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectBirthTime", "value")));
@@ -1351,13 +1353,14 @@ class XmlPacker {
      * @param e root of the person message <code>Document</code> parsed from XML
      */
     private void unpackFindPersonResponseMessage(Message m, Element e) {
+        PersonResponse personResponse = new PersonResponse();
+        m.setData(personResponse);
+        personResponse.setSuccessful(true);
         unpackHl7Header(m, e);
         NodeList nodeList = e.getElementsByTagName("subject");
         if (nodeList.getLength() != 0) {
-            PersonResponse pr = new PersonResponse();
             List<Person> personList = new ArrayList<Person>();
-            pr.setPersonList(personList);
-            m.setData(pr);
+            personResponse.setPersonList(personList);
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Person p = new Person();
                 Element el = (Element) nodeList.item(i);

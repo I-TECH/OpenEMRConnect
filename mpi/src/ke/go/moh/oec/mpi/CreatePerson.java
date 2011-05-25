@@ -44,8 +44,8 @@ public class CreatePerson {
             Logger.getLogger(ModifyPerson.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person data.");
             return;
         }
-        Connection conn = Mpi.dbConnect();
-        ResultSet rs = Mpi.query(conn, "select uuid() as uuid");
+        Connection conn = Sql.connect();
+        ResultSet rs = Sql.query(conn, "select uuid() as uuid");
         String guid = null;
         try {
             rs.next();
@@ -54,7 +54,7 @@ public class CreatePerson {
             Logger.getLogger(CreatePerson.class.getName()).log(Level.SEVERE, null, ex);
         }
         p.setPersonGuid(guid);
-        Mpi.execute(conn, "start transaction;");
+        Sql.execute(conn, "start transaction;");
         String sql = "INSERT INTO person (person_guid, first_name, middle_name, last_name, "
                 + "other_name, sex, birthdate, deathdate, "
                 + "mothers_first_name, mothers_middle_name, mothers_last_name, "
@@ -62,12 +62,12 @@ public class CreatePerson {
                 + "mothers_first_name, mothers_middle_name, mothers_last_name, "
                 + "compound_head_first_name, compound_head_middle_name, compound_head_last_name, "
                 + "village_id, marital_status, consent_signed, date_created) values ("
-                + Mpi.quote(p.getPersonGuid()) + ", "
-                + Mpi.quote(p.getFirstName()) + ", "
-                + Mpi.quote(p.getMiddleName()) + ", "
-                + Mpi.quote(p.getLastName()) + ", "
-                + Mpi.quote(p.getOtherName()) + ", "
-                + Mpi.quote(p.getSex().name()) + ", ";
+                + Sql.quote(p.getPersonGuid()) + ", "
+                + Sql.quote(p.getFirstName()) + ", "
+                + Sql.quote(p.getMiddleName()) + ", "
+                + Sql.quote(p.getLastName()) + ", "
+                + Sql.quote(p.getOtherName()) + ", "
+                + Sql.quote(p.getSex()) + ", ";
         
         // TO DO: Finish code
     }

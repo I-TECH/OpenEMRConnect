@@ -85,10 +85,7 @@ class QueueManager implements Runnable {
      * sent immediately. If it fails to send, it will be periodically retried
      * until it succeeds.
      *
-     * @param message packed XML message to send.
-     * @param IPAddressPort IP Address/port to which to send the message.
-     * @param destination ultimate message destination (to encode in URL.)
-     * @param hopCount current hop count (to encode in URL.)
+     * @param m Message to queue for sending
      */
     protected void enqueue(Message m) {
         try {

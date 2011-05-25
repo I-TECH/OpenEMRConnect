@@ -25,8 +25,6 @@
 package ke.go.moh.oec.mpi;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -49,11 +47,9 @@ import ke.go.moh.oec.lib.Mediator;
  */
 public class Mpi implements IService {
 
-    private static int testQueryLimit = 10;
+    private static int testQueryLimit = 100;
     private static String testOrderBy = null;
     private PersonList personList = new PersonList();
-    private static Level loggerLevel = Level.INFO;
-    private static final Logger logger = Logger.getLogger(Mpi.class.getName());
 
     /**
      * Start up MPI processing. Load the database into memory so it can be
@@ -62,7 +58,6 @@ public class Mpi implements IService {
      * entry.
      */
     public Mpi() {
-        logger.setLevel(loggerLevel);
         final String driverName = "com.mysql.jdbc.Driver";
         try {
             Class.forName(driverName).newInstance();
@@ -72,26 +67,6 @@ public class Mpi implements IService {
             System.exit(1);
         }
         loadPersonMatchList();
-    }
-
-    /**
-     * Gets the Mpi logger.
-     *
-     * @return logger used for logging MPI messages.
-     */
-    public static Logger getLogger() {
-        return logger;
-    }
-
-    /**
-     * Sets the level that will be used for the MPI logger. The level
-     * can be set for testing or debugging before creating the MPI object.
-     *
-     * @param loggerLevel Level to set for the MPI logger.
-     */
-    public static void setLoggerLevel(Level loggerLevel) {
-        Mpi.loggerLevel = loggerLevel;
-        Mpi.logger.setLevel(loggerLevel);
     }
 
     /**
@@ -120,76 +95,6 @@ public class Mpi implements IService {
     }
 
     /**
-     * Creates a connection to the MPI(/LPI) database. For a query that is run while the results
-     * are being fetched from another query, a separate connection is needed.
-     *
-     * @return The connection.
-     */
-    public static Connection dbConnect() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/mpi", "root", "root");
-        } catch (Exception ex) {
-            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
-                    "Can''t connect to the database -- Please check the database and try again.", ex);
-            System.exit(1);
-        }
-        return conn;
-    }
-
-    /**
-     * Executes a SQL query on a database connection.
-     *
-     * @param conn The Connection to use.
-     * @param sql The SQL query.
-     * @return the results of the query, in ResultSet form.
-     */
-    public static ResultSet query(Connection conn, String sql) {
-        Mediator.getLogger(Mpi.class.getName()).log(Level.INFO, "Mpi query({0})", sql);
-        ResultSet rs = null;
-        try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
-        } catch (SQLException ex) {
-            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
-                    "Error executing SQL Query " + sql, ex);
-            System.exit(1);
-        }
-        return rs;
-    }
-
-    /**
-     * Executes any SQL statement on a database connection.
-     *
-     * @param conn The Connection to use.
-     * @param sql The SQL statement.
-     * @return true if first result is a ResultSet.
-     */
-    public static boolean execute(Connection conn, String sql) {
-        Mpi.getLogger().log(Level.INFO, "Mpi.query({0})", sql);
-        boolean returnValue = false;
-        try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            returnValue = stmt.execute();
-        } catch (SQLException ex) {
-            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
-                    "Error executing SQL statement " + sql, ex);
-            System.exit(1);
-        }
-        return returnValue;
-    }
-
-    public static String quote(String s) {
-        if (s == null) {
-            s = "null";
-        } else {
-            s = s.replace("'", "''");
-            s = s.replace("\\", "\\\\");
-        }
-        return s;
-    }
-
-    /**
      * Loads into memory the entire person table from the MPI, along with
      * any joining person relation data.
      */
@@ -200,30 +105,32 @@ public class Mpi implements IService {
          * the queries to load a list of identifiers or fingerprints for
          * a single person.
          */
-        Connection personConn = dbConnect();
-        Connection listConn = dbConnect();
+        Connection personConn = Sql.connect();
+        Connection listConn = Sql.connect();
         /*
          * For quick debugging, set queryLimit to a limite number of rows,
          * to avoide loading the entire database. For production uses, set
          * queryLimit to zero.
          */
         Calendar cal = Calendar.getInstance(); // Default Calendar, used for getting database date fields.
-        String sql = "SELECT p.person_id, p.person_guid, p.sex, p.birthdate, p.deathdate,"
-                + " p.first_name, p.middle_name, p.last_name, p.other_name, p.clan_name,"
-                + " p.mothers_first_name, p.mothers_middle_name, p.mothers_last_name,"
-                + " p.fathers_first_name, p.fathers_middle_name, p.fathers_last_name,"
-                + " p.compoundhead_first_name, p.compoundhead_middle_name, p.compoundhead_last_name,"
-                + " v.village_name, m.marital_status_name, p.consent_signed"
-                + " FROM person p"
-                + " JOIN village v on v.village_id = p.village_id"
-                + " JOIN marital_status_type m on m.marital_status_type_id = p.marital_status";
+        String sql = "SELECT p.person_id, p.person_guid, p.sex, p.birthdate, p.deathdate,\n"
+                + "       p.first_name, p.middle_name, p.last_name, p.other_name, p.clan_name,\n"
+                + "       p.mothers_first_name, p.mothers_middle_name, p.mothers_last_name,\n"
+                + "       p.fathers_first_name, p.fathers_middle_name, p.fathers_last_name,\n"
+                + "       p.compoundhead_first_name, p.compoundhead_middle_name, p.compoundhead_last_name,\n"
+                + "       v.village_name, m.marital_status_name, p.consent_signed\n"
+                + "FROM person p\n"
+                + "LEFT OUTER JOIN village v on v.village_id = p.village_id\n"
+                + "LEFT OUTER JOIN marital_status_type m on m.marital_status_type_id = p.marital_status";
         if (testOrderBy != null) {
             sql = sql + " ORDER BY " + testOrderBy;
         }
         if (testQueryLimit != 0) {
             sql = sql + " LIMIT " + testQueryLimit;
         }
-        ResultSet rs = query(personConn, sql);
+        Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "Loading Persons:\n{0}", sql);
+        ResultSet rs = Sql.query(personConn, sql);
+        int recordCount = 0;
         try {
             while (rs.next()) {
                 Person p = new Person();
@@ -253,6 +160,9 @@ public class Mpi implements IService {
                 PersonMatch per = new PersonMatch(p);
                 per.setDbPersonId(dbPersonId);
                 personList.add(per);
+                if (++recordCount % 1000 == 0) {
+                    Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "Loaded {0}.", recordCount);
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
@@ -270,11 +180,12 @@ public class Mpi implements IService {
      */
     private List<PersonIdentifier> loadPersonIdentifierList(Connection conn, int dbPersonId) {
         List<PersonIdentifier> personIdentifierList = null;
-        String sql = "SELECT pi.identifier, it.identifier_type_name"
-                + " FROM person_identifier pi"
-                + " JOIN identifier_type it on it.identifier_type_id = pi.identifier_type_id"
-                + " WHERE pi.person_id = " + dbPersonId;
-        ResultSet rs = query(conn, sql);
+        String sql = "SELECT pi.identifier, it.identifier_type_name\n"
+                + "FROM person_identifier pi\n"
+                + "JOIN identifier_type it on it.identifier_type_id = pi.identifier_type_id\n"
+                + "WHERE pi.person_id = " + dbPersonId;
+        Mediator.getLogger(Mpi.class.getName()).log(Level.FINEST, "Loading Persons Identifiers:\n{0}", sql);
+        ResultSet rs = Sql.query(conn, sql);
         try {
             while (rs.next()) {
                 /*
@@ -319,12 +230,13 @@ public class Mpi implements IService {
      */
     private List<Fingerprint> loadFingerprintList(Connection conn, int dbPersonId) {
         List<Fingerprint> fingerprintList = null;
-        String sql = "SELECT f.fingerprint_template, t.hand_name, t.finger_name, tech.sdk_type"
-                + " FROM fingerprint f"
-                + " JOIN fingerprint_type t on t.fingerprint_type_id = f.fingerprint_technology_type_id"
-                + " JOIN fingerprint_technology_type tech on tech.fingerprint_technology_type_id = f.fingerprint_technology_type_id"
-                + " WHERE f.person_id = " + dbPersonId;
-        ResultSet rs = query(conn, sql);
+        String sql = "SELECT f.fingerprint_template, t.hand_name, t.finger_name, tech.sdk_type\n"
+                + "FROM fingerprint f\n"
+                + "JOIN fingerprint_type t on t.fingerprint_type_id = f.fingerprint_technology_type_id\n"
+                + "JOIN fingerprint_technology_type tech on tech.fingerprint_technology_type_id = f.fingerprint_technology_type_id\n"
+                + "WHERE f.person_id = " + dbPersonId;
+        Mediator.getLogger(Mpi.class.getName()).log(Level.FINEST, "Loading Fingerprints:\n{0}", sql);
+        ResultSet rs = Sql.query(conn, sql);
         try {
             while (rs.next()) {
                 // (See programming note in loadPersonIdentifierList().
@@ -373,9 +285,11 @@ public class Mpi implements IService {
      * @return the enumerated value if there was a match, otherwise null
      */
     private Enum getEnum(Enum[] values, String text) {
-        for (Enum e : values) {
-            if (e.name().equalsIgnoreCase(text)) {
-                return e;
+        if (text != null) {
+            for (Enum e : values) {
+                if (e.name().equalsIgnoreCase(text)) {
+                    return e;
+                }
             }
         }
         return null;
@@ -392,17 +306,20 @@ public class Mpi implements IService {
         switch (requestTypeId) {
             case RequestTypeId.FIND_PERSON_MPI:
             case RequestTypeId.FIND_PERSON_LPI:
+                Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "FindPerson");
                 FindPerson findPerson = new FindPerson();
                 returnData = findPerson.find(personList, (PersonRequest) requestData);
                 break;
 
             case RequestTypeId.CREATE_PERSON_MPI:
             case RequestTypeId.CREATE_PERSON_LPI:
+                Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "CreatePerson");
                 //TO DO: createPerson((PersonRequest) requestData);
                 break;
 
             case RequestTypeId.MODIFY_PERSON_MPI:
             case RequestTypeId.MODIFY_PERSON_LPI:
+                Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "ModifyPerson");
                 //TO DO: modifyPerson((PersonRequest) requestData);
                 break;
 

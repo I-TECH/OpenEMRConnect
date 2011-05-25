@@ -50,7 +50,6 @@ public class MpiTest {
         System.out.println("testFindPerson");
         Mpi.setTestQueryLimit(10);
         // slows things down: Mpi.setTestOrderBy("person_id");
-        Mpi.setLoggerLevel(Level.FINE);
         Mpi mpi = new Mpi();
 
         int requestTypeId = RequestTypeId.FIND_PERSON_MPI;

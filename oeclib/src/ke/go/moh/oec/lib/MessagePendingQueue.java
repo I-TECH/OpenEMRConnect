@@ -66,9 +66,11 @@ final class MessagePendingQueue implements Runnable {
         nextTimeout = getNextTimeout();
         while (nextTimeout > 0) {
             long now = System.currentTimeMillis();
-            try {
-                Thread.sleep(nextTimeout - now);
-            } catch (InterruptedException ex) {
+            if (nextTimeout > now) { // If we aren't there yet:
+                try {
+                    Thread.sleep(nextTimeout - now);
+                } catch (InterruptedException ex) {
+                }
             }
             timeOutEntries();
             nextTimeout = getNextTimeout();

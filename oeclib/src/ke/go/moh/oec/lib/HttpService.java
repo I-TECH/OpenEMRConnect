@@ -72,11 +72,7 @@ class HttpService {
     /**
      * Sends a HTTP message.
      *
-     * @param message contents of message to send
-     * @param ipAddressPort IP address:port to which to send the message
-     * @param destination ultimate destination of the message (encode in URL)
-     * @param toBeQueued is the message to be queued for store-and-forward? (encode in URL)
-     * @param hopCount is the count of hops to detect routing loops (encode in URL)
+     * @param m Message to send
      * @return true if message was sent and HTTP response received, otherwise false
      */
     protected boolean send(Message m) throws MalformedURLException, IOException {
@@ -102,13 +98,13 @@ class HttpService {
             }
             returnStatus = true;
         } catch (MalformedURLException ex) {
-            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, "While sending to " + m.getDestinationAddress(), ex);
         } catch (IOException ex) {
             if (ex.getMessage().equals("Premature EOF")
                     || ex.getMessage().equals("Unexpected end of file from server")) {
                 returnStatus = true; // We expect End of File at some point
             } else {
-                Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, "While sending to " + m.getDestinationAddress(), ex);
 //            There was some transmission error we return false.
             }
         }
@@ -129,7 +125,7 @@ class HttpService {
         server.createContext("/oecmessage", (HttpHandler) new Handler(mediator));
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
-        Mediator.getLogger(HttpService.class.getName()).log(Level.INFO, "Listening on port " + port);
+        Mediator.getLogger(HttpService.class.getName()).log(Level.INFO, "Listening on port {0}", port);
     }
 
     /**

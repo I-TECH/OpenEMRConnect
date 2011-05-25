@@ -83,7 +83,7 @@ public class MediatorTest {
         assertTrue(pr.isSuccessful());
         assertNull(pr.getPersonList());
 
-        // Clan name having 4 matches in the first 10 people
+        // Clan name having 8 matches in the first 100 people
         p.setClanName("KONYANGO");
         result = mediator.getData(RequestTypeId.FIND_PERSON_MPI, requestData);
         assertNotNull(result);
@@ -93,7 +93,7 @@ public class MediatorTest {
         pList = pr.getPersonList();
         assertNotNull(pList);
         int pCount = pList.size();
-        assertEquals(pCount, 4);
+        assertEquals(pCount, 8);
         Person p0 = pList.get(0);
         int score = p0.getMatchScore();
         assertEquals(score, 100);
