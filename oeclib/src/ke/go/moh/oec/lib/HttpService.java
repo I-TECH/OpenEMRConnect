@@ -81,8 +81,9 @@ class HttpService {
         String url = "http://" + m.getIpAddressPort() + "/oecmessage?destination="
                 + m.getDestinationAddress() + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount();
         String xml = m.getXml();
-        Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Sending to {0}", url);
-        Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message \n{0}", xml);
+        Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Sending {0} to {1}",
+                new Object[]{m.getMessageType().getTemplateType().name(), url});
+        Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message:\n{0}", xml);
 
         try {
             /*Code thats performing a task should be placed in the try catch statement especially in the try part*/
@@ -98,13 +99,15 @@ class HttpService {
             }
             returnStatus = true;
         } catch (MalformedURLException ex) {
-            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, "While sending to " + m.getDestinationAddress(), ex);
+            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
+                    "While sending to " + m.getDestinationAddress(), ex);
         } catch (IOException ex) {
             if (ex.getMessage().equals("Premature EOF")
                     || ex.getMessage().equals("Unexpected end of file from server")) {
                 returnStatus = true; // We expect End of File at some point
             } else {
-                Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, "While sending to " + m.getDestinationAddress(), ex);
+                Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
+                        "While sending to " + m.getDestinationAddress(), ex);
 //            There was some transmission error we return false.
             }
         }
@@ -125,7 +128,8 @@ class HttpService {
         server.createContext("/oecmessage", (HttpHandler) new Handler(mediator));
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
-        Mediator.getLogger(HttpService.class.getName()).log(Level.INFO, "Listening on port {0}", port);
+        Mediator.getLogger(HttpService.class.getName()).log(Level.INFO,
+                Mediator.getProperty("Instance.Address") + " listening on port {0}", port);
     }
 
     /**
@@ -171,31 +175,33 @@ class HttpService {
                     m.setToBeQueued(Boolean.parseBoolean(pair[1]));
                 }
             }
-            /*
-             * Read the content
-             */
-            BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-            String st;
-            String request = "";
-            while ((st = br.readLine()) != null) {
-                request = request + st + "\n";
-            }
-            m.setXml(request);
-
             Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Received {0}", query);
-            Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message \n{0}", request);
-            /*
-             * Process the message.
-             */
-            mediator.processReceivedMessage(m);
-            /*
-             * Acknoweldge to the sender that we received the message.
-             */
-            Headers responseHeaders = exchange.getResponseHeaders();
-            responseHeaders.set("Content-Type", "text/plain");
-            OutputStream responseBody = exchange.getResponseBody();
-            responseBody.close();
-            exchange.sendResponseHeaders(200, 0);
+            if (requestMethod.equals("POST")) {
+                /*
+                 * Read the posted content
+                 */
+                BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
+                String st;
+                String request = "";
+                while ((st = br.readLine()) != null) {
+                    request = request + st + "\n";
+                }
+                br.close();
+                m.setXml(request);
+                Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message:\n{0}", request);
+                /*
+                 * Process the message.
+                 */
+                mediator.processReceivedMessage(m);
+                /*
+                 * Acknoweldge to the sender that we received the message.
+                 */
+                Headers responseHeaders = exchange.getResponseHeaders();
+                responseHeaders.set("Content-Type", "text/plain");
+                exchange.sendResponseHeaders(200, 0);
+                OutputStream responseBody = exchange.getResponseBody();
+                responseBody.close();
+            }
         }
     }
 }

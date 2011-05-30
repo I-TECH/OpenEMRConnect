@@ -35,84 +35,85 @@ package ke.go.moh.oec.lib;
  */
 class MessageType {
 
-	protected enum TemplateType {
-		notifyPersonChanged,
-		findPerson,
-		findPersonResponse,
-		createPerson,
-		modifyPerson,
-		logEntry,
-                getWork,
-                workDone,
-                reassignWork
-	}
-	/** RequestTypeId of the request message, or 0 if this message is only used as a response. */
-	private int requestTypeId;
-	/** MessageType of any expected response to this message, or 0 if this message is only used as a response. */
-	private MessageType responseMessageType;
-	/** The type of message template we use */
-	private TemplateType templateType;
-	/** The root XML tag for this message template. For HL7 messages this is the HL7 V3 message type */
-	private String rootXmlTag;
-	/** The default message destination (if any) for this message, otherwise null. */
-	private String defaultDestinationAddress;
-	/** Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false) */
-	private String defaultDestinationName;
-	/** Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false) */
-	private boolean toBeQueued;
+    protected enum TemplateType {
 
-	/**
-	 * Constructor to initialize all the fields of a message type.
-	 *
-	 * @param requestTypeId RequestTypeId of the request message, or 0 if this message is only used as a response
-	 * @param responseMessageType MessageType of any expected response to this message, or 0 if this message is only used as a response
-	 * @param templateType the type of XML message template used by this message
-	 * @param rootXmlTag The (HL7 V3) root XML tag that identifies this type of message when parsing
-	 * @param defaultDestinationAddress The default message destination address (if any) for this message, otherwise null
-	 * @param defaultDestinationName The default message destination address (if any) for this message, otherwise null
-	 * @param toBeQueued Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false)
-	 */
-	protected MessageType(int requestTypeId, MessageType responseMessageType, TemplateType templateType,
-			String rootXmlTag, String defaultDestinationAddress, String defaultDestinationName, boolean toBeQueued) {
-		this.requestTypeId = requestTypeId;
-		this.responseMessageType = responseMessageType;
-		this.templateType = templateType;
-		this.rootXmlTag = rootXmlTag;
-		this.defaultDestinationAddress = defaultDestinationAddress;
-		this.defaultDestinationName = defaultDestinationName;
-		this.toBeQueued = toBeQueued;
-	}
+        notifyPersonChanged,
+        findPerson,
+        findPersonResponse,
+        createPerson,
+        modifyPerson,
+        logEntry,
+        getWork,
+        workDone,
+        reassignWork
+    }
+    /** RequestTypeId of the request message, or 0 if this message is only used as a response. */
+    private int requestTypeId;
+    /** MessageType of any expected response to this message, or 0 if this message is only used as a response. */
+    private MessageType responseMessageType;
+    /** The type of message template we use */
+    private TemplateType templateType;
+    /** The root XML tag for this message template. For HL7 messages this is the HL7 V3 message type */
+    private String rootXmlTag;
+    /** The default message destination (if any) for this message, otherwise null. */
+    private String defaultDestinationAddress;
+    /** Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false) */
+    private String defaultDestinationName;
+    /** Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false) */
+    private boolean toBeQueued;
 
-	public String getDefaultDestinationAddress() {
-		return defaultDestinationAddress;
-	}
+    /**
+     * Constructor to initialize all the fields of a message type.
+     *
+     * @param requestTypeId RequestTypeId of the request message, or 0 if this message is only used as a response
+     * @param responseMessageType MessageType of any expected response to this message, or 0 if this message is only used as a response
+     * @param templateType the type of XML message template used by this message
+     * @param rootXmlTag The (HL7 V3) root XML tag that identifies this type of message when parsing
+     * @param defaultDestinationAddress The default message destination address (if any) for this message, otherwise null
+     * @param defaultDestinationName The default message destination address (if any) for this message, otherwise null
+     * @param toBeQueued Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false)
+     */
+    protected MessageType(int requestTypeId, MessageType responseMessageType, TemplateType templateType,
+            String rootXmlTag, String defaultDestinationAddress, String defaultDestinationName, boolean toBeQueued) {
+        this.requestTypeId = requestTypeId;
+        this.responseMessageType = responseMessageType;
+        this.templateType = templateType;
+        this.rootXmlTag = rootXmlTag;
+        this.defaultDestinationAddress = defaultDestinationAddress;
+        this.defaultDestinationName = defaultDestinationName;
+        this.toBeQueued = toBeQueued;
+    }
 
-	public String getDefaultDestinationName() {
-		return defaultDestinationName;
-	}
+    public String getDefaultDestinationAddress() {
+        return defaultDestinationAddress;
+    }
 
-	public int getRequestTypeId() {
-		return requestTypeId;
-	}
+    public String getDefaultDestinationName() {
+        return defaultDestinationName;
+    }
 
-	public MessageType getResponseMessageType() {
-		return responseMessageType;
-	}
+    public int getRequestTypeId() {
+        return requestTypeId;
+    }
 
-	public String getRootXmlTag() {
-		return rootXmlTag;
-	}
+    public MessageType getResponseMessageType() {
+        return responseMessageType;
+    }
 
-	public TemplateType getTemplateType() {
-		return templateType;
-	}
+    public String getRootXmlTag() {
+        return rootXmlTag;
+    }
 
-	public boolean isToBeQueued() {
-		return toBeQueued;
-	}
+    public TemplateType getTemplateType() {
+        return templateType;
+    }
 
-	/*
-	 * Note that only the getter is defined for each field.
-	 * The MessageType fields are always set through the constructor.
-	 */
+    public boolean isToBeQueued() {
+        return toBeQueued;
+    }
+
+    /*
+     * Note that only the getter is defined for each field.
+     * The MessageType fields are always set through the constructor.
+     */
 }

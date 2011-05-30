@@ -24,23 +24,28 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import ke.go.moh.oec.Person;
-import ke.go.moh.oec.PersonRequest;
+import java.sql.Connection;
+import java.util.Date;
+import ke.go.moh.oec.Visit;
 
 /**
+ * MPI Methods to operate on a list of visits.
  *
  * @author Jim Grace
  */
-public class ModifyPerson {
+public class VisitList {
 
-    public void modify(PersonList personList, PersonRequest req) {
-        Person p = req.getPerson();
-        if (p == null) {
-            Logger.getLogger(ModifyPerson.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person data.");
-            return;
+    public static void update(Connection conn, int visitTypeId, int personId, Visit visit) {
+        if (visit != null && visit.getVisitDate() != null) {
+            String addressId = Sql.getAddressId(conn, visit.getAddress());
+            Date visitDate = visit.getVisitDate();
+            String sql = "SELECT 1 FROM visit WHERE visit_type_id = " + visitTypeId
+                    + " AND person_id = " + personId + " AND visit_date = " + Sql.quote(visitDate);
+            if (!Sql.resultExists(conn, sql)) {
+                sql = "INSERT INTO visit (visit_type_id, person_id, address_id, visit_date, date_created) values (\n"
+                        + visitTypeId + ", " + personId + ", " + addressId + ", " + Sql.quote(visitDate) + ", NOW());";
+                Sql.execute(conn, sql);
+            }
         }
-        // TO DO: Finish code
     }
 }

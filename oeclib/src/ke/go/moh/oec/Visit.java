@@ -49,6 +49,23 @@ public class Visit {
     /** The application address (reception station within a facility) where the patient was seen. */
     private String address;
 
+    /**
+     * Get a Visit instance, but only if the visit data is not null.
+     * 
+     * @param visitDate Date of the visit.
+     * @param address address of the visit.
+     * @return if Date is not null, then Visit filled in, otherwise null.
+     */
+    static public Visit getVisit(Date visitDate, String address) {
+        Visit visit = null;
+        if (visitDate != null) {
+            visit = new Visit();
+            visit.visitDate = visitDate;
+            visit.address = address;
+        }
+        return visit;
+    }
+    
 	public String getAddress() {
 		return address;
 	}

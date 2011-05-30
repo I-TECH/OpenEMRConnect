@@ -24,39 +24,31 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
+import ke.go.moh.oec.PersonRequest;
 
 /**
- * Represents a string value for matching.
+ * Maintain a history of the MPI searches and matches.
  * 
  * @author Jim Grace
  */
-public class StringMatch {
+public class SearchHistory {
 
-    /** Original string (all lower case) */
-    private String original = null;
-
-    public StringMatch(String original) {
-        if (original != null) {
-            this.original = original.toLowerCase();
-        }
+    /**
+     * Create a search history record for a new search.
+     * 
+     * @param req Search parameters.
+     */
+    public static void create(PersonRequest req) {
+        // TODO: create a search_history record.
     }
 
-    public void score(Scorecard s, StringMatch other) {
-        if (original != null && other.original != null) {
-            s.addScore(stringScore(original, other.original));
-        }
+    /**
+     * Update a search history record to show the search results.
+     * 
+     * @param req Search parameters.
+     * @param matched true if a candidate matched, false if it did not.
+     */
+    public static void update(PersonRequest req, boolean matched) {
+        // TODO: update a search_history record.
     }
-
-    public static int stringScore(String s1, String s2) {
-        int returnScore = 0;
-        if (s1 != null && s2 != null) {
-            if (s1.equals(s2)) {
-                returnScore = 100;
-            } else {
-                returnScore = 0;
-            }
-        }
-        return returnScore;
-    }
-
 }

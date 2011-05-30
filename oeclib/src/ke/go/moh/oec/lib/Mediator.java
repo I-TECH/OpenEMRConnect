@@ -122,7 +122,8 @@ public class Mediator implements IService {
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
         }
         queueManager.start();
-        Logger.getLogger(Mediator.class.getName()).log(Level.INFO, "OpenEMRConnect library services started.");
+        Logger.getLogger(Mediator.class.getName()).log(Level.INFO,
+                "{0} started.", getProperty("Instance.Name"));
     }
 
     /**
@@ -334,7 +335,7 @@ public class Mediator implements IService {
          * Pack the data into the XML message.
          */
         String xml = xmlPacker.pack(m);
-        m.setXml(xml); 
+        m.setXml(xml);
         /*
          * If we may get a response to this message, add it to the list of responses we are expecting.
          */
@@ -456,52 +457,57 @@ public class Mediator implements IService {
      * @param m Message received
      */
     protected void processReceivedMessage(Message m) {
-        String ourInstanceAddress = getProperty("Instance.Address");
         String destinationAddress = m.getDestinationAddress();
-        String ipAddressPort = getIpAddressPort(destinationAddress);
-        if (destinationAddress.equals(ourInstanceAddress)) { // If the message is addressed to us:
-            if (ipAddressPort == null) {
-                /*
-                 * The message destination matches our own instance address
-                 * and we do not find a different IP address/port for the
-                 * message destination. It is really destined for us. Process it.
-                 */
-                xmlPacker.unpack(m);
-                boolean responseDelivered = pendingQueue.findRequest(m);
-                if (!responseDelivered) { // Was the message a response to a request that we just delivered?
-                    processUnsolicitedMessage(m);
+        if (destinationAddress == null) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                    "Message has no destination address.");
+        } else {
+            String ourInstanceAddress = getProperty("Instance.Address");
+            String ipAddressPort = getIpAddressPort(destinationAddress);
+            if (destinationAddress.equals(ourInstanceAddress)) { // If the message is addressed to us:
+                if (ipAddressPort == null) {
+                    /*
+                     * The message destination matches our own instance address
+                     * and we do not find a different IP address/port for the
+                     * message destination. It is really destined for us. Process it.
+                     */
+                    xmlPacker.unpack(m);
+                    boolean responseDelivered = pendingQueue.findRequest(m);
+                    if (!responseDelivered) { // Was the message a response to a request that we just delivered?
+                        processUnsolicitedMessage(m);
+                    }
+                } else {
+                    /*
+                     * The message destination matches our own instance address
+                     * but the router has returned a IP address/port for the
+                     * destination that is not us. Somehing funny is happening.
+                     */
+                    Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                            "Message destination ''{0}'' matches our own name, but router returns IP Address/port of ''{1}''",
+                            new Object[]{destinationAddress, ipAddressPort});
                 }
-            } else {
-                /*
-                 * The message destination matches our own instance address
-                 * but the router has returned a IP address/port for the
-                 * destination that is not us. Somehing funny is happening.
-                 */
-                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                        "Message destination ''{0}'' matches our own name, but router returns IP Address/port of ''{1}''",
-                        new Object[]{destinationAddress, ipAddressPort});
-            }
-        } else {    // If the message is not addressed to us:
-            if (ipAddressPort == null) {
-                /*
-                 * The message destination does not match our own,
-                 * and the router is not giving us an IP Port/Address for it.
-                 */
-                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                        "IP Address/port not found for message with destination ''{0}'', our instance address is ''{1}''",
-                        new Object[]{destinationAddress, ourInstanceAddress});
-            } else {
-                /*
-                 * The message destination does not match our own,
-                 * and we have found an external IP address/port for it.
-                 * It is not destined for us, so we will pass it though
-                 * to its destination.
-                 */
-                m.setIpAddressPort(ipAddressPort);
-                int hopCount = m.getHopCount();
-                hopCount++;
-                m.setHopCount(hopCount);
-                sendMessage(m);
+            } else {    // If the message is not addressed to us:
+                if (ipAddressPort == null) {
+                    /*
+                     * The message destination does not match our own,
+                     * and the router is not giving us an IP Port/Address for it.
+                     */
+                    Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                            "IP Address/port not found for message with destination ''{0}'', our instance address is ''{1}''",
+                            new Object[]{destinationAddress, ourInstanceAddress});
+                } else {
+                    /*
+                     * The message destination does not match our own,
+                     * and we have found an external IP address/port for it.
+                     * It is not destined for us, so we will pass it though
+                     * to its destination.
+                     */
+                    m.setIpAddressPort(ipAddressPort);
+                    int hopCount = m.getHopCount();
+                    hopCount++;
+                    m.setHopCount(hopCount);
+                    sendMessage(m);
+                }
             }
         }
     }

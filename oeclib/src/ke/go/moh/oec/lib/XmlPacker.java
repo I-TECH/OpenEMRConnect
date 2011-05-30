@@ -55,7 +55,6 @@ import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
 import ke.go.moh.oec.RelatedPerson;
-import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.Work;
 import org.w3c.dom.Node;
@@ -525,6 +524,9 @@ class XmlPacker {
      * type. The first such identifier replaces the template value. Subsequent identifiers
      * are inserted into clones of the template value. If there is no identifier of the given type,
      * the template value is removed.
+     * <p>
+     * The patient registry ID type is a special case. It doesn't come from the
+     * list of identifiers, but rather from person.personGuid.
      *
      * @param subtree head of the <code>Document</code> subtree in which this person is to be packed
      * @param p person information containing the list of identifiers
@@ -540,15 +542,23 @@ class XmlPacker {
             return;
         }
         boolean idTypeFound = false;
-        if (p.getPersonIdentifierList() != null) {
-            for (PersonIdentifier pi : p.getPersonIdentifierList()) {
-                if (pi.getIdentifierType() == type && pi.getIdentifier() != null) {
-                    Element e = idElement;
-                    if (idTypeFound) {
-                        e = packCloneElement(idElement);
+        if (type == PersonIdentifier.Type.patientRegistryId) {
+            String personGuid = p.getPersonGuid();
+            if (personGuid != null) {
+                packAttribute(idElement, "extension", personGuid);
+                idTypeFound = true;
+            }
+        } else {
+            if (p.getPersonIdentifierList() != null) {
+                for (PersonIdentifier pi : p.getPersonIdentifierList()) {
+                    if (pi.getIdentifierType() == type && pi.getIdentifier() != null) {
+                        Element e = idElement;
+                        if (idTypeFound) {
+                            e = packCloneElement(idElement);
+                        }
+                        packAttribute(e, "extension", pi.getIdentifier());
+                        idTypeFound = true;
                     }
-                    packAttribute(e, "extension", pi.getIdentifier());
-                    idTypeFound = true;
                 }
             }
         }
@@ -1111,11 +1121,11 @@ class XmlPacker {
     }
 
     /**
-     * Packs a binary array of bytes into a hexidecimal-encoded string.
+     * Packs a binary array of bytes into a hexadecimal-encoded string.
      * If the byte array is <code>null</code>, returns <code>null</code>.
      *
      * @param byteArray binary array of bytes to pack
-     * @return the array of bytes encoded as a hexidecimal string
+     * @return the array of bytes encoded as a hexadecimal string
      */
     private String packByteArray(byte[] byteArray) {
         if (byteArray != null) {
@@ -1291,11 +1301,6 @@ class XmlPacker {
         Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
         m.setData(p);
         unpackPerson(p, ePerson);
-        p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
-        p.setBirthdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectBirthTime", "value")));
-        p.setDeathdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectDeceasedTime", "value")));
-
-        // TODO: Finish the code.
     }
 
     /**
@@ -1528,7 +1533,10 @@ class XmlPacker {
      * Searches through all the person identifiers in a <code>Document</code> subtree
      * to find identifiers of the given type. For each such identifier, allocates
      * a <code>PersonIdentifier</code> object and attaches it to the <code>Person</code> object.
-     *
+     * <p>
+     * An identifier of type patientRegistryId is unpacked into the person.personGuid field.
+     * All other identifiers are unpacked into the array of PersonIdentifier.
+     * 
      * @param p person information
      * @param e head of the <code>Document</code> subtree in which
      * these person identifiers are to be found
@@ -1538,13 +1546,17 @@ class XmlPacker {
     private void unpackPersonIdentifiers(Person p, Element e, String oidPersonIdentifier, PersonIdentifier.Type type) {
         List<Element> idList = unpackGetIdList(e, oidPersonIdentifier);
         for (Element id : idList) {
-            PersonIdentifier pi = new PersonIdentifier();
-            pi.setIdentifier(unpackAttribute(id, "extension"));
-            pi.setIdentifierType(type);
-            if (p.getPersonIdentifierList() == null) {
-                p.setPersonIdentifierList(new ArrayList<PersonIdentifier>());
+            if (type == PersonIdentifier.Type.patientRegistryId) {
+                p.setPersonGuid(unpackAttribute(id, "extension"));
+            } else {
+                PersonIdentifier pi = new PersonIdentifier();
+                pi.setIdentifier(unpackAttribute(id, "extension"));
+                pi.setIdentifierType(type);
+                if (p.getPersonIdentifierList() == null) {
+                    p.setPersonIdentifierList(new ArrayList<PersonIdentifier>());
+                }
+                p.getPersonIdentifierList().add(pi);
             }
-            p.getPersonIdentifierList().add(pi);
         }
     }
 

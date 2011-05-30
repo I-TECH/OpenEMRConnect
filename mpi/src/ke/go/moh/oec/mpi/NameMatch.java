@@ -50,5 +50,6 @@ public class NameMatch extends StringMatch {
      */
     public void score(Scorecard s, NameMatch m) {
         super.score(s, m);
+        //TODO: Test soundex, metaphone1, metaphone2.
     }
 }

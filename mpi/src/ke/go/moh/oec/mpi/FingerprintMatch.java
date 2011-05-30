@@ -62,6 +62,22 @@ public class FingerprintMatch implements Cloneable {
     }
 
     /**
+     * Returns the maximum number of threads that can be used for fingerprint matching.
+     * 
+     * @return the maximum number of threads that can be used for fingerprint matching.
+     */
+    public static int maxThreadCount() {
+        int returnCount = 0; // Unlimited unless we find out otherwise.
+        if (!grInitialized) {
+            init();
+        }
+        if (useFingerprintSdk) {
+            returnCount = MatchingContext.getMaximumNumberOfContexts();
+        }
+        return returnCount;
+    }
+
+    /**
      * Construct a FingerprintMatch from a Fingerprint.
      * <p>
      * Information about the fingerprint is extracted and stored ahead of time for quick matching.
