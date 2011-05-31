@@ -35,6 +35,6 @@ Thumbs.db
 
 # NetBeans #
 ###########
-*/nbproject/*
+*/nbproject/private/*
 */build/*
 */dist/*
