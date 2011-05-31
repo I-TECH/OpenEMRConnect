@@ -34,7 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
+import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
 import ke.go.moh.oec.Visit;
@@ -84,6 +86,7 @@ public class PersonList {
         personList.remove(personMatch);
         personMap.remove(personMatch.getPerson().getPersonGuid());
     }
+
     /**
      * Gets a person from the in-memory list, by list index.
      * 
@@ -205,32 +208,47 @@ public class PersonList {
         PersonMatch searchTerms = new PersonMatch(p);
         CandidateSet candidateSet = new CandidateSet();
         DateMatch.setToday();
+        if (p.getPersonGuid() != null
+                && (p.getFingerprintList() == null || p.getFingerprintList().isEmpty())) {
+            PersonMatch match = this.get(p.getPersonGuid());
+            if (match != null) {
+                Scorecard scorecard = new Scorecard();
+                scorecard.addScore(100);
+                candidateSet.add(match, scorecard);
+            }
+        } else {
+            // TODO: If search by clinic ID with clinic name, do fuzzy match on clinic name.
 
-        int personMatchCount = personList.size();
-        int threadCount = Mpi.getMaxThreadCount();
-        if (threadCount > personMatchCount) {
-            threadCount = personMatchCount;
-        }
-        int countPerThread = (personMatchCount + threadCount - 1) / threadCount;
-        long startTime = System.currentTimeMillis();
-        List<Thread> threadArray = new ArrayList<Thread>();
-        for (int i = 0; i < threadCount; i++) {
-            int startIndex = countPerThread * i;
-            int endIndex = (countPerThread * (i + 1)) - 1;
-            if (endIndex >= personMatchCount) {
-                endIndex = personMatchCount - 1;
+            int personMatchCount = personList.size();
+            int threadCount = Mpi.getMaxThreadCount();
+            if (threadCount > personMatchCount) {
+                threadCount = personMatchCount;
             }
-            FindPersonThread fpt = new FindPersonThread(this, searchTerms, candidateSet, startIndex, endIndex);
-            Thread t = new Thread(fpt);
-            threadArray.add(t);
-            t.start();
-        }
-        for (Thread t : threadArray) {
-            try {
-                t.join();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "Error joining FindPersonThread", ex);
+            int countPerThread = (personMatchCount + threadCount - 1) / threadCount;
+            long startTime = System.currentTimeMillis();
+            List<Thread> threadArray = new ArrayList<Thread>();
+            for (int i = 0; i < threadCount; i++) {
+                int startIndex = countPerThread * i;
+                int endIndex = (countPerThread * (i + 1)) - 1;
+                if (endIndex >= personMatchCount) {
+                    endIndex = personMatchCount - 1;
+                }
+                FindPersonThread fpt = new FindPersonThread(this, searchTerms, candidateSet, startIndex, endIndex);
+                Thread t = new Thread(fpt);
+                threadArray.add(t);
+                t.start();
             }
+            for (Thread t : threadArray) {
+                try {
+                    t.join();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "Error joining FindPersonThread", ex);
+                }
+            }
+            double timeInterval = (System.currentTimeMillis() - startTime) / 1000.0;
+            Mediator.getLogger(PersonList.class.getName()).log(Level.INFO,
+                    "Searched {0} entries in {1} seconds.",
+                    new Object[]{personMatchCount, timeInterval});
         }
         List<Person> candidateList = candidateSet.export();
         resp.setPersonList(candidateList);
@@ -296,7 +314,8 @@ public class PersonList {
         Sql.startTransaction(conn);
         Sql.execute(conn, sql);
         int dbPersonId = Integer.parseInt(Sql.getLastInsertId(conn));
-        FingerprintList.update(conn, dbPersonId, p.getFingerprintList());
+        PersonIdentifierList.update(conn, dbPersonId, p.getPersonIdentifierList(), null);
+        FingerprintList.update(conn, dbPersonId, p.getFingerprintList(), null);
         VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
         VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
         Sql.commit(conn);
@@ -318,7 +337,7 @@ public class PersonList {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person data.");
             return;
         }
-        
+
         String personGuid = p.getPersonGuid();
         if (p == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person GUID.");
@@ -328,43 +347,52 @@ public class PersonList {
         PersonMatch oldPer = this.get(personGuid);
         if (oldPer == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON GUID {0} not found.", personGuid);
-                    
             return;
         }
-        // TODO: Send Notify message if something has changed that the clinic wants to know.
+
         int dbPersonId = oldPer.getDbPersonId();
+        Person oldP = oldPer.getPerson();
         Connection conn = Sql.connect();
         String sex = ValueMap.SEX.getDb().get(p.getSex());
         String villageId = Sql.getVillageId(conn, p.getVillageName());
         String maritalStatusId = Sql.getMaritalStatusId(conn, p.getMaritalStatus());
         String consentSigned = ValueMap.CONSENT_SIGNED.getDb().get(p.getConsentSigned());
-        String sql = "UPDATE person set\n"
-                + "       first_name = " + Sql.quote(p.getFirstName()) + ", "
-                + "       middle_name = " + Sql.quote(p.getMiddleName()) + ", "
-                + "       last_name = " + Sql.quote(p.getLastName()) + ",\n   "
-                + "       other_name = " + Sql.quote(p.getOtherName()) + ", "
-                + "       sex = " + Sql.quote(sex) + ", "
-                + "       birthdate = " + Sql.quote(p.getBirthdate()) + ", "
-                + "       deathdate = " + Sql.quote(p.getDeathdate()) + ",\n   "
-                + "       mothers_first_name = " + Sql.quote(p.getMothersFirstName()) + ", "
-                + "       mothers_middle_name = " + Sql.quote(p.getMothersMiddleName()) + ", "
-                + "       mothers_last_name = " + Sql.quote(p.getMothersLastName()) + ",\n   "
-                + "       fathers_first_name = " + Sql.quote(p.getFathersFirstName()) + ", "
-                + "       fathers_middle_name = " + Sql.quote(p.getFathersMiddleName()) + ", "
-                + "       fathers_last_name = " + Sql.quote(p.getFathersLastName()) + ",\n   "
-                + "       compoundhead_first_name = " + Sql.quote(p.getCompoundHeadFirstName()) + ", "
-                + "       compoundhead_middle_name = " + Sql.quote(p.getCompoundHeadMiddleName()) + ", "
-                + "       compoundhead_last_name = " + Sql.quote(p.getCompoundHeadLastName()) + ",\n   "
-                + "       village_id = " + villageId + ", "
-                + "       marital_status = " + maritalStatusId + ", "
-                + "       consent_signed = " + consentSigned + ", "
-                + "       date_changed = NOW()"
+        String sql = "UPDATE person set\n       "
+                + "first_name = " + Sql.quote(p.getFirstName()) + ", "
+                + "middle_name = " + Sql.quote(p.getMiddleName()) + ", "
+                + "last_name = " + Sql.quote(p.getLastName()) + ",\n       "
+                + "other_name = " + Sql.quote(p.getOtherName()) + ", "
+                + "sex = " + Sql.quote(sex) + ", "
+                + "birthdate = " + Sql.quote(p.getBirthdate()) + ", "
+                + "deathdate = " + Sql.quote(p.getDeathdate()) + ",\n       "
+                + "mothers_first_name = " + Sql.quote(p.getMothersFirstName()) + ", "
+                + "mothers_middle_name = " + Sql.quote(p.getMothersMiddleName()) + ", "
+                + "mothers_last_name = " + Sql.quote(p.getMothersLastName()) + ",\n       "
+                + "fathers_first_name = " + Sql.quote(p.getFathersFirstName()) + ", "
+                + "fathers_middle_name = " + Sql.quote(p.getFathersMiddleName()) + ", "
+                + "fathers_last_name = " + Sql.quote(p.getFathersLastName()) + ",\n       "
+                + "compoundhead_first_name = " + Sql.quote(p.getCompoundHeadFirstName()) + ", "
+                + "compoundhead_middle_name = " + Sql.quote(p.getCompoundHeadMiddleName()) + ", "
+                + "compoundhead_last_name = " + Sql.quote(p.getCompoundHeadLastName()) + ",\n       "
+                + "village_id = " + villageId + ", "
+                + "marital_status = " + maritalStatusId + ", "
+                + "consent_signed = " + consentSigned + ", "
+                + "date_changed = NOW()\n"
                 + "WHERE person_id = " + dbPersonId;
         Sql.startTransaction(conn);
         Sql.execute(conn, sql);
-        FingerprintList.update(conn, dbPersonId, p.getFingerprintList());
+        List<PersonIdentifier> pList = PersonIdentifierList.update(conn, dbPersonId, p.getPersonIdentifierList(), oldP.getPersonIdentifierList());
+        p.setPersonIdentifierList(pList);
+        List<Fingerprint> fList = FingerprintList.update(conn, dbPersonId, p.getFingerprintList(), oldP.getFingerprintList());
+        p.setFingerprintList(fList);
         VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
         VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
+        if (p.getLastRegularVisit() == null) {
+            p.setLastRegularVisit(oldP.getLastRegularVisit());
+        }
+        if (p.getLastOneOffVisit() == null) {
+            p.setLastOneOffVisit(oldP.getLastOneOffVisit());
+        }
         Sql.commit(conn);
         PersonMatch newPer = new PersonMatch(p);
         newPer.setDbPersonId(dbPersonId);
@@ -372,5 +400,6 @@ public class PersonList {
         this.add(newPer); // Add new person to our in-memory list.
         boolean matchFound = true; // Modified a person, so a match was found.
         SearchHistory.update(req, matchFound);
+        Notifier.notify(p);
     }
 }

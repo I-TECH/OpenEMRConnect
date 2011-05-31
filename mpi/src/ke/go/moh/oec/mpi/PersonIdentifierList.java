@@ -71,4 +71,42 @@ public class PersonIdentifierList {
         }
         return personIdentifierList;
     }
+
+    public static List<PersonIdentifier> update(Connection conn, int personId, List<PersonIdentifier> newList, List<PersonIdentifier> oldList) {
+        boolean newEntries = (newList != null && newList.size() > 0);
+        boolean oldEntries = (oldList != null && oldList.size() > 0);
+        if (newEntries) {
+            String sql;
+            List<PersonIdentifier> deleteList = new ArrayList<PersonIdentifier>();
+            for (PersonIdentifier newP : newList) {
+                PersonIdentifier.Type piType = newP.getIdentifierType();
+                String id = newP.getIdentifier();
+                String dbType = ValueMap.FINGERPRINT_TYPE.getDb().get(piType);
+                for (PersonIdentifier oldP : oldList) {
+                    if (oldP.getIdentifierType() == piType) {
+                        String oldId = oldP.getIdentifier();
+                        if ((piType != PersonIdentifier.Type.cccLocalId && piType != PersonIdentifier.Type.cccLocalId)
+                                || (id.substring(0, 4).equals(oldId.substring(0, 4)))) {
+                            deleteList.add(oldP);
+                            sql = "DELETE FROM person_identifier "
+                                    + " WHERE person_id = " + personId
+                                    + " AND identifier_type = " + dbType
+                                    + " AND identifier = " + Sql.quote(oldId);
+                            Sql.execute(conn, sql);
+                        }
+                    }
+                }
+                sql = "INSERT INTO person_identifier (person_id, identifier_type, identifier) values ("
+                        + personId + ", " + dbType + ", " + Sql.quote(id) + ")";
+                Sql.execute(conn, sql);
+            }
+            oldList.removeAll(deleteList);
+        } else {
+            newList = new ArrayList<PersonIdentifier>();
+        }
+        if (oldEntries) {
+            newList.addAll(oldList);
+        }
+        return newList;
+    }
 }

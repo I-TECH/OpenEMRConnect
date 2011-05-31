@@ -33,6 +33,12 @@ import ke.go.moh.oec.lib.Mediator;
  */
 public class Main {
 
+    private static Mediator mediator;
+    
+    public static Mediator getMediator() {
+        return mediator;
+    }
+    
     /**
      * Creates a new MPI and a new Mediator, and links them to each other.
      * <p>
@@ -45,7 +51,7 @@ public class Main {
         Mpi mpi = new Mpi();
         Mediator.registerCallback(mpi);
 
-        Mediator mediator = new Mediator();
+        mediator = new Mediator();
         while (true) {
             try {
                 Thread.sleep(Long.MAX_VALUE);

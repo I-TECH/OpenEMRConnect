@@ -75,19 +75,51 @@ public class FingerprintList {
         return fingerprintList;
     }
 
-    public static void update(Connection conn, int personId, List<Fingerprint> fingerprintList) {
-        if (fingerprintList != null && fingerprintList.size() > 0) {
-            String sql = "DELETE FROM fingerprint WHERE person_id = " + personId;
-            Sql.execute(conn, sql);
-            for (Fingerprint f : fingerprintList) {
-                String fingerprintTypeId = ValueMap.FINGERPRINT_TYPE.getDb().get(f.getFingerprintType());
-                String technologyTypeId = ValueMap.FINGERPRINT_TECHNOLOGY_TYPE.getDb().get(f.getTechnologyType());
-                byte[] template = f.getTemplate();
-                sql = "INSERT INTO fingerprint (person_id, fingerprint_type_id, fingerprint_technology_type_id, fingerprint_template) VALUES (\n"
-                        + personId + ", " + fingerprintTypeId + ", " + technologyTypeId + ",\n"
-                        + Sql.quote(template) + ")";
+    /**
+     * Updates list of fingerprints for a person.
+     * If no new fingerprints are given, then nothing is changed
+     * (existing fingerprints, if any, remain in place).
+     * If new fingerprints are given, then any old fingerprints are
+     * removed, and the new ones inserted.
+     * <p>
+     * If a new fingerprint is given but is of zero length, then
+     * any old fingerprints are removed, and the new zero-length fingerprint
+     * is not inserted. This is the way that an update can remove any
+     * existing fingerprints.
+     * 
+     * @param conn
+     * @param personId
+     * @param newList new list of fingerprints (if any) 
+     */
+    public static List<Fingerprint> update(Connection conn, int personId, List<Fingerprint> newList, List<Fingerprint> oldList) {
+        List<Fingerprint> returnList = new ArrayList<Fingerprint>();
+        boolean newEntries = (newList != null && newList.size() > 0);
+        boolean oldEntries = (oldList != null && oldList.size() > 0);
+        if (newEntries) {
+            String sql;
+            if (oldEntries) {
+                sql = "DELETE FROM fingerprint WHERE person_id = " + personId;
                 Sql.execute(conn, sql);
             }
+            for (Fingerprint f : newList) {
+                byte[] template = f.getTemplate();
+                if (template != null && template.length > 0) {
+                    returnList.add(f);
+                    String fingerprintTypeId = ValueMap.FINGERPRINT_TYPE.getDb().get(f.getFingerprintType());
+                    String technologyTypeId = ValueMap.FINGERPRINT_TECHNOLOGY_TYPE.getDb().get(f.getTechnologyType());
+                    sql = "INSERT INTO fingerprint (person_id, fingerprint_type_id, fingerprint_technology_type_id, fingerprint_template) VALUES (\n"
+                            + personId + ", " + fingerprintTypeId + ", " + technologyTypeId + ",\n"
+                            + Sql.quote(template) + ")";
+                    Sql.execute(conn, sql);
+                }
+            }
         }
+        else if (oldEntries) {
+            returnList = oldList;
+        }
+        if (returnList.isEmpty()) {
+            returnList = null;
+        }
+        return returnList;
     }
 }
