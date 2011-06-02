@@ -1,0 +1,2189 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.7">
+  <NonVisualComponents>
+    <Container class="javax.swing.JPanel" name="mainPanel">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="mainPanel" noResource="true"/>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="mainSplitPane" alignment="0" pref="880" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="mainSplitPane" alignment="0" pref="704" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JSplitPane" name="mainSplitPane">
+          <Properties>
+            <Property name="dividerLocation" type="int" value="250"/>
+            <Property name="name" type="java.lang.String" value="mainSplitPane" noResource="true"/>
+          </Properties>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="leftPanel">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="leftPanel" noResource="true"/>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
+                  <JSplitPaneConstraints position="left"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="alertsListPanel" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="alertsListPanel" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="alertsListPanel">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder title="Alerts">
+                          <Property name="titleX" resourceKey="alertsListPanel.border.title"/>
+                        </TitledBorder>
+                      </Border>
+                    </Property>
+                    <Property name="name" type="java.lang.String" value="alertsListPanel" noResource="true"/>
+                  </Properties>
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="alertsScrollPane" pref="197" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="alertsScrollPane" pref="642" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JScrollPane" name="alertsScrollPane">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="alertsScrollPane" noResource="true"/>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                      <SubComponents>
+                        <Component class="javax.swing.JList" name="alertsList">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
+                              <StringArray count="5">
+                                <StringItem index="0" value="Item 1"/>
+                                <StringItem index="1" value="Item 2"/>
+                                <StringItem index="2" value="Item 3"/>
+                                <StringItem index="3" value="Item 4"/>
+                                <StringItem index="4" value="Item 5"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="name" type="java.lang.String" value="alertsList" noResource="true"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="rightPanel">
+              <Properties>
+                <Property name="name" type="java.lang.String" value="rightPanel" noResource="true"/>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
+                  <JSplitPaneConstraints position="right"/>
+                </Constraint>
+              </Constraints>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="wizardPanel" alignment="0" pref="634" max="32767" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="homeButton" linkSize="1" min="-2" pref="48" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="backButton" linkSize="1" min="-2" pref="51" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="1" attributes="0">
+                              <Component id="backButton" linkSize="2" alignment="0" pref="42" max="32767" attributes="1"/>
+                              <Component id="homeButton" linkSize="2" alignment="0" min="-2" pref="42" max="-2" attributes="1"/>
+                          </Group>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Component id="wizardPanel" pref="632" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JButton" name="homeButton">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                      <action class="ke.go.moh.oec.reception.gui.View" id="showFirstCard" methodName="showFirstCard"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" resourceKey="homeButton.text"/>
+                    <Property name="name" type="java.lang.String" value="homeButton" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="backButton">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                      <action class="ke.go.moh.oec.reception.gui.View" id="showPreviousCard" methodName="showPreviousCard"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" resourceKey="backButton.text"/>
+                    <Property name="name" type="java.lang.String" value="backButton" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Container class="javax.swing.JPanel" name="wizardPanel">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                        <LineBorder/>
+                      </Border>
+                    </Property>
+                    <Property name="name" type="java.lang.String" value="wizardPanel" noResource="true"/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="homeCard">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="homeCard" noResource="true"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                          <CardConstraints cardName="homeCard"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="145" max="-2" attributes="0"/>
+                                  <Component id="homePanel" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="172" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="homePanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace pref="384" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="homePanel">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Select client type">
+                                  <Property name="titleX" resourceKey="homePanel.border.title"/>
+                                </TitledBorder>
+                              </Border>
+                            </Property>
+                            <Property name="name" type="java.lang.String" value="homePanel" noResource="true"/>
+                          </Properties>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="newButton" alignment="0" pref="283" max="32767" attributes="0"/>
+                                          <Component id="visitorButton" alignment="0" pref="283" max="32767" attributes="0"/>
+                                          <Component id="enrolledButton" alignment="0" pref="283" max="32767" attributes="0"/>
+                                          <Component id="transferInButton" alignment="0" pref="283" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                      <Component id="enrolledButton" min="-2" pref="42" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                      <Component id="visitorButton" min="-2" pref="43" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                      <Component id="newButton" min="-2" pref="40" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                      <Component id="transferInButton" min="-2" pref="43" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="1"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Component class="javax.swing.JButton" name="enrolledButton">
+                              <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.View" id="showClinicIdCard" methodName="showClinicIdCard"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="enrolledButton.text"/>
+                                <Property name="name" type="java.lang.String" value="enrolledButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="visitorButton">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="visitorButton.text"/>
+                                <Property name="name" type="java.lang.String" value="visitorButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="newButton">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="newButton.text"/>
+                                <Property name="name" type="java.lang.String" value="newButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="transferInButton">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="transferInButton.text"/>
+                                <Property name="name" type="java.lang.String" value="transferInButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="clinicIdCard">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="clinicIdCard" noResource="true"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                          <CardConstraints cardName="knowsClinicIdCard"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="130" max="-2" attributes="0"/>
+                                  <Component id="clientIdPanel" max="32767" attributes="0"/>
+                                  <EmptySpace min="-2" pref="168" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="clientIdPanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace pref="479" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="clientIdPanel">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Client knows their Clinic ID">
+                                  <Property name="titleX" resourceKey="clientIdPanel.border.title"/>
+                                </TitledBorder>
+                              </Border>
+                            </Property>
+                            <Property name="name" type="java.lang.String" value="clientIdPanel" noResource="true"/>
+                          </Properties>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="clinicIdNoButton" alignment="0" pref="302" max="32767" attributes="0"/>
+                                          <Component id="clinicIdYesButton" alignment="0" pref="302" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                      <Component id="clinicIdYesButton" min="-2" pref="42" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                                      <Component id="clinicIdNoButton" min="-2" pref="43" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Component class="javax.swing.JButton" name="clinicIdYesButton">
+                              <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.View" id="showBasicSearchCard" methodName="showBasicSearchCard"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="clinicIdYesButton.text"/>
+                                <Property name="name" type="java.lang.String" value="clinicIdYesButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="clinicIdNoButton">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="clinicIdNoButton.text"/>
+                                <Property name="name" type="java.lang.String" value="clinicIdNoButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="basicSearchCard">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="basicSearchCard" noResource="true"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                          <CardConstraints cardName="basicSearchCard"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="basicSearchPanel" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="basicSearchPanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace pref="372" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="basicSearchPanel">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Basic Search">
+                                  <Property name="titleX" resourceKey="basicSearchPanel.border.title"/>
+                                </TitledBorder>
+                              </Border>
+                            </Property>
+                            <Property name="name" type="java.lang.String" value="basicSearchPanel" noResource="true"/>
+                          </Properties>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="basicSearchClinicNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="basicSearchClinicIdLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="basicSearchFingerprintLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="522" max="32767" attributes="0"/>
+                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="522" max="32767" attributes="0"/>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                                          <Component id="basicSearchTakeButton" alignment="0" max="32767" attributes="1"/>
+                                                          <Component id="basicSearchFingerprintImagePanel" alignment="0" max="32767" attributes="1"/>
+                                                      </Group>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="basicSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                              </Group>
+                                          </Group>
+                                          <Component id="basicSearchButton" alignment="0" pref="580" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="basicSearchClinicIdLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="basicSearchClinicIdTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="basicSearchClinicNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="basicSearchClinicNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="basicSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="basicSearchFingerprintImagePanel" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="basicSearchTakeButton" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Component id="basicSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="basicSearchButton" min="-2" pref="46" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Component class="javax.swing.JLabel" name="basicSearchClinicIdLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="basicSearchClinicIdLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="basicSearchClinicIdLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JTextField" name="basicSearchClinicIdTextField">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="basicSearchClinicIdTextField.text"/>
+                                <Property name="name" type="java.lang.String" value="basicSearchClinicIdTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="basicSearchClinicNameLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="basicSearchClinicNameLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="basicSearchClinicNameLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JTextField" name="basicSearchClinicNameTextField">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="basicSearchClinicNameTextField.text"/>
+                                <Property name="name" type="java.lang.String" value="basicSearchClinicNameTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="basicSearchFingerprintLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="basicSearchFingerprintLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="basicSearchFingerprintLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Container class="ke.go.moh.oec.reception.gui.ImagePanel" name="basicSearchFingerprintImagePanel">
+                              <Properties>
+                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                                    <LineBorder/>
+                                  </Border>
+                                </Property>
+                                <Property name="name" type="java.lang.String" value="basicSearchFingerprintImagePanel" noResource="true"/>
+                              </Properties>
+
+                              <Layout>
+                                <DimensionLayout dim="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="75" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                                <DimensionLayout dim="1">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="74" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                              </Layout>
+                            </Container>
+                            <Component class="javax.swing.JCheckBox" name="basicSearchClientRefusesCheckBox">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="basicSearchClientRefusesCheckBox.text"/>
+                                <Property name="name" type="java.lang.String" value="basicSearchClientRefusesCheckBox" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="basicSearchTakeButton">
+                              <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.View" id="showFingerprintDialog" methodName="showFingerprintDialog"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="basicSearchTakeButton.text"/>
+                                <Property name="name" type="java.lang.String" value="basicSearchTakeButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="basicSearchButton">
+                              <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.View" id="search" methodName="search"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="basicSearchButton.text"/>
+                                <Property name="name" type="java.lang.String" value="basicSearchButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="extendedSearchCard">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="extendedSearchCard" noResource="true"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                          <CardConstraints cardName="card5"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="extendedSearchPanel" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="extendedSearchPanel" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="extendedSearchPanel">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Extended Search">
+                                  <Property name="titleX" resourceKey="extendedSearchPanel.border.title"/>
+                                </TitledBorder>
+                              </Border>
+                            </Property>
+                            <Property name="name" type="java.lang.String" value="extendedSearchPanel" noResource="true"/>
+                          </Properties>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="extendedSearchButton" alignment="1" pref="580" max="32767" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                                  <Component id="extendedSearchTakeButton" alignment="0" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchFingerprintImagePanel" alignment="0" min="-2" max="-2" attributes="1"/>
+                                              </Group>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="extendedSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="extendedSearchClinicNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchClinicIdLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchFirstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchMiddleNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchSexLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchVillageLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchDateOfBirthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Group type="102" attributes="0">
+                                                      <Component id="maleButton" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Component id="extendedSearchLastNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchFirstNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchVillageTextField" alignment="0" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicIdTextField" alignment="0" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchDateOfBirthChooser" alignment="0" pref="515" max="32767" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="extendedSearchClinicIdLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchClinicIdTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="extendedSearchClinicNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchClinicNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="extendedSearchFirstNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchFirstNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="extendedSearchMiddleNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchMiddleNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="extendedSearchLastNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchLastNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="extendedSearchSexLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="maleButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="femaleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="extendedSearchDateOfBirthChooser" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchDateOfBirthLabel" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="extendedSearchVillageLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchVillageTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="extendedSearchFingerprintImagePanel" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="extendedSearchTakeButton" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <Component id="extendedSearchClientRefusesCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="extendedSearchButton" min="-2" pref="46" max="-2" attributes="0"/>
+                                      <EmptySpace pref="221" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Component class="javax.swing.JLabel" name="extendedSearchClinicIdLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchClinicIdLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchClinicIdLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JTextField" name="extendedSearchClinicIdTextField">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="extendedSearchClinicIdTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="extendedSearchClinicNameLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchClinicNameLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchClinicNameLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JTextField" name="extendedSearchClinicNameTextField">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="extendedSearchClinicNameTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="extendedSearchFirstNameLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchFirstNameLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchFirstNameLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JTextField" name="extendedSearchFirstNameTextField">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchFirstNameTextField.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchFirstNameTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="extendedSearchMiddleNameLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchMiddleNameLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchMiddleNameLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JTextField" name="extendedSearchMiddleNameTextField">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchMiddleNameTextField.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchMiddleNameTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="extendedSearchLastNameLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchLastNameLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchLastNameLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JTextField" name="extendedSearchLastNameTextField">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchLastNameTextField.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchLastNameTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="extendedSearchSexLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchSexLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchSexLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JRadioButton" name="maleButton">
+                              <Properties>
+                                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                                  <ComponentRef name="sexButtonGroup"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="maleButton.text"/>
+                                <Property name="name" type="java.lang.String" value="maleButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JRadioButton" name="femaleRadioButton">
+                              <Properties>
+                                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                                  <ComponentRef name="sexButtonGroup"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="femaleRadioButton.text"/>
+                                <Property name="name" type="java.lang.String" value="femaleRadioButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="extendedSearchDateOfBirthLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchDateOfBirthLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchDateOfBirthLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="com.toedter.calendar.JDateChooser" name="extendedSearchDateOfBirthChooser">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="extendedSearchDateOfBirthChooser" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="extendedSearchVillageLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchVillageLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchVillageLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JTextField" name="extendedSearchVillageTextField">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchVillageTextField.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchVillageTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="extendedSearchFingerprintLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchFingerprintLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchFingerprintLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Container class="ke.go.moh.oec.reception.gui.ImagePanel" name="extendedSearchFingerprintImagePanel">
+                              <Properties>
+                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                                    <LineBorder/>
+                                  </Border>
+                                </Property>
+                                <Property name="name" type="java.lang.String" value="extendedSearchFingerprintImagePanel" noResource="true"/>
+                              </Properties>
+
+                              <Layout>
+                                <DimensionLayout dim="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="75" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                                <DimensionLayout dim="1">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="74" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                              </Layout>
+                            </Container>
+                            <Component class="javax.swing.JCheckBox" name="extendedSearchClientRefusesCheckBox">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchClientRefusesCheckBox.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchClientRefusesCheckBox" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="extendedSearchTakeButton">
+                              <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.View" id="showFingerprintDialog" methodName="showFingerprintDialog"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchTakeButton.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchTakeButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="extendedSearchButton">
+                              <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.View" id="search" methodName="search"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchButton.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="searchResultsCard">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="searchResultsCard" noResource="true"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                          <CardConstraints cardName="searchResultsCard"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="searchResultsPanel" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="searchResultsPanel" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="searchResultsPanel">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Search Results">
+                                  <Property name="titleX" resourceKey="searchResultsPanel.border.title"/>
+                                </TitledBorder>
+                              </Border>
+                            </Property>
+                            <Property name="name" type="java.lang.String" value="searchResultsPanel" noResource="true"/>
+                          </Properties>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="notFoundButton" alignment="0" pref="580" max="32767" attributes="0"/>
+                                          <Component id="searchResultsScrollPane" alignment="0" pref="580" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="searchResultsScrollPane" pref="526" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="notFoundButton" min="-2" pref="38" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Container class="javax.swing.JScrollPane" name="searchResultsScrollPane">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="searchResultsScrollPane" noResource="true"/>
+                              </Properties>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                              <SubComponents>
+                                <Component class="javax.swing.JTable" name="searchResultsTable">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="searchResultsTable" noResource="true"/>
+                                  </Properties>
+                                  <BindingProperties>
+                                    <BindingProperty name="elements" source="searchResultsList" target="searchResultsTable" targetPath="elements" updateStrategy="0" immediately="true">
+                                      <Subbinding sourcePath="${firstName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${middleName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${lastName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${otherName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${birthdate}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="java.util.Date.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${villageName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${fathersFirstName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${fathersMiddleName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${fathersLastName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${mothersFirstName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${mothersMiddleName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${mothersLastName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${compoundHeadFirstName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${compoundHeadMiddleName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${compoundHeadLastName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${clanName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                    </BindingProperty>
+                                  </BindingProperties>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                            <Component class="javax.swing.JButton" name="notFoundButton">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="notFoundButton.text"/>
+                                <Property name="name" type="java.lang.String" value="notFoundButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="reviewCard">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="reviewCard" noResource="true"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                          <CardConstraints cardName="card7"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jPanel1" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jPanel1" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Container class="javax.swing.JPanel" name="jPanel1">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Add/ Review">
+                                  <Property name="titleX" resourceKey="jPanel1.border.title"/>
+                                </TitledBorder>
+                              </Border>
+                            </Property>
+                            <Property name="name" type="java.lang.String" value="jPanel1" noResource="true"/>
+                          </Properties>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jPanel3" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jPanel3" min="-2" max="-2" attributes="1"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jPanel2" max="32767" attributes="1"/>
+                                      <EmptySpace min="-2" pref="72" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Container class="javax.swing.JPanel" name="jPanel2">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="jPanel2" noResource="true"/>
+                              </Properties>
+
+                              <Layout>
+                                <DimensionLayout dim="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="jLabel17" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                                  <Component id="jTextField15" pref="186" max="32767" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Component id="jButton33" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Component id="jButton34" min="-2" pref="39" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Group type="103" groupAlignment="0" attributes="0">
+                                                      <Component id="jLabel16" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel15" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel14" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel13" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel12" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel11" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel10" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel6" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jLabel7" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="0" attributes="0">
+                                                      <Group type="102" alignment="0" attributes="0">
+                                                          <Component id="jRadioButton1" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jRadioButton2" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace pref="87" max="32767" attributes="0"/>
+                                                          <Component id="jButton9" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton10" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" attributes="0">
+                                                          <Component id="jTextField1" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton1" linkSize="5" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton2" linkSize="5" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Component id="jTextField2" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton3" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton4" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Component id="jTextField3" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton5" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton6" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="0" attributes="0">
+                                                          <Component id="jTextField6" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton15" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton16" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Component id="jTextField7" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton17" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton18" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Component id="jTextField8" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton19" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton20" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Component id="jTextField9" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton21" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton22" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Component id="jTextField10" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton23" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton24" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Component id="jTextField11" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton25" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton26" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Component id="jTextField12" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton27" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton28" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Component id="jTextField13" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton29" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton30" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="0" attributes="0">
+                                                          <Component id="jTextField14" pref="187" max="32767" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton31" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="jButton32" min="-2" pref="39" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" alignment="1" attributes="0">
+                                                          <Group type="103" groupAlignment="1" attributes="0">
+                                                              <Component id="jComboBox1" alignment="1" pref="187" max="32767" attributes="0"/>
+                                                              <Component id="jTextField4" pref="187" max="32767" attributes="0"/>
+                                                              <Component id="jDateChooser1" alignment="1" pref="187" max="32767" attributes="0"/>
+                                                          </Group>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Group type="103" groupAlignment="0" attributes="0">
+                                                              <Group type="102" alignment="1" attributes="0">
+                                                                  <Component id="jButton7" min="-2" max="-2" attributes="0"/>
+                                                                  <EmptySpace max="-2" attributes="0"/>
+                                                                  <Component id="jButton8" min="-2" pref="39" max="-2" attributes="0"/>
+                                                              </Group>
+                                                              <Group type="102" alignment="1" attributes="0">
+                                                                  <Component id="jButton11" min="-2" max="-2" attributes="0"/>
+                                                                  <EmptySpace max="-2" attributes="0"/>
+                                                                  <Component id="jButton12" min="-2" pref="39" max="-2" attributes="0"/>
+                                                              </Group>
+                                                              <Group type="102" alignment="1" attributes="0">
+                                                                  <Component id="jButton13" min="-2" max="-2" attributes="0"/>
+                                                                  <EmptySpace max="-2" attributes="0"/>
+                                                                  <Component id="jButton14" min="-2" pref="39" max="-2" attributes="0"/>
+                                                              </Group>
+                                                          </Group>
+                                                      </Group>
+                                                  </Group>
+                                              </Group>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                </DimensionLayout>
+                                <DimensionLayout dim="1">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton2" linkSize="6" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton1" linkSize="6" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton4" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton3" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField3" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton6" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton5" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField4" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton8" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton7" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jRadioButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jRadioButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton10" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton9" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="1" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                                                  <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                                                      <Component id="jButton12" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="jButton11" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                              </Group>
+                                              <Component id="jDateChooser1" alignment="1" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton14" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton13" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField6" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton16" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton15" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField7" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton18" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton17" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField8" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton20" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton19" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField9" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton22" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton21" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel12" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField10" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton24" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton23" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField11" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton26" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton25" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel14" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField12" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton28" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton27" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel15" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField13" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton30" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton29" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel16" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField14" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton32" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton31" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jLabel17" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jTextField15" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton34" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jButton33" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                </DimensionLayout>
+                              </Layout>
+                              <SubComponents>
+                                <Component class="javax.swing.JLabel" name="jLabel1">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel1.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel1" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField1">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField1.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField1" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton1">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton1.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton1" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton2">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton2.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton2" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel2">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel2.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel2" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField2">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField2" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton3">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton3.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton3" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton4">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton4.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton4" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel3">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel3.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel3" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField3">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField3" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton5">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton5" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton6">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton6.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton6" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel4">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel4.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel4" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField4">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField4" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton7">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton7.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton7" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton8">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton8.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton8" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel5">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel5" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JRadioButton" name="jRadioButton1">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jRadioButton1.text"/>
+                                    <Property name="name" type="java.lang.String" value="jRadioButton1" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JRadioButton" name="jRadioButton2">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jRadioButton2.text"/>
+                                    <Property name="name" type="java.lang.String" value="jRadioButton2" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel6">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel6.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel6" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="com.toedter.calendar.JDateChooser" name="jDateChooser1">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jDateChooser1" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton9">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton9.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton9" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton10">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton10.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton10" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton11">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton11.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton11" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton12">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton12.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton12" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel7">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel7.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel7" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JComboBox" name="jComboBox1">
+                                  <Properties>
+                                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                                      <StringArray count="4">
+                                        <StringItem index="0" value="Item 1"/>
+                                        <StringItem index="1" value="Item 2"/>
+                                        <StringItem index="2" value="Item 3"/>
+                                        <StringItem index="3" value="Item 4"/>
+                                      </StringArray>
+                                    </Property>
+                                    <Property name="name" type="java.lang.String" value="jComboBox1" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton13">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton13.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton13" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton14">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton14.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton14" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel8">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel8.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel8" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField6">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField6" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton15">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton15.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton15" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton16">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton16.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton16" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel9">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel9.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel9" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField7">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField7" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton17">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton17.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton17" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton18">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton18.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton18" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel10">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel10.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel10" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField8">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField8" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton19">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton19.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton19" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton20">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton20.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton20" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel11">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel11.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel11" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField9">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField9" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton21">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton21.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton21" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton22">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton22.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton22" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel12">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel12.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel12" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField10">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField10" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton23">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton23.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton23" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton24">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton24.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton24" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel13">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel13.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel13" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField11">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField11" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton25">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton25.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton25" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton26">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton26.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton26" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel14">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel14.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel14" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField12">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField12" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton27">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton27.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton27" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton28">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton28.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton28" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel15">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel15.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel15" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField13">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField13" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton29">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton29.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton29" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton30">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton30.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton30" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel16">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel16.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel16" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField14">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField14" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton31">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton31.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton31" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton32">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton32.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton32" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JLabel" name="jLabel17">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jLabel17.text"/>
+                                    <Property name="name" type="java.lang.String" value="jLabel17" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField15">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jTextField15" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton33">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton33.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton33" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JButton" name="jButton34">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jButton34.text"/>
+                                    <Property name="name" type="java.lang.String" value="jButton34" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JPanel" name="jPanel3">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="jPanel3" noResource="true"/>
+                              </Properties>
+
+                              <Layout>
+                                <DimensionLayout dim="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="jDateChooser2" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="jRadioButton3" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Component id="jRadioButton4" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Component id="jTextField16" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField5" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField17" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField18" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jComboBox2" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField21" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField20" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField19" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField22" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField23" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField24" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField28" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField27" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField26" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField25" alignment="0" pref="106" max="32767" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                </DimensionLayout>
+                                <DimensionLayout dim="1">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jTextField5" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="jTextField16" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="jTextField17" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jTextField18" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="jRadioButton3" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="jRadioButton4" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="jDateChooser2" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="jComboBox2" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="jTextField19" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jTextField20" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jTextField21" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="jTextField22" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="jTextField23" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jTextField24" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="jTextField25" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                                          <Component id="jTextField26" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                                          <Component id="jTextField27" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jTextField28" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace pref="12" max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                </DimensionLayout>
+                              </Layout>
+                              <SubComponents>
+                                <Component class="javax.swing.JTextField" name="jTextField5">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField5" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField16">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField16" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField17">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField17" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField18">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField18" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JRadioButton" name="jRadioButton3">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jRadioButton3.text"/>
+                                    <Property name="name" type="java.lang.String" value="jRadioButton3" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JRadioButton" name="jRadioButton4">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jRadioButton4.text"/>
+                                    <Property name="name" type="java.lang.String" value="jRadioButton4" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="com.toedter.calendar.JDateChooser" name="jDateChooser2">
+                                  <Properties>
+                                    <Property name="name" type="java.lang.String" value="jDateChooser2" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JComboBox" name="jComboBox2">
+                                  <Properties>
+                                    <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                                      <StringArray count="4">
+                                        <StringItem index="0" value="Item 1"/>
+                                        <StringItem index="1" value="Item 2"/>
+                                        <StringItem index="2" value="Item 3"/>
+                                        <StringItem index="3" value="Item 4"/>
+                                      </StringArray>
+                                    </Property>
+                                    <Property name="name" type="java.lang.String" value="jComboBox2" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField19">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField19" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField20">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField20" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField21">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField21" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField22">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField22" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField23">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField23" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField24">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField24" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField25">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField25" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField26">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField26" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField27">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField27" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JTextField" name="jTextField28">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" resourceKey="jTextField5.text"/>
+                                    <Property name="name" type="java.lang.String" value="jTextField28" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JMenuBar" name="menuBar">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="menuBar" noResource="true"/>
+      </Properties>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
+        <Property name="useNullLayout" type="boolean" value="true"/>
+      </Layout>
+      <SubComponents>
+        <Menu class="javax.swing.JMenu" name="fileMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="fileMenu.text"/>
+            <Property name="name" type="java.lang.String" value="fileMenu" noResource="true"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+          </AuxValues>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="exitMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="org.jdesktop.application.Application" id="quit" methodName="quit"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="exitMenuItem" noResource="true"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+              </AuxValues>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="helpMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="helpMenu.text"/>
+            <Property name="name" type="java.lang.String" value="helpMenu" noResource="true"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+          </AuxValues>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="ke.go.moh.oec.reception.gui.View" id="showAboutBox" methodName="showAboutBox"/>
+                </Property>
+                <Property name="name" type="java.lang.String" value="aboutMenuItem" noResource="true"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+              </AuxValues>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="statusPanel">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="statusPanel" noResource="true"/>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="statusPanelSeparator" alignment="0" pref="880" max="32767" attributes="0"/>
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="710" max="32767" attributes="0"/>
+                  <Component id="progressBar" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="statusPanelSeparator" min="-2" pref="2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="statusMessageLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="statusAnimationLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="progressBar" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JSeparator" name="statusPanelSeparator">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="statusPanelSeparator" noResource="true"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JLabel" name="statusMessageLabel">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="statusMessageLabel" noResource="true"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="false"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="2"/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JLabel" name="statusAnimationLabel">
+          <Properties>
+            <Property name="horizontalAlignment" type="int" value="2"/>
+            <Property name="name" type="java.lang.String" value="statusAnimationLabel" noResource="true"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="false"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="2"/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JProgressBar" name="progressBar">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="progressBar" noResource="true"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="false"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="2"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.ButtonGroup" name="sexButtonGroup">
+    </Component>
+    <Component class="java.util.List" name="searchResultsList">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ArrayList&lt;Person&gt;()"/>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;ke.go.moh.oec.Person&gt;"/>
+      </AuxValues>
+    </Component>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="component" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">
+      <ComponentRef name="mainPanel"/>
+    </Property>
+    <Property name="menuBar" type="javax.swing.JMenuBar" editor="org.netbeans.modules.form.ComponentChooserEditor">
+      <ComponentRef name="menuBar"/>
+    </Property>
+    <Property name="statusBar" type="javax.swing.JComponent" editor="org.netbeans.modules.form.ComponentChooserEditor">
+      <ComponentRef name="statusPanel"/>
+    </Property>
+  </Properties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-18,0,0,3,112"/>
+  </AuxValues>
+</Form>

@@ -57,7 +57,7 @@ public class Sql {
     public static Connection connect() {
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/mpi", "root", "root");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost/mpi", "root", "2806");
         } catch (Exception ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Can''t connect to the database -- Please check the database and try again.", ex);
