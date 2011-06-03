@@ -33,6 +33,7 @@ package ke.go.moh.oec.mpi;
  * @author Jim Grace
  */
 public class Scorecard {
+
     private int sum = 0;
     private int count = 0;
     private boolean fingerprintMatched = false;
@@ -65,8 +66,12 @@ public class Scorecard {
         this.sum += score;
         count++;
     }
-    
+
     public int getScore() {
-        return sum / count;
+        if (count != 0) { // Protect against divide by zero.
+            return sum / count;
+        } else {
+            return 0;
+        }
     }
 }
