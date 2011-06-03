@@ -473,7 +473,10 @@ public class Mediator implements IService {
                      */
                     xmlPacker.unpack(m);
                     boolean responseDelivered = pendingQueue.findRequest(m);
-                    if (!responseDelivered) { // Was the message a response to a request that we just delivered?
+                    if (responseDelivered) { // Was the message a response to a request that we just delivered?
+                        Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Response matched and delivered to API.");
+                    } else {
+                        Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Delivering unsolicited message to API.");
                         processUnsolicitedMessage(m);
                     }
                 } else {
@@ -503,6 +506,7 @@ public class Mediator implements IService {
                      * It is not destined for us, so we will pass it though
                      * to its destination.
                      */
+                    Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Relaying message to next hop.");
                     m.setIpAddressPort(ipAddressPort);
                     int hopCount = m.getHopCount();
                     hopCount++;
