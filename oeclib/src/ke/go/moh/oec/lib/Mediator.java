@@ -480,7 +480,7 @@ public class Mediator implements IService {
                     /*
                      * The message destination matches our own instance address
                      * but the router has returned a IP address/port for the
-                     * destination that is not us. Somehing funny is happening.
+                     * destination that is not us. Somehing is misconfigured.
                      */
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                             "Message destination ''{0}'' matches our own name, but router returns IP Address/port of ''{1}''",
@@ -491,6 +491,7 @@ public class Mediator implements IService {
                     /*
                      * The message destination does not match our own,
                      * and the router is not giving us an IP Port/Address for it.
+                     * This is a configuration error.
                      */
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                             "IP Address/port not found for message with destination ''{0}'', our instance address is ''{1}''",

@@ -121,7 +121,7 @@ public class DateMatch {
                 int diff = maxDate - minDate;
                 int age = today - minDate;
                 if (age >= 0 && diff < age) {
-                    int score = 70 * (age / (age - diff));
+                    int score = 70 * (age - diff) / age;
                     s.addScore(score);
                 } else {
                     s.addScore(0);
