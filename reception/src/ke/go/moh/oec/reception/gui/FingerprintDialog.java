@@ -30,11 +30,10 @@
 package ke.go.moh.oec.reception.gui;
 
 import com.griaule.grfingerjava.GrFingerJavaException;
-import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Fingerprint.TechnologyType;
 import ke.go.moh.oec.Fingerprint.Type;
 import ke.go.moh.oec.reception.domain.ImagedFingerprint;
@@ -49,14 +48,14 @@ import org.jdesktop.application.Action;
 public class FingerprintDialog extends javax.swing.JDialog {
 
     private ReaderManager readerManager;
-    private Session search;
+    private Session session;
 
-    public void setSearch(Session search) {
-        this.search = search;
-        if (search.getFingerprintList() == null) {
+    public void setSession(Session session) {
+        this.session = session;
+        if (session.getBasicSearchParameters().getFingerprintList() == null) {
             rightIndexRadioButton.setSelected(true);
         } else {
-            switch (search.getFingerprintList().size() - 1) {
+            switch (session.getBasicSearchParameters().getFingerprintList().size() - 1) {
                 case -1:
                     rightIndexRadioButton.setSelected(true);
                     break;
@@ -339,24 +338,23 @@ public class FingerprintDialog extends javax.swing.JDialog {
 
     @Action
     public void addFingerprint() {
-        ImagedFingerprint imagedFingerprint = new ImagedFingerprint();
+        Fingerprint fingerPrint = new Fingerprint();
         if (rightIndexRadioButton.isSelected()) {
-            imagedFingerprint.setFingerprintType(Type.rightIndexFinger);
+            fingerPrint.setFingerprintType(Type.rightIndexFinger);
         } else if (leftIndexRadioButton.isSelected()) {
-            imagedFingerprint.setFingerprintType(Type.leftIndexFinger);
+            fingerPrint.setFingerprintType(Type.leftIndexFinger);
         } else if (rightMiddleRadioButton.isSelected()) {
-            imagedFingerprint.setFingerprintType(Type.rightMiddleFinger);
+            fingerPrint.setFingerprintType(Type.rightMiddleFinger);
         } else if (leftMiddleRadioButton.isSelected()) {
-            imagedFingerprint.setFingerprintType(Type.leftMiddleFinger);
+            fingerPrint.setFingerprintType(Type.leftMiddleFinger);
         } else if (rightRingRadioButton.isSelected()) {
-            imagedFingerprint.setFingerprintType(Type.rightRingFinger);
+            fingerPrint.setFingerprintType(Type.rightRingFinger);
         } else if (leftRingRadioButton.isSelected()) {
-            imagedFingerprint.setFingerprintType(Type.leftRingFinger);
+            fingerPrint.setFingerprintType(Type.leftRingFinger);
         }
-        imagedFingerprint.setTechnologyType(TechnologyType.griauleTemplate);
-        imagedFingerprint.setTemplate(readerManager.getTemplate().getData());
-        imagedFingerprint.setImage(fingerprintImagePanel.getImage());
-        search.addImagedFingerprint(imagedFingerprint);
+        fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
+        fingerPrint.setTemplate(readerManager.getTemplate().getData());
+        session.addImagedFingerprint(new ImagedFingerprint(fingerPrint, fingerprintImagePanel.getImage()));
         dispose();
     }
 }

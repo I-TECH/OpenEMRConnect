@@ -10,7 +10,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="mainSplitPane" alignment="0" pref="880" max="32767" attributes="0"/>
+              <Component id="mainSplitPane" alignment="0" pref="942" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -134,7 +134,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="wizardPanel" alignment="0" pref="634" max="32767" attributes="0"/>
+                              <Component id="wizardPanel" alignment="0" pref="666" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="homeButton" linkSize="1" min="-2" pref="48" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -207,7 +207,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="145" max="-2" attributes="0"/>
                                   <Component id="homePanel" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" pref="172" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="229" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -240,10 +240,10 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="newButton" alignment="0" pref="283" max="32767" attributes="0"/>
-                                          <Component id="visitorButton" alignment="0" pref="283" max="32767" attributes="0"/>
-                                          <Component id="enrolledButton" alignment="0" pref="283" max="32767" attributes="0"/>
-                                          <Component id="transferInButton" alignment="0" pref="283" max="32767" attributes="0"/>
+                                          <Component id="newButton" alignment="0" pref="258" max="32767" attributes="0"/>
+                                          <Component id="visitorButton" alignment="0" pref="258" max="32767" attributes="0"/>
+                                          <Component id="enrolledButton" alignment="0" pref="258" max="32767" attributes="0"/>
+                                          <Component id="transferInButton" alignment="0" pref="258" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -313,7 +313,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="130" max="-2" attributes="0"/>
                                   <Component id="clientIdPanel" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" pref="168" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="225" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -346,8 +346,8 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="clinicIdNoButton" alignment="0" pref="302" max="32767" attributes="0"/>
-                                          <Component id="clinicIdYesButton" alignment="0" pref="302" max="32767" attributes="0"/>
+                                          <Component id="clinicIdNoButton" alignment="0" pref="277" max="32767" attributes="0"/>
+                                          <Component id="clinicIdYesButton" alignment="0" pref="277" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -442,8 +442,8 @@
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="522" max="32767" attributes="0"/>
-                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="522" max="32767" attributes="0"/>
+                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="554" max="32767" attributes="0"/>
+                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="554" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="0" attributes="0">
                                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                                           <Component id="basicSearchTakeButton" alignment="0" max="32767" attributes="1"/>
@@ -454,7 +454,7 @@
                                                   </Group>
                                               </Group>
                                           </Group>
-                                          <Component id="basicSearchButton" alignment="0" pref="580" max="32767" attributes="0"/>
+                                          <Component id="basicSearchButton" alignment="0" pref="612" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -622,7 +622,7 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="extendedSearchButton" alignment="1" pref="580" max="32767" attributes="0"/>
+                                          <Component id="extendedSearchButton" alignment="1" pref="612" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -651,13 +651,13 @@
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="extendedSearchLastNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchFirstNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchClinicNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchVillageTextField" alignment="0" pref="515" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchClinicIdTextField" alignment="0" pref="515" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchDateOfBirthChooser" alignment="0" pref="515" max="32767" attributes="0"/>
+                                                  <Component id="extendedSearchLastNameTextField" alignment="1" pref="547" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="547" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchFirstNameTextField" alignment="1" pref="547" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicNameTextField" alignment="1" pref="547" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchVillageTextField" alignment="0" pref="547" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicIdTextField" alignment="0" pref="547" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchDateOfBirthChooser" alignment="0" pref="547" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
                                       </Group>
@@ -937,8 +937,8 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="notFoundButton" alignment="0" pref="580" max="32767" attributes="0"/>
-                                          <Component id="searchResultsScrollPane" alignment="0" pref="580" max="32767" attributes="0"/>
+                                          <Component id="notFoundButton" alignment="0" pref="612" max="32767" attributes="0"/>
+                                          <Component id="searchResultsScrollPane" alignment="0" pref="612" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -1047,7 +1047,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jPanel1" max="32767" attributes="0"/>
+                                  <Component id="reviewPanel" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1056,23 +1056,23 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jPanel1" max="32767" attributes="0"/>
+                                  <Component id="reviewPanel" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
                       </Layout>
                       <SubComponents>
-                        <Container class="javax.swing.JPanel" name="jPanel1">
+                        <Container class="javax.swing.JPanel" name="reviewPanel">
                           <Properties>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                                 <TitledBorder title="Add/ Review">
-                                  <Property name="titleX" resourceKey="jPanel1.border.title"/>
+                                  <Property name="titleX" resourceKey="reviewPanel.border.title"/>
                                 </TitledBorder>
                               </Border>
                             </Property>
-                            <Property name="name" type="java.lang.String" value="jPanel1" noResource="true"/>
+                            <Property name="name" type="java.lang.String" value="reviewPanel" noResource="true"/>
                           </Properties>
 
                           <Layout>
@@ -1820,27 +1820,27 @@
                                       <Group type="102" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="jDateChooser2" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jDateChooser2" alignment="0" pref="138" max="32767" attributes="0"/>
                                               <Group type="102" alignment="0" attributes="0">
                                                   <Component id="jRadioButton3" min="-2" max="-2" attributes="0"/>
                                                   <EmptySpace max="-2" attributes="0"/>
                                                   <Component id="jRadioButton4" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <Component id="jTextField16" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField5" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField17" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField18" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jComboBox2" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField21" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField20" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField19" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField22" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField23" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField24" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField28" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField27" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField26" alignment="0" pref="106" max="32767" attributes="0"/>
-                                              <Component id="jTextField25" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField16" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField5" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField17" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField18" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jComboBox2" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField21" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField20" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField19" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField22" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField23" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField24" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField28" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField27" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField26" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField25" alignment="0" pref="138" max="32767" attributes="0"/>
                                           </Group>
                                           <EmptySpace max="-2" attributes="0"/>
                                       </Group>
@@ -2087,11 +2087,11 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="statusPanelSeparator" alignment="0" pref="880" max="32767" attributes="0"/>
+              <Component id="statusPanelSeparator" alignment="0" pref="942" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="710" max="32767" attributes="0"/>
+                  <EmptySpace pref="772" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
@@ -2184,6 +2184,6 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-18,0,0,3,112"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-23,0,0,3,-82"/>
   </AuxValues>
 </Form>

@@ -24,24 +24,9 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.domain;
 
-import java.util.Date;
-import java.util.List;
-import ke.go.moh.oec.Person;
-
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class PersonListGenerator {
-
-    public List<Person> generatePersonList() {
-        
-        Person person = new Person();
-        person.setAliveStatus(Person.AliveStatus.yes);
-        person.setBirthdate(new Date());
-        person.setClanName("Clan A");
-        person.setCompoundHeadFirstName("Compound Head");
-        person.setVillageName("Village A");
-        return null;
-    }
+public interface SearchParameters {
 }

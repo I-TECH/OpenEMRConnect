@@ -24,40 +24,24 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.domain;
 
-import java.util.List;
-import ke.go.moh.oec.Fingerprint;
-
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class BasicSearchParameters implements SearchParameters {
+public class UnreachableMPIException extends Exception {
 
-    private String clinicId;
-    private String clinicName;
-    List<Fingerprint> fingerprintList;
-
-    public String getClinicId() {
-        return clinicId;
+    /**
+     * Creates a new instance of <code>UnreachableMPIException</code> without detail message.
+     */
+    public UnreachableMPIException() {
+        super("The Master Person Index could not be reached.");
     }
 
-    public void setClinicId(String clinicId) {
-        this.clinicId = clinicId;
-    }
-
-    public String getClinicName() {
-        return clinicName;
-    }
-
-    public void setClinicName(String clinicName) {
-        this.clinicName = clinicName;
-    }
-
-    public List<Fingerprint> getFingerprintList() {
-        return fingerprintList;
-    }
-
-    public void setFingerprintList(List<Fingerprint> fingerprintList) {
-        this.fingerprintList = fingerprintList;
+    /**
+     * Constructs an instance of <code>UnreachableMPIException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public UnreachableMPIException(String msg) {
+        super(msg);
     }
 }

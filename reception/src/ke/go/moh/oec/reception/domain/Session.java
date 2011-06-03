@@ -24,8 +24,9 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.domain;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.List;
+import ke.go.moh.oec.Fingerprint;
 
 /**
  *
@@ -40,17 +41,24 @@ public class Session {
         NEW,
         TRANSFER_IN
     }
-
     private CLIENT_TYPE clientType;
-    private String clinicId;
-    //private String firstName
-    private List<ImagedFingerprint> fingerprintList;
+    private BasicSearchParameters basicSearchParameters = new BasicSearchParameters();
+    private ExtendedSearchParameters extendedSearchParameters = new ExtendedSearchParameters();
+    private BufferedImage currentFingerprintImage = null;
 
     public Session() {
     }
 
     public Session(CLIENT_TYPE clientType) {
         this.clientType = clientType;
+    }
+
+    public BasicSearchParameters getBasicSearchParameters() {
+        return basicSearchParameters;
+    }
+
+    public void setBasicSearchParameters(BasicSearchParameters basicSearchParameters) {
+        this.basicSearchParameters = basicSearchParameters;
     }
 
     public CLIENT_TYPE getClientType() {
@@ -61,14 +69,23 @@ public class Session {
         this.clientType = clientType;
     }
 
-    public List<ImagedFingerprint> getFingerprintList() {
-        return fingerprintList;
+    public ExtendedSearchParameters getExtendedSearchParameters() {
+        return extendedSearchParameters;
+    }
+
+    public void setExtendedSearchParameters(ExtendedSearchParameters extendedSearchParameters) {
+        this.extendedSearchParameters = extendedSearchParameters;
+    }
+
+    public BufferedImage getCurrentFingerprintImage() {
+        return currentFingerprintImage;
     }
 
     public void addImagedFingerprint(ImagedFingerprint imagedFingerprint) {
-        if (fingerprintList == null) {
-            fingerprintList = new ArrayList<ImagedFingerprint>();
+        if (basicSearchParameters.getFingerprintList() == null) {
+            basicSearchParameters.setFingerprintList(new ArrayList<Fingerprint>());
         }
-        fingerprintList.add(imagedFingerprint);
+        basicSearchParameters.getFingerprintList().add(imagedFingerprint.getFingerprint());
+        currentFingerprintImage = imagedFingerprint.getImage();
     }
 }

@@ -24,11 +24,96 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.domain;
 
+import java.util.Date;
+import java.util.List;
+import ke.go.moh.oec.Fingerprint;
+import ke.go.moh.oec.Person.Sex;
+
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class ExtendedSearchParameters {
+public class ExtendedSearchParameters implements SearchParameters {
 
-    private BasicSearchParameters basicSearchParameters;
+    private String clinicId;
+    private String clinicName;
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private Sex sex;
+    private Date birthdate;
+    private String villageName;
+    List<Fingerprint> fingerprintList;
+
+    public Date getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(Date birthDate) {
+        this.birthdate = birthDate;
+    }
+
+    public String getClinicId() {
+        return clinicId;
+    }
+
+    public void setClinicId(String clinicId) {
+        this.clinicId = clinicId;
+    }
+
+    public String getClinicName() {
+        return clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public List<Fingerprint> getFingerprint() {
+        return fingerprintList;
+    }
+
+    public void setFingerprint(List<Fingerprint> fingerprintList) {
+        this.fingerprintList = fingerprintList;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex = sex;
+    }
+
+    public String getVillageName() {
+        return villageName;
+    }
+
+    public void setVillageName(String villageName) {
+        this.villageName = villageName;
+    }
 }

@@ -253,6 +253,7 @@
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
           <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="addFingerprint" methodName="addFingerprint"/>
         </Property>
+        <Property name="text" type="java.lang.String" value="OK"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="cancelButton">
@@ -260,6 +261,7 @@
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
           <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="cancel" methodName="cancel"/>
         </Property>
+        <Property name="text" type="java.lang.String" value="Cancel"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="statusLabel">

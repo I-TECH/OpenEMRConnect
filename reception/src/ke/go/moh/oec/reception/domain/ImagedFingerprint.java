@@ -31,9 +31,23 @@ import ke.go.moh.oec.Fingerprint;
  *
  * @author Gitahi Ng'ang'a
  */
-public class ImagedFingerprint extends Fingerprint {
+public class ImagedFingerprint {
 
+    private Fingerprint fingerprint;
     private BufferedImage image;
+
+    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image) {
+        this.fingerprint = fingerprint;
+        this.image = image;
+    }
+
+    public Fingerprint getFingerprint() {
+        return fingerprint;
+    }
+
+    public void setFingerprint(Fingerprint fingerprint) {
+        this.fingerprint = fingerprint;
+    }
 
     public BufferedImage getImage() {
         return image;

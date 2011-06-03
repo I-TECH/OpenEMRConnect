@@ -48,7 +48,7 @@ public class Mpi implements IService {
      * entry.
      */
     public Mpi() {
-        final String driverName = "com.mysql.jdbc.Driver";
+        final String driverName = Mediator.getProperty("MPI.driver");
         try {
             Class.forName(driverName).newInstance();
         } catch (Exception ex) {

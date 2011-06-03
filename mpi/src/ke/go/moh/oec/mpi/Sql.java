@@ -57,7 +57,11 @@ public class Sql {
     public static Connection connect() {
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/mpi", "root", "2806");
+            String url = Mediator.getProperty("MPI.url");
+            String username = Mediator.getProperty("MPI.username");
+            String password = Mediator.getProperty("MPI.password");
+            conn = DriverManager.getConnection(url, username, password);
+
         } catch (Exception ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Can''t connect to the database -- Please check the database and try again.", ex);
@@ -376,5 +380,4 @@ public class Sql {
             return null;
         }
     }
-
 }
