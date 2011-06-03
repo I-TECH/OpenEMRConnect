@@ -25,9 +25,12 @@ import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.reception.domain.RequestDispatcher;
 import ke.go.moh.oec.reception.domain.Session;
+import ke.go.moh.oec.reception.domain.UnreachableLPIException;
+import ke.go.moh.oec.reception.domain.Util;
 
 /**
  * The application's main frame.
@@ -519,6 +522,7 @@ public class View extends FrameView {
             .addGap(0, 74, Short.MAX_VALUE)
         );
 
+        basicSearchClientRefusesCheckBox.setAction(actionMap.get("refuseFingerprinting")); // NOI18N
         basicSearchClientRefusesCheckBox.setText(resourceMap.getString("basicSearchClientRefusesCheckBox.text")); // NOI18N
         basicSearchClientRefusesCheckBox.setName("basicSearchClientRefusesCheckBox"); // NOI18N
 
@@ -677,7 +681,7 @@ public class View extends FrameView {
         extendedSearchTakeButton.setText(resourceMap.getString("extendedSearchTakeButton.text")); // NOI18N
         extendedSearchTakeButton.setName("extendedSearchTakeButton"); // NOI18N
 
-        extendedSearchButton.setAction(actionMap.get("search")); // NOI18N
+        extendedSearchButton.setAction(actionMap.get("test")); // NOI18N
         extendedSearchButton.setText(resourceMap.getString("extendedSearchButton.text")); // NOI18N
         extendedSearchButton.setName("extendedSearchButton"); // NOI18N
 
@@ -1672,16 +1676,39 @@ public class View extends FrameView {
 
         @Override
         protected Object doInBackground() {
+            //TODO: Decide what to do when the MPI or LPI cannot be contacted
             List<Person> mpiPersonList = null;
             List<Person> lpiPersonList = null;
             try {
                 session.getBasicSearchParameters().setClinicId(basicSearchClinicIdTextField.getText());
                 mpiPersonList = RequestDispatcher.findMPICandidates(session.getBasicSearchParameters());
                 lpiPersonList = RequestDispatcher.findLPICandidates(session.getBasicSearchParameters());
+                if (!mpiPersonList.isEmpty()) {
+                    if (Util.checkPersonListForFingerprintCandidates(mpiPersonList)) {
+                        if (!lpiPersonList.isEmpty()) {
+                            //TODO: Display LPI candidates
+                        } else {
+                            //TODO: Display MPI candidates
+                        }
+                    } else {
+                    }
+                } else {
+                    if (!session.hasAllFingerprintsTaken()) {
+                        //TODO: Repeat Basic Search with next fingerprint                      
+                    } else {
+                        if (!lpiPersonList.isEmpty()) {
+                            //TODO: Display LPI candidates
+                        } else {
+                            //TODO: Go to Extended Search
+                        }
+                    }
+                }
             } catch (UnreachableMPIException ex) {
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnreachableLPIException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             }
-            return mpiPersonList;
+            return new Envelope("searchResultsCard", mpiPersonList);
         }
 
         @Override
@@ -1693,6 +1720,41 @@ public class View extends FrameView {
             searchResultsCard.repaint();
         }
     }
+
+    @Action
+    public void refuseFingerprinting() {
+        if (basicSearchClientRefusesCheckBox.isSelected()) {
+            showFingerprintImage(refusedFingerprint);
+            session.getBasicSearchParameters().setFingerprintList(new ArrayList<Fingerprint>());
+        } else {
+            showFingerprintImage(fingerprintNotTaken);
+        }
+    }
+
+    @Action
+    public Task test() {
+        return new TestTask(getApplication());
+    }
+
+    private class TestTask extends org.jdesktop.application.Task<Object, Void> {
+        TestTask(org.jdesktop.application.Application app) {
+            // Runs on the EDT.  Copy GUI state that
+            // doInBackground() depends on from parameters
+            // to TestTask fields, here.
+            super(app);
+        }
+        @Override protected Object doInBackground() {
+            // Your Task's code here.  This method runs
+            // on a background thread, so don't reference
+            // the Swing GUI from here.
+            return null;  // return your result
+        }
+        @Override protected void succeeded(Object result) {
+            // Runs on the EDT.  Update the GUI based on
+            // the result computed by doInBackground().
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList alertsList;
     private javax.swing.JPanel alertsListPanel;

@@ -88,4 +88,12 @@ public class Session {
         basicSearchParameters.getFingerprintList().add(imagedFingerprint.getFingerprint());
         currentFingerprintImage = imagedFingerprint.getImage();
     }
+
+    public boolean hasAllFingerprintsTaken() {
+        boolean allFingerprintsTaken = false;
+        if (basicSearchParameters.getFingerprintList() != null) {
+            allFingerprintsTaken = (basicSearchParameters.getFingerprintList().size() > 5);
+        }
+        return allFingerprintsTaken;
+    }
 }

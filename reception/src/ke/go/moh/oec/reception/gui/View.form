@@ -547,6 +547,9 @@
                             </Container>
                             <Component class="javax.swing.JCheckBox" name="basicSearchClientRefusesCheckBox">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.View" id="refuseFingerprinting" methodName="refuseFingerprinting"/>
+                                </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="basicSearchClientRefusesCheckBox.text"/>
                                 <Property name="name" type="java.lang.String" value="basicSearchClientRefusesCheckBox" noResource="true"/>
                               </Properties>
@@ -878,7 +881,7 @@
                             <Component class="javax.swing.JButton" name="extendedSearchButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.View" id="search" methodName="search"/>
+                                  <action class="ke.go.moh.oec.reception.gui.View" id="test" methodName="test"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="extendedSearchButton.text"/>
                                 <Property name="name" type="java.lang.String" value="extendedSearchButton" noResource="true"/>

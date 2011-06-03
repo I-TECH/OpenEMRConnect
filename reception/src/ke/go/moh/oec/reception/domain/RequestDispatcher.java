@@ -35,27 +35,41 @@ import ke.go.moh.oec.lib.Mediator;
 
 public class RequestDispatcher {
 
-    private static Mediator mediator;
+    private static Mediator mediator = new Mediator();
 
-    static {
-        mediator = new Mediator();
-    }
-
-    public static List<Person> findMPICandidates(SearchParameters searchParameters) throws UnreachableMPIException {
+    public static List<Person> findMPICandidates(SearchParameters searchParameters) throws UnreachableMPIException, UnreachableLPIException {
         return findCandidates(searchParameters, RequestTypeId.FIND_PERSON_MPI);
     }
 
-    public static List<Person> findLPICandidates(SearchParameters searchParameters) throws UnreachableMPIException {
+    public static List<Person> findLPICandidates(SearchParameters searchParameters) throws UnreachableMPIException, UnreachableLPIException {
         return findCandidates(searchParameters, RequestTypeId.FIND_PERSON_LPI);
     }
 
-    public void modifyPerson(Person person) {
+    public void modifyPersonInMPI(int requestTypeId) {
+        modifyPerson(RequestTypeId.MODIFY_PERSON_MPI);
     }
 
-    public void addPerson(Person person) {
+    public void modifyPersonInLPI() {
+        modifyPerson(RequestTypeId.MODIFY_PERSON_LPI);
     }
 
-    private static List<Person> findCandidates(SearchParameters searchParameters, int requestTypeId) throws UnreachableMPIException {
+    public void createPersonInMPI() {
+        createPerson(RequestTypeId.CREATE_PERSON_MPI);
+    }
+
+    public void createPersonInLPI() {
+        createPerson(RequestTypeId.CREATE_PERSON_LPI);
+    }
+
+    private void modifyPerson(int requestTypeId) {
+        mediator.getData(requestTypeId, requestTypeId);
+    }
+
+    private void createPerson(int requestTypeId) {
+        mediator.getData(requestTypeId, requestTypeId);
+    }
+
+    private static List<Person> findCandidates(SearchParameters searchParameters, int requestTypeId) throws UnreachableMPIException, UnreachableLPIException {
         List<Person> personList = new ArrayList<Person>();
         PersonRequest personRequest = new PersonRequest();
         Person person = new Person();
@@ -69,8 +83,6 @@ public class RequestDispatcher {
             personIdentifierList.add(personIdentifier);
             person.setPersonIdentifierList(personIdentifierList);
             person.setFingerprintList(basicSearchParameters.getFingerprintList());
-            personRequest.setPerson(person);
-            personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
         } else if (searchParameters.getClass() == ExtendedSearchParameters.class) {
             ExtendedSearchParameters extendedSearchParameters = (ExtendedSearchParameters) searchParameters;
             personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
@@ -84,16 +96,20 @@ public class RequestDispatcher {
             person.setSex(extendedSearchParameters.getSex());
             person.setBirthdate(extendedSearchParameters.getBirthdate());
             person.setVillageName(extendedSearchParameters.getVillageName());
-            personRequest.setPerson(person);
-            personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
         }
+        personRequest.setPerson(person);
+        personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
         if (personResponse.isSuccessful()) {
             List<Person> pList = personResponse.getPersonList();
             if (pList != null) {
                 personList = pList;
             }
         } else {
-            throw new UnreachableMPIException();
+            if (requestTypeId == RequestTypeId.FIND_PERSON_MPI) {
+                throw new UnreachableMPIException();
+            } else {
+                throw new UnreachableLPIException();
+            }
         }
         return personList;
     }
