@@ -252,7 +252,8 @@ public class Mediator implements IService {
          * us <code>PersonRequest</code> data, they may choose to explicitly
          * specify the destination rather than leaving it to the default.
          */
-        m.setDestinationAddress(messageType.getDefaultDestinationAddress());
+        String defaultDestinationAddress = getProperty(messageType.getDefaultDestinationAddressProperty());
+        m.setDestinationAddress(defaultDestinationAddress);
         m.setDestinationName(messageType.getDefaultDestinationName());
         if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest) requestData;

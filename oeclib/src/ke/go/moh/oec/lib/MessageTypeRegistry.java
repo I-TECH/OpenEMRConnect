@@ -64,7 +64,7 @@ class MessageTypeRegistry {
             null, // No response type (this mssage does not have a response to answer it).
             MessageType.TemplateType.findPersonResponse,
             FIND_PERSON_RESPONSE_ROOT_TAG, //HL7 Patient Registry Find Candidates Query Response
-            null, // No default destination address
+            null, // No default destination address property
             null, // No default destination name
             false); // Don't store and forward if it doesn't go immediately
     /**
@@ -75,7 +75,7 @@ class MessageTypeRegistry {
             findPersonResponse,
             MessageType.TemplateType.findPerson,
             FIND_PERSON_ROOT_TAG, //HL7 Patient Registry Find Candidates Query
-            "ke.go.moh.mpi", // The Master Person List
+            "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
             false); // Don't store and forward if it doesn't go immediately
     /**
@@ -86,7 +86,7 @@ class MessageTypeRegistry {
             findPersonResponse,
             MessageType.TemplateType.findPerson,
             FIND_PERSON_ROOT_TAG, //HL7 Patient Registry Find Candidates Query
-            ".lpi", // The Local Person List (relative to where we are now.)
+            "LPI.Address", // The Local Person List address property
             "Local Person Index", // The Local Person List
             false); // Don't store and forward if it doesn't go immediately
     /**
@@ -97,7 +97,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             MessageType.TemplateType.createPerson,
             CREATE_PERSON_ROOT_TAG, //HL7 Patient Registry Add Request
-            "ke.go.moh.mpi", // The Master Person List
+            "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
@@ -108,7 +108,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             MessageType.TemplateType.createPerson,
             CREATE_PERSON_ROOT_TAG, //HL7 Patient Registry Add Request
-            ".lpi", // The Local Person List (relative to where we are now.)
+            "LPI.Address", // The Local Person List address property
             "Local Person Index", // The Local Person List
             true); // Store and forward if it doesn't send immediately
     /**
@@ -119,7 +119,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             MessageType.TemplateType.modifyPerson,
             MODIFY_PERSON_ROOT_TAG, //HL7 Patient Registry Revise Request
-            "ke.go.moh.mpi", // The Master Person List
+            "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
@@ -130,7 +130,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             MessageType.TemplateType.modifyPerson,
             MODIFY_PERSON_ROOT_TAG, //HL7 Patient Registry Revise Request
-            ".lpi", // The Local Person List (relative to where we are now.)
+            "LPI.Address", // The Local Person List address property
             "Local Person Index", // The Local Person List
             true); // Store and forward if it doesn't send immediately
     /**
@@ -141,7 +141,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             MessageType.TemplateType.notifyPersonChanged,
             NOTIFY_PERSON_CHANGED_ROOT_TAG, //HL7 Patient Registry Record Revised
-            "ke.go.moh.mpi", // The Master Person List
+            "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
@@ -152,8 +152,8 @@ class MessageTypeRegistry {
             findPersonResponse,
             MessageType.TemplateType.findPerson,
             FIND_PERSON_ROOT_TAG, //HL7 Patient Registry Find Candidates Query
-            "org.kemri.kisumu.hdss", // The HDSS companion
-            "Kisumu HDSS Companion", // The HDSS companion
+            "HDSS.Address", // The HDSS companion address property
+            "HDSS Companion", // The HDSS companion
             true); // Store and forward if it doesn't send immediately
     /**
      * Send Log Entry
@@ -163,7 +163,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             MessageType.TemplateType.logEntry,
             LOG_ENTRY_ROOT_TAG, // XML root tag To Be Defined
-            "ke.go.moh.loggingServer", // The Logging Server
+            "LoggingServer.Address", // The Logging Server address property
             "Logging Server", // The Logging Server
             true); // Store and forward if it doesn't send immediately
     /**
@@ -174,8 +174,8 @@ class MessageTypeRegistry {
             null, // No response to this message.
             MessageType.TemplateType.getWork,
             GET_WORK_ROOT_TAG, // XML root tag To Be Defined
-            ".lpi", // The Local Person List (relative to where we are now.)
-            "Local Person Index", // The Local Person List
+            "CDS.Address", // The Clinical Document Store address property
+            "Clinical Document Store", // The Clinical Document Store
             true); // Store and forward if it doesn't send immediately
     /**
      * Send WorkDone
@@ -185,8 +185,8 @@ class MessageTypeRegistry {
             null, // No response to this message.
             MessageType.TemplateType.workDone,
             WORK_DONE_ROOT_TAG, // XML root tag To Be Defined
-            ".lpi", // The Local Person List (relative to where we are now.)
-            "Local Person Index", // The Local Person List
+            "CDS.Address", // The Clinical Document Store address property
+            "Clinical Document Store", // The Clinical Document Store
             true); // Store and forward if it doesn't send immediately
     /**
      * Send Reassign
@@ -196,7 +196,7 @@ class MessageTypeRegistry {
             null, // No response to this message.
             MessageType.TemplateType.reassignWork,
             REASSIGN_ROOT_TAG, // XML root tag To Be Defined
-            ".cds", // The Clinical document store
+            "CDS.Address", // The Clinical Document Store address property
             "Clinical Document Store", // The Clinical Document Store
             true); // Store and forward if it doesn't send immediately
     /**
