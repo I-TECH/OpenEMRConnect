@@ -978,17 +978,25 @@ class XmlPacker {
      * to this class, in the "messages/" package relative to the package
      * storing the current class. In other words, the XML message template files
      * are packed into the .jar file containing this class.
+     * <p>
+     * Note: If the caller has a pre-formed XML message to use as the template
+     * instead of the fixed template, then it will be used instead.
      *
      * @param m message to load the template for
      * @return the loaded template <code>Document</code>
      */
     private Document packTemplate(Message m) {
         Document doc = null;
-        String templateFileName = "messages/" + m.getMessageType().getTemplateType().name() + ".xml";
         try {
+            String templateFileName = "messages/" + m.getMessageType().getTemplateType().name() + ".xml";
+            InputStream is = null;
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            InputStream is = XmlPacker.class.getResourceAsStream(templateFileName);
+            if (m.getXml() != null) {
+                is = new ByteArrayInputStream(m.getXml().getBytes());
+            } else {
+                is = XmlPacker.class.getResourceAsStream(templateFileName);
+            }
             doc = db.parse(is);
         } catch (SAXException ex) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
@@ -1294,6 +1302,7 @@ class XmlPacker {
      */
     private void unpackGenericPersonMessage(Message m, Element e) {
         PersonRequest personRequest = new PersonRequest();
+        personRequest.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
         m.setData(personRequest);
         Person p = new Person();
         personRequest.setPerson(p);
@@ -1312,6 +1321,7 @@ class XmlPacker {
      */
     private void unpackFindPersonMessage(Message m, Element e) {
         PersonRequest personRequest = new PersonRequest();
+        personRequest.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
         m.setData(personRequest);
         Person p = new Person();
         personRequest.setPerson(p);

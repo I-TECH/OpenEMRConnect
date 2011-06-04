@@ -251,6 +251,9 @@ public class Mediator implements IService {
          * destination for the message type. However if our caller is passing
          * us <code>PersonRequest</code> data, they may choose to explicitly
          * specify the destination rather than leaving it to the default.
+         * Also, if we have a <code>PersonRequest</code>, then the caller
+         * has the option of specifying an XML string to be used
+         * instead of the standard template for the message.
          */
         String defaultDestinationAddress = getProperty(messageType.getDefaultDestinationAddressProperty());
         m.setDestinationAddress(defaultDestinationAddress);
@@ -263,6 +266,7 @@ public class Mediator implements IService {
             if (pr.getDestinationName() != null) {
                 m.setDestinationName(pr.getDestinationName());
             }
+            m.setXml(pr.getXml());
         }
         Object returnData = null;
         if (m.getDestinationAddress() == null) {
