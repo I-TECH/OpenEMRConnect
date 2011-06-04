@@ -94,6 +94,14 @@ public class MediatorTest {
         assertNotNull(pList);
         int pCount = pList.size();
         assertEquals(pCount, 8);
+        for (int i = 0; i < pList.size(); i++) {
+            Person person = pList.get(i);
+            String guid = person.getPersonGuid();
+            // Make sure every returned person GUID is unique:
+            for (int j = 0; j < i; j++) {
+                assertFalse(pList.get(j).getPersonGuid().equals(guid));
+            }
+        }
         Person p0 = pList.get(0);
         int score = p0.getMatchScore();
         assertEquals(score, 100);
