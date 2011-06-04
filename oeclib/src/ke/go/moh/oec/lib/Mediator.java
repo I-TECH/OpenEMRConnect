@@ -317,7 +317,7 @@ public class Mediator implements IService {
      * @param m message to be sent
      * @return object containing response data from the request
      */
-    protected Object sendData(Message m) {
+    Object sendData(Message m) {
         Object returnData = null;
         MessageType messageType = m.getMessageType(); // For handy reference.
         String ipAddressPort = getIpAddressPort(m.getDestinationAddress());
@@ -457,7 +457,7 @@ public class Mediator implements IService {
      *
      * @param m Message received
      */
-    protected void processReceivedMessage(Message m) {
+    void processReceivedMessage(Message m) {
         String destinationAddress = m.getDestinationAddress();
         if (destinationAddress == null) {
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,

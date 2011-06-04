@@ -138,7 +138,7 @@ class XmlPacker {
      * @param m message to be packed
      * @return the packed XML in a string
      */
-    protected String pack(Message m) {
+    String pack(Message m) {
         Document doc = packMessage(m);
         String xml = packDocument(doc);
         return xml;
@@ -150,7 +150,7 @@ class XmlPacker {
      * @param doc the DOM Document structure to pack
      * @return the packed XML string
      */
-    protected String packDocument(Document doc) {
+    String packDocument(Document doc) {
         StringWriter stringWriter = new StringWriter();
         try {
             Transformer t = TransformerFactory.newInstance().newTransformer();
@@ -172,7 +172,7 @@ class XmlPacker {
      * @param m message contents to pack
      * @return message packed in a <code>Document</code>
      */
-    protected Document packMessage(Message m) {
+    Document packMessage(Message m) {
         Document doc = null;
         switch (m.getMessageType().getTemplateType()) {
             case findPerson:
@@ -1210,7 +1210,7 @@ class XmlPacker {
      *
      * @param m Message to unpack
      */
-    protected void unpack(Message m) {
+    void unpack(Message m) {
         Document doc = unpackXml(m.getXml());
         unpackDocument(m, doc);
     }
@@ -1221,7 +1221,7 @@ class XmlPacker {
      * @param xml String containing XML request message
      * @return the DOM Document structure
      */
-    protected Document unpackXml(String xml) {
+    Document unpackXml(String xml) {
         Document doc = null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -1244,7 +1244,7 @@ class XmlPacker {
      * @param m the message to unpack
      * @param doc the DOM Document structure to decode
      */
-    protected void unpackDocument(Message m, Document doc) {
+    void unpackDocument(Message m, Document doc) {
         Element root = doc.getDocumentElement();
         String rootName = root.getTagName();
         MessageType messageType = MessageTypeRegistry.find(rootName);

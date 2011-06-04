@@ -39,27 +39,27 @@ import java.util.List;
 class MessageTypeRegistry {
 
     /** NOTIFY PERSON CHANGED uses HL7 Patient Registry Record Revised, PRPA_IN201302UV02 */
-    protected static final String NOTIFY_PERSON_CHANGED_ROOT_TAG = "PRPA_IN201302UV02";
+    static final String NOTIFY_PERSON_CHANGED_ROOT_TAG = "PRPA_IN201302UV02";
     /** FIND PERSON uses HL7 Patient Registry Find Candidates Query, PRPA_IN201305UV02 */
-    protected static final String FIND_PERSON_ROOT_TAG = "PRPA_IN201305UV02";
+    static final String FIND_PERSON_ROOT_TAG = "PRPA_IN201305UV02";
     /** FIND PERSON RESPONSE uses HL7 Patient Registry Find Candidates Query Response, PRPA_IN201306UV02  */
-    protected static final String FIND_PERSON_RESPONSE_ROOT_TAG = "PRPA_IN201306UV02";
+    static final String FIND_PERSON_RESPONSE_ROOT_TAG = "PRPA_IN201306UV02";
     /** ADD PERSON uses HL7 Patient Registry Add Request, PRPA_IN201311UV02 */
-    protected static final String CREATE_PERSON_ROOT_TAG = "PRPA_IN201311UV02";
+    static final String CREATE_PERSON_ROOT_TAG = "PRPA_IN201311UV02";
     /** MODIFY PERSON uses HL7 Patient Registry Revise Request, PRPA_IN201314UV02 */
-    protected static final String MODIFY_PERSON_ROOT_TAG = "PRPA_IN201314UV02";
+    static final String MODIFY_PERSON_ROOT_TAG = "PRPA_IN201314UV02";
     /** LOG ENTRY uses LogEntry for a root tag */
-    protected static final String LOG_ENTRY_ROOT_TAG = "LogEntry";
+    static final String LOG_ENTRY_ROOT_TAG = "LogEntry";
     /** GET WORK  uses getWork for a root tag*/
-    protected static final String GET_WORK_ROOT_TAG = "GetWork";
+    static final String GET_WORK_ROOT_TAG = "GetWork";
     /**WORK DONE uses Work Done for a root tag*/
-    protected static final String WORK_DONE_ROOT_TAG = "WorkDone";
+    static final String WORK_DONE_ROOT_TAG = "WorkDone";
     /**Reassign uses Reassign for a root tag*/
-    protected static final String REASSIGN_ROOT_TAG = "Reassign";
+    static final String REASSIGN_ROOT_TAG = "Reassign";
     /**
      * Find Person response
      */
-    protected static final MessageType findPersonResponse = new MessageType(
+    static final MessageType findPersonResponse = new MessageType(
             0, // No request type (this message is only a response).
             null, // No response type (this mssage does not have a response to answer it).
             MessageType.TemplateType.findPersonResponse,
@@ -70,7 +70,7 @@ class MessageTypeRegistry {
     /**
      * Find Person (MPI) request
      */
-    protected static final MessageType findPersonMpi = new MessageType(
+    static final MessageType findPersonMpi = new MessageType(
             RequestTypeId.FIND_PERSON_MPI,
             findPersonResponse,
             MessageType.TemplateType.findPerson,
@@ -81,7 +81,7 @@ class MessageTypeRegistry {
     /**
      * Find Person (LPI) request
      */
-    protected static final MessageType findPersonLpi = new MessageType(
+    static final MessageType findPersonLpi = new MessageType(
             RequestTypeId.FIND_PERSON_LPI,
             findPersonResponse,
             MessageType.TemplateType.findPerson,
@@ -92,7 +92,7 @@ class MessageTypeRegistry {
     /**
      * Create Person (MPI) request
      */
-    protected static final MessageType createPersonMpi = new MessageType(
+    static final MessageType createPersonMpi = new MessageType(
             RequestTypeId.CREATE_PERSON_MPI,
             null, // No response to this message.
             MessageType.TemplateType.createPerson,
@@ -103,7 +103,7 @@ class MessageTypeRegistry {
     /**
      * Create Person (LPI) request
      */
-    protected static final MessageType createPersonLpi = new MessageType(
+    static final MessageType createPersonLpi = new MessageType(
             RequestTypeId.CREATE_PERSON_LPI,
             null, // No response to this message.
             MessageType.TemplateType.createPerson,
@@ -114,7 +114,7 @@ class MessageTypeRegistry {
     /**
      * Modify Person (MPI) request
      */
-    protected static final MessageType modifyPersonMpi = new MessageType(
+    static final MessageType modifyPersonMpi = new MessageType(
             RequestTypeId.MODIFY_PERSON_MPI,
             null, // No response to this message.
             MessageType.TemplateType.modifyPerson,
@@ -125,7 +125,7 @@ class MessageTypeRegistry {
     /**
      * Modify Person (LPI) request
      */
-    protected static final MessageType modifyPersonLpi = new MessageType(
+    static final MessageType modifyPersonLpi = new MessageType(
             RequestTypeId.MODIFY_PERSON_LPI,
             null, // No response to this message.
             MessageType.TemplateType.modifyPerson,
@@ -136,7 +136,7 @@ class MessageTypeRegistry {
     /**
      * Set Clinical Document
      */
-    protected static final MessageType notifyPersonChanged = new MessageType(
+    static final MessageType notifyPersonChanged = new MessageType(
             RequestTypeId.NOTIFY_PERSON_CHANGED,
             null, // No response to this message.
             MessageType.TemplateType.notifyPersonChanged,
@@ -147,7 +147,7 @@ class MessageTypeRegistry {
     /**
      * Find person (to get household members) from HDSS
      */
-    protected static final MessageType findPersonHdss = new MessageType(
+    static final MessageType findPersonHdss = new MessageType(
             RequestTypeId.FIND_PERSON_HDSS,
             findPersonResponse,
             MessageType.TemplateType.findPerson,
@@ -158,7 +158,7 @@ class MessageTypeRegistry {
     /**
      * Send Log Entry
      */
-    protected static final MessageType logEntry = new MessageType(
+    static final MessageType logEntry = new MessageType(
             RequestTypeId.LOG_ENTRY,
             null, // No response to this message.
             MessageType.TemplateType.logEntry,
@@ -169,7 +169,7 @@ class MessageTypeRegistry {
     /**
      * Send get work
      */
-    protected static final MessageType getWork = new MessageType(
+    static final MessageType getWork = new MessageType(
             RequestTypeId.GET_WORK,
             null, // No response to this message.
             MessageType.TemplateType.getWork,
@@ -180,7 +180,7 @@ class MessageTypeRegistry {
     /**
      * Send WorkDone
      */
-    protected static final MessageType WorkDone = new MessageType(
+    static final MessageType WorkDone = new MessageType(
             RequestTypeId.WORK_DONE,
             null, // No response to this message.
             MessageType.TemplateType.workDone,
@@ -191,7 +191,7 @@ class MessageTypeRegistry {
     /**
      * Send Reassign
      */
-    protected static final MessageType ReassignWork = new MessageType(
+    static final MessageType ReassignWork = new MessageType(
             RequestTypeId.REASSIGN_WORK,
             null, // No response to this message.
             MessageType.TemplateType.reassignWork,
@@ -224,7 +224,7 @@ class MessageTypeRegistry {
      * @param requestTypeId request type to search for
      * @return <code>MessageType</code>, or <code>null</code> if not found.
      */
-    protected static MessageType find(int requestTypeId) {
+    static MessageType find(int requestTypeId) {
         for (MessageType m : messageTypeList) {
             if (m.getRequestTypeId() == requestTypeId) {
                 return m;
@@ -243,7 +243,7 @@ class MessageTypeRegistry {
      * @param rootXmlTag message root XML tag to search for
      * @return <code>MessageType</code>, or <code>null</code> if not found.
      */
-    protected static MessageType find(String rootXmlTag) {
+    static MessageType find(String rootXmlTag) {
         for (MessageType m : messageTypeList) {
             if (m.getRootXmlTag().equals(rootXmlTag)) {
                 return m;

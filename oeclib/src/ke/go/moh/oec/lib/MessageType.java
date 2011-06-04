@@ -35,7 +35,7 @@ package ke.go.moh.oec.lib;
  */
 class MessageType {
 
-    protected enum TemplateType {
+    enum TemplateType {
 
         notifyPersonChanged,
         findPerson,
@@ -72,7 +72,7 @@ class MessageType {
      * @param defaultDestinationProperty Property name for finding the default destination address and name
      * @param toBeQueued Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false)
      */
-    protected MessageType(int requestTypeId, MessageType responseMessageType, TemplateType templateType,
+    MessageType(int requestTypeId, MessageType responseMessageType, TemplateType templateType,
             String rootXmlTag, String defaultDestinationAddressProperty, String defaultDestinationName, boolean toBeQueued) {
         this.requestTypeId = requestTypeId;
         this.responseMessageType = responseMessageType;

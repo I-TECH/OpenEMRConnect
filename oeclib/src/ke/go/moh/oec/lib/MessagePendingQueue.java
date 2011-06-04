@@ -135,7 +135,7 @@ final class MessagePendingQueue implements Runnable {
      * @param request
      * @return the queue entry, for future reference.
      */
-    protected synchronized Entry enqueue(Message request) {
+    synchronized Entry enqueue(Message request) {
         Entry e = new Entry();
         e.request = request;
         e.response = null;
@@ -149,7 +149,7 @@ final class MessagePendingQueue implements Runnable {
      *
      * @param e the entry to remove.
      */
-    protected synchronized void dequeue(Entry e) {
+    synchronized void dequeue(Entry e) {
         queue.remove(e);
     }
 
@@ -161,7 +161,7 @@ final class MessagePendingQueue implements Runnable {
      * @param e the queue entry for which to wait.
      * @return the response message if there was one, otherwise null
      */
-    protected Message waitForResponse(Entry e) {
+    Message waitForResponse(Entry e) {
         synchronized (e) {
             if (e.response == null) {
                 if (!timeoutThread.isAlive()) {
@@ -185,7 +185,7 @@ final class MessagePendingQueue implements Runnable {
      * @param response the message that might be a response
      * @return true if the message was a response to something in the queue, otherwise false
      */
-    protected synchronized boolean findRequest(Message response) {
+    synchronized boolean findRequest(Message response) {
 
         for (Entry e : queue) {
             if (e.request.getMessageId().equals(response.getMessageId())) {
