@@ -1,0 +1,507 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <NonVisualComponents>
+    <Component class="java.util.List" name="driverList">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="generateDriverList()"/>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Driver&gt;"/>
+      </AuxValues>
+    </Component>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="title" type="java.lang.String" value="OECSM Daemon"/>
+    <Property name="iconImage" type="java.awt.Image" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+      <Connection code="Toolkit.getDefaultToolkit().getImage(&quot;tray.gif&quot;)" type="code"/>
+    </Property>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="outputPanel" alignment="1" max="32767" attributes="0"/>
+                  <Component id="primaryPanel" alignment="1" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="pollingFrequencyLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="pollingFrequencyTextField" pref="487" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="restartButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="stopButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="exitButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="primaryPanel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="pollingFrequencyLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="pollingFrequencyTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="exitButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="stopButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="restartButton" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="outputPanel" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="primaryPanel">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="OECSM Daemon Configuration"/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="sourceDatabasePanel" alignment="0" max="32767" attributes="0"/>
+                      <Component id="shadowDatabasePanel" alignment="0" max="32767" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="sourceDatabasePanel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="shadowDatabasePanel" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="sourceDatabasePanel">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="Source Database"/>
+              </Border>
+            </Property>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="sourceUsernameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="sourcePasswordLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="sourceUrlLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="sourceDatabaseLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="sourceDriverLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="sourceDatabaseTextField" alignment="1" pref="496" max="32767" attributes="0"/>
+                                  <Component id="sourceUrlTextField" alignment="0" pref="496" max="32767" attributes="0"/>
+                                  <Component id="sourcePasswordField" pref="496" max="32767" attributes="0"/>
+                                  <Component id="sourceUsernameTextField" alignment="0" pref="496" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="sourceDriverComboBox" pref="365" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="sourceUrlTemplateButton" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="sourceDatabaseTestButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="sourceDatabaseResetButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="sourceDatabaseSaveButton" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="sourceDatabaseLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sourceDatabaseTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="sourceDriverLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sourceUrlTemplateButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sourceDriverComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="sourceUrlLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sourceUrlTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="sourceUsernameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sourceUsernameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="sourcePasswordLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sourcePasswordField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="sourceDatabaseSaveButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sourceDatabaseResetButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="sourceDatabaseTestButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="sourceDatabaseLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Database"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="sourceDatabaseTextField">
+            </Component>
+            <Component class="javax.swing.JLabel" name="sourceDriverLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Driver"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="sourceDriverComboBox">
+              <BindingProperties>
+                <BindingProperty name="elements" source="driverList" target="sourceDriverComboBox" targetPath="elements" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JButton" name="sourceUrlTemplateButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Insert Url Template"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sourceUrlTemplateButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="sourceUrlLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Url"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="sourceUrlTextField">
+            </Component>
+            <Component class="javax.swing.JLabel" name="sourceUsernameLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Username"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="sourceUsernameTextField">
+            </Component>
+            <Component class="javax.swing.JLabel" name="sourcePasswordLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Password"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JPasswordField" name="sourcePasswordField">
+            </Component>
+            <Component class="javax.swing.JButton" name="sourceDatabaseTestButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Test"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sourceDatabaseTestButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="sourceDatabaseResetButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Reset"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sourceDatabaseResetButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="sourceDatabaseSaveButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Save"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sourceDatabaseSaveButtonActionPerformed"/>
+              </Events>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="shadowDatabasePanel">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="Shadow Database"/>
+              </Border>
+            </Property>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="shadowUsernameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="shadowPasswordLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="shadowUrlLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="shadowDatabaseLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="shadowDriverLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="shadowDatabaseTextField" alignment="1" pref="496" max="32767" attributes="0"/>
+                                  <Component id="shadowUrlTextField" alignment="0" pref="496" max="32767" attributes="0"/>
+                                  <Component id="shadowPasswordField" alignment="0" pref="496" max="32767" attributes="0"/>
+                                  <Component id="shadowUsernameTextField" alignment="0" pref="496" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="shadowDriverComboBox" pref="0" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="shadowUrlTemplateButton" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="shadowSourceDatabaseTestButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="shadowDatabaseResetButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                              <Component id="shadowDatabaseSaveButton" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="shadowDatabaseLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="shadowDatabaseTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="shadowDriverLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="shadowUrlTemplateButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="shadowDriverComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="shadowUrlLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="shadowUrlTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="shadowUsernameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="shadowUsernameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="shadowPasswordLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="shadowPasswordField" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="shadowSourceDatabaseTestButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="shadowDatabaseResetButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="shadowDatabaseSaveButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="shadowDatabaseLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Database"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="shadowDatabaseTextField">
+            </Component>
+            <Component class="javax.swing.JLabel" name="shadowDriverLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Driver"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="shadowDriverComboBox">
+              <BindingProperties>
+                <BindingProperty name="elements" source="driverList" target="shadowDriverComboBox" targetPath="elements" updateStrategy="0" immediately="false"/>
+              </BindingProperties>
+            </Component>
+            <Component class="javax.swing.JButton" name="shadowUrlTemplateButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Insert Url Template"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="shadowUrlTemplateButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="shadowUrlLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Url"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="shadowUrlTextField">
+            </Component>
+            <Component class="javax.swing.JLabel" name="shadowUsernameLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Username"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="shadowUsernameTextField">
+            </Component>
+            <Component class="javax.swing.JLabel" name="shadowPasswordLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Password"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JPasswordField" name="shadowPasswordField">
+            </Component>
+            <Component class="javax.swing.JButton" name="shadowSourceDatabaseTestButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Test"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="shadowSourceDatabaseTestButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="shadowDatabaseResetButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Reset"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="shadowDatabaseResetButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="shadowDatabaseSaveButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Save"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="shadowDatabaseSaveButtonActionPerformed"/>
+              </Events>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="pollingFrequencyLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Polling Frequency (Seconds)"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="pollingFrequencyTextField">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="10"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="restartButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Restart"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="restartButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="stopButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Stop"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stopButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="exitButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Exit"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Container class="javax.swing.JPanel" name="outputPanel">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="outputScrollPane" alignment="0" pref="610" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="outputScrollPane" alignment="0" pref="111" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JScrollPane" name="outputScrollPane">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+          <SubComponents>
+            <Component class="javax.swing.JTextArea" name="outputTextArea">
+              <Properties>
+                <Property name="columns" type="int" value="20"/>
+                <Property name="rows" type="int" value="5"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>
