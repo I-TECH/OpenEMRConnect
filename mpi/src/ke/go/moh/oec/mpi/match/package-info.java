@@ -22,41 +22,8 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.mpi;
-
-
 /**
- * Represents a string value for matching.
- * 
- * @author Jim Grace
+ * Contains the MPI classes for matching data elements,
+ * including probabilistic matching.
  */
-public class StringMatch {
-
-    /** Original string (all lower case) */
-    private String original = null;
-
-    public StringMatch(String original) {
-        if (original != null) {
-            this.original = original.toLowerCase();
-        }
-    }
-
-    public void score(Scorecard s, StringMatch other) {
-        if (original != null && other.original != null) {
-            s.addScore(stringScore(original, other.original));
-        }
-    }
-
-    public static int stringScore(String s1, String s2) {
-        int returnScore = 0;
-        if (s1 != null && s2 != null) {
-            if (s1.equals(s2)) {
-                returnScore = 100;
-            } else {
-                returnScore = 0;
-            }
-        }
-        return returnScore;
-    }
-
-}
+package ke.go.moh.oec.mpi.match;

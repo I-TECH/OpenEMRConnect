@@ -24,6 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
+import ke.go.moh.oec.mpi.match.FingerprintMatch;
+import ke.go.moh.oec.mpi.list.PersonList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.IService;

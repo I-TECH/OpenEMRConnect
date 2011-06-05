@@ -22,11 +22,12 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.mpi;
+package ke.go.moh.oec.mpi.list;
 
 import java.sql.Connection;
 import java.util.Date;
 import ke.go.moh.oec.Visit;
+import ke.go.moh.oec.mpi.Sql;
 
 /**
  * MPI Methods to operate on a list of visits.

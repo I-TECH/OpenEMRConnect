@@ -22,8 +22,43 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
+package ke.go.moh.oec.mpi.match;
+
+import ke.go.moh.oec.mpi.Scorecard;
+
+
 /**
- * Contains the Master Patient Index classes.
- * This code may also be deployed as a Local Patient Index.
+ * Represents a string value for matching.
+ * 
+ * @author Jim Grace
  */
-package ke.go.moh.oec.mpi;
+public class StringMatch {
+
+    /** Original string (all lower case) */
+    private String original = null;
+
+    public StringMatch(String original) {
+        if (original != null) {
+            this.original = original.toLowerCase();
+        }
+    }
+
+    public void score(Scorecard s, StringMatch other) {
+        if (original != null && other.original != null) {
+            s.addScore(stringScore(original, other.original));
+        }
+    }
+
+    public static int stringScore(String s1, String s2) {
+        int returnScore = 0;
+        if (s1 != null && s2 != null) {
+            if (s1.equals(s2)) {
+                returnScore = 100;
+            } else {
+                returnScore = 0;
+            }
+        }
+        return returnScore;
+    }
+
+}

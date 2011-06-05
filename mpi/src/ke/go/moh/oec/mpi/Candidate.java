@@ -24,6 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
+import ke.go.moh.oec.mpi.match.PersonMatch;
+
 /**
  * Describes a candidate to be returned in the result set of findPerson.
  *
