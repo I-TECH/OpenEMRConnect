@@ -25,6 +25,7 @@ import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.reception.domain.RequestDispatcher;
@@ -1679,34 +1680,38 @@ public class View extends FrameView {
             //TODO: Decide what to do when the MPI or LPI cannot be contacted
             List<Person> mpiPersonList = null;
             List<Person> lpiPersonList = null;
+            session.getBasicSearchParameters().setClinicId(basicSearchClinicIdTextField.getText());
             try {
-                session.getBasicSearchParameters().setClinicId(basicSearchClinicIdTextField.getText());
                 mpiPersonList = RequestDispatcher.findMPICandidates(session.getBasicSearchParameters());
                 lpiPersonList = RequestDispatcher.findLPICandidates(session.getBasicSearchParameters());
-                if (!mpiPersonList.isEmpty()) {
-                    if (Util.checkPersonListForFingerprintCandidates(mpiPersonList)) {
-                        if (!lpiPersonList.isEmpty()) {
-                            //TODO: Display LPI candidates
-                        } else {
-                            //TODO: Display MPI candidates
-                        }
-                    } else {
-                    }
-                } else {
-                    if (!session.hasAllFingerprintsTaken()) {
-                        //TODO: Repeat Basic Search with next fingerprint                      
-                    } else {
-                        if (!lpiPersonList.isEmpty()) {
-                            //TODO: Display LPI candidates
-                        } else {
-                            //TODO: Go to Extended Search
-                        }
-                    }
-                }
             } catch (UnreachableMPIException ex) {
+                JOptionPane.showMessageDialog(basicSearchCard, "OEC Reception Module", "The Master Person Index Could not be contacted."
+                        + " Would you like to try contacting it again?", JOptionPane.QUESTION_MESSAGE);
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
             } catch (UnreachableLPIException ex) {
+                JOptionPane.showMessageDialog(basicSearchCard, "OEC Reception Module", "The Local Person Index Could not be contacted."
+                        + " Would you like to try contacting it again?", JOptionPane.QUESTION_MESSAGE);
                 Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (!mpiPersonList.isEmpty()) {
+                if (Util.checkPersonListForFingerprintCandidates(mpiPersonList)) {
+                    if (!lpiPersonList.isEmpty()) {
+                        //TODO: Display LPI candidates
+                    } else {
+                        //TODO: Display MPI candidates
+                    }
+                } else {
+                }
+            } else {
+                if (!session.hasAllFingerprintsTaken()) {
+                    //TODO: Repeat Basic Search with next fingerprint                      
+                } else {
+                    if (!lpiPersonList.isEmpty()) {
+                        //TODO: Display LPI candidates
+                    } else {
+                        //TODO: Go to Extended Search
+                    }
+                }
             }
             return new Envelope("searchResultsCard", mpiPersonList);
         }
@@ -1737,24 +1742,28 @@ public class View extends FrameView {
     }
 
     private class TestTask extends org.jdesktop.application.Task<Object, Void> {
+
         TestTask(org.jdesktop.application.Application app) {
             // Runs on the EDT.  Copy GUI state that
             // doInBackground() depends on from parameters
             // to TestTask fields, here.
             super(app);
         }
-        @Override protected Object doInBackground() {
+
+        @Override
+        protected Object doInBackground() {
             // Your Task's code here.  This method runs
             // on a background thread, so don't reference
             // the Swing GUI from here.
             return null;  // return your result
         }
-        @Override protected void succeeded(Object result) {
+
+        @Override
+        protected void succeeded(Object result) {
             // Runs on the EDT.  Update the GUI based on
             // the result computed by doInBackground().
         }
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList alertsList;
     private javax.swing.JPanel alertsListPanel;
