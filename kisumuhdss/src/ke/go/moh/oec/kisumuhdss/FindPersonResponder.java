@@ -1,7 +1,27 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is OpenEMRConnect.
+ *
+ * The Initial Developer of the Original Code is International Training &
+ * Education Center for Health (I-TECH) <http://www.go2itech.org/>
+ *
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.kisumuhdss;
 /**
  *
@@ -40,18 +60,18 @@ public class FindPersonResponder implements IService {
                     }
 
                     String connectionUrl = "jdbc:sqlserver://dss-kek3;database=DSSHRS;Integrated Security=SSPI;";
-                    Connection conn = DriverManager.getConnection(connectionUrl, "Ewere", "12trojan24@@1");
+                    Connection conn = DriverManager.getConnection(connectionUrl, "root", "root");
 
                     PreparedStatement sql = null;
                     //Set Query To Run
-                    sql = conn.prepareStatement("SELECT * FROM [DSSHRS].[dbo].[getMembersinIndividualHousehold] ('" + hdssID + "')");
+                    sql = conn.prepareStatement("SELECT * FROM [dbo].[getMembersinIndividualHousehold] ('" + hdssID + "')");
                     ResultSet rs = null;
                     //Execute Query
                     rs = sql.executeQuery(); //excute query
                     while (rs.next()) {
                         //For Each HouseHold Member Add To The List
                         RelatedPerson rp = new RelatedPerson();
-                        rp.setRelation(RelatedPerson.Relation.spouse);
+                       // rp.setRelation(RelatedPerson.Relation.spouse);
                         Person p = new Person();
                         rp.setPerson(p);
                         p.setFirstName(rs.getString("fname")); //FirstName
@@ -59,7 +79,7 @@ public class FindPersonResponder implements IService {
                         p.setLastName(rs.getString("lname")); //LastName
                         p.setOtherName(rs.getString("akaname")); //OtherName
                         p.setClanName(rs.getString("famcla")); //Clan Name
-                        p.setSex(Person.Sex.valueOf(rs.getString("gender"))); //Sex Or Gender
+                        p.setSex(Person.Sex.valueOf(rs.getString("Sex"))); //Sex Or Gender
                         p.setBirthdate(rs.getDate("dob")); //Birth Date
                         p.setMothersFirstName(rs.getString("mfname")); //Mother FirstName
                         p.setMothersMiddleName(rs.getString("mjname")); //Mother MiddleName

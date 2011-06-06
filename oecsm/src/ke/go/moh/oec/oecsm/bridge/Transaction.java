@@ -22,41 +22,24 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec;
+package ke.go.moh.oec.oecsm.bridge;
+
+import ke.go.moh.oec.oecsm.data.TransactionType;
 
 /**
- * Representation of a HL7/ASTM Clinical Care Document (CCD).
+ * @date Aug 19, 2010
  *
- * This is a particular form of the HL7 Clinical Document Architecture (CDA).
- *
- * @author Jim Grace
+ * @author JGitahi
  */
-public class ClinicalDocument {
+public abstract class Transaction {
 
-    /** The {@link Person} to whom this clinical document applies. */
-    private Person person;
-    /** The XML representation of this clinical document. */
-    private String xml;
-    // More fields are to be added, to describe clinical document contents.
+    protected TransactionType type;
 
-    public ClinicalDocument(Person person, String xml) {
-        this.person = person;
-        this.xml = xml;
+    public TransactionType getType() {
+        return type;
     }
 
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-    public String getXml() {
-        return xml;
-    }
-
-    public void setXml(String xml) {
-        this.xml = xml;
+    public void setType(TransactionType type) {
+        this.type = type;
     }
 }

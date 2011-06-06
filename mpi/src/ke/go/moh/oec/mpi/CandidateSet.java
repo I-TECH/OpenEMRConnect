@@ -24,6 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
+import ke.go.moh.oec.mpi.match.PersonMatch;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;

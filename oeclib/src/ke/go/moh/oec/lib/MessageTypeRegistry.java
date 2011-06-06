@@ -39,164 +39,164 @@ import java.util.List;
 class MessageTypeRegistry {
 
     /** NOTIFY PERSON CHANGED uses HL7 Patient Registry Record Revised, PRPA_IN201302UV02 */
-    protected static final String NOTIFY_PERSON_CHANGED_ROOT_TAG = "PRPA_IN201302UV02";
+    static final String NOTIFY_PERSON_CHANGED_ROOT_TAG = "PRPA_IN201302UV02";
     /** FIND PERSON uses HL7 Patient Registry Find Candidates Query, PRPA_IN201305UV02 */
-    protected static final String FIND_PERSON_ROOT_TAG = "PRPA_IN201305UV02";
+    static final String FIND_PERSON_ROOT_TAG = "PRPA_IN201305UV02";
     /** FIND PERSON RESPONSE uses HL7 Patient Registry Find Candidates Query Response, PRPA_IN201306UV02  */
-    protected static final String FIND_PERSON_RESPONSE_ROOT_TAG = "PRPA_IN201306UV02";
+    static final String FIND_PERSON_RESPONSE_ROOT_TAG = "PRPA_IN201306UV02";
     /** ADD PERSON uses HL7 Patient Registry Add Request, PRPA_IN201311UV02 */
-    protected static final String CREATE_PERSON_ROOT_TAG = "PRPA_IN201311UV02";
+    static final String CREATE_PERSON_ROOT_TAG = "PRPA_IN201311UV02";
     /** MODIFY PERSON uses HL7 Patient Registry Revise Request, PRPA_IN201314UV02 */
-    protected static final String MODIFY_PERSON_ROOT_TAG = "PRPA_IN201314UV02";
+    static final String MODIFY_PERSON_ROOT_TAG = "PRPA_IN201314UV02";
     /** LOG ENTRY uses LogEntry for a root tag */
-    protected static final String LOG_ENTRY_ROOT_TAG = "LogEntry";
+    static final String LOG_ENTRY_ROOT_TAG = "LogEntry";
     /** GET WORK  uses getWork for a root tag*/
-    protected static final String GET_WORK_ROOT_TAG = "GetWork";
+    static final String GET_WORK_ROOT_TAG = "GetWork";
     /**WORK DONE uses Work Done for a root tag*/
-    protected static final String WORK_DONE_ROOT_TAG = "WorkDone";
+    static final String WORK_DONE_ROOT_TAG = "WorkDone";
     /**Reassign uses Reassign for a root tag*/
-    protected static final String REASSIGN_ROOT_TAG = "Reassign";
+    static final String REASSIGN_ROOT_TAG = "Reassign";
     /**
      * Find Person response
      */
-    protected static final MessageType findPersonResponse = new MessageType(
+    static final MessageType findPersonResponse = new MessageType(
             0, // No request type (this message is only a response).
             null, // No response type (this mssage does not have a response to answer it).
             MessageType.TemplateType.findPersonResponse,
             FIND_PERSON_RESPONSE_ROOT_TAG, //HL7 Patient Registry Find Candidates Query Response
-            null, // No default destination address
+            null, // No default destination address property
             null, // No default destination name
             false); // Don't store and forward if it doesn't go immediately
     /**
      * Find Person (MPI) request
      */
-    protected static final MessageType findPersonMpi = new MessageType(
+    static final MessageType findPersonMpi = new MessageType(
             RequestTypeId.FIND_PERSON_MPI,
             findPersonResponse,
             MessageType.TemplateType.findPerson,
             FIND_PERSON_ROOT_TAG, //HL7 Patient Registry Find Candidates Query
-            "ke.go.moh.mpi", // The Master Person List
+            "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
             false); // Don't store and forward if it doesn't go immediately
     /**
      * Find Person (LPI) request
      */
-    protected static final MessageType findPersonLpi = new MessageType(
+    static final MessageType findPersonLpi = new MessageType(
             RequestTypeId.FIND_PERSON_LPI,
             findPersonResponse,
             MessageType.TemplateType.findPerson,
             FIND_PERSON_ROOT_TAG, //HL7 Patient Registry Find Candidates Query
-            ".lpi", // The Local Person List (relative to where we are now.)
+            "LPI.Address", // The Local Person List address property
             "Local Person Index", // The Local Person List
             false); // Don't store and forward if it doesn't go immediately
     /**
      * Create Person (MPI) request
      */
-    protected static final MessageType createPersonMpi = new MessageType(
+    static final MessageType createPersonMpi = new MessageType(
             RequestTypeId.CREATE_PERSON_MPI,
             null, // No response to this message.
             MessageType.TemplateType.createPerson,
             CREATE_PERSON_ROOT_TAG, //HL7 Patient Registry Add Request
-            "ke.go.moh.mpi", // The Master Person List
+            "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Create Person (LPI) request
      */
-    protected static final MessageType createPersonLpi = new MessageType(
+    static final MessageType createPersonLpi = new MessageType(
             RequestTypeId.CREATE_PERSON_LPI,
             null, // No response to this message.
             MessageType.TemplateType.createPerson,
             CREATE_PERSON_ROOT_TAG, //HL7 Patient Registry Add Request
-            ".lpi", // The Local Person List (relative to where we are now.)
+            "LPI.Address", // The Local Person List address property
             "Local Person Index", // The Local Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Modify Person (MPI) request
      */
-    protected static final MessageType modifyPersonMpi = new MessageType(
+    static final MessageType modifyPersonMpi = new MessageType(
             RequestTypeId.MODIFY_PERSON_MPI,
             null, // No response to this message.
             MessageType.TemplateType.modifyPerson,
             MODIFY_PERSON_ROOT_TAG, //HL7 Patient Registry Revise Request
-            "ke.go.moh.mpi", // The Master Person List
+            "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Modify Person (LPI) request
      */
-    protected static final MessageType modifyPersonLpi = new MessageType(
+    static final MessageType modifyPersonLpi = new MessageType(
             RequestTypeId.MODIFY_PERSON_LPI,
             null, // No response to this message.
             MessageType.TemplateType.modifyPerson,
             MODIFY_PERSON_ROOT_TAG, //HL7 Patient Registry Revise Request
-            ".lpi", // The Local Person List (relative to where we are now.)
+            "LPI.Address", // The Local Person List address property
             "Local Person Index", // The Local Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Set Clinical Document
      */
-    protected static final MessageType notifyPersonChanged = new MessageType(
+    static final MessageType notifyPersonChanged = new MessageType(
             RequestTypeId.NOTIFY_PERSON_CHANGED,
             null, // No response to this message.
             MessageType.TemplateType.notifyPersonChanged,
             NOTIFY_PERSON_CHANGED_ROOT_TAG, //HL7 Patient Registry Record Revised
-            "ke.go.moh.mpi", // The Master Person List
+            "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
             true); // Store and forward if it doesn't send immediately
     /**
      * Find person (to get household members) from HDSS
      */
-    protected static final MessageType findPersonHdss = new MessageType(
+    static final MessageType findPersonHdss = new MessageType(
             RequestTypeId.FIND_PERSON_HDSS,
             findPersonResponse,
             MessageType.TemplateType.findPerson,
             FIND_PERSON_ROOT_TAG, //HL7 Patient Registry Find Candidates Query
-            "org.kemri.kisumu.hdss", // The HDSS companion
-            "Kisumu HDSS Companion", // The HDSS companion
+            "HDSS.Address", // The HDSS companion address property
+            "HDSS Companion", // The HDSS companion
             true); // Store and forward if it doesn't send immediately
     /**
      * Send Log Entry
      */
-    protected static final MessageType logEntry = new MessageType(
+    static final MessageType logEntry = new MessageType(
             RequestTypeId.LOG_ENTRY,
             null, // No response to this message.
             MessageType.TemplateType.logEntry,
             LOG_ENTRY_ROOT_TAG, // XML root tag To Be Defined
-            "ke.go.moh.loggingServer", // The Logging Server
+            "LoggingServer.Address", // The Logging Server address property
             "Logging Server", // The Logging Server
             true); // Store and forward if it doesn't send immediately
     /**
      * Send get work
      */
-    protected static final MessageType getWork = new MessageType(
+    static final MessageType getWork = new MessageType(
             RequestTypeId.GET_WORK,
             null, // No response to this message.
             MessageType.TemplateType.getWork,
             GET_WORK_ROOT_TAG, // XML root tag To Be Defined
-            ".lpi", // The Local Person List (relative to where we are now.)
-            "Local Person Index", // The Local Person List
+            "CDS.Address", // The Clinical Document Store address property
+            "Clinical Document Store", // The Clinical Document Store
             true); // Store and forward if it doesn't send immediately
     /**
      * Send WorkDone
      */
-    protected static final MessageType WorkDone = new MessageType(
+    static final MessageType WorkDone = new MessageType(
             RequestTypeId.WORK_DONE,
             null, // No response to this message.
             MessageType.TemplateType.workDone,
             WORK_DONE_ROOT_TAG, // XML root tag To Be Defined
-            ".lpi", // The Local Person List (relative to where we are now.)
-            "Local Person Index", // The Local Person List
+            "CDS.Address", // The Clinical Document Store address property
+            "Clinical Document Store", // The Clinical Document Store
             true); // Store and forward if it doesn't send immediately
     /**
      * Send Reassign
      */
-    protected static final MessageType ReassignWork = new MessageType(
+    static final MessageType ReassignWork = new MessageType(
             RequestTypeId.REASSIGN_WORK,
             null, // No response to this message.
             MessageType.TemplateType.reassignWork,
             REASSIGN_ROOT_TAG, // XML root tag To Be Defined
-            ".cds", // The Clinical document store
+            "CDS.Address", // The Clinical Document Store address property
             "Clinical Document Store", // The Clinical Document Store
             true); // Store and forward if it doesn't send immediately
     /**
@@ -224,7 +224,7 @@ class MessageTypeRegistry {
      * @param requestTypeId request type to search for
      * @return <code>MessageType</code>, or <code>null</code> if not found.
      */
-    protected static MessageType find(int requestTypeId) {
+    static MessageType find(int requestTypeId) {
         for (MessageType m : messageTypeList) {
             if (m.getRequestTypeId() == requestTypeId) {
                 return m;
@@ -243,7 +243,7 @@ class MessageTypeRegistry {
      * @param rootXmlTag message root XML tag to search for
      * @return <code>MessageType</code>, or <code>null</code> if not found.
      */
-    protected static MessageType find(String rootXmlTag) {
+    static MessageType find(String rootXmlTag) {
         for (MessageType m : messageTypeList) {
             if (m.getRootXmlTag().equals(rootXmlTag)) {
                 return m;

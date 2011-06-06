@@ -50,7 +50,7 @@ class QueueManager implements Runnable {
      *
      * @param httpService <code>HttpService</code> object for sending messages
      */
-    protected QueueManager(HttpService httpService) {
+    QueueManager(HttpService httpService) {
         this.httpService = httpService;
     }
 
@@ -62,7 +62,7 @@ class QueueManager implements Runnable {
      * use a thread for each distinct IP address in the queue (and
      * no threads if the queue is empty.)
      */
-    protected void start() {
+    void start() {
         /*
         if (queueManagerThread == null) {
             queueManagerThread = new Thread(new QueueManager(httpService));
@@ -74,7 +74,7 @@ class QueueManager implements Runnable {
     /**
      * Stop the queue manager (call after last use).
      */
-    protected void stop() {
+    void stop() {
         // Stop the thread.
     }
 
@@ -87,7 +87,7 @@ class QueueManager implements Runnable {
      *
      * @param m Message to queue for sending
      */
-    protected void enqueue(Message m) {
+    void enqueue(Message m) {
         try {
             httpService.send(m);
         } catch (MalformedURLException ex) {

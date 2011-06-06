@@ -50,7 +50,7 @@ class CallbackThread implements Runnable {
     private IService callbackObject;    // User object we need to call with the unsolicited message.
     private Message message;            // Unsolicited message.
 
-    protected CallbackThread(Mediator mediator, IService callbackObject, Message message) {
+    CallbackThread(Mediator mediator, IService callbackObject, Message message) {
         this.mediator = mediator;
         this.callbackObject = callbackObject;
         this.message = message;

@@ -41,6 +41,13 @@ public class Notifier {
     /**
      * Notifies clinics of certain changes in person status for those
      * who are regular clients at those clinics.
+     * <p>
+     * The notification is sent to the Clinical Document Store at the same
+     * facility as the reception system where the person was last seen.
+     * For example, say the patient was last seen at a reception system
+     * with application address ke.go.moh.facility.14080.tb.reception.
+     * The notification will be sent to the Clinical Document Store at address
+     * ke.go.moh.facility.14080.cds.
      * 
      * @param p updated person
      */
@@ -50,13 +57,18 @@ public class Notifier {
                 || p.getPregnancyEndDate() != null
                 || p.getAliveStatus() == Person.AliveStatus.no) {
             Visit v = p.getLastRegularVisit();
-            if (v != null && v.getAddress() != null) {
-                PersonRequest pr = new PersonRequest();
-                pr.setPerson(p);
-                pr.setDestinationAddress(v.getAddress());
-                pr.setDestinationName("MOH Facility"); // We really don't know the name.
-                Mediator mediator = Main.getMediator();
-                mediator.getData(RequestTypeId.NOTIFY_PERSON_CHANGED, pr);
+            if (v != null) {
+                String address = v.getAddress();
+                if (address != null) {
+                    String facility = address.substring(0, address.indexOf(".facility.")+15);
+                    String destination = facility + ".cds";
+                    PersonRequest pr = new PersonRequest();
+                    pr.setPerson(p);
+                    pr.setDestinationAddress(destination);
+                    pr.setDestinationName("Clinical Document Store");
+                    Mediator mediator = Main.getMediator();
+                    mediator.getData(RequestTypeId.NOTIFY_PERSON_CHANGED, pr);
+                }
             }
         }
     }

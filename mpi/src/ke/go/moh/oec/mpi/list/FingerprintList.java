@@ -22,7 +22,7 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.mpi;
+package ke.go.moh.oec.mpi.list;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
+import ke.go.moh.oec.mpi.Mpi;
+import ke.go.moh.oec.mpi.Sql;
+import ke.go.moh.oec.mpi.ValueMap;
 
 /**
  * MPI Methods to operate on a list of fingerprints.

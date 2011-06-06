@@ -251,8 +251,12 @@ public class Mediator implements IService {
          * destination for the message type. However if our caller is passing
          * us <code>PersonRequest</code> data, they may choose to explicitly
          * specify the destination rather than leaving it to the default.
+         * Also, if we have a <code>PersonRequest</code>, then the caller
+         * has the option of specifying an XML string to be used
+         * instead of the standard template for the message.
          */
-        m.setDestinationAddress(messageType.getDefaultDestinationAddress());
+        String defaultDestinationAddress = getProperty(messageType.getDefaultDestinationAddressProperty());
+        m.setDestinationAddress(defaultDestinationAddress);
         m.setDestinationName(messageType.getDefaultDestinationName());
         if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest) requestData;
@@ -262,6 +266,7 @@ public class Mediator implements IService {
             if (pr.getDestinationName() != null) {
                 m.setDestinationName(pr.getDestinationName());
             }
+            m.setXml(pr.getXml());
         }
         Object returnData = null;
         if (m.getDestinationAddress() == null) {
@@ -316,7 +321,7 @@ public class Mediator implements IService {
      * @param m message to be sent
      * @return object containing response data from the request
      */
-    protected Object sendData(Message m) {
+    Object sendData(Message m) {
         Object returnData = null;
         MessageType messageType = m.getMessageType(); // For handy reference.
         String ipAddressPort = getIpAddressPort(m.getDestinationAddress());
@@ -456,7 +461,7 @@ public class Mediator implements IService {
      *
      * @param m Message received
      */
-    protected void processReceivedMessage(Message m) {
+    void processReceivedMessage(Message m) {
         String destinationAddress = m.getDestinationAddress();
         if (destinationAddress == null) {
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,

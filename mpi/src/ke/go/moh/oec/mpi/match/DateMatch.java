@@ -22,11 +22,12 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.mpi;
+package ke.go.moh.oec.mpi.match;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import ke.go.moh.oec.mpi.Scorecard;
 
 /**
  * Represents a date value for matching.

@@ -23,7 +23,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 /**
- * Contains the Master Patient Index module.
+ * Contains the Master Patient Index classes.
  * This code may also be deployed as a Local Patient Index.
  */
 package ke.go.moh.oec.mpi;

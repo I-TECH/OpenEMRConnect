@@ -35,7 +35,7 @@ package ke.go.moh.oec.lib;
  */
 class MessageType {
 
-    protected enum TemplateType {
+    enum TemplateType {
 
         notifyPersonChanged,
         findPerson,
@@ -55,9 +55,9 @@ class MessageType {
     private TemplateType templateType;
     /** The root XML tag for this message template. For HL7 messages this is the HL7 V3 message type */
     private String rootXmlTag;
-    /** The default message destination (if any) for this message, otherwise null. */
-    private String defaultDestinationAddress;
-    /** Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false) */
+    /** Property name of the default destination address, or null if no default. */
+    private String defaultDestinationAddressProperty;
+    /** Name name of the default destination, or null if no default. */
     private String defaultDestinationName;
     /** Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false) */
     private boolean toBeQueued;
@@ -69,23 +69,22 @@ class MessageType {
      * @param responseMessageType MessageType of any expected response to this message, or 0 if this message is only used as a response
      * @param templateType the type of XML message template used by this message
      * @param rootXmlTag The (HL7 V3) root XML tag that identifies this type of message when parsing
-     * @param defaultDestinationAddress The default message destination address (if any) for this message, otherwise null
-     * @param defaultDestinationName The default message destination address (if any) for this message, otherwise null
+     * @param defaultDestinationProperty Property name for finding the default destination address and name
      * @param toBeQueued Is this message to be queued for store-and-forward if it can't send immediately (true), or not (false)
      */
-    protected MessageType(int requestTypeId, MessageType responseMessageType, TemplateType templateType,
-            String rootXmlTag, String defaultDestinationAddress, String defaultDestinationName, boolean toBeQueued) {
+    MessageType(int requestTypeId, MessageType responseMessageType, TemplateType templateType,
+            String rootXmlTag, String defaultDestinationAddressProperty, String defaultDestinationName, boolean toBeQueued) {
         this.requestTypeId = requestTypeId;
         this.responseMessageType = responseMessageType;
         this.templateType = templateType;
         this.rootXmlTag = rootXmlTag;
-        this.defaultDestinationAddress = defaultDestinationAddress;
+        this.defaultDestinationAddressProperty = defaultDestinationAddressProperty;
         this.defaultDestinationName = defaultDestinationName;
         this.toBeQueued = toBeQueued;
     }
 
-    public String getDefaultDestinationAddress() {
-        return defaultDestinationAddress;
+    public String getDefaultDestinationAddressProperty() {
+        return defaultDestinationAddressProperty;
     }
 
     public String getDefaultDestinationName() {

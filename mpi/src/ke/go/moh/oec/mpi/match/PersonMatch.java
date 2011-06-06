@@ -22,13 +22,14 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.mpi;
+package ke.go.moh.oec.mpi.match;
 
 import java.util.ArrayList;
 import java.util.List;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
+import ke.go.moh.oec.mpi.Scorecard;
 
 /**
  * Represents a Person for matching.

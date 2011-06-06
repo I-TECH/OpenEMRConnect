@@ -138,7 +138,7 @@ class XmlPacker {
      * @param m message to be packed
      * @return the packed XML in a string
      */
-    protected String pack(Message m) {
+    String pack(Message m) {
         Document doc = packMessage(m);
         String xml = packDocument(doc);
         return xml;
@@ -150,7 +150,7 @@ class XmlPacker {
      * @param doc the DOM Document structure to pack
      * @return the packed XML string
      */
-    protected String packDocument(Document doc) {
+    String packDocument(Document doc) {
         StringWriter stringWriter = new StringWriter();
         try {
             Transformer t = TransformerFactory.newInstance().newTransformer();
@@ -172,7 +172,7 @@ class XmlPacker {
      * @param m message contents to pack
      * @return message packed in a <code>Document</code>
      */
-    protected Document packMessage(Message m) {
+    Document packMessage(Message m) {
         Document doc = null;
         switch (m.getMessageType().getTemplateType()) {
             case findPerson:
@@ -978,17 +978,25 @@ class XmlPacker {
      * to this class, in the "messages/" package relative to the package
      * storing the current class. In other words, the XML message template files
      * are packed into the .jar file containing this class.
+     * <p>
+     * Note: If the caller has a pre-formed XML message to use as the template
+     * instead of the fixed template, then it will be used instead.
      *
      * @param m message to load the template for
      * @return the loaded template <code>Document</code>
      */
     private Document packTemplate(Message m) {
         Document doc = null;
-        String templateFileName = "messages/" + m.getMessageType().getTemplateType().name() + ".xml";
         try {
+            String templateFileName = "messages/" + m.getMessageType().getTemplateType().name() + ".xml";
+            InputStream is = null;
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            InputStream is = XmlPacker.class.getResourceAsStream(templateFileName);
+            if (m.getXml() != null) {
+                is = new ByteArrayInputStream(m.getXml().getBytes());
+            } else {
+                is = XmlPacker.class.getResourceAsStream(templateFileName);
+            }
             doc = db.parse(is);
         } catch (SAXException ex) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
@@ -1210,7 +1218,7 @@ class XmlPacker {
      *
      * @param m Message to unpack
      */
-    protected void unpack(Message m) {
+    void unpack(Message m) {
         Document doc = unpackXml(m.getXml());
         unpackDocument(m, doc);
     }
@@ -1221,7 +1229,7 @@ class XmlPacker {
      * @param xml String containing XML request message
      * @return the DOM Document structure
      */
-    protected Document unpackXml(String xml) {
+    Document unpackXml(String xml) {
         Document doc = null;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -1244,7 +1252,7 @@ class XmlPacker {
      * @param m the message to unpack
      * @param doc the DOM Document structure to decode
      */
-    protected void unpackDocument(Message m, Document doc) {
+    void unpackDocument(Message m, Document doc) {
         Element root = doc.getDocumentElement();
         String rootName = root.getTagName();
         MessageType messageType = MessageTypeRegistry.find(rootName);
@@ -1294,6 +1302,7 @@ class XmlPacker {
      */
     private void unpackGenericPersonMessage(Message m, Element e) {
         PersonRequest personRequest = new PersonRequest();
+        personRequest.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
         m.setData(personRequest);
         Person p = new Person();
         personRequest.setPerson(p);
@@ -1312,6 +1321,7 @@ class XmlPacker {
      */
     private void unpackFindPersonMessage(Message m, Element e) {
         PersonRequest personRequest = new PersonRequest();
+        personRequest.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
         m.setData(personRequest);
         Person p = new Person();
         personRequest.setPerson(p);

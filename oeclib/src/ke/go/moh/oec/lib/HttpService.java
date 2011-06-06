@@ -65,7 +65,7 @@ class HttpService {
      *
      * @param mediator {@link Mediator} callback object for listener
      */
-    protected HttpService(Mediator mediator) {
+    HttpService(Mediator mediator) {
         this.mediator = mediator;
     }
 
@@ -75,7 +75,7 @@ class HttpService {
      * @param m Message to send
      * @return true if message was sent and HTTP response received, otherwise false
      */
-    protected boolean send(Message m) throws MalformedURLException, IOException {
+    boolean send(Message m) throws MalformedURLException, IOException {
         boolean returnStatus = false;
         //   throw new UnsupportedOperationException();
         String url = "http://" + m.getIpAddressPort() + "/oecmessage?destination="
@@ -122,7 +122,7 @@ class HttpService {
      * For each message received, call mediator.processReceivedMessage()
      * @throws IOException
      */
-    protected void start() throws IOException {
+    void start() throws IOException {
         //throw new UnsupportedOperationException("Not supported yet.");
         int port = Integer.parseInt(Mediator.getProperty("HTTPHandler.ListenPort"));
         InetSocketAddress addr = new InetSocketAddress(port);
@@ -137,7 +137,7 @@ class HttpService {
     /**
      * Stops listening for HTTP messages.
      */
-    protected void stop() {
+    void stop() {
         final int delaySeconds = 0;
         server.stop(delaySeconds);
     }

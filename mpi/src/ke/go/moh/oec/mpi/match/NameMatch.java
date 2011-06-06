@@ -22,7 +22,9 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.mpi;
+package ke.go.moh.oec.mpi.match;
+
+import ke.go.moh.oec.mpi.Scorecard;
 
 /**
  * Represents a name string value for matching.

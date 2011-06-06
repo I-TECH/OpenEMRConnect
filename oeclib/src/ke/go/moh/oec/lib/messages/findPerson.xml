@@ -9,218 +9,214 @@
  xsi:schemaLocation="urn:hl7-org:v3 ../../schema/HL7V3/NE2008/multicacheschemas/PRPA_IN201305UV02.xsd"
  xmlns="urn:hl7-org:v3"
  ITSVersion="XML_1.0">
-	<!-- Message ID - message reference number (unique for this sender) -->
-	<id root="1.3.6.1.4.1.150.2474.11.1.1" extension="2340202304"/>
-	<!-- Replace with message generation date&time -->
-	<creationTime value="201101010930"/>
-	<!-- interaction id = Patient Registry Find Candidates Query -->
-	<interactionId root="2.16.840.1.113883.1.6" extension="PRPA_IN201305UV02"/>
-	<!-- processing code = Production -->
-	<processingCode code="P"/>
-	<!-- processing mode code = Current processing -->
-	<processingModeCode code="T"/>
-	<!-- AcknowledgementCondition codes:
-	     AL - Always acknowledge
-	     ER - Error/Reject only
-	     NE - Never acknoweldge -->
-	<acceptAckCode code="AL"/>
-	<receiver typeCode="RCV">
-		<device classCode="DEV" determinerCode="INSTANCE">
-			<!-- id root = OID for service address -->
-			<id root="1.3.6.1.4.1.150.2474.11.1.2" extension="ke.gov.moh.mpi"/>
-			<name>Master Person Index</name>
-		</device>
-	</receiver>
-	<sender>
-		<device classCode="DEV" determinerCode="INSTANCE">
-			<!-- id root = OID for application address -->
-			<id root="1.3.6.1.4.1.150.2474.11.1.2"
-                            extension="ke.gov.moh.facility.14130.ccc.reception"/>
-			<name>Suba District Hospital CCC Reception</name>
-		</device>
-	</sender>
+    <!-- Message ID - message reference number (unique for this sender) -->
+    <id root="1.3.6.1.4.1.150.2474.11.1.1" extension="2340202304"/>
+    <!-- Replace with message generation date&time -->
+    <creationTime value="201101010930"/>
+    <!-- interaction id = Patient Registry Find Candidates Query -->
+    <interactionId root="2.16.840.1.113883.1.6" extension="PRPA_IN201305UV02"/>
+    <!-- processing code = Production -->
+    <processingCode code="P"/>
+    <!-- processing mode code = Current processing -->
+    <processingModeCode code="T"/>
+    <!-- AcknowledgementCondition codes:
+         AL - Always acknowledge
+         ER - Error/Reject only
+         NE - Never acknoweldge -->
+    <acceptAckCode code="AL"/>
+    <receiver typeCode="RCV">
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <!-- id root = OID for service address -->
+            <id root="1.3.6.1.4.1.150.2474.11.1.2" extension="ke.gov.moh.mpi"/>
+            <name>Master Person Index</name>
+        </device>
+    </receiver>
+    <sender>
+        <device classCode="DEV" determinerCode="INSTANCE">
+            <!-- id root = OID for application address -->
+            <id root="1.3.6.1.4.1.150.2474.11.1.2"
+                extension="ke.gov.moh.facility.14130.ccc.reception"/>
+            <name>Suba District Hospital CCC Reception</name>
+        </device>
+    </sender>
 	<!-- class code = entity, moodCode = executed task (including a task in progress) -->
-	<controlActProcess classCode="CACT" moodCode="EVN">
-		<code code="PRPA_TE201305UV02" codeSystem="2.16.840.1.113883.1.6"/>
-		<queryByParameter>
-		  <!-- Query ID should be unique relative to the sender. -->
-		  <queryId root="1.3.6.1.4.1.150.2474.11.1.3" extension="1234567890"/>
-			<!-- Query Status Codes:
-			     aborted - Query status aborted
-			     deliveredResponse - Query status delivered response
-			     executing - Query status executing
-			     new - Query status new
-			     waitContinuedQueryResponse - Query status wait continued -->
-			<statusCode code="new"/>
-			<matchCriterionList>
-				<matchAlgorithm>
-					<!-- MatchAlgorith may have one of the following values:
-					     Normal - Do a normal, weighted match
-						 FingerprintMustMatch - Like normal except only return
-					         results where fingerprint is above the
-					         fingerprint match confidence threshold. -->
-					<value value="Normal"/>
-					<semanticsText>MatchAlgorithm</semanticsText>
-				</matchAlgorithm>
-			</matchCriterionList>
-			<parameterList>
-			  <!-- Search values are inserted into the entries below.
-			       Any item that is not to be searched for must be deleted from
-			       this parameter list, before sending the request message. -->
-				<livingSubjectName>
-					<value>
-						<given>James</given> <!-- First Name -->
-						<given>Okero</given> <!-- Middle Name -->
-						<family>Owino</family> <!-- Last Name -->
-					</value>
-					<semanticsText>LivingSubject.name</semanticsText>
-				</livingSubjectName>
-				<livingSubjectAdministrativeGender>
-					<value code="M"/> <!-- Gender: "F" or "M" -->
-					<semanticsText>LivingSubject.administrativeGender</semanticsText>
-				</livingSubjectAdministrativeGender>
-				<livingSubjectBirthTime>
-				 <value value="19630804"/> <!-- Birthdate: "yyyymmdd" -->
-				 <semanticsText>LivingSubject.birthTime</semanticsText>
-			  </livingSubjectBirthTime>
-				<livingSubjectDeceasedTime>
-				 <value value="19630804"/> <!-- Deathdate: "yyyymmdd" -->
-				 <semanticsText>LivingSubject.deceasedTime</semanticsText>
-			  </livingSubjectDeceasedTime>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.1" extension="Mzee"/>
-					<semanticsText>LivingSubject.otherName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.2" extension="Omondi"/>
-					<semanticsText>LivingSubject.clanName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.3" extension="T"/>
-					<semanticsText>LivingSubject.aliveStatus</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.4" extension="Ruth"/>
-					<semanticsText>LivingSubject.mothersFirstName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.5" extension="Adhiambo"/>
-					<semanticsText>LivingSubject.mothersMiddleName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.6" extension="Olouch"/>
-					<semanticsText>LivingSubject.mothersLastName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.7" extension="George"/>
-					<semanticsText>LivingSubject.fathersFirstName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.8" extension="Olouch"/>
-					<semanticsText>LivingSubject.fathersMiddleName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.9" extension="Okwatch"/>
-					<semanticsText>LivingSubject.fathersLastName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.10" extension="Victor"/>
-					<semanticsText>LivingSubject.compoundHeadFirstName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.11" extension="Odero"/>
-					<semanticsText>LivingSubject.compoundHeadMiddleName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.12" extension="Okambo"/>
-					<semanticsText>LivingSubject.compoundHeadLastName</semanticsText>
-				</livingSubjectId>
-				<!-- Marital status types:
-				     marriedPolygamous
-				     marriedMonogamous
-				     divorced
-				     widowed
-				     cohabitating
-				     single -->
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.13" extension="Married Monogamous"/>
-					<semanticsText>LivingSubject.maritalStatusType</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.14" extension="Siaya"/>
-					<semanticsText>LivingSubject.consentSigned</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.15" extension="Siaya"/>
-					<semanticsText>LivingSubject.villageName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.4.21" extension="Siaya"/>
-					<semanticsText>LivingSubject.siteName</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.5.1"
-					       extension="ff58e616-ab5a-102d-be97-85aedb3d9f67"/>
-					<semanticsText>LivingSubject.registryIdentifier</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.5.2"
-					       extension="a788642d-341c-b5c9-7561-92946e7f90da"/>
-					<semanticsText>LivingSubject.masterRegistryIdentifier</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.5.3" extension="14080-01234"/>
-					<semanticsText>LivingSubject.cccUniqueIdentifier</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.5.4" extension="14080-00234/05"/>
-					<semanticsText>LivingSubject.cccLocalIdentifier</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.5.5" extension="1-161-1-3"/>
-					<semanticsText>LivingSubject.kemriKisumuHdssIdentifier</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.6.1" extension="14080"/>
-					<semanticsText>LivingSubject.lastRegularVisitSite</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.6.2" extension="20110105"/>
-					<semanticsText>LivingSubject.lastRegularVisitDate</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.6.3" extension="13471"/>
-					<semanticsText>LivingSubject.LastOneOffVisitSite</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.6.4" extension="20110314"/>
-					<semanticsText>LivingSubject.LastOneOffVisitDate</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.7.1" extension="(Hex fingerprint template)"/>
-					<semanticsText>LivingSubject.LeftHandIndexFingerprint</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.7.2" extension="(Hex fingerprint template)"/>
-					<semanticsText>LivingSubject.LeftHandMiddleFingerprint</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.7.3" extension="(Hex fingerprint template)"/>
-					<semanticsText>LivingSubject.LeftHandRingFingerprint</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.7.4" extension="(Hex fingerprint template)"/>
-					<semanticsText>LivingSubject.RightHandIndexFingerprint</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.7.5" extension="(Hex fingerprint template)"/>
-					<semanticsText>LivingSubject.RightHandMiddleFingerprint</semanticsText>
-				</livingSubjectId>
-				<livingSubjectId>
-					<value root="1.3.6.1.4.1.150.2474.11.1.7.6" extension="(Hex fingerprint template)"/>
-					<semanticsText>LivingSubject.RightHandRingFingerprint</semanticsText>
-				</livingSubjectId>
-			</parameterList>
-		</queryByParameter>
-	</controlActProcess>
+    <controlActProcess classCode="CACT" moodCode="EVN">
+        <code code="PRPA_TE201305UV02" codeSystem="2.16.840.1.113883.1.6"/>
+        <queryByParameter>
+            <!-- Query ID should be unique relative to the sender. -->
+            <queryId root="1.3.6.1.4.1.150.2474.11.1.3" extension="1234567890"/>
+            <!-- Query Status Codes:
+                 aborted - Query status aborted
+                 deliveredResponse - Query status delivered response
+                 executing - Query status executing
+                 new - Query status new
+                 waitContinuedQueryResponse - Query status wait continued -->
+            <statusCode code="new"/>
+            <matchCriterionList>
+                <matchAlgorithm>
+                <!-- MatchAlgorith may have one of the following values:
+                     Normal - Do a normal, weighted match
+                         FingerprintMustMatch - Like normal except only return
+                         results where fingerprint is above the
+                         fingerprint match confidence threshold. -->
+                    <value value="Normal"/>
+                    <semanticsText>MatchAlgorithm</semanticsText>
+                </matchAlgorithm>
+            </matchCriterionList>
+            <parameterList>
+                <!-- Search values are inserted into the entries below.
+                     Any item that is not to be searched for must be deleted from
+                     this parameter list, before sending the request message. -->
+                <livingSubjectName>
+                    <value>
+                        <given>James</given> <!-- First Name -->
+                        <given>Okero</given> <!-- Middle Name -->
+                        <family>Owino</family> <!-- Last Name -->
+                    </value>
+                    <semanticsText>LivingSubject.name</semanticsText>
+                </livingSubjectName>
+                <livingSubjectAdministrativeGender>
+                    <value code="M"/> <!-- Gender: "F" or "M" -->
+                    <semanticsText>LivingSubject.administrativeGender</semanticsText>
+                </livingSubjectAdministrativeGender>
+                <livingSubjectBirthTime>
+                    <value value="19630804"/> <!-- Birthdate: "yyyymmdd" -->
+                    <semanticsText>LivingSubject.birthTime</semanticsText>
+                </livingSubjectBirthTime>
+                <livingSubjectDeceasedTime>
+                    <value value="19630804"/> <!-- Deathdate: "yyyymmdd" -->
+                    <semanticsText>LivingSubject.deceasedTime</semanticsText>
+                </livingSubjectDeceasedTime>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.1" extension="Mzee"/>
+                    <semanticsText>LivingSubject.otherName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.2" extension="Omondi"/>
+                    <semanticsText>LivingSubject.clanName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.3" extension="T"/>
+                    <semanticsText>LivingSubject.aliveStatus</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.4" extension="Ruth"/>
+                    <semanticsText>LivingSubject.mothersFirstName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.5" extension="Adhiambo"/>
+                    <semanticsText>LivingSubject.mothersMiddleName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.6" extension="Olouch"/>
+                    <semanticsText>LivingSubject.mothersLastName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.7" extension="George"/>
+                    <semanticsText>LivingSubject.fathersFirstName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.8" extension="Olouch"/>
+                    <semanticsText>LivingSubject.fathersMiddleName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.9" extension="Okwatch"/>
+                    <semanticsText>LivingSubject.fathersLastName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.10" extension="Victor"/>
+                    <semanticsText>LivingSubject.compoundHeadFirstName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.11" extension="Odero"/>
+                    <semanticsText>LivingSubject.compoundHeadMiddleName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.12" extension="Okambo"/>
+                    <semanticsText>LivingSubject.compoundHeadLastName</semanticsText>
+                </livingSubjectId>
+                <!-- Marital status types:
+                     marriedPolygamous
+                     marriedMonogamous
+                     divorced
+                     widowed
+                     cohabitating
+                     single -->
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.13" extension="Married Monogamous"/>
+                    <semanticsText>LivingSubject.maritalStatusType</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.14" extension="Siaya"/>
+                    <semanticsText>LivingSubject.consentSigned</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.15" extension="Siaya"/>
+                    <semanticsText>LivingSubject.villageName</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.4.21" extension="Siaya"/>
+                    <semanticsText>LivingSubject.siteName</semanticsText>
+                </livingSubjectId>
+                <!-- Note that ...5.1 is specified above: Register Number -->
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.5.2"
+                           extension="a788642d-341c-b5c9-7561-92946e7f90da"/>
+                    <semanticsText>LivingSubject.masterRegistryIdentifier</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.5.3" extension="14080-01234"/>
+                    <semanticsText>LivingSubject.cccUniqueIdentifier</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.5.4" extension="14080-00234/05"/>
+                    <semanticsText>LivingSubject.cccLocalIdentifier</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.5.5" extension="1-161-1-3"/>
+                    <semanticsText>LivingSubject.kemriKisumuHdssIdentifier</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.6.1" extension="14080"/>
+                    <semanticsText>LivingSubject.lastRegularVisitSite</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.6.2" extension="20110105"/>
+                    <semanticsText>LivingSubject.lastRegularVisitDate</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.6.3" extension="13471"/>
+                    <semanticsText>LivingSubject.LastOneOffVisitSite</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.6.4" extension="20110314"/>
+                    <semanticsText>LivingSubject.LastOneOffVisitDate</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.7.1" extension="(Hex fingerprint template)"/>
+                    <semanticsText>LivingSubject.LeftHandIndexFingerprint</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.7.2" extension="(Hex fingerprint template)"/>
+                    <semanticsText>LivingSubject.LeftHandMiddleFingerprint</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.7.3" extension="(Hex fingerprint template)"/>
+                    <semanticsText>LivingSubject.LeftHandRingFingerprint</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.7.4" extension="(Hex fingerprint template)"/>
+                    <semanticsText>LivingSubject.RightHandIndexFingerprint</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.7.5" extension="(Hex fingerprint template)"/>
+                    <semanticsText>LivingSubject.RightHandMiddleFingerprint</semanticsText>
+                </livingSubjectId>
+                <livingSubjectId>
+                    <value root="1.3.6.1.4.1.150.2474.11.1.7.6" extension="(Hex fingerprint template)"/>
+                    <semanticsText>LivingSubject.RightHandRingFingerprint</semanticsText>
+                </livingSubjectId>
+            </parameterList>
+        </queryByParameter>
+    </controlActProcess>
 </PRPA_IN201305UV02>

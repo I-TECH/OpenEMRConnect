@@ -22,7 +22,7 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.mpi;
+package ke.go.moh.oec.mpi.list;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -41,6 +41,16 @@ import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
 import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.lib.Mediator;
+import ke.go.moh.oec.mpi.CandidateSet;
+import ke.go.moh.oec.mpi.match.DateMatch;
+import ke.go.moh.oec.mpi.FindPersonThread;
+import ke.go.moh.oec.mpi.Mpi;
+import ke.go.moh.oec.mpi.Notifier;
+import ke.go.moh.oec.mpi.match.PersonMatch;
+import ke.go.moh.oec.mpi.Scorecard;
+import ke.go.moh.oec.mpi.SearchHistory;
+import ke.go.moh.oec.mpi.Sql;
+import ke.go.moh.oec.mpi.ValueMap;
 
 /**
  * Holds in memory the information about all persons in the MPI.
