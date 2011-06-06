@@ -60,7 +60,7 @@ public class ShadowResultSet {
     }
 
     public boolean next() throws SQLException {
-        if (rs.isAfterLast()) {
+        if (afterLast || rs.isAfterLast()) {
             afterLast = true;
             return false; // Return opposize of afterLast.
         } else {

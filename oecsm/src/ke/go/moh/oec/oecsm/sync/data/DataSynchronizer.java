@@ -28,6 +28,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ke.go.moh.oec.oecsm.bridge.TransactionConverter;
 import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.bridge.Transaction;
@@ -67,6 +69,8 @@ public class DataSynchronizer extends DatabaseConnector {
             }
             connection.commit();
             statement.close();
+        } catch (Exception ex) {
+            Logger.getLogger(DataSynchronizer.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             disconnect();
         }

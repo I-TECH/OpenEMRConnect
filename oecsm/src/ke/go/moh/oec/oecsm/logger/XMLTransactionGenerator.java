@@ -55,9 +55,9 @@ public class XMLTransactionGenerator {
     public void generate(List<LoggableTransaction> transactionList)
             throws FileNotFoundException, ParserConfigurationException, TransformerConfigurationException, TransformerException {
         if (!transactionList.isEmpty()) {
-            File transactionFile = new File("OECSM Transactions");
+            File transactionFile = new File("OECSM_Transactions");
             transactionFile.mkdir();
-            PrintWriter out = new PrintWriter(new File("OECSM Transactions/" + "OECSM Transaction No. " + transactionList.get(0).getId() + " - " + transactionList.get(transactionList.size() - 1).getId() + ".xml"));
+            PrintWriter out = new PrintWriter(new File("OECSM_Transactions/" + "OECSM Transaction No. " + transactionList.get(0).getId() + " - " + transactionList.get(transactionList.size() - 1).getId() + ".xml"));
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = dbf.newDocumentBuilder();
             DOMImplementation dom = builder.getDOMImplementation();
