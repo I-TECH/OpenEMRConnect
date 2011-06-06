@@ -224,13 +224,15 @@ class XmlPacker {
         packHl7Header(root, m);
         Element personNode = (Element) root.getElementsByTagName("patient").item(0);
         if (!(m.getData() instanceof PersonRequest)) {
-            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packGenericPersonMessage() - Expected data class PersonRequest, got {0}",
                     m.getData().getClass().getName());
         }
-        PersonRequest personRequest = (PersonRequest) m.getData();
-        Person p = personRequest.getPerson();
-        packPerson(personNode, p);
+        if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
+            PersonRequest personRequest = (PersonRequest) m.getData();
+            Person p = personRequest.getPerson();
+            packPerson(personNode, p);
+        }
         return doc;
     }
 
@@ -286,43 +288,45 @@ class XmlPacker {
         // The rest of what we want is in the subtree under <queryByParameter>
         Element q = (Element) root.getElementsByTagName("queryByParameter").item(0);
         if (!(m.getData() instanceof PersonRequest)) {
-            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packFindPersonMessage() - Expected data class PersonRequest, got {0}",
                     m.getData().getClass().getName());
         }
-        PersonRequest personRequest = (PersonRequest) m.getData();
-        Person p = personRequest.getPerson();
-        packPersonName(q, p, "livingSubjectName");
-        packTagValueAttribute(q, "livingSubjectAdministrativeGender", "code", packEnum(p.getSex()));
-        packTagValueAttribute(q, "livingSubjectBirthTime", "value", packDate(p.getBirthdate()));
-        packTagValueAttribute(q, "livingSubjectDeceasedTime", "value", packDate(p.getDeathdate()));
-        packLivingSubjectId(q, OID_OTHER_NAME, p.getOtherName());
-        packLivingSubjectId(q, OID_CLAN_NAME, p.getClanName());
-        packLivingSubjectId(q, OID_ALIVE_STATUS, packEnum(p.getAliveStatus())); // (Used only on findPerson.)
-        packLivingSubjectId(q, OID_MOTHERS_FIRST_NAME, p.getMothersFirstName());
-        packLivingSubjectId(q, OID_MOTHERS_MIDDLE_NAME, p.getMothersMiddleName());
-        packLivingSubjectId(q, OID_MOTHERS_LAST_NAME, p.getMothersLastName());
-        packLivingSubjectId(q, OID_FATHERS_FIRST_NAME, p.getFathersFirstName());
-        packLivingSubjectId(q, OID_FATHERS_MIDDLE_NAME, p.getFathersMiddleName());
-        packLivingSubjectId(q, OKD_FATHERS_LAST_NAME, p.getFathersLastName());
-        packLivingSubjectId(q, OID_COMPOUND_HEAD_FIRST_NAME, p.getCompoundHeadFirstName());
-        packLivingSubjectId(q, OID_COMPOUND_HEAD_MIDDLE_NAME, p.getCompoundHeadMiddleName());
-        packLivingSubjectId(q, OID_COMPOUND_HEAD_LAST_NAME, p.getCompoundHeadLastName());
-        packLivingSubjectId(q, OID_MARITAL_STATUS, packEnum(p.getMaritalStatus()));
-        packLivingSubjectId(q, OID_CONSENT_SIGNED, packEnum(p.getConsentSigned()));
-        packLivingSubjectId(q, OID_SITE_NAME, p.getSiteName()); // (Used only on findPerson.)
-        packLivingSubjectId(q, OID_VILAGE_NAME, p.getVillageName());
-        packLivingSubjectPersonIdentifiers(q, p, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
-        packLivingSubjectPersonIdentifiers(q, p, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
-        packLivingSubjectPersonIdentifiers(q, p, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
-        packLivingSubjectPersonIdentifiers(q, p, OID_CCC_LOCAL_PATIENT_ID, PersonIdentifier.Type.cccLocalId);
-        packLivingSubjectPersonIdentifiers(q, p, KISUMU_HDSS_ID, PersonIdentifier.Type.kisumuHdssId);
-        packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_LEFT_INDEX, Fingerprint.Type.leftIndexFinger);
-        packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_LEFT_MIDDLE, Fingerprint.Type.leftMiddleFinger);
-        packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_LEFT_RING, Fingerprint.Type.leftRingFinger);
-        packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_RIGHT_INDEX, Fingerprint.Type.rightIndexFinger);
-        packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_RIGHT_MIDDLE, Fingerprint.Type.rightMiddleFinger);
-        packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_RIGHT_RING, Fingerprint.Type.rightRingFinger);
+        if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
+            PersonRequest personRequest = (PersonRequest) m.getData();
+            Person p = personRequest.getPerson();
+            packPersonName(q, p, "livingSubjectName");
+            packTagValueAttribute(q, "livingSubjectAdministrativeGender", "code", packEnum(p.getSex()));
+            packTagValueAttribute(q, "livingSubjectBirthTime", "value", packDate(p.getBirthdate()));
+            packTagValueAttribute(q, "livingSubjectDeceasedTime", "value", packDate(p.getDeathdate()));
+            packLivingSubjectId(q, OID_OTHER_NAME, p.getOtherName());
+            packLivingSubjectId(q, OID_CLAN_NAME, p.getClanName());
+            packLivingSubjectId(q, OID_ALIVE_STATUS, packEnum(p.getAliveStatus())); // (Used only on findPerson.)
+            packLivingSubjectId(q, OID_MOTHERS_FIRST_NAME, p.getMothersFirstName());
+            packLivingSubjectId(q, OID_MOTHERS_MIDDLE_NAME, p.getMothersMiddleName());
+            packLivingSubjectId(q, OID_MOTHERS_LAST_NAME, p.getMothersLastName());
+            packLivingSubjectId(q, OID_FATHERS_FIRST_NAME, p.getFathersFirstName());
+            packLivingSubjectId(q, OID_FATHERS_MIDDLE_NAME, p.getFathersMiddleName());
+            packLivingSubjectId(q, OKD_FATHERS_LAST_NAME, p.getFathersLastName());
+            packLivingSubjectId(q, OID_COMPOUND_HEAD_FIRST_NAME, p.getCompoundHeadFirstName());
+            packLivingSubjectId(q, OID_COMPOUND_HEAD_MIDDLE_NAME, p.getCompoundHeadMiddleName());
+            packLivingSubjectId(q, OID_COMPOUND_HEAD_LAST_NAME, p.getCompoundHeadLastName());
+            packLivingSubjectId(q, OID_MARITAL_STATUS, packEnum(p.getMaritalStatus()));
+            packLivingSubjectId(q, OID_CONSENT_SIGNED, packEnum(p.getConsentSigned()));
+            packLivingSubjectId(q, OID_SITE_NAME, p.getSiteName()); // (Used only on findPerson.)
+            packLivingSubjectId(q, OID_VILAGE_NAME, p.getVillageName());
+            packLivingSubjectPersonIdentifiers(q, p, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
+            packLivingSubjectPersonIdentifiers(q, p, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
+            packLivingSubjectPersonIdentifiers(q, p, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
+            packLivingSubjectPersonIdentifiers(q, p, OID_CCC_LOCAL_PATIENT_ID, PersonIdentifier.Type.cccLocalId);
+            packLivingSubjectPersonIdentifiers(q, p, KISUMU_HDSS_ID, PersonIdentifier.Type.kisumuHdssId);
+            packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_LEFT_INDEX, Fingerprint.Type.leftIndexFinger);
+            packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_LEFT_MIDDLE, Fingerprint.Type.leftMiddleFinger);
+            packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_LEFT_RING, Fingerprint.Type.leftRingFinger);
+            packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_RIGHT_INDEX, Fingerprint.Type.rightIndexFinger);
+            packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_RIGHT_MIDDLE, Fingerprint.Type.rightMiddleFinger);
+            packLivingSubjectFingerprints(q, p, OID_FINGERPRINT_RIGHT_RING, Fingerprint.Type.rightRingFinger);
+        }
         return doc;
     }
 
@@ -337,29 +341,36 @@ class XmlPacker {
         Document doc = packTemplate(m);
         Element root = doc.getDocumentElement();
         packHl7Header(root, m);
-        PersonResponse pr = (PersonResponse) m.getData();
-        List<Person> personList = pr.getPersonList();
-        /*
-         * Find the <subject> subtree in the template. If there are no person results returned, remove it.
-         * If there is one result, pack it into the template. If there are more than one results,
-         * clone the <subject> subtree so we will have one to pack for each result.
-         *
-         * Note that we do all the cloning first, before any of the filling in.
-         * This is because template elements may be deleted as a person object is packed --
-         * we want all the template elements there in case some return person structures
-         * have more properties filled in than others.
-         */
-        Element subject = (Element) root.getElementsByTagName("subject").item(0);
-        if (personList == null || personList.isEmpty()) {
-            packRemoveNode(subject);
-        } else {
-            List<Element> elementList = new ArrayList<Element>();
-            elementList.add(subject); // Always the first element in the list.
-            for (int i = 1; i < personList.size(); i++) { // From 2nd person (index 1) onwards...
-                elementList.add(packCloneElement(subject));
-            }
-            for (int i = 0; i < personList.size(); i++) { // From 1st person (index 0) ondwards...
-                packCandidate(elementList.get(i), personList.get(i));
+        if (!(m.getData() instanceof PersonResponse)) {
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
+                    "packFindPersonResponseMessage() - Expected data class PersonResponse, got {0}",
+                    m.getData().getClass().getName());
+        }
+        if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
+            PersonResponse pr = (PersonResponse) m.getData();
+            List<Person> personList = pr.getPersonList();
+            /*
+             * Find the <subject> subtree in the template. If there are no person results returned, remove it.
+             * If there is one result, pack it into the template. If there are more than one results,
+             * clone the <subject> subtree so we will have one to pack for each result.
+             *
+             * Note that we do all the cloning first, before any of the filling in.
+             * This is because template elements may be deleted as a person object is packed --
+             * we want all the template elements there in case some return person structures
+             * have more properties filled in than others.
+             */
+            Element subject = (Element) root.getElementsByTagName("subject").item(0);
+            if (personList == null || personList.isEmpty()) {
+                packRemoveNode(subject);
+            } else {
+                List<Element> elementList = new ArrayList<Element>();
+                elementList.add(subject); // Always the first element in the list.
+                for (int i = 1; i < personList.size(); i++) { // From 2nd person (index 1) onwards...
+                    elementList.add(packCloneElement(subject));
+                }
+                for (int i = 0; i < personList.size(); i++) { // From 1st person (index 0) ondwards...
+                    packCandidate(elementList.get(i), personList.get(i));
+                }
             }
         }
         return doc;
@@ -1086,7 +1097,7 @@ class XmlPacker {
      */
     private Document packLogEntryMessage(Message m) {
         if (!(m.getData() instanceof LogEntry)) {
-            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packLogEntryMessage() - Expected data class LogEntry, got {0}",
                     m.getData().getClass().getName());
         }
@@ -1123,7 +1134,7 @@ class XmlPacker {
     private void packNewElement(Document doc, Element parent, String elementName, String value) {
         if (value != null) {
             Element element = doc.createElement(elementName);
-            element.setNodeValue(value);
+            element.setTextContent(value);
             parent.appendChild(element);
         }
     }
@@ -1505,9 +1516,9 @@ class XmlPacker {
         if (eName != null) {
             NodeList givenList = eName.getElementsByTagName("given");
             if (givenList.getLength() > 0) {
-                p.setFirstName(givenList.item(0).getNodeValue());
+                p.setFirstName(givenList.item(0).getTextContent());
                 if (givenList.getLength() > 1) {
-                    p.setMiddleName(givenList.item(1).getNodeValue());
+                    p.setMiddleName(givenList.item(1).getTextContent());
                 }
             }
             p.setLastName(unpackTagValue(eName, "family"));
@@ -1802,7 +1813,7 @@ class XmlPacker {
     private String unpackTagValue(Element subtree, String tag) {
         Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e != null) {
-            return e.getNodeValue();
+            return e.getTextContent();
         } else {
             return null;
         }
@@ -1880,11 +1891,11 @@ class XmlPacker {
     private void unpackLogEntryMessage(Message m, Element e) {
         LogEntry logEntry = new LogEntry();
         m.setData(logEntry);
-        logEntry.setSeverity(e.getElementsByTagName("severity").item(0).getNodeValue());
-        logEntry.setClassName(e.getElementsByTagName("class").item(0).getNodeValue());
-        logEntry.setDateTime(unpackDateTime(e.getElementsByTagName("dateTime").item(0).getNodeValue()));
-        logEntry.setMessage(e.getElementsByTagName("message").item(0).getNodeValue());
-        logEntry.setInstance(e.getElementsByTagName("instance").item(0).getNodeValue());
+        logEntry.setSeverity(e.getElementsByTagName("severity").item(0).getTextContent());
+        logEntry.setClassName(e.getElementsByTagName("class").item(0).getTextContent());
+        logEntry.setDateTime(unpackDateTime(e.getElementsByTagName("dateTime").item(0).getTextContent()));
+        logEntry.setMessage(e.getElementsByTagName("message").item(0).getTextContent());
+        logEntry.setInstance(e.getElementsByTagName("instance").item(0).getTextContent());
     }
 
     /**
@@ -1897,9 +1908,9 @@ class XmlPacker {
     private void unpackWorkMessage(Message m, Element e) {
         Work work = new Work();
         m.setData(work);
-        work.setSourceAddress(e.getElementsByTagName("sourceAddress").item(0).getNodeValue());
-        work.setSourceAddress(e.getElementsByTagName("notificationId").item(0).getNodeValue());
-        work.setSourceAddress(e.getElementsByTagName("reassignAddress").item(0).getNodeValue());
+        work.setSourceAddress(e.getElementsByTagName("sourceAddress").item(0).getTextContent());
+        work.setSourceAddress(e.getElementsByTagName("notificationId").item(0).getTextContent());
+        work.setSourceAddress(e.getElementsByTagName("reassignAddress").item(0).getTextContent());
     }
 
     /**
