@@ -1134,7 +1134,7 @@ class XmlPacker {
     private void packNewElement(Document doc, Element parent, String elementName, String value) {
         if (value != null) {
             Element element = doc.createElement(elementName);
-            element.setNodeValue(value);
+            element.setTextContent(value);
             parent.appendChild(element);
         }
     }
@@ -1516,9 +1516,9 @@ class XmlPacker {
         if (eName != null) {
             NodeList givenList = eName.getElementsByTagName("given");
             if (givenList.getLength() > 0) {
-                p.setFirstName(givenList.item(0).getNodeValue());
+                p.setFirstName(givenList.item(0).getTextContent());
                 if (givenList.getLength() > 1) {
-                    p.setMiddleName(givenList.item(1).getNodeValue());
+                    p.setMiddleName(givenList.item(1).getTextContent());
                 }
             }
             p.setLastName(unpackTagValue(eName, "family"));
@@ -1813,7 +1813,7 @@ class XmlPacker {
     private String unpackTagValue(Element subtree, String tag) {
         Element e = (Element) subtree.getElementsByTagName(tag).item(0);
         if (e != null) {
-            return e.getNodeValue();
+            return e.getTextContent();
         } else {
             return null;
         }
@@ -1891,11 +1891,11 @@ class XmlPacker {
     private void unpackLogEntryMessage(Message m, Element e) {
         LogEntry logEntry = new LogEntry();
         m.setData(logEntry);
-        logEntry.setSeverity(e.getElementsByTagName("severity").item(0).getNodeValue());
-        logEntry.setClassName(e.getElementsByTagName("class").item(0).getNodeValue());
-        logEntry.setDateTime(unpackDateTime(e.getElementsByTagName("dateTime").item(0).getNodeValue()));
-        logEntry.setMessage(e.getElementsByTagName("message").item(0).getNodeValue());
-        logEntry.setInstance(e.getElementsByTagName("instance").item(0).getNodeValue());
+        logEntry.setSeverity(e.getElementsByTagName("severity").item(0).getTextContent());
+        logEntry.setClassName(e.getElementsByTagName("class").item(0).getTextContent());
+        logEntry.setDateTime(unpackDateTime(e.getElementsByTagName("dateTime").item(0).getTextContent()));
+        logEntry.setMessage(e.getElementsByTagName("message").item(0).getTextContent());
+        logEntry.setInstance(e.getElementsByTagName("instance").item(0).getTextContent());
     }
 
     /**
@@ -1908,9 +1908,9 @@ class XmlPacker {
     private void unpackWorkMessage(Message m, Element e) {
         Work work = new Work();
         m.setData(work);
-        work.setSourceAddress(e.getElementsByTagName("sourceAddress").item(0).getNodeValue());
-        work.setSourceAddress(e.getElementsByTagName("notificationId").item(0).getNodeValue());
-        work.setSourceAddress(e.getElementsByTagName("reassignAddress").item(0).getNodeValue());
+        work.setSourceAddress(e.getElementsByTagName("sourceAddress").item(0).getTextContent());
+        work.setSourceAddress(e.getElementsByTagName("notificationId").item(0).getTextContent());
+        work.setSourceAddress(e.getElementsByTagName("reassignAddress").item(0).getTextContent());
     }
 
     /**

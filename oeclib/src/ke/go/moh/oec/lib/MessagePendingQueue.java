@@ -43,6 +43,7 @@ import java.util.List;
 final class MessagePendingQueue implements Runnable {
 
     private final int MESSAGE_TIMEOUT_SECONDS = 20;
+    // TODO: Make this an optional property.
 
     class Entry {
 
