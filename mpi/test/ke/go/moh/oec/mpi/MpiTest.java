@@ -77,6 +77,17 @@ public class MpiTest {
         pr = (PersonResponse) result;
         assertTrue(pr.isSuccessful());
         List<Person> pList = pr.getPersonList();
+
+        for (Person person : pList) {
+            System.out.println("GUID: " + person.getPersonGuid()
+                    + " NAME: " + person.getFirstName() + " " + person.getMiddleName()
+                    + " " + person.getLastName()
+                    + " CLAN: " + person.getClanName() 
+                    + " FFN: " + person.getFathersFirstName()
+                    + " FMN: " + person.getFathersMiddleName()
+                    + " FLN: " + person.getFathersLastName());
+        }
+
         assertNotNull(pList);
         int pCount = pList.size();
         assertEquals(8, pCount);

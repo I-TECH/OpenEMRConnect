@@ -92,7 +92,9 @@ class HttpService {
             Writer output = new OutputStreamWriter(connection.getOutputStream());
             output.write(xml);
             output.close();
-
+            
+            Object o = connection.getInputStream();
+            
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             while (br.readLine() != null) {
                 //content not required, just acknowlegment that message was received.

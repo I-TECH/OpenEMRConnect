@@ -36,9 +36,9 @@ import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Fingerprint.TechnologyType;
 import ke.go.moh.oec.Fingerprint.Type;
-import ke.go.moh.oec.reception.domain.ImagedFingerprint;
-import ke.go.moh.oec.reception.domain.Session;
-import ke.go.moh.oec.reception.fingerprintreader.ReaderManager;
+import ke.go.moh.oec.reception.data.ImagedFingerprint;
+import ke.go.moh.oec.reception.controller.Session;
+import ke.go.moh.oec.reception.reader.ReaderManager;
 import org.jdesktop.application.Action;
 
 /**
@@ -111,7 +111,7 @@ public class FingerprintDialog extends javax.swing.JDialog {
         leftMiddleRadioButton = new javax.swing.JRadioButton();
         rightRingRadioButton = new javax.swing.JRadioButton();
         leftRingRadioButton = new javax.swing.JRadioButton();
-        fingerprintImagePanel = new ke.go.moh.oec.reception.gui.ImagePanel();
+        fingerprintImagePanel = new ke.go.moh.oec.reception.gui.custom.ImagePanel();
         qualityTextField = new javax.swing.JTextField();
         notAvailableCheckBox = new javax.swing.JCheckBox();
         okButton = new javax.swing.JButton();
@@ -293,7 +293,7 @@ public class FingerprintDialog extends javax.swing.JDialog {
     private javax.swing.JButton cancelButton;
     private javax.swing.ButtonGroup fingerButtonGroup;
     private javax.swing.JPanel fingerPanel;
-    private ke.go.moh.oec.reception.gui.ImagePanel fingerprintImagePanel;
+    private ke.go.moh.oec.reception.gui.custom.ImagePanel fingerprintImagePanel;
     private javax.swing.JPanel fingerprintPanel;
     private javax.swing.JRadioButton leftIndexRadioButton;
     private javax.swing.JRadioButton leftMiddleRadioButton;

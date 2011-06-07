@@ -22,26 +22,42 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.reception.domain;
+package ke.go.moh.oec.reception.gui.helper;
 
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class UnreachableMPIException extends Exception {
+public class ProcessResult {
 
-    /**
-     * Creates a new instance of <code>UnreachableMPIException</code> without detail message.
-     */
-    public UnreachableMPIException() {
-        super("The Master Person Index could not be reached.");
+    public enum Type {
+
+        LIST,
+        ERROR,
+        NEXT,
+        EXIT
+    }
+    private Type type;
+    private Object data;
+
+    public ProcessResult(Type type, Object data) {
+        this.type = type;
+        this.data = data;
     }
 
-    /**
-     * Constructs an instance of <code>UnreachableMPIException</code> with the specified detail message.
-     * @param msg the detail message.
-     */
-    public UnreachableMPIException(String msg) {
-        super(msg);
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }

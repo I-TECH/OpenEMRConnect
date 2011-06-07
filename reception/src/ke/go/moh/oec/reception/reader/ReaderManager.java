@@ -27,7 +27,7 @@
  *
  * Created on May 26, 2011, 9:30:59 AM
  */
-package ke.go.moh.oec.reception.fingerprintreader;
+package ke.go.moh.oec.reception.reader;
 
 import com.griaule.grfingerjava.FingerprintImage;
 import com.griaule.grfingerjava.GrFingerJava;
