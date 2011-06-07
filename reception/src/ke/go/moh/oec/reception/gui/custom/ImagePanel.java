@@ -1,4 +1,4 @@
-package ke.go.moh.oec.reception.gui;
+package ke.go.moh.oec.reception.gui.custom;
 
 import java.awt.Graphics;
 import java.awt.Insets;

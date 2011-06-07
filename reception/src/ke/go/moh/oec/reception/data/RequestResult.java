@@ -22,38 +22,36 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.reception.domain;
-
-import java.awt.image.BufferedImage;
-import ke.go.moh.oec.Fingerprint;
+package ke.go.moh.oec.reception.data;
 
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class ImagedFingerprint {
+public class RequestResult {
 
-    private Fingerprint fingerprint;
-    private BufferedImage image;
+    public static final int SUCCESS = 1;
+    public static final int FAILURE = 2;
+    public static final int INDETERMINATE = 3;
+    private int returnCode = INDETERMINATE;
+    private Object data;
 
-    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image) {
-        this.fingerprint = fingerprint;
-        this.image = image;
+    public RequestResult() {
     }
 
-    public Fingerprint getFingerprint() {
-        return fingerprint;
+    public Object getData() {
+        return data;
     }
 
-    public void setFingerprint(Fingerprint fingerprint) {
-        this.fingerprint = fingerprint;
+    public void setData(Object data) {
+        this.data = data;
     }
 
-    public BufferedImage getImage() {
-        return image;
+    public int getReturnCode() {
+        return returnCode;
     }
 
-    public void setImage(BufferedImage image) {
-        this.image = image;
+    public void setReturnCode(int status) {
+        this.returnCode = status;
     }
 }

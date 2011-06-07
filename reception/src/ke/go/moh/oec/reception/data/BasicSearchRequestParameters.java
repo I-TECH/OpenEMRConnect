@@ -22,36 +22,20 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.reception.domain;
+package ke.go.moh.oec.reception.data;
 
-import java.util.Date;
 import java.util.List;
 import ke.go.moh.oec.Fingerprint;
-import ke.go.moh.oec.Person.Sex;
 
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class ExtendedSearchParameters implements SearchParameters {
+public class BasicSearchRequestParameters implements RequestParameters {
 
     private String clinicId;
     private String clinicName;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private Sex sex;
-    private Date birthdate;
-    private String villageName;
     List<Fingerprint> fingerprintList;
-
-    public Date getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(Date birthDate) {
-        this.birthdate = birthDate;
-    }
 
     public String getClinicId() {
         return clinicId;
@@ -69,51 +53,41 @@ public class ExtendedSearchParameters implements SearchParameters {
         this.clinicName = clinicName;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public List<Fingerprint> getFingerprint() {
+    public List<Fingerprint> getFingerprintList() {
         return fingerprintList;
     }
 
-    public void setFingerprint(List<Fingerprint> fingerprintList) {
+    public void setFingerprintList(List<Fingerprint> fingerprintList) {
         this.fingerprintList = fingerprintList;
     }
 
-    public String getLastName() {
-        return lastName;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final BasicSearchRequestParameters other = (BasicSearchRequestParameters) obj;
+        if ((this.clinicId == null) ? (other.clinicId != null) : !this.clinicId.equals(other.clinicId)) {
+            return false;
+        }
+        if ((this.clinicName == null) ? (other.clinicName != null) : !this.clinicName.equals(other.clinicName)) {
+            return false;
+        }
+        if (this.fingerprintList != other.fingerprintList && (this.fingerprintList == null || !this.fingerprintList.equals(other.fingerprintList))) {
+            return false;
+        }
+        return true;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
-    public Sex getSex() {
-        return sex;
-    }
-
-    public void setSex(Sex sex) {
-        this.sex = sex;
-    }
-
-    public String getVillageName() {
-        return villageName;
-    }
-
-    public void setVillageName(String villageName) {
-        this.villageName = villageName;
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 37 * hash + (this.clinicId != null ? this.clinicId.hashCode() : 0);
+        hash = 37 * hash + (this.clinicName != null ? this.clinicName.hashCode() : 0);
+        hash = 37 * hash + (this.fingerprintList != null ? this.fingerprintList.hashCode() : 0);
+        return hash;
     }
 }
