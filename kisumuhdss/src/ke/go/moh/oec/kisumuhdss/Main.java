@@ -34,6 +34,11 @@ import ke.go.moh.oec.lib.Mediator;
  */
 public class Main {
 
+    
+    
+    
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -41,11 +46,21 @@ public class Main {
         // TODO code application logic here
         FindPersonResponder fpr = new FindPersonResponder();
         Mediator.registerCallback(fpr);
-
+        String driverName = Mediator.getProperty("Shadow.driver");
+        try {
+            Class.forName(driverName).newInstance();
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+                    "Can''t load JDBC driver " + driverName, ex);
+            System.exit(1);
+        }
+        
         Mediator mediator = new Mediator();
+        Updater updater = new Updater();
         while (true) {
+            updater.update();
             try {
-                Thread.sleep(Long.MAX_VALUE);
+                Thread.sleep(10 * 1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }

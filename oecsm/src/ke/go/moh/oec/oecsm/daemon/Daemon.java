@@ -24,8 +24,13 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.daemon;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ke.go.moh.oec.oecsm.data.LoggableTransaction;
 import ke.go.moh.oec.oecsm.gui.DaemonFrame;
 import ke.go.moh.oec.oecsm.sync.data.DataSynchronizer;
 import ke.go.moh.oec.oecsm.logger.LoggableTransactionMiner;
@@ -41,6 +46,7 @@ public class Daemon extends Thread {
 
     private int snooze;
     private DaemonFrame daemonFrame;
+    private static Properties properties = null;
 
     public Daemon(int snooze, DaemonFrame daemonFrame) {
         this.snooze = snooze;
@@ -65,7 +71,12 @@ public class Daemon extends Thread {
             while (true) {
                 new SchemaSynchronizer().synchronize();
                 new DataSynchronizer().Synchronize();
-                new XMLTransactionGenerator().generate(new LoggableTransactionMiner().generate());
+                List<LoggableTransaction> transactionList = new LoggableTransactionMiner().generate();
+                String transactionXmlOutput = getProperty("transaction.xml.output");
+                if (transactionXmlOutput != null && transactionXmlOutput.equalsIgnoreCase("true")) {
+                    new XMLTransactionGenerator().generate(transactionList);
+                }
+                // TODO: Implement time of day scheduler method
                 Thread.sleep(snooze);
                 System.gc();
             }
@@ -73,5 +84,28 @@ public class Daemon extends Thread {
             Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
             daemonFrame.getOutputTextArea().append(ex.getMessage() + "\n");
         }
+    }
+
+    public static String getProperty(String propertyName) {
+        if (properties == null) {
+            properties = new Properties();
+            final String propertiesFileName = "oecsm.properties";
+            File propFile = new File(propertiesFileName);
+            String propFilePath = propFile.getAbsolutePath();
+            try {
+                FileInputStream fis = new FileInputStream(propFilePath);
+                properties.load(fis);
+            } catch (Exception e) {
+                /*
+                 * We somehow failed to open our default propoerties file.
+                 * This should not happen. It should always be there.
+                 */
+                Logger.getLogger(DaemonManager.class.getName()).log(Level.SEVERE,
+                        "getProperty() Can''t open ''{0}'' -- Please create the properties file if it doesn''t exist and then restart the app",
+                        propFilePath);
+                System.exit(1);
+            }
+        }
+        return properties.getProperty(propertyName);
     }
 }

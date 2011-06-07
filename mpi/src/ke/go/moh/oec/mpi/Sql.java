@@ -61,7 +61,6 @@ public class Sql {
             String username = Mediator.getProperty("MPI.username");
             String password = Mediator.getProperty("MPI.password");
             conn = DriverManager.getConnection(url, username, password);
-
         } catch (Exception ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Can''t connect to the database -- Please check the database and try again.", ex);
@@ -161,6 +160,7 @@ public class Sql {
      * @param conn the Connection to use.
      */
     public static void commit(Connection conn) {
+        // TODO: Use JDBC function for this.
         execute(conn, "COMMIT");
     }
 
@@ -170,6 +170,7 @@ public class Sql {
      * @param conn the Connection to use.
      */
     public static void rollback(Connection conn) {
+        // TODO: Use JDBC function for this.
         execute(conn, "ROLLBACK");
     }
 
@@ -180,6 +181,7 @@ public class Sql {
      * @return the auto-generated ID.
      */
     public static String getLastInsertId(Connection conn) {
+        // TODO: Use JDBC function for this.
         ResultSet rs = query(conn, "SELECT LAST_INSERT_ID()");
         String returnId = null;
         try {

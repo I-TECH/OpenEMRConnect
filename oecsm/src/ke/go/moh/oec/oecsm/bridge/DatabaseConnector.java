@@ -47,11 +47,13 @@ import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
 public class DatabaseConnector {
 
     protected String database;
-    protected static String url;
+    protected String url;
     protected String driver;
     protected String username;
     protected String password;
     protected Connection connection;
+    protected String schemaPattern;
+    protected String tableTypes;
 
     public void testConnection(String driver, String url, String username, String password) throws DriverNotFoundException, SQLException {
         try {
@@ -71,6 +73,11 @@ public class DatabaseConnector {
             driver = properties.getProperty("driver");
             username = properties.getProperty("username");
             password = properties.getProperty("password");
+            schemaPattern = properties.getProperty("schemaPattern");
+            tableTypes = properties.getProperty("tableTypes");
+            if (tableTypes == null) {
+                tableTypes = "TABLE"; // Default: get all tables in the source database.
+            }
         } catch (IOException ex) {
             Logger.getLogger(DatabaseConnector.class.getName()).log(Level.SEVERE, null, ex);
             throw new InaccessibleConfigurationFileException(ex);
@@ -105,7 +112,7 @@ public class DatabaseConnector {
         }
     }
 
-    public static QueryCustomizer getQueryCustomizer() {
+    public QueryCustomizer getQueryCustomizer() {
         if (url.contains("mysql")) {
             return new MySQLQueryCustomizer();
         } else if (url.contains("sqlserver")) {
