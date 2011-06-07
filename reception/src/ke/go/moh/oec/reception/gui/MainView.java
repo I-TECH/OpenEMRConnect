@@ -1,13 +1,13 @@
 /*
- * View.java
+ * MainView.java
  */
 package ke.go.moh.oec.reception.gui;
 
+import ke.go.moh.oec.reception.gui.helper.ProcessResult;
 import java.awt.CardLayout;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ke.go.moh.oec.reception.domain.UnreachableMPIException;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -25,30 +25,23 @@ import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
-import ke.go.moh.oec.reception.domain.RequestDispatcher;
-import ke.go.moh.oec.reception.domain.Session;
-import ke.go.moh.oec.reception.domain.UnreachableLPIException;
-import ke.go.moh.oec.reception.domain.Util;
+import ke.go.moh.oec.reception.controller.RequestDispatcher;
+import ke.go.moh.oec.reception.data.RequestResult;
+import ke.go.moh.oec.reception.controller.Session;
 
 /**
  * The application's main frame.
  */
-public class View extends FrameView {
+public class MainView extends FrameView {
 
     private CardLayout cardLayout;
     private Session session;
     private BufferedImage refusedFingerprint;
     private BufferedImage fingerprintNotTaken;
-    private BufferedImage fingerprintImage;
 
-    public void setFingerprintImage(BufferedImage fingerprintImage) {
-        this.fingerprintImage = fingerprintImage;
-    }
-
-    public View(SingleFrameApplication app) {
+    public MainView(SingleFrameApplication app) {
         super(app);
 
         initComponents();
@@ -58,7 +51,7 @@ public class View extends FrameView {
             refusedFingerprint = ImageIO.read(new File("refused_fingerprinting.png"));
             fingerprintNotTaken = ImageIO.read(new File("no_fingerprint.png"));
         } catch (IOException ex) {
-            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
         // status bar initialization - message timeout, idle icon and busy animation, etc
         ResourceMap resourceMap = getResourceMap();
@@ -122,7 +115,7 @@ public class View extends FrameView {
     public void showAboutBox() {
         if (aboutBox == null) {
             JFrame mainFrame = App.getApplication().getMainFrame();
-            aboutBox = new AboutBox(mainFrame);
+            aboutBox = new AboutDialog(mainFrame);
             aboutBox.setLocationRelativeTo(mainFrame);
         }
         App.getApplication().show(aboutBox);
@@ -165,7 +158,7 @@ public class View extends FrameView {
         basicSearchClinicNameLabel = new javax.swing.JLabel();
         basicSearchClinicNameTextField = new javax.swing.JTextField();
         basicSearchFingerprintLabel = new javax.swing.JLabel();
-        basicSearchFingerprintImagePanel = new ke.go.moh.oec.reception.gui.ImagePanel();
+        basicSearchFingerprintImagePanel = new ke.go.moh.oec.reception.gui.custom.ImagePanel();
         basicSearchClientRefusesCheckBox = new javax.swing.JCheckBox();
         basicSearchTakeButton = new javax.swing.JButton();
         basicSearchButton = new javax.swing.JButton();
@@ -189,7 +182,7 @@ public class View extends FrameView {
         extendedSearchVillageLabel = new javax.swing.JLabel();
         extendedSearchVillageTextField = new javax.swing.JTextField();
         extendedSearchFingerprintLabel = new javax.swing.JLabel();
-        extendedSearchFingerprintImagePanel = new ke.go.moh.oec.reception.gui.ImagePanel();
+        extendedSearchFingerprintImagePanel = new ke.go.moh.oec.reception.gui.custom.ImagePanel();
         extendedSearchClientRefusesCheckBox = new javax.swing.JCheckBox();
         extendedSearchTakeButton = new javax.swing.JButton();
         extendedSearchButton = new javax.swing.JButton();
@@ -197,6 +190,7 @@ public class View extends FrameView {
         searchResultsPanel = new javax.swing.JPanel();
         searchResultsScrollPane = new javax.swing.JScrollPane();
         searchResultsTable = new javax.swing.JTable();
+        acceptButton = new javax.swing.JButton();
         notFoundButton = new javax.swing.JButton();
         reviewCard = new javax.swing.JPanel();
         reviewPanel = new javax.swing.JPanel();
@@ -309,7 +303,7 @@ public class View extends FrameView {
 
         leftPanel.setName("leftPanel"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getResourceMap(View.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getResourceMap(MainView.class);
         alertsListPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("alertsListPanel.border.title"))); // NOI18N
         alertsListPanel.setName("alertsListPanel"); // NOI18N
 
@@ -335,7 +329,7 @@ public class View extends FrameView {
         alertsListPanelLayout.setVerticalGroup(
             alertsListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, alertsListPanelLayout.createSequentialGroup()
-                .addComponent(alertsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE)
+                .addComponent(alertsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 565, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -360,7 +354,7 @@ public class View extends FrameView {
 
         rightPanel.setName("rightPanel"); // NOI18N
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(View.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(MainView.class, this);
         homeButton.setAction(actionMap.get("showFirstCard")); // NOI18N
         homeButton.setText(resourceMap.getString("homeButton.text")); // NOI18N
         homeButton.setName("homeButton"); // NOI18N
@@ -398,10 +392,10 @@ public class View extends FrameView {
             .addGroup(homePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
-                    .addComponent(visitorButton, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
-                    .addComponent(enrolledButton, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
-                    .addComponent(transferInButton, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE))
+                    .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(visitorButton, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(enrolledButton, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(transferInButton, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
                 .addContainerGap())
         );
         homePanelLayout.setVerticalGroup(
@@ -422,17 +416,17 @@ public class View extends FrameView {
         homeCard.setLayout(homeCardLayout);
         homeCardLayout.setHorizontalGroup(
             homeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(homeCardLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, homeCardLayout.createSequentialGroup()
                 .addGap(145, 145, 145)
                 .addComponent(homePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(229, 229, 229))
+                .addGap(350, 350, 350))
         );
         homeCardLayout.setVerticalGroup(
             homeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(homeCardLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(homePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(384, Short.MAX_VALUE))
+                .addContainerGap(307, Short.MAX_VALUE))
         );
 
         wizardPanel.add(homeCard, "homeCard");
@@ -456,8 +450,8 @@ public class View extends FrameView {
             .addGroup(clientIdPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(clientIdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(clinicIdNoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
-                    .addComponent(clinicIdYesButton, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE))
+                    .addComponent(clinicIdNoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
+                    .addComponent(clinicIdYesButton, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
                 .addContainerGap())
         );
         clientIdPanelLayout.setVerticalGroup(
@@ -475,16 +469,16 @@ public class View extends FrameView {
         clinicIdCardLayout.setHorizontalGroup(
             clinicIdCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(clinicIdCardLayout.createSequentialGroup()
-                .addGap(130, 130, 130)
+                .addGap(135, 135, 135)
                 .addComponent(clientIdPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(225, 225, 225))
+                .addGap(349, 349, 349))
         );
         clinicIdCardLayout.setVerticalGroup(
             clinicIdCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(clinicIdCardLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(clientIdPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(479, Short.MAX_VALUE))
+                .addContainerGap(402, Short.MAX_VALUE))
         );
 
         wizardPanel.add(clinicIdCard, "knowsClinicIdCard");
@@ -549,15 +543,15 @@ public class View extends FrameView {
                             .addComponent(basicSearchFingerprintLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(basicSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(basicSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
-                            .addComponent(basicSearchClinicNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+                            .addComponent(basicSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
+                            .addComponent(basicSearchClinicNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
                             .addGroup(basicSearchPanelLayout.createSequentialGroup()
                                 .addGroup(basicSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(basicSearchTakeButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(basicSearchFingerprintImagePanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(basicSearchClientRefusesCheckBox))))
-                    .addComponent(basicSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE))
+                    .addComponent(basicSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE))
                 .addContainerGap())
         );
         basicSearchPanelLayout.setVerticalGroup(
@@ -598,7 +592,7 @@ public class View extends FrameView {
             .addGroup(basicSearchCardLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(basicSearchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(372, Short.MAX_VALUE))
+                .addContainerGap(295, Short.MAX_VALUE))
         );
 
         wizardPanel.add(basicSearchCard, "basicSearchCard");
@@ -693,7 +687,7 @@ public class View extends FrameView {
             .addGroup(extendedSearchPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(extendedSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(extendedSearchButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
+                    .addComponent(extendedSearchButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
                     .addGroup(extendedSearchPanelLayout.createSequentialGroup()
                         .addComponent(extendedSearchFingerprintLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -718,13 +712,13 @@ public class View extends FrameView {
                                 .addComponent(maleButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(femaleRadioButton))
-                            .addComponent(extendedSearchLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
-                            .addComponent(extendedSearchMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
-                            .addComponent(extendedSearchFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
-                            .addComponent(extendedSearchClinicNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
-                            .addComponent(extendedSearchVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
-                            .addComponent(extendedSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
-                            .addComponent(extendedSearchDateOfBirthChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE))))
+                            .addComponent(extendedSearchLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                            .addComponent(extendedSearchMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                            .addComponent(extendedSearchFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                            .addComponent(extendedSearchClinicNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                            .addComponent(extendedSearchVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                            .addComponent(extendedSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                            .addComponent(extendedSearchDateOfBirthChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         extendedSearchPanelLayout.setVerticalGroup(
@@ -772,7 +766,7 @@ public class View extends FrameView {
                     .addComponent(extendedSearchClientRefusesCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(extendedSearchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(221, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout extendedSearchCardLayout = new javax.swing.GroupLayout(extendedSearchCard);
@@ -788,19 +782,21 @@ public class View extends FrameView {
             extendedSearchCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(extendedSearchCardLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(extendedSearchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(extendedSearchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(144, Short.MAX_VALUE))
         );
 
-        wizardPanel.add(extendedSearchCard, "card5");
+        wizardPanel.add(extendedSearchCard, "extendedSearchCard");
 
         searchResultsCard.setName("searchResultsCard"); // NOI18N
 
         searchResultsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("searchResultsPanel.border.title"))); // NOI18N
         searchResultsPanel.setName("searchResultsPanel"); // NOI18N
 
+        searchResultsScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         searchResultsScrollPane.setName("searchResultsScrollPane"); // NOI18N
 
+        searchResultsTable.setAutoCreateRowSorter(true);
         searchResultsTable.setName("searchResultsTable"); // NOI18N
 
         org.jdesktop.swingbinding.JTableBinding jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, searchResultsList, searchResultsTable);
@@ -813,15 +809,9 @@ public class View extends FrameView {
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${lastName}"));
         columnBinding.setColumnName("Last Name");
         columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${otherName}"));
-        columnBinding.setColumnName("Other Name");
-        columnBinding.setColumnClass(String.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${birthdate}"));
         columnBinding.setColumnName("Birthdate");
         columnBinding.setColumnClass(java.util.Date.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${villageName}"));
-        columnBinding.setColumnName("Village Name");
-        columnBinding.setColumnClass(String.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${fathersFirstName}"));
         columnBinding.setColumnName("Fathers First Name");
         columnBinding.setColumnClass(String.class);
@@ -831,30 +821,18 @@ public class View extends FrameView {
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${fathersLastName}"));
         columnBinding.setColumnName("Fathers Last Name");
         columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${mothersFirstName}"));
-        columnBinding.setColumnName("Mothers First Name");
-        columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${mothersMiddleName}"));
-        columnBinding.setColumnName("Mothers Middle Name");
-        columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${mothersLastName}"));
-        columnBinding.setColumnName("Mothers Last Name");
-        columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${compoundHeadFirstName}"));
-        columnBinding.setColumnName("Compound Head First Name");
-        columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${compoundHeadMiddleName}"));
-        columnBinding.setColumnName("Compound Head Middle Name");
-        columnBinding.setColumnClass(String.class);
-        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${compoundHeadLastName}"));
-        columnBinding.setColumnName("Compound Head Last Name");
-        columnBinding.setColumnClass(String.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${clanName}"));
         columnBinding.setColumnName("Clan Name");
+        columnBinding.setColumnClass(String.class);
+        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${personGuid}"));
+        columnBinding.setColumnName("Person Guid");
         columnBinding.setColumnClass(String.class);
         bindingGroup.addBinding(jTableBinding);
         jTableBinding.bind();
         searchResultsScrollPane.setViewportView(searchResultsTable);
+
+        acceptButton.setText(resourceMap.getString("acceptButton.text")); // NOI18N
+        acceptButton.setName("acceptButton"); // NOI18N
 
         notFoundButton.setText(resourceMap.getString("notFoundButton.text")); // NOI18N
         notFoundButton.setName("notFoundButton"); // NOI18N
@@ -866,14 +844,17 @@ public class View extends FrameView {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchResultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(searchResultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(notFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE)
-                    .addComponent(searchResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 612, Short.MAX_VALUE))
+                    .addComponent(searchResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
+                    .addComponent(notFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
+                    .addComponent(acceptButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE))
                 .addContainerGap())
         );
         searchResultsPanelLayout.setVerticalGroup(
             searchResultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchResultsPanelLayout.createSequentialGroup()
-                .addComponent(searchResultsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE)
+                .addComponent(searchResultsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(acceptButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(notFoundButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -1412,26 +1393,26 @@ public class View extends FrameView {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jDateChooser2, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
+                    .addComponent(jDateChooser2, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jRadioButton3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jRadioButton4))
-                    .addComponent(jTextField16, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField17, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField18, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jComboBox2, 0, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField21, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField20, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField19, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField22, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField23, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField24, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField28, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField27, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField26, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)
-                    .addComponent(jTextField25, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE))
+                    .addComponent(jTextField16, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField17, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField18, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jComboBox2, 0, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField21, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField20, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField19, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField22, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField23, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField24, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField28, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField27, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField26, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jTextField25, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -1510,8 +1491,8 @@ public class View extends FrameView {
             reviewCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(reviewCardLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(reviewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(reviewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         wizardPanel.add(reviewCard, "card7");
@@ -1523,7 +1504,7 @@ public class View extends FrameView {
             .addGroup(rightPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 666, Short.MAX_VALUE)
+                    .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
                     .addGroup(rightPanelLayout.createSequentialGroup()
                         .addComponent(homeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1541,7 +1522,7 @@ public class View extends FrameView {
                     .addComponent(backButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
                     .addComponent(homeButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
+                .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1553,11 +1534,11 @@ public class View extends FrameView {
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 942, Short.MAX_VALUE)
+            .addComponent(mainSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 897, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 704, Short.MAX_VALUE)
+            .addComponent(mainSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 627, Short.MAX_VALUE)
         );
 
         menuBar.setName("menuBar"); // NOI18N
@@ -1595,11 +1576,11 @@ public class View extends FrameView {
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 942, Short.MAX_VALUE)
+            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 897, Short.MAX_VALUE)
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 772, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 727, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusAnimationLabel)
@@ -1677,52 +1658,62 @@ public class View extends FrameView {
 
         @Override
         protected Object doInBackground() {
-            //TODO: Decide what to do when the MPI or LPI cannot be contacted
+            session.getBasicSearchParameters().setClinicId(basicSearchClinicIdTextField.getText());
+            //session.getBasicSearchParameters().setFingerprintList(session.get)
             List<Person> mpiPersonList = null;
             List<Person> lpiPersonList = null;
-            session.getBasicSearchParameters().setClinicId(basicSearchClinicIdTextField.getText());
-            try {
-                mpiPersonList = RequestDispatcher.findMPICandidates(session.getBasicSearchParameters());
-                lpiPersonList = RequestDispatcher.findLPICandidates(session.getBasicSearchParameters());
-            } catch (UnreachableMPIException ex) {
-                JOptionPane.showMessageDialog(basicSearchCard, "OEC Reception Module", "The Master Person Index Could not be contacted."
-                        + " Would you like to try contacting it again?", JOptionPane.QUESTION_MESSAGE);
-                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (UnreachableLPIException ex) {
-                JOptionPane.showMessageDialog(basicSearchCard, "OEC Reception Module", "The Local Person Index Could not be contacted."
-                        + " Would you like to try contacting it again?", JOptionPane.QUESTION_MESSAGE);
-                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (!mpiPersonList.isEmpty()) {
-                if (Util.checkPersonListForFingerprintCandidates(mpiPersonList)) {
-                    if (!lpiPersonList.isEmpty()) {
-                        //TODO: Display LPI candidates
-                    } else {
-                        //TODO: Display MPI candidates
-                    }
+            RequestResult mpiRequestResult = new RequestResult();
+            RequestResult lpiRequestResult = new RequestResult();
+            RequestDispatcher.findCandidates(session.getBasicSearchParameters(),
+                    mpiRequestResult, lpiRequestResult);
+            if (mpiRequestResult.getReturnCode() == RequestResult.SUCCESS
+                    && lpiRequestResult.getReturnCode() == RequestResult.SUCCESS) {
+                mpiPersonList = (List<Person>) mpiRequestResult.getData();
+                lpiPersonList = (List<Person>) lpiRequestResult.getData();
+                if (Session.checkPersonListForLinkedCandidates(lpiPersonList)) {
+                    return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
                 } else {
+                    if (Session.checkPersonListForFingerprintCandidates(mpiPersonList)) {
+                        return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
+                    } else {
+                        if (!session.hasAllFingerprintsTaken()) {
+                            return new ProcessResult(ProcessResult.Type.NEXT, null);
+                        } else {
+                            if (!lpiPersonList.isEmpty()) {
+                                return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
+                            } else {
+                                if (!mpiPersonList.isEmpty()) {
+                                    return new ProcessResult(ProcessResult.Type.LIST, mpiPersonList);
+                                } else {
+                                    return new ProcessResult(ProcessResult.Type.EXIT, null);
+                                }
+                            }
+                        }
+
+                    }
                 }
             } else {
-                if (!session.hasAllFingerprintsTaken()) {
-                    //TODO: Repeat Basic Search with next fingerprint                      
-                } else {
-                    if (!lpiPersonList.isEmpty()) {
-                        //TODO: Display LPI candidates
-                    } else {
-                        //TODO: Go to Extended Search
-                    }
-                }
+                //TODO: Add code to handle what happes when the LPI or MPI cannot
+                //contacted
+                return new ProcessResult(ProcessResult.Type.ERROR, null);
             }
-            return new Envelope("searchResultsCard", mpiPersonList);
         }
 
         @Override
         protected void succeeded(Object result) {
-            cardLayout.show(wizardPanel, "searchResultsCard");
-            bindingGroup.unbind();
-            searchResultsList = (List<Person>) result;
-            bindingGroup.bind();
-            searchResultsCard.repaint();
+            ProcessResult processResult = (ProcessResult) result;
+            if (processResult.getType() == ProcessResult.Type.LIST) {
+                cardLayout.show(wizardPanel, "searchResultsCard");
+                bindingGroup.unbind();
+                searchResultsList.clear();
+                searchResultsList.addAll((List<Person>) processResult.getData());
+                bindingGroup.bind();
+                searchResultsTable.repaint();
+            } else if (processResult.getType() == ProcessResult.Type.NEXT) {
+                showFingerprintDialog();
+            } else if (processResult.getType() == ProcessResult.Type.EXIT) {
+                cardLayout.show(wizardPanel, "extendedSearchCard");
+            }
         }
     }
 
@@ -1731,8 +1722,10 @@ public class View extends FrameView {
         if (basicSearchClientRefusesCheckBox.isSelected()) {
             showFingerprintImage(refusedFingerprint);
             session.getBasicSearchParameters().setFingerprintList(new ArrayList<Fingerprint>());
+            session.setNonFingerprint(true);
         } else {
             showFingerprintImage(fingerprintNotTaken);
+            session.setNonFingerprint(false);
         }
     }
 
@@ -1765,6 +1758,7 @@ public class View extends FrameView {
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton acceptButton;
     private javax.swing.JList alertsList;
     private javax.swing.JPanel alertsListPanel;
     private javax.swing.JScrollPane alertsScrollPane;
@@ -1776,7 +1770,7 @@ public class View extends FrameView {
     private javax.swing.JTextField basicSearchClinicIdTextField;
     private javax.swing.JLabel basicSearchClinicNameLabel;
     private javax.swing.JTextField basicSearchClinicNameTextField;
-    private ke.go.moh.oec.reception.gui.ImagePanel basicSearchFingerprintImagePanel;
+    private ke.go.moh.oec.reception.gui.custom.ImagePanel basicSearchFingerprintImagePanel;
     private javax.swing.JLabel basicSearchFingerprintLabel;
     private javax.swing.JPanel basicSearchPanel;
     private javax.swing.JButton basicSearchTakeButton;
@@ -1794,7 +1788,7 @@ public class View extends FrameView {
     private javax.swing.JTextField extendedSearchClinicNameTextField;
     private com.toedter.calendar.JDateChooser extendedSearchDateOfBirthChooser;
     private javax.swing.JLabel extendedSearchDateOfBirthLabel;
-    private ke.go.moh.oec.reception.gui.ImagePanel extendedSearchFingerprintImagePanel;
+    private ke.go.moh.oec.reception.gui.custom.ImagePanel extendedSearchFingerprintImagePanel;
     private javax.swing.JLabel extendedSearchFingerprintLabel;
     private javax.swing.JLabel extendedSearchFirstNameLabel;
     private javax.swing.JTextField extendedSearchFirstNameTextField;

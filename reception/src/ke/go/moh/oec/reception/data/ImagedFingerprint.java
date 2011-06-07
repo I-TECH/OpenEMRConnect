@@ -22,25 +22,38 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.reception.domain;
+package ke.go.moh.oec.reception.data;
 
-import java.util.List;
-import ke.go.moh.oec.Person;
+import java.awt.image.BufferedImage;
+import ke.go.moh.oec.Fingerprint;
 
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class Util {
+public class ImagedFingerprint {
 
-    public static boolean checkPersonListForFingerprintCandidates(List<Person> personList) {
-        boolean fingerprintCandidates = false;
-        for (Person person : personList) {
-            if (person.isFingerprintMatched()) {
-                fingerprintCandidates = true;
-                break;
-            }
-        }
-        return fingerprintCandidates;
+    private Fingerprint fingerprint;
+    private BufferedImage image;
+
+    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image) {
+        this.fingerprint = fingerprint;
+        this.image = image;
+    }
+
+    public Fingerprint getFingerprint() {
+        return fingerprint;
+    }
+
+    public void setFingerprint(Fingerprint fingerprint) {
+        this.fingerprint = fingerprint;
+    }
+
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public void setImage(BufferedImage image) {
+        this.image = image;
     }
 }

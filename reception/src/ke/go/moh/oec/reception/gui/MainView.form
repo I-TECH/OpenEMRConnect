@@ -10,12 +10,12 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="mainSplitPane" alignment="0" pref="942" max="32767" attributes="0"/>
+              <Component id="mainSplitPane" alignment="0" pref="897" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="mainSplitPane" alignment="0" pref="704" max="32767" attributes="0"/>
+              <Component id="mainSplitPane" alignment="0" pref="627" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -84,7 +84,7 @@
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="alertsScrollPane" pref="642" max="32767" attributes="0"/>
+                              <Component id="alertsScrollPane" pref="565" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -134,7 +134,7 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="wizardPanel" alignment="0" pref="666" max="32767" attributes="0"/>
+                              <Component id="wizardPanel" alignment="0" pref="634" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="homeButton" linkSize="1" min="-2" pref="48" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -154,7 +154,7 @@
                               <Component id="homeButton" linkSize="2" alignment="0" min="-2" pref="42" max="-2" attributes="1"/>
                           </Group>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Component id="wizardPanel" pref="632" max="32767" attributes="0"/>
+                          <Component id="wizardPanel" pref="555" max="32767" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -204,10 +204,10 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
+                              <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace min="-2" pref="145" max="-2" attributes="0"/>
                                   <Component id="homePanel" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" pref="229" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="350" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -216,7 +216,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="homePanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="384" max="32767" attributes="0"/>
+                                  <EmptySpace pref="307" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -240,10 +240,10 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="newButton" alignment="0" pref="258" max="32767" attributes="0"/>
-                                          <Component id="visitorButton" alignment="0" pref="258" max="32767" attributes="0"/>
-                                          <Component id="enrolledButton" alignment="0" pref="258" max="32767" attributes="0"/>
-                                          <Component id="transferInButton" alignment="0" pref="258" max="32767" attributes="0"/>
+                                          <Component id="newButton" alignment="0" pref="105" max="32767" attributes="0"/>
+                                          <Component id="visitorButton" alignment="0" pref="105" max="32767" attributes="0"/>
+                                          <Component id="enrolledButton" alignment="0" pref="105" max="32767" attributes="0"/>
+                                          <Component id="transferInButton" alignment="0" pref="105" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -311,9 +311,9 @@
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="130" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="135" max="-2" attributes="0"/>
                                   <Component id="clientIdPanel" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" pref="225" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="349" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -322,7 +322,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="clientIdPanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="479" max="32767" attributes="0"/>
+                                  <EmptySpace pref="402" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -346,8 +346,8 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="clinicIdNoButton" alignment="0" pref="277" max="32767" attributes="0"/>
-                                          <Component id="clinicIdYesButton" alignment="0" pref="277" max="32767" attributes="0"/>
+                                          <Component id="clinicIdNoButton" alignment="0" pref="116" max="32767" attributes="0"/>
+                                          <Component id="clinicIdYesButton" alignment="0" pref="116" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -410,7 +410,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="basicSearchPanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="372" max="32767" attributes="0"/>
+                                  <EmptySpace pref="295" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -442,8 +442,8 @@
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="554" max="32767" attributes="0"/>
-                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="554" max="32767" attributes="0"/>
+                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="522" max="32767" attributes="0"/>
+                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="522" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="0" attributes="0">
                                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                                           <Component id="basicSearchTakeButton" alignment="0" max="32767" attributes="1"/>
@@ -454,7 +454,7 @@
                                                   </Group>
                                               </Group>
                                           </Group>
-                                          <Component id="basicSearchButton" alignment="0" pref="612" max="32767" attributes="0"/>
+                                          <Component id="basicSearchButton" alignment="0" pref="580" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -522,7 +522,7 @@
                                 <Property name="name" type="java.lang.String" value="basicSearchFingerprintLabel" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Container class="ke.go.moh.oec.reception.gui.ImagePanel" name="basicSearchFingerprintImagePanel">
+                            <Container class="ke.go.moh.oec.reception.gui.custom.ImagePanel" name="basicSearchFingerprintImagePanel">
                               <Properties>
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -566,7 +566,7 @@
                             <Component class="javax.swing.JButton" name="basicSearchButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.View" id="search" methodName="search"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="search" methodName="search"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="basicSearchButton.text"/>
                                 <Property name="name" type="java.lang.String" value="basicSearchButton" noResource="true"/>
@@ -582,7 +582,7 @@
                       </Properties>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                          <CardConstraints cardName="card5"/>
+                          <CardConstraints cardName="extendedSearchCard"/>
                         </Constraint>
                       </Constraints>
 
@@ -600,8 +600,8 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="extendedSearchPanel" max="32767" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="extendedSearchPanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace pref="144" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -625,7 +625,7 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="extendedSearchButton" alignment="1" pref="612" max="32767" attributes="0"/>
+                                          <Component id="extendedSearchButton" alignment="1" pref="580" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -654,13 +654,13 @@
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="extendedSearchLastNameTextField" alignment="1" pref="547" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="547" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchFirstNameTextField" alignment="1" pref="547" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchClinicNameTextField" alignment="1" pref="547" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchVillageTextField" alignment="0" pref="547" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchClinicIdTextField" alignment="0" pref="547" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchDateOfBirthChooser" alignment="0" pref="547" max="32767" attributes="0"/>
+                                                  <Component id="extendedSearchLastNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchFirstNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchVillageTextField" alignment="0" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicIdTextField" alignment="0" pref="515" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchDateOfBirthChooser" alignment="0" pref="515" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
                                       </Group>
@@ -723,7 +723,7 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="extendedSearchButton" min="-2" pref="46" max="-2" attributes="0"/>
-                                      <EmptySpace pref="221" max="32767" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -840,7 +840,7 @@
                                 <Property name="name" type="java.lang.String" value="extendedSearchFingerprintLabel" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Container class="ke.go.moh.oec.reception.gui.ImagePanel" name="extendedSearchFingerprintImagePanel">
+                            <Container class="ke.go.moh.oec.reception.gui.custom.ImagePanel" name="extendedSearchFingerprintImagePanel">
                               <Properties>
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -914,9 +914,9 @@
                         <DimensionLayout dim="1">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="searchResultsPanel" max="32767" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="1"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -940,8 +940,9 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="notFoundButton" alignment="0" pref="612" max="32767" attributes="0"/>
-                                          <Component id="searchResultsScrollPane" alignment="0" pref="612" max="32767" attributes="0"/>
+                                          <Component id="searchResultsScrollPane" alignment="0" pref="580" max="32767" attributes="0"/>
+                                          <Component id="notFoundButton" alignment="0" pref="580" max="32767" attributes="0"/>
+                                          <Component id="acceptButton" alignment="0" pref="580" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -950,7 +951,9 @@
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="searchResultsScrollPane" pref="526" max="32767" attributes="0"/>
+                                      <Component id="searchResultsScrollPane" pref="405" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="acceptButton" min="-2" pref="38" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="notFoundButton" min="-2" pref="38" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -961,6 +964,7 @@
                           <SubComponents>
                             <Container class="javax.swing.JScrollPane" name="searchResultsScrollPane">
                               <Properties>
+                                <Property name="horizontalScrollBarPolicy" type="int" value="32"/>
                                 <Property name="name" type="java.lang.String" value="searchResultsScrollPane" noResource="true"/>
                               </Properties>
 
@@ -968,6 +972,7 @@
                               <SubComponents>
                                 <Component class="javax.swing.JTable" name="searchResultsTable">
                                   <Properties>
+                                    <Property name="autoCreateRowSorter" type="boolean" value="true"/>
                                     <Property name="name" type="java.lang.String" value="searchResultsTable" noResource="true"/>
                                   </Properties>
                                   <BindingProperties>
@@ -981,14 +986,8 @@
                                       <Subbinding sourcePath="${lastName}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                       </Subbinding>
-                                      <Subbinding sourcePath="${otherName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
                                       <Subbinding sourcePath="${birthdate}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="java.util.Date.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${villageName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                       </Subbinding>
                                       <Subbinding sourcePath="${fathersFirstName}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
@@ -999,25 +998,10 @@
                                       <Subbinding sourcePath="${fathersLastName}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                       </Subbinding>
-                                      <Subbinding sourcePath="${mothersFirstName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${mothersMiddleName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${mothersLastName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${compoundHeadFirstName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${compoundHeadMiddleName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${compoundHeadLastName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
                                       <Subbinding sourcePath="${clanName}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                                      </Subbinding>
+                                      <Subbinding sourcePath="${personGuid}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                       </Subbinding>
                                     </BindingProperty>
@@ -1025,6 +1009,12 @@
                                 </Component>
                               </SubComponents>
                             </Container>
+                            <Component class="javax.swing.JButton" name="acceptButton">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="acceptButton.text"/>
+                                <Property name="name" type="java.lang.String" value="acceptButton" noResource="true"/>
+                              </Properties>
+                            </Component>
                             <Component class="javax.swing.JButton" name="notFoundButton">
                               <Properties>
                                 <Property name="text" type="java.lang.String" resourceKey="notFoundButton.text"/>
@@ -1059,8 +1049,8 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="reviewPanel" max="32767" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="reviewPanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="1"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1823,27 +1813,27 @@
                                       <Group type="102" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="jDateChooser2" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jDateChooser2" alignment="0" pref="106" max="32767" attributes="0"/>
                                               <Group type="102" alignment="0" attributes="0">
                                                   <Component id="jRadioButton3" min="-2" max="-2" attributes="0"/>
                                                   <EmptySpace max="-2" attributes="0"/>
                                                   <Component id="jRadioButton4" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <Component id="jTextField16" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField5" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField17" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField18" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jComboBox2" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField21" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField20" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField19" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField22" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField23" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField24" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField28" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField27" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField26" alignment="0" pref="138" max="32767" attributes="0"/>
-                                              <Component id="jTextField25" alignment="0" pref="138" max="32767" attributes="0"/>
+                                              <Component id="jTextField16" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField5" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField17" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField18" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jComboBox2" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField21" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField20" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField19" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField22" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField23" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField24" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField28" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField27" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField26" alignment="0" pref="106" max="32767" attributes="0"/>
+                                              <Component id="jTextField25" alignment="0" pref="106" max="32767" attributes="0"/>
                                           </Group>
                                           <EmptySpace max="-2" attributes="0"/>
                                       </Group>
@@ -2090,11 +2080,11 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="statusPanelSeparator" alignment="0" pref="942" max="32767" attributes="0"/>
+              <Component id="statusPanelSeparator" alignment="0" pref="897" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="772" max="32767" attributes="0"/>
+                  <EmptySpace pref="727" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
@@ -2187,6 +2177,6 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-23,0,0,3,-82"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-95,0,0,3,-127"/>
   </AuxValues>
 </Form>
