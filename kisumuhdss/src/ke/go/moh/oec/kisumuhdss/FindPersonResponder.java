@@ -94,7 +94,6 @@ public class FindPersonResponder implements IService {
                     //status = false;
                     Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
             }
         }
         return pr;

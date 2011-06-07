@@ -28,6 +28,7 @@ import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import ke.go.moh.oec.oecsm.daemon.Daemon;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Database;
 import ke.go.moh.oec.oecsm.data.Table;
@@ -42,7 +43,6 @@ import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
 public class SourceSchemaMiner extends DatabaseConnector {
 
     private DatabaseMetaData databaseMetaData;
-    private static final String[] TABLE_TYPES = {"TABLE"};
 
     public Database mine() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
         Database db = null;
@@ -58,11 +58,19 @@ public class SourceSchemaMiner extends DatabaseConnector {
     }
 
     private void populateTableList(Database database) throws SQLException {
-        ResultSet tableRs = databaseMetaData.getTables(null, null, "%", TABLE_TYPES);
+        String[] tableTypeArray = tableTypes.split(",");
+        ResultSet tableRs = databaseMetaData.getTables(null, schemaPattern, "%", tableTypeArray);
         while (tableRs.next()) {
             Table ts = new Table(tableRs.getString("TABLE_NAME"));
             String pks = extractPrimaryKeys(ts);
-            if (!pks.equals("")) {
+            System.out.println("Name " + tableRs.getString("TABLE_NAME")
+                    + ", Cat " + tableRs.getString("TABLE_CAT")
+                    + ", Schema " + tableRs.getString("TABLE_SCHEM")
+                    + ", Type " + tableRs.getString("TABLE_TYPE"));
+
+            // If it's a table, insist that it has a primary key.
+            // If it's a view, we will assume the first column is the primary key.
+            if (!pks.equals("") || tableRs.getString("TABLE_TYPE").equals("VIEW")) {
                 ts.setPk(pks);
                 ts.setDatabase(database);
                 populateColumnList(ts);
@@ -76,6 +84,9 @@ public class SourceSchemaMiner extends DatabaseConnector {
         ResultSet columnRs = databaseMetaData.getColumns(null, null, table.getName(), null);
         while (columnRs.next()) {
             Column cs = new Column(columnRs.getString("COLUMN_NAME"), columnRs.getInt("ORDINAL_POSITION"), columnRs.getString("TYPE_NAME"), columnRs.getInt("COLUMN_SIZE"));
+            if (table.getPk().equals("")) {
+                table.setPk(cs.getName()); // First column of a view is considered to be the primary key.
+            }
             cs.setTable(table);
             table.getColumnList().add(cs);
         }

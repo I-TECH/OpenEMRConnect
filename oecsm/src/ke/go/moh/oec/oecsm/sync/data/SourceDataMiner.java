@@ -61,10 +61,10 @@ public class SourceDataMiner extends DatabaseConnector {
     public SourceResultSet mine(Table table) throws SQLException {
         SourceResultSet srs = null;
         try {
-            String compositePK = DatabaseConnector.getQueryCustomizer().buildCompositePrimaryKey(table);
+            String compositePK = getQueryCustomizer().buildCompositePrimaryKey(table);
             String sql = "SELECT " + compositePK + " AS PK";
-            String prefx = DatabaseConnector.getQueryCustomizer().getOpenningSafetyPad();
-            String suffix = DatabaseConnector.getQueryCustomizer().getClosingSafetyPad();
+            String prefx = getQueryCustomizer().getOpenningSafetyPad();
+            String suffix = getQueryCustomizer().getClosingSafetyPad();
             for (Column column : table.getColumnList()) {
                 sql += ", " + prefx + column.getName() + suffix + " AS C" + column.getId();
             }

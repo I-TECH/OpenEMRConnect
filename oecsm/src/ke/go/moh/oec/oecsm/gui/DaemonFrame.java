@@ -628,7 +628,7 @@ public class DaemonFrame extends javax.swing.JFrame {
             sourceProperties.setProperty("url", sourceUrlTextField.getText());
             sourceProperties.setProperty("username", sourceUsernameTextField.getText());
             sourceProperties.setProperty("password", sourcePasswordField.getText());
-            sourceProperties.store(new FileOutputStream("source_database.properties"), "Yep!");
+            sourceProperties.store(new FileOutputStream("source_database.properties"), "");
         } catch (FileNotFoundException ex) {
             Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
