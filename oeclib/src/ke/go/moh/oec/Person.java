@@ -38,6 +38,7 @@ public class Person implements Cloneable {
 
     public enum MaritalStatus {
 
+        single,
         marriedPolygamous,
         marriedMonogamous,
         divorced,
