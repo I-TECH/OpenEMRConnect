@@ -52,7 +52,7 @@ final class MessagePendingQueue implements Runnable {
         private Message response;
     }
     private List<Entry> queue = new ArrayList<Entry>();
-    private Thread timeoutThread = new Thread(this);
+    private final Thread timeoutThread = new Thread(this);
     private long nextTimeout = 0;
 
     /**
@@ -163,11 +163,24 @@ final class MessagePendingQueue implements Runnable {
      * @return the response message if there was one, otherwise null
      */
     Message waitForResponse(Entry e) {
+        //
+        // Start the timeout thread. Synchronize on the timeout thread so that
+        // another process won't try to start it after we test it but before
+        // we try to start it.
+        //
+        synchronized (timeoutThread) {
+            if (!timeoutThread.isAlive()) {
+                timeoutThread.start();
+            }
+        }
+        //
+        // Wait for the timeout. Also handle the extreme case where we got
+        // a response before we even wait. In this case the response will
+        // not be null, becuase it will already be posted. In this case
+        // we don't have to wait.
+        //
         synchronized (e) {
             if (e.response == null) {
-                if (!timeoutThread.isAlive()) {
-                    timeoutThread.start();
-                }
                 try {
                     e.wait();
                 } catch (InterruptedException ex) {
@@ -190,6 +203,24 @@ final class MessagePendingQueue implements Runnable {
 
         for (Entry e : queue) {
             if (e.request.getMessageId().equals(response.getMessageId())) {
+                // To prevent a race condition, it is important that the following
+                // two statements are done in the right order. First set the
+                // response on the message. If the sending thread sees the
+                // response posted, they will not wait. The worst that can
+                // happen is that the notify() method does nothing.
+                //
+                // But if the notify method were first, then the sending thread
+                // might come in and look for the response after we've notified.
+                // Then it might sleep before we set the response. Then it would
+                // sleep needlessly, delaying the response to the user.
+                //
+                // Alternatively, we could have put a "synchronized (e) {" block
+                // around the next two statements, but Java might warn us that
+                // we have nested synchronizations (which is a dangerous thing
+                // in some situations even if it isn't here.) So to avoid the
+                // warning, we just do the next two statements in the right
+                // order and there is no problem.
+                //
                 e.response = response;
                 notify(e);
                 return true;
