@@ -1319,7 +1319,6 @@ class XmlPacker {
         personRequest.setPerson(p);
         unpackHl7Header(m, e);
         Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
-        m.setData(p);
         unpackPerson(p, ePerson);
     }
 
