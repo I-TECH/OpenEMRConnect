@@ -22,42 +22,11 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.reception.domain;
-
-import java.util.List;
-import ke.go.moh.oec.Fingerprint;
+package ke.go.moh.oec.reception.data;
 
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class BasicSearchParameters implements SearchParameters {
-
-    private String clinicId;
-    private String clinicName;
-    List<Fingerprint> fingerprintList;
-
-    public String getClinicId() {
-        return clinicId;
-    }
-
-    public void setClinicId(String clinicId) {
-        this.clinicId = clinicId;
-    }
-
-    public String getClinicName() {
-        return clinicName;
-    }
-
-    public void setClinicName(String clinicName) {
-        this.clinicName = clinicName;
-    }
-
-    public List<Fingerprint> getFingerprintList() {
-        return fingerprintList;
-    }
-
-    public void setFingerprintList(List<Fingerprint> fingerprintList) {
-        this.fingerprintList = fingerprintList;
-    }
+public interface RequestParameters {
 }

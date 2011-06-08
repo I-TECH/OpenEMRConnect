@@ -1518,9 +1518,15 @@ class XmlPacker {
                 p.setFirstName(givenList.item(0).getTextContent());
                 if (givenList.getLength() > 1) {
                     p.setMiddleName(givenList.item(1).getTextContent());
+//                    String firstName = (givenList.item(0).getNodeValue());
+//                    p.setFirstName(firstName);
+//                    if (givenList.getLength() > 1) {
+//                        String middleName = givenList.item(1).getNodeValue();
+//                        p.setMiddleName(middleName);
+//                    }
                 }
+                p.setLastName(unpackTagValue(eName, "family"));
             }
-            p.setLastName(unpackTagValue(eName, "family"));
         }
     }
 
