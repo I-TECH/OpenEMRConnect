@@ -24,8 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.controller;
 
-import ke.go.moh.oec.reception.data.ExtendedSearchRequestParameters;
-import ke.go.moh.oec.reception.data.BasicSearchRequestParameters;
+import ke.go.moh.oec.reception.data.ExtendedRequestParameters;
+import ke.go.moh.oec.reception.data.BasicRequestParameters;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -48,8 +48,8 @@ public class Session {
         TRANSFER_IN
     }
     private CLIENT_TYPE clientType;
-    private BasicSearchRequestParameters basicSearchRequestParameters = new BasicSearchRequestParameters();
-    private ExtendedSearchRequestParameters extendedSearchRequestParameters = new ExtendedSearchRequestParameters();
+    private BasicRequestParameters basicSearchRequestParameters = new BasicRequestParameters();
+    private ExtendedRequestParameters extendedSearchRequestParameters = new ExtendedRequestParameters();
     private BufferedImage currentFingerprintImage = null;
     private boolean nonFingerprint = false;
 
@@ -60,11 +60,11 @@ public class Session {
         this.clientType = clientType;
     }
 
-    public BasicSearchRequestParameters getBasicSearchParameters() {
+    public BasicRequestParameters getBasicSearchRequestParameters() {
         return basicSearchRequestParameters;
     }
 
-    public void setBasicSearchParameters(BasicSearchRequestParameters basicSearchParameters) {
+    public void setBasicSearchRequestParameters(BasicRequestParameters basicSearchParameters) {
         this.basicSearchRequestParameters = basicSearchParameters;
     }
 
@@ -76,11 +76,11 @@ public class Session {
         this.clientType = clientType;
     }
 
-    public ExtendedSearchRequestParameters getExtendedSearchParameters() {
+    public ExtendedRequestParameters getExtendedSearchRequestParameters() {
         return extendedSearchRequestParameters;
     }
 
-    public void setExtendedSearchParameters(ExtendedSearchRequestParameters extendedSearchParameters) {
+    public void setExtendedSearchRequestParameters(ExtendedRequestParameters extendedSearchParameters) {
         this.extendedSearchRequestParameters = extendedSearchParameters;
     }
 

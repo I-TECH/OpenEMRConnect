@@ -31,7 +31,7 @@ import ke.go.moh.oec.Fingerprint;
  *
  * @author Gitahi Ng'ang'a
  */
-public class BasicSearchRequestParameters implements RequestParameters {
+public class BasicRequestParameters implements RequestParameters {
 
     private String clinicId;
     private String clinicName;
@@ -69,7 +69,7 @@ public class BasicSearchRequestParameters implements RequestParameters {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BasicSearchRequestParameters other = (BasicSearchRequestParameters) obj;
+        final BasicRequestParameters other = (BasicRequestParameters) obj;
         if ((this.clinicId == null) ? (other.clinicId != null) : !this.clinicId.equals(other.clinicId)) {
             return false;
         }

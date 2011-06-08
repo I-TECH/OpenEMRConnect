@@ -205,16 +205,16 @@
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace min="-2" pref="145" max="-2" attributes="0"/>
-                                  <Component id="homePanel" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" pref="350" max="-2" attributes="0"/>
+                                  <EmptySpace pref="145" max="32767" attributes="0"/>
+                                  <Component id="homePanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="128" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="homePanel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace pref="307" max="32767" attributes="0"/>
                               </Group>
@@ -240,10 +240,10 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="newButton" alignment="0" pref="105" max="32767" attributes="0"/>
-                                          <Component id="visitorButton" alignment="0" pref="105" max="32767" attributes="0"/>
-                                          <Component id="enrolledButton" alignment="0" pref="105" max="32767" attributes="0"/>
-                                          <Component id="transferInButton" alignment="0" pref="105" max="32767" attributes="0"/>
+                                          <Component id="newButton" alignment="0" pref="327" max="32767" attributes="0"/>
+                                          <Component id="visitorButton" alignment="0" pref="327" max="32767" attributes="0"/>
+                                          <Component id="enrolledButton" alignment="0" pref="327" max="32767" attributes="0"/>
+                                          <Component id="transferInButton" alignment="0" pref="327" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -283,6 +283,9 @@
                             </Component>
                             <Component class="javax.swing.JButton" name="newButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="showExtendedSearchCard" methodName="showExtendedSearchCard"/>
+                                </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="newButton.text"/>
                                 <Property name="name" type="java.lang.String" value="newButton" noResource="true"/>
                               </Properties>
@@ -566,7 +569,7 @@
                             <Component class="javax.swing.JButton" name="basicSearchButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="search" methodName="search"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="searchBasic" methodName="searchBasic"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="basicSearchButton.text"/>
                                 <Property name="name" type="java.lang.String" value="basicSearchButton" noResource="true"/>
@@ -645,14 +648,14 @@
                                                   <Component id="extendedSearchLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="extendedSearchSexLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="extendedSearchVillageLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                                  <Component id="extendedSearchDateOfBirthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchBirthdateLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Group type="102" attributes="0">
-                                                      <Component id="maleButton" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="extendedSearchMaleRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="extendedSearchFemaleRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Component id="extendedSearchLastNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
                                                   <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
@@ -660,7 +663,7 @@
                                                   <Component id="extendedSearchClinicNameTextField" alignment="1" pref="515" max="32767" attributes="1"/>
                                                   <Component id="extendedSearchVillageTextField" alignment="0" pref="515" max="32767" attributes="1"/>
                                                   <Component id="extendedSearchClinicIdTextField" alignment="0" pref="515" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchDateOfBirthChooser" alignment="0" pref="515" max="32767" attributes="0"/>
+                                                  <Component id="extendedSearchBirthdateChooser" alignment="0" pref="515" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
                                       </Group>
@@ -698,13 +701,13 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="extendedSearchSexLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                          <Component id="maleButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                          <Component id="femaleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchMaleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchFemaleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="extendedSearchDateOfBirthChooser" min="-2" max="-2" attributes="0"/>
-                                          <Component id="extendedSearchDateOfBirthLabel" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchBirthdateChooser" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchBirthdateLabel" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
@@ -793,33 +796,33 @@
                                 <Property name="name" type="java.lang.String" value="extendedSearchSexLabel" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JRadioButton" name="maleButton">
+                            <Component class="javax.swing.JRadioButton" name="extendedSearchMaleRadioButton">
                               <Properties>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="sexButtonGroup"/>
                                 </Property>
-                                <Property name="text" type="java.lang.String" resourceKey="maleButton.text"/>
-                                <Property name="name" type="java.lang.String" value="maleButton" noResource="true"/>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchMaleRadioButton.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchMaleRadioButton" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JRadioButton" name="femaleRadioButton">
+                            <Component class="javax.swing.JRadioButton" name="extendedSearchFemaleRadioButton">
                               <Properties>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="sexButtonGroup"/>
                                 </Property>
-                                <Property name="text" type="java.lang.String" resourceKey="femaleRadioButton.text"/>
-                                <Property name="name" type="java.lang.String" value="femaleRadioButton" noResource="true"/>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchFemaleRadioButton.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchFemaleRadioButton" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JLabel" name="extendedSearchDateOfBirthLabel">
+                            <Component class="javax.swing.JLabel" name="extendedSearchBirthdateLabel">
                               <Properties>
-                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchDateOfBirthLabel.text"/>
-                                <Property name="name" type="java.lang.String" value="extendedSearchDateOfBirthLabel" noResource="true"/>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchBirthdateLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchBirthdateLabel" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Component class="com.toedter.calendar.JDateChooser" name="extendedSearchDateOfBirthChooser">
+                            <Component class="com.toedter.calendar.JDateChooser" name="extendedSearchBirthdateChooser">
                               <Properties>
-                                <Property name="name" type="java.lang.String" value="extendedSearchDateOfBirthChooser" noResource="true"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchBirthdateChooser" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JLabel" name="extendedSearchVillageLabel">
@@ -865,6 +868,9 @@
                             </Container>
                             <Component class="javax.swing.JCheckBox" name="extendedSearchClientRefusesCheckBox">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="refuseFingerprinting" methodName="refuseFingerprinting"/>
+                                </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="extendedSearchClientRefusesCheckBox.text"/>
                                 <Property name="name" type="java.lang.String" value="extendedSearchClientRefusesCheckBox" noResource="true"/>
                               </Properties>
@@ -881,7 +887,7 @@
                             <Component class="javax.swing.JButton" name="extendedSearchButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.View" id="test" methodName="test"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="searchExtended" methodName="searchExtended"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="extendedSearchButton.text"/>
                                 <Property name="name" type="java.lang.String" value="extendedSearchButton" noResource="true"/>
@@ -1031,7 +1037,7 @@
                       </Properties>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                          <CardConstraints cardName="card7"/>
+                          <CardConstraints cardName="reviewCard"/>
                         </Constraint>
                       </Constraints>
 
