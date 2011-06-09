@@ -381,6 +381,8 @@ public class Mediator implements IService {
             MessageType.TemplateType templateType = m.getMessageType().getTemplateType();
             switch (templateType) {
                 case findPerson:
+                case createPersonAccepted:
+                case modifyPersonAccepted:
                     PersonResponse personResponse;
                     if (responseMessage != null) {
                         returnData = responseMessage.getData();

@@ -52,7 +52,7 @@ final class MessagePendingQueue implements Runnable {
         private Message response;
     }
     private List<Entry> queue = new ArrayList<Entry>();
-    private final Thread timeoutThread = new Thread(this);
+    private Thread timeoutThread = null;
     private long nextTimeout = 0;
 
     /**
@@ -95,12 +95,18 @@ final class MessagePendingQueue implements Runnable {
      * Get the timeout time of the first entry in the pending queue,
      * or zero if the queue is empty. The first entry in the queue will
      * be the next one to time out, since it is the oldest.
+     * <p>
+     * This method is called by the timeout thread. If it returns 0
+     * then the timeout thread will exit. So if it returns 0, it will
+     * also set timeoutThread to null. This will signal that a new
+     * timeoutThread must be allocated to run the timer again.
      *
      * @return the system time in milliseconds when the next timeout will occur,
      * or zero if there are no entries in the queue.
      */
     private synchronized long getNextTimeout() {
         if (queue.isEmpty()) {
+            timeoutThread = null;
             return 0;
         } else {
             return queue.get(0).timeout;
@@ -164,12 +170,14 @@ final class MessagePendingQueue implements Runnable {
      */
     Message waitForResponse(Entry e) {
         //
-        // Start the timeout thread. Synchronize on the timeout thread so that
+        // Start a timeout thread. Synchronize on the current object so that
         // another process won't try to start it after we test it but before
-        // we try to start it.
+        // we try to start it -- and also so that the thread won't finish
+        // and go away before we look.
         //
-        synchronized (timeoutThread) {
-            if (!timeoutThread.isAlive()) {
+        synchronized (this) {
+            if (timeoutThread == null) {
+                timeoutThread = new Thread(this);
                 timeoutThread.start();
             }
         }
