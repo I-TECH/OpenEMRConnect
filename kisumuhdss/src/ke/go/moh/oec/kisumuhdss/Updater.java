@@ -102,10 +102,34 @@ public class Updater {
         return rs;
     }
 
+    /**
+     * Executes any SQL statement on a database connection.
+     *
+     * @param conn Connection to use.
+     * @param sql SQL statement.
+     * @return true if first result is a ResultSet.
+     */
+    public boolean execute(Connection conn, String sql) {
+        Mediator.getLogger(Updater.class.getName()).log(Level.FINE, "SQL Execute:\n{0}", sql);
+        boolean returnValue = false;
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            returnValue = stmt.execute();
+            int updateCount = stmt.getUpdateCount();
+            Mediator.getLogger(Updater.class.getName()).log(Level.FINE, "{0} rows updated.", updateCount);
+        } catch (SQLException ex) {
+            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE,
+                    "Error executing SQL statement " + sql, ex);
+            System.exit(1);
+        }
+        return returnValue;
+    }
+
     private int getLastReceivedTransaction() {
         if (lastReceivedTransaction < 0) {
             lastReceivedTransaction = 0;
-            ResultSet rs = query(connMaster, "SELECT last_received_transaction_id FROM destination WHERE name = " + HDSS_COMPANION_NAME);
+            String sql = "SELECT last_received_transaction_id FROM destination WHERE name = " + HDSS_COMPANION_NAME;
+            ResultSet rs = query(connMaster, sql);
             try {
                 if (rs.next()) {
                     lastReceivedTransaction = rs.getInt("last_received_transaction_id");
@@ -120,7 +144,6 @@ public class Updater {
 
     public void updateAllTransactions() throws SQLException {
         int trans = getLastReceivedTransaction();
-
         String sql = "select id, type from transaction where id > " + trans + " order by id";
         ResultSet rsMaster = query(connMaster, sql);
         while (rsMaster.next()) {
@@ -145,7 +168,14 @@ public class Updater {
             }
             rsDetail.close();
             if (updateTransaction(transId, hdssId, rowList)) {
-                
+                lastReceivedTransaction = transId;
+                sql = "UPDATE destination SET last_received_transaction_id = " + transId + " where name = " + HDSS_COMPANION_NAME;
+                if (!execute(connDetail, sql)) {
+                    Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't SET last_received_transaction_id.");
+                }
+            } else {
+                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update MPI.");
+                break;
             }
         }
         rsMaster.close();
