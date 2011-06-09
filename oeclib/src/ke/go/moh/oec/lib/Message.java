@@ -75,6 +75,10 @@ class Message {
      * The message in XML form.
      */
     private String xml;
+    /**
+     * Is a response expected to this message?
+     */
+    private boolean responseExpected;
 
     public Object getData() {
         return data;
@@ -130,6 +134,14 @@ class Message {
 
     public void setMessageType(MessageType messageType) {
         this.messageType = messageType;
+    }
+
+    public boolean isResponseExpected() {
+        return responseExpected;
+    }
+
+    public void setResponseExpected(boolean responseExpected) {
+        this.responseExpected = responseExpected;
     }
 
     public String getSourceAddress() {

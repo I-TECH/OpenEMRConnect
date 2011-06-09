@@ -185,6 +185,8 @@ class XmlPacker {
 
             case createPerson: // Uses packGenericPersonMessage(), below.
             case modifyPerson: // Uses packGenericPersonMessage(), below.
+            case createPersonAccepted: // Uses packGenericPersonMessage(), below.
+            case modifyPersonAccepted: // Uses packGenericPersonMessage(), below.
             case notifyPersonChanged:
                 doc = packGenericPersonMessage(m);
                 break;
@@ -213,6 +215,8 @@ class XmlPacker {
      * <p>
      * CREATE PERSON <br>
      * MODIFY PERSON <br>
+     * CREATE PERSON ACCEPTED <br>
+     * MODIFY PERSON ACCEPTED <br>
      * NOTIFY PERSON CHANGED
      *
      * @param m notification message contents to pack
@@ -232,6 +236,9 @@ class XmlPacker {
             PersonRequest personRequest = (PersonRequest) m.getData();
             Person p = personRequest.getPerson();
             packPerson(personNode, p);
+            if (personRequest.isResponseRequested()) {
+                packTagValue(root, "acceptAckCode", "AL"); // Request "ALways" acknowedge.
+            }
         }
         return doc;
     }
@@ -1306,6 +1313,8 @@ class XmlPacker {
      * <p>
      * CREATE PERSON <br>
      * MODIFY PERSON <br>
+     * CREATE PERSON ACCEPTED <br>
+     * MODIFY PERSON ACCEPTED <br>
      * NOTIFY PERSON CHANGED
      *
      * @param m the message contents to fill in
@@ -1320,6 +1329,9 @@ class XmlPacker {
         unpackHl7Header(m, e);
         Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
         unpackPerson(p, ePerson);
+        if (unpackTagValue(e, "acceptAckCode").equals("AL")) {
+            personRequest.setResponseRequested(true);
+        }
     }
 
     /**

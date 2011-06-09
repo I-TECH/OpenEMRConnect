@@ -99,13 +99,13 @@ public class Mpi implements IService {
             case RequestTypeId.CREATE_PERSON_MPI:
             case RequestTypeId.CREATE_PERSON_LPI:
                 Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "CreatePerson");
-                personList.create((PersonRequest) requestData);
+                returnData = personList.create((PersonRequest) requestData);
                 break;
 
             case RequestTypeId.MODIFY_PERSON_MPI:
             case RequestTypeId.MODIFY_PERSON_LPI:
                 Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "ModifyPerson");
-                personList.modify((PersonRequest) requestData);
+                returnData = personList.modify((PersonRequest) requestData);
                 break;
 
             default:
