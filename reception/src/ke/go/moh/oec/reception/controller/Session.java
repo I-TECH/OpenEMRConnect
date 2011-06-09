@@ -33,6 +33,8 @@ import java.util.List;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
+import ke.go.moh.oec.lib.Mediator;
+import ke.go.moh.oec.reception.data.ComprehensiveRequestParameters;
 
 /**
  *
@@ -47,52 +49,49 @@ public class Session {
         NEW,
         TRANSFER_IN
     }
-    private CLIENT_TYPE clientType;
-    private BasicRequestParameters basicSearchRequestParameters = new BasicRequestParameters();
-    private ExtendedRequestParameters extendedSearchRequestParameters = new ExtendedRequestParameters();
-    private BufferedImage currentFingerprintImage = null;
-    private boolean nonFingerprint = false;
+    private static CLIENT_TYPE clientType;
+    private static BasicRequestParameters basicRequestParameters = new BasicRequestParameters();
+    private static ExtendedRequestParameters extendedRequestParameters = new ExtendedRequestParameters();
+    private static ComprehensiveRequestParameters comprehensiveRequestParameters = new ComprehensiveRequestParameters();
+    private static BufferedImage currentFingerprintImage = null;
+    private static boolean nonFingerprint = false;
 
     public Session() {
     }
 
     public Session(CLIENT_TYPE clientType) {
-        this.clientType = clientType;
+        Session.clientType = clientType;
     }
 
-    public BasicRequestParameters getBasicSearchRequestParameters() {
-        return basicSearchRequestParameters;
+    public static BasicRequestParameters getBasicRequestParameters() {
+        return basicRequestParameters;
     }
 
-    public void setBasicSearchRequestParameters(BasicRequestParameters basicSearchParameters) {
-        this.basicSearchRequestParameters = basicSearchParameters;
-    }
-
-    public CLIENT_TYPE getClientType() {
+    public static CLIENT_TYPE getClientType() {
         return clientType;
     }
 
-    public void setClientType(CLIENT_TYPE clientType) {
-        this.clientType = clientType;
+    public static void setClientType(CLIENT_TYPE clientType) {
+        Session.clientType = clientType;
     }
 
-    public ExtendedRequestParameters getExtendedSearchRequestParameters() {
-        return extendedSearchRequestParameters;
+    public static ComprehensiveRequestParameters getComprehensiveRequestParameters() {
+        return comprehensiveRequestParameters;
     }
 
-    public void setExtendedSearchRequestParameters(ExtendedRequestParameters extendedSearchParameters) {
-        this.extendedSearchRequestParameters = extendedSearchParameters;
+    public static ExtendedRequestParameters getExtendedRequestParameters() {
+        return extendedRequestParameters;
     }
 
-    public BufferedImage getCurrentFingerprintImage() {
-        return currentFingerprintImage;
+    public static boolean isNonFingerprint() {
+        return nonFingerprint;
     }
 
     public void addImagedFingerprint(ImagedFingerprint imagedFingerprint) {
-        if (basicSearchRequestParameters.getFingerprintList() == null) {
-            basicSearchRequestParameters.setFingerprintList(new ArrayList<Fingerprint>());
+        if (basicRequestParameters.getFingerprintList() == null) {
+            basicRequestParameters.setFingerprintList(new ArrayList<Fingerprint>());
         }
-        basicSearchRequestParameters.getFingerprintList().add(imagedFingerprint.getFingerprint());
+        basicRequestParameters.getFingerprintList().add(imagedFingerprint.getFingerprint());
         currentFingerprintImage = imagedFingerprint.getImage();
     }
 
@@ -101,8 +100,8 @@ public class Session {
         if (nonFingerprint) {
             allFingerprintsTaken = true;
         } else {
-            if (basicSearchRequestParameters.getFingerprintList() != null
-                    && basicSearchRequestParameters.getFingerprintList().size() > 5) {
+            if (basicRequestParameters.getFingerprintList() != null
+                    && basicRequestParameters.getFingerprintList().size() > 5) {
                 allFingerprintsTaken = true;
             }
         }
@@ -110,7 +109,15 @@ public class Session {
     }
 
     public void setNonFingerprint(boolean nonFingerprint) {
-        this.nonFingerprint = nonFingerprint;
+        Session.nonFingerprint = nonFingerprint;
+    }
+
+    public static BufferedImage getCurrentFingerprintImage() {
+        return currentFingerprintImage;
+    }
+
+    public static void setCurrentFingerprintImage(BufferedImage currentFingerprintImage) {
+        Session.currentFingerprintImage = currentFingerprintImage;
     }
 
     public static boolean checkPersonListForFingerprintCandidates(List<Person> personList) {
@@ -131,5 +138,36 @@ public class Session {
             }
         }
         return false;
+    }
+
+    public static PersonIdentifier.Type deducePersonIdentifierType(String personIdentifier) {
+        PersonIdentifier.Type clinicIdType = PersonIdentifier.Type.indeterminate;
+        if (personIdentifier != null && !personIdentifier.isEmpty()) {
+            if (personIdentifier.contains("-") && !personIdentifier.contains("/")) {
+                if ((personIdentifier.split("-").length == 2 && personIdentifier.split("-")[0].length() == 5)
+                        && (personIdentifier.split("-").length == 2 && personIdentifier.split("-")[1].length() == 5)) {
+                    clinicIdType = PersonIdentifier.Type.cccUniqueId;
+                } else if (personIdentifier.split("-").length == 4) {
+                    clinicIdType = PersonIdentifier.Type.kisumuHdssId;
+                }
+            } else if (personIdentifier.contains("/") && !personIdentifier.contains("-")) {
+                if ((personIdentifier.split("/").length == 2 && personIdentifier.split("/")[0].length() == 5)
+                        && (personIdentifier.split("/").length == 2 && personIdentifier.split("/")[1].length() == 4)) {
+                    clinicIdType = PersonIdentifier.Type.cccLocalId;
+                }
+            }
+        }
+        return clinicIdType;
+    }
+
+    public static boolean validateClinicId(String clinicId) {
+        return deducePersonIdentifierType(clinicId) != PersonIdentifier.Type.indeterminate;
+    }
+
+    public static String tweakLocalClinicId(String clinicId) {
+        if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
+            clinicId = Mediator.getProperty("Instance.FacilityCode") + "-" + clinicId;
+        }
+        return clinicId;
     }
 }

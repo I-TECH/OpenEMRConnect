@@ -56,4 +56,26 @@ public class ImagedFingerprint {
     public void setImage(BufferedImage image) {
         this.image = image;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ImagedFingerprint other = (ImagedFingerprint) obj;
+        if (this.fingerprint != other.fingerprint && (this.fingerprint == null || !this.fingerprint.equals(other.fingerprint))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + (this.fingerprint != null ? this.fingerprint.hashCode() : 0);
+        return hash;
+    }
 }

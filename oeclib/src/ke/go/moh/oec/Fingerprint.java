@@ -32,22 +32,21 @@ import java.util.Date;
  * @author Jim Grace
  */
 public class Fingerprint {
-	
-	public enum Type {
 
-		leftIndexFinger,
-		leftMiddleFinger,
-		leftRingFinger,
-		rightIndexFinger,
-		rightMiddleFinger,
-		rightRingFinger
-	}
-	
-	public enum TechnologyType {
+    public enum Type {
 
-		griauleTemplate
-	}
+        leftIndexFinger,
+        leftMiddleFinger,
+        leftRingFinger,
+        rightIndexFinger,
+        rightMiddleFinger,
+        rightRingFinger
+    }
 
+    public enum TechnologyType {
+
+        griauleTemplate
+    }
     /** The type of fingerprint (which hand and which finger). */
     private Type fingerprintType;
     /** The fingerprint template stores the actual fingerprint data. */
@@ -64,44 +63,44 @@ public class Fingerprint {
     /** Date on which the fingerprint was changed. */
     private Date dateChanged;
 
-	public Date getDateChanged() {
-		return dateChanged;
-	}
+    public Date getDateChanged() {
+        return dateChanged;
+    }
 
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
+    public void setDateChanged(Date dateChanged) {
+        this.dateChanged = dateChanged;
+    }
 
-	public Date getDateEntered() {
-		return dateEntered;
-	}
+    public Date getDateEntered() {
+        return dateEntered;
+    }
 
-	public void setDateEntered(Date dateEntered) {
-		this.dateEntered = dateEntered;
-	}
+    public void setDateEntered(Date dateEntered) {
+        this.dateEntered = dateEntered;
+    }
 
-	public Type getFingerprintType() {
-		return fingerprintType;
-	}
+    public Type getFingerprintType() {
+        return fingerprintType;
+    }
 
-	public void setFingerprintType(Type fingerprintType) {
-		this.fingerprintType = fingerprintType;
-	}
+    public void setFingerprintType(Type fingerprintType) {
+        this.fingerprintType = fingerprintType;
+    }
 
-	public TechnologyType getTechnologyType() {
-		return technologyType;
-	}
+    public TechnologyType getTechnologyType() {
+        return technologyType;
+    }
 
-	public void setTechnologyType(TechnologyType technologyType) {
-		this.technologyType = technologyType;
-	}
+    public void setTechnologyType(TechnologyType technologyType) {
+        this.technologyType = technologyType;
+    }
 
-	public byte[] getTemplate() {
-		return template;
-	}
+    public byte[] getTemplate() {
+        return template;
+    }
 
-	public void setTemplate(byte[] template) {
-		this.template = template;
-	}
-
+    public void setTemplate(byte[] template) {
+        this.template = template;
+    }
+    
 }

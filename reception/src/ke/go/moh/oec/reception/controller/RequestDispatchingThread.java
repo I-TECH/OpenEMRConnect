@@ -63,8 +63,7 @@ public class RequestDispatchingThread extends Thread {
                 findCandidates(requestParameters, requestTypeId);
                 break;
             case RequestTypeId.FIND_PERSON_LPI:
-                //TODO: Change this call to go to the LPI
-                findCandidates(requestParameters, RequestTypeId.FIND_PERSON_MPI);
+                findCandidates(requestParameters, requestTypeId);
                 break;
             default:
                 //TODO: Add code to handle unspecified request types
@@ -80,17 +79,26 @@ public class RequestDispatchingThread extends Thread {
         PersonResponse personResponse = null;
         if (searchParameters.getClass() == BasicRequestParameters.class) {
             BasicRequestParameters basicSearchParameters = (BasicRequestParameters) searchParameters;
-            //TODO: Change Identifier type to Clinic ID types
-            personIdentifier.setIdentifierType(PersonIdentifier.Type.kisumuHdssId);
-            personIdentifier.setIdentifier(basicSearchParameters.getClinicId());
+            String clinicId = basicSearchParameters.getClinicId();
+            PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
+            if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
+                clinicId = Session.tweakLocalClinicId(clinicId);
+            }
+            personIdentifier.setIdentifierType(clinicIdType);
+            personIdentifier.setIdentifier(clinicId);
             personIdentifierList.add(personIdentifier);
             person.setPersonIdentifierList(personIdentifierList);
             person.setFingerprintList(basicSearchParameters.getFingerprintList());
             //person.setClanName("KONYANGO");
         } else if (searchParameters.getClass() == ExtendedRequestParameters.class) {
             ExtendedRequestParameters extendedSearchParameters = (ExtendedRequestParameters) searchParameters;
-            personIdentifier.setIdentifierType(PersonIdentifier.Type.kisumuHdssId);
-            personIdentifier.setIdentifier(extendedSearchParameters.getBasicRequestParameters().getClinicId());
+            String clinicId = extendedSearchParameters.getBasicRequestParameters().getClinicId();
+            PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
+            if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
+                clinicId = Session.tweakLocalClinicId(clinicId);
+            }
+            personIdentifier.setIdentifierType(clinicIdType);
+            personIdentifier.setIdentifier(clinicId);
             personIdentifierList.add(personIdentifier);
             person.setPersonIdentifierList(personIdentifierList);
             person.setFingerprintList(extendedSearchParameters.getBasicRequestParameters().getFingerprintList());
@@ -102,8 +110,13 @@ public class RequestDispatchingThread extends Thread {
             person.setVillageName(extendedSearchParameters.getVillageName());
         } else if (searchParameters.getClass() == ComprehensiveRequestParameters.class) {
             ComprehensiveRequestParameters comprehensiveRequestParameters = (ComprehensiveRequestParameters) searchParameters;
-            personIdentifier.setIdentifierType(PersonIdentifier.Type.kisumuHdssId);
-            personIdentifier.setIdentifier(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getClinicId());
+            String clinicId = comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getClinicId();
+            PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
+            if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
+                clinicId = Session.tweakLocalClinicId(clinicId);
+            }
+            personIdentifier.setIdentifierType(clinicIdType);
+            personIdentifier.setIdentifier(clinicId);
             personIdentifierList.add(personIdentifier);
             person.setPersonIdentifierList(personIdentifierList);
             person.setFingerprintList(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprintList());
@@ -128,7 +141,8 @@ public class RequestDispatchingThread extends Thread {
         try {
             personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("mediator.getData(requestTypeId, personRequest); Exeption " + e.getMessage());
+            e.printStackTrace();
         }
         if (personResponse != null) {
             if (personResponse.isSuccessful()) {

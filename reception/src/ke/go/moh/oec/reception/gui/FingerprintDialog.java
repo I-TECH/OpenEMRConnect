@@ -52,10 +52,10 @@ public class FingerprintDialog extends javax.swing.JDialog {
 
     public void setSession(Session session) {
         this.session = session;
-        if (session.getBasicSearchRequestParameters().getFingerprintList() == null) {
+        if (Session.getBasicRequestParameters().getFingerprintList() == null) {
             rightIndexRadioButton.setSelected(true);
         } else {
-            switch (session.getBasicSearchRequestParameters().getFingerprintList().size() - 1) {
+            switch (Session.getBasicRequestParameters().getFingerprintList().size() - 1) {
                 case -1:
                     rightIndexRadioButton.setSelected(true);
                     break;

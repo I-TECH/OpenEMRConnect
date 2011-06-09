@@ -35,7 +35,8 @@ public class ProcessResult {
         LIST,
         ERROR,
         NEXT,
-        EXIT
+        EXIT,
+        ABORT
     }
     private Type type;
     private Object data;

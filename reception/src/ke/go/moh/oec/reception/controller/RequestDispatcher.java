@@ -54,7 +54,7 @@ public class RequestDispatcher {
                 mpiThread.join();
                 lpiThread.join();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println("Exception while trying to joing thread: " + e.getMessage());
             }
         } else if (targetIndex == TargetIndex.MPI) {
             mpiThread = new RequestDispatchingThread(
@@ -63,7 +63,7 @@ public class RequestDispatcher {
             try {
                 mpiThread.join();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println("Exception while trying to joing thread: " + e.getMessage());
             }
         } else if (targetIndex == TargetIndex.LPI) {
             lpiThread = new RequestDispatchingThread(
@@ -72,7 +72,7 @@ public class RequestDispatcher {
             try {
                 lpiThread.join();
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println("Exception while trying to joing thread: " + e.getMessage());
             }
         }
     }

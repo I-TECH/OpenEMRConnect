@@ -44,6 +44,10 @@ public class ComprehensiveRequestParameters implements RequestParameters {
     private String compoundHeadsLastName;
     private MaritalStatus maritalStatus;
 
+    public ComprehensiveRequestParameters() {
+        this.extendedRequestParameters = new ExtendedRequestParameters();
+    }
+
     public String getCompoundHeadsFirstName() {
         return compoundHeadsFirstName;
     }

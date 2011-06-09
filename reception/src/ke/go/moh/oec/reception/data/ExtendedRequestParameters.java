@@ -41,6 +41,10 @@ public class ExtendedRequestParameters implements RequestParameters {
     private Date birthdate;
     private String villageName;
 
+    public ExtendedRequestParameters() {
+        this.basicRequestParameters = new BasicRequestParameters();
+    }
+
     public BasicRequestParameters getBasicRequestParameters() {
         return basicRequestParameters;
     }
