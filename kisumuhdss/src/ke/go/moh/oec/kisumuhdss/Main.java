@@ -24,6 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.kisumuhdss;
 
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.lib.Mediator;
@@ -34,11 +35,12 @@ import ke.go.moh.oec.lib.Mediator;
  */
 public class Main {
 
-    
-    
-    
-    
-    
+    private static Mediator mediator = new Mediator();
+
+    public static Mediator getMediator() {
+        return mediator;
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -54,13 +56,15 @@ public class Main {
                     "Can''t load JDBC driver " + driverName, ex);
             System.exit(1);
         }
-        
-        Mediator mediator = new Mediator();
+
+        mediator = new Mediator();
         Updater updater = new Updater();
         while (true) {
-            updater.update();
             try {
+                updater.updateAllTransactions();
                 Thread.sleep(10 * 1000);
+            } catch (SQLException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
