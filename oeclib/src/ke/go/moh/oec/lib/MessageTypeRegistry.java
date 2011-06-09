@@ -44,10 +44,14 @@ class MessageTypeRegistry {
     static final String FIND_PERSON_ROOT_TAG = "PRPA_IN201305UV02";
     /** FIND PERSON RESPONSE uses HL7 Patient Registry Find Candidates Query Response, PRPA_IN201306UV02  */
     static final String FIND_PERSON_RESPONSE_ROOT_TAG = "PRPA_IN201306UV02";
-    /** ADD PERSON uses HL7 Patient Registry Add Request, PRPA_IN201311UV02 */
+    /** CREATE PERSON uses HL7 Patient Registry Add Request, PRPA_IN201311UV02 */
     static final String CREATE_PERSON_ROOT_TAG = "PRPA_IN201311UV02";
+    /** CREATE PERSON ACCEPTED uses HL7 Patient Registry Add Request Accepted message, PRPA_IN201312UV02 */
+    static final String CREATE_PERSON_ACCEPTED_ROOT_TAG = "PRPA_IN201312UV02";
     /** MODIFY PERSON uses HL7 Patient Registry Revise Request, PRPA_IN201314UV02 */
     static final String MODIFY_PERSON_ROOT_TAG = "PRPA_IN201314UV02";
+    /** MODIFY PERSON ACCEPTED uses HL7 Patient Registry Revise Request Accepted message, PRPA_IN201315UV02 */
+    static final String MODIFY_PERSON_ACCEPTED_ROOT_TAG = "PRPA_IN201315UV02";
     /** LOG ENTRY uses LogEntry for a root tag */
     static final String LOG_ENTRY_ROOT_TAG = "LogEntry";
     /** GET WORK  uses getWork for a root tag*/
@@ -90,11 +94,22 @@ class MessageTypeRegistry {
             "Local Person Index", // The Local Person List
             false); // Don't store and forward if it doesn't go immediately
     /**
+     * Create Person Accepted response
+     */
+    static final MessageType createPersonAccepted = new MessageType(
+            0, // No request type (this message is only a response).
+            null, // No response type (this mssage does not have a response to answer it).
+            MessageType.TemplateType.createPersonAccepted,
+            CREATE_PERSON_ACCEPTED_ROOT_TAG, //HL7 Patient Registry Add Request
+            null, // No default destination address property
+            null, // No default destination name
+            true); // Store and forward if it doesn't send immediately
+    /**
      * Create Person (MPI) request
      */
     static final MessageType createPersonMpi = new MessageType(
             RequestTypeId.CREATE_PERSON_MPI,
-            null, // No response to this message.
+            createPersonAccepted, // Response to this message -- if sender requests it.
             MessageType.TemplateType.createPerson,
             CREATE_PERSON_ROOT_TAG, //HL7 Patient Registry Add Request
             "MPI.Address", // The Master Person List address property
@@ -105,18 +120,29 @@ class MessageTypeRegistry {
      */
     static final MessageType createPersonLpi = new MessageType(
             RequestTypeId.CREATE_PERSON_LPI,
-            null, // No response to this message.
+            createPersonAccepted, // Response to this message -- if sender requests it.
             MessageType.TemplateType.createPerson,
             CREATE_PERSON_ROOT_TAG, //HL7 Patient Registry Add Request
             "LPI.Address", // The Local Person List address property
             "Local Person Index", // The Local Person List
             true); // Store and forward if it doesn't send immediately
     /**
+     * Modify Person Accepted response
+     */
+    static final MessageType modifyPersonAccepted = new MessageType(
+            0, // No request type (this message is only a response).
+            null, // No response type (this mssage does not have a response to answer it).
+            MessageType.TemplateType.modifyPersonAccepted,
+            MODIFY_PERSON_ACCEPTED_ROOT_TAG, //HL7 Patient Registry Add Request
+            null, // No default destination address property
+            null, // No default destination name
+            true); // Store and forward if it doesn't send immediately
+    /**
      * Modify Person (MPI) request
      */
     static final MessageType modifyPersonMpi = new MessageType(
             RequestTypeId.MODIFY_PERSON_MPI,
-            null, // No response to this message.
+            modifyPersonAccepted, // Response to this message -- if sender requests it.
             MessageType.TemplateType.modifyPerson,
             MODIFY_PERSON_ROOT_TAG, //HL7 Patient Registry Revise Request
             "MPI.Address", // The Master Person List address property
@@ -127,7 +153,7 @@ class MessageTypeRegistry {
      */
     static final MessageType modifyPersonLpi = new MessageType(
             RequestTypeId.MODIFY_PERSON_LPI,
-            null, // No response to this message.
+            modifyPersonAccepted, // Response to this message -- if sender requests it.
             MessageType.TemplateType.modifyPerson,
             MODIFY_PERSON_ROOT_TAG, //HL7 Patient Registry Revise Request
             "LPI.Address", // The Local Person List address property
