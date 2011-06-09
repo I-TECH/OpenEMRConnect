@@ -43,7 +43,8 @@ public class PersonIdentifier {
 		masterPatientRegistryId,
 		cccUniqueId,
 		cccLocalId,
-		kisumuHdssId
+		kisumuHdssId,
+                indeterminate
 	}
 	
 	/**

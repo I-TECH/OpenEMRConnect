@@ -24,6 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import ke.go.moh.oec.Fingerprint;
 
@@ -31,11 +32,15 @@ import ke.go.moh.oec.Fingerprint;
  *
  * @author Gitahi Ng'ang'a
  */
-public class BasicSearchRequestParameters implements RequestParameters {
+public class BasicRequestParameters implements RequestParameters {
 
     private String clinicId;
     private String clinicName;
     List<Fingerprint> fingerprintList;
+
+    public BasicRequestParameters() {
+        this.fingerprintList = new ArrayList<Fingerprint>();
+    }
 
     public String getClinicId() {
         return clinicId;
@@ -59,35 +64,5 @@ public class BasicSearchRequestParameters implements RequestParameters {
 
     public void setFingerprintList(List<Fingerprint> fingerprintList) {
         this.fingerprintList = fingerprintList;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final BasicSearchRequestParameters other = (BasicSearchRequestParameters) obj;
-        if ((this.clinicId == null) ? (other.clinicId != null) : !this.clinicId.equals(other.clinicId)) {
-            return false;
-        }
-        if ((this.clinicName == null) ? (other.clinicName != null) : !this.clinicName.equals(other.clinicName)) {
-            return false;
-        }
-        if (this.fingerprintList != other.fingerprintList && (this.fingerprintList == null || !this.fingerprintList.equals(other.fingerprintList))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 37 * hash + (this.clinicId != null ? this.clinicId.hashCode() : 0);
-        hash = 37 * hash + (this.clinicName != null ? this.clinicName.hashCode() : 0);
-        hash = 37 * hash + (this.fingerprintList != null ? this.fingerprintList.hashCode() : 0);
-        return hash;
     }
 }

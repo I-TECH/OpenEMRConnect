@@ -25,11 +25,13 @@ import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.reception.controller.RequestDispatcher;
 import ke.go.moh.oec.reception.data.RequestResult;
 import ke.go.moh.oec.reception.controller.Session;
+import ke.go.moh.oec.reception.data.TargetIndex;
 
 /**
  * The application's main frame.
@@ -40,6 +42,8 @@ public class MainView extends FrameView {
     private Session session;
     private BufferedImage refusedFingerprint;
     private BufferedImage fingerprintNotTaken;
+    private String currentCardName = "homeCard";
+    private String previousCardName = "homeCard";
 
     public MainView(SingleFrameApplication app) {
         super(app);
@@ -48,7 +52,7 @@ public class MainView extends FrameView {
         cardLayout = (CardLayout) wizardPanel.getLayout();
         session = new Session();
         try {
-            refusedFingerprint = ImageIO.read(new File("refused_fingerprinting.png"));
+            refusedFingerprint = ImageIO.read(new File("refused_fingerprint.png"));
             fingerprintNotTaken = ImageIO.read(new File("no_fingerprint.png"));
         } catch (IOException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
@@ -175,10 +179,10 @@ public class MainView extends FrameView {
         extendedSearchLastNameLabel = new javax.swing.JLabel();
         extendedSearchLastNameTextField = new javax.swing.JTextField();
         extendedSearchSexLabel = new javax.swing.JLabel();
-        maleButton = new javax.swing.JRadioButton();
-        femaleRadioButton = new javax.swing.JRadioButton();
-        extendedSearchDateOfBirthLabel = new javax.swing.JLabel();
-        extendedSearchDateOfBirthChooser = new com.toedter.calendar.JDateChooser();
+        extendedSearchMaleRadioButton = new javax.swing.JRadioButton();
+        extendedSearchFemaleRadioButton = new javax.swing.JRadioButton();
+        extendedSearchBirthdateLabel = new javax.swing.JLabel();
+        extendedSearchBirthdateChooser = new com.toedter.calendar.JDateChooser();
         extendedSearchVillageLabel = new javax.swing.JLabel();
         extendedSearchVillageTextField = new javax.swing.JTextField();
         extendedSearchFingerprintLabel = new javax.swing.JLabel();
@@ -372,13 +376,15 @@ public class MainView extends FrameView {
         homePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("homePanel.border.title"))); // NOI18N
         homePanel.setName("homePanel"); // NOI18N
 
-        enrolledButton.setAction(actionMap.get("showClinicIdCard")); // NOI18N
+        enrolledButton.setAction(actionMap.get("showClinicIdCardForEnrolled")); // NOI18N
         enrolledButton.setText(resourceMap.getString("enrolledButton.text")); // NOI18N
         enrolledButton.setName("enrolledButton"); // NOI18N
 
+        visitorButton.setAction(actionMap.get("showClinicIdCardForVisitor")); // NOI18N
         visitorButton.setText(resourceMap.getString("visitorButton.text")); // NOI18N
         visitorButton.setName("visitorButton"); // NOI18N
 
+        newButton.setAction(actionMap.get("showExtendedSearchCard")); // NOI18N
         newButton.setText(resourceMap.getString("newButton.text")); // NOI18N
         newButton.setName("newButton"); // NOI18N
 
@@ -392,10 +398,10 @@ public class MainView extends FrameView {
             .addGroup(homePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                    .addComponent(visitorButton, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                    .addComponent(enrolledButton, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                    .addComponent(transferInButton, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
+                    .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
+                    .addComponent(visitorButton, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
+                    .addComponent(enrolledButton, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
+                    .addComponent(transferInButton, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE))
                 .addContainerGap())
         );
         homePanelLayout.setVerticalGroup(
@@ -417,9 +423,9 @@ public class MainView extends FrameView {
         homeCardLayout.setHorizontalGroup(
             homeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, homeCardLayout.createSequentialGroup()
-                .addGap(145, 145, 145)
+                .addGap(140, 140, 140)
                 .addComponent(homePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(350, 350, 350))
+                .addGap(140, 140, 140))
         );
         homeCardLayout.setVerticalGroup(
             homeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -450,8 +456,8 @@ public class MainView extends FrameView {
             .addGroup(clientIdPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(clientIdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(clinicIdNoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE)
-                    .addComponent(clinicIdYesButton, javax.swing.GroupLayout.DEFAULT_SIZE, 116, Short.MAX_VALUE))
+                    .addComponent(clinicIdNoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
+                    .addComponent(clinicIdYesButton, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE))
                 .addContainerGap())
         );
         clientIdPanelLayout.setVerticalGroup(
@@ -469,9 +475,9 @@ public class MainView extends FrameView {
         clinicIdCardLayout.setHorizontalGroup(
             clinicIdCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(clinicIdCardLayout.createSequentialGroup()
-                .addGap(135, 135, 135)
+                .addGap(140, 140, 140)
                 .addComponent(clientIdPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(349, 349, 349))
+                .addGap(153, 153, 153))
         );
         clinicIdCardLayout.setVerticalGroup(
             clinicIdCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -493,12 +499,22 @@ public class MainView extends FrameView {
 
         basicSearchClinicIdTextField.setText(resourceMap.getString("basicSearchClinicIdTextField.text")); // NOI18N
         basicSearchClinicIdTextField.setName("basicSearchClinicIdTextField"); // NOI18N
+        basicSearchClinicIdTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                basicSearchClinicIdTextFieldKeyTyped(evt);
+            }
+        });
 
         basicSearchClinicNameLabel.setText(resourceMap.getString("basicSearchClinicNameLabel.text")); // NOI18N
         basicSearchClinicNameLabel.setName("basicSearchClinicNameLabel"); // NOI18N
 
         basicSearchClinicNameTextField.setText(resourceMap.getString("basicSearchClinicNameTextField.text")); // NOI18N
         basicSearchClinicNameTextField.setName("basicSearchClinicNameTextField"); // NOI18N
+        basicSearchClinicNameTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                basicSearchClinicNameTextFieldKeyTyped(evt);
+            }
+        });
 
         basicSearchFingerprintLabel.setText(resourceMap.getString("basicSearchFingerprintLabel.text")); // NOI18N
         basicSearchFingerprintLabel.setName("basicSearchFingerprintLabel"); // NOI18N
@@ -517,15 +533,18 @@ public class MainView extends FrameView {
             .addGap(0, 74, Short.MAX_VALUE)
         );
 
-        basicSearchClientRefusesCheckBox.setAction(actionMap.get("refuseFingerprinting")); // NOI18N
+        basicSearchClientRefusesCheckBox.setAction(actionMap.get("refuseFingerprintingBasic")); // NOI18N
         basicSearchClientRefusesCheckBox.setText(resourceMap.getString("basicSearchClientRefusesCheckBox.text")); // NOI18N
         basicSearchClientRefusesCheckBox.setName("basicSearchClientRefusesCheckBox"); // NOI18N
 
-        basicSearchTakeButton.setAction(actionMap.get("showFingerprintDialog")); // NOI18N
+        basicSearchTakeButton.setAction(actionMap.get("showFingerprintDialogBasic")); // NOI18N
         basicSearchTakeButton.setText(resourceMap.getString("basicSearchTakeButton.text")); // NOI18N
         basicSearchTakeButton.setName("basicSearchTakeButton"); // NOI18N
 
-        basicSearchButton.setAction(actionMap.get("search")); // NOI18N
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, basicSearchClientRefusesCheckBox, org.jdesktop.beansbinding.ELProperty.create("${!selected}"), basicSearchTakeButton, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
+        basicSearchButton.setAction(actionMap.get("searchBasic")); // NOI18N
         basicSearchButton.setText(resourceMap.getString("basicSearchButton.text")); // NOI18N
         basicSearchButton.setName("basicSearchButton"); // NOI18N
 
@@ -543,15 +562,15 @@ public class MainView extends FrameView {
                             .addComponent(basicSearchFingerprintLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(basicSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(basicSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
-                            .addComponent(basicSearchClinicNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
+                            .addComponent(basicSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 509, Short.MAX_VALUE)
+                            .addComponent(basicSearchClinicNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 509, Short.MAX_VALUE)
                             .addGroup(basicSearchPanelLayout.createSequentialGroup()
                                 .addGroup(basicSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(basicSearchTakeButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(basicSearchFingerprintImagePanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(basicSearchClientRefusesCheckBox))))
-                    .addComponent(basicSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE))
+                    .addComponent(basicSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE))
                 .addContainerGap())
         );
         basicSearchPanelLayout.setVerticalGroup(
@@ -633,18 +652,18 @@ public class MainView extends FrameView {
         extendedSearchSexLabel.setText(resourceMap.getString("extendedSearchSexLabel.text")); // NOI18N
         extendedSearchSexLabel.setName("extendedSearchSexLabel"); // NOI18N
 
-        sexButtonGroup.add(maleButton);
-        maleButton.setText(resourceMap.getString("maleButton.text")); // NOI18N
-        maleButton.setName("maleButton"); // NOI18N
+        sexButtonGroup.add(extendedSearchMaleRadioButton);
+        extendedSearchMaleRadioButton.setText(resourceMap.getString("extendedSearchMaleRadioButton.text")); // NOI18N
+        extendedSearchMaleRadioButton.setName("extendedSearchMaleRadioButton"); // NOI18N
 
-        sexButtonGroup.add(femaleRadioButton);
-        femaleRadioButton.setText(resourceMap.getString("femaleRadioButton.text")); // NOI18N
-        femaleRadioButton.setName("femaleRadioButton"); // NOI18N
+        sexButtonGroup.add(extendedSearchFemaleRadioButton);
+        extendedSearchFemaleRadioButton.setText(resourceMap.getString("extendedSearchFemaleRadioButton.text")); // NOI18N
+        extendedSearchFemaleRadioButton.setName("extendedSearchFemaleRadioButton"); // NOI18N
 
-        extendedSearchDateOfBirthLabel.setText(resourceMap.getString("extendedSearchDateOfBirthLabel.text")); // NOI18N
-        extendedSearchDateOfBirthLabel.setName("extendedSearchDateOfBirthLabel"); // NOI18N
+        extendedSearchBirthdateLabel.setText(resourceMap.getString("extendedSearchBirthdateLabel.text")); // NOI18N
+        extendedSearchBirthdateLabel.setName("extendedSearchBirthdateLabel"); // NOI18N
 
-        extendedSearchDateOfBirthChooser.setName("extendedSearchDateOfBirthChooser"); // NOI18N
+        extendedSearchBirthdateChooser.setName("extendedSearchBirthdateChooser"); // NOI18N
 
         extendedSearchVillageLabel.setText(resourceMap.getString("extendedSearchVillageLabel.text")); // NOI18N
         extendedSearchVillageLabel.setName("extendedSearchVillageLabel"); // NOI18N
@@ -669,14 +688,18 @@ public class MainView extends FrameView {
             .addGap(0, 74, Short.MAX_VALUE)
         );
 
+        extendedSearchClientRefusesCheckBox.setAction(actionMap.get("refuseFingerprintingExtended")); // NOI18N
         extendedSearchClientRefusesCheckBox.setText(resourceMap.getString("extendedSearchClientRefusesCheckBox.text")); // NOI18N
         extendedSearchClientRefusesCheckBox.setName("extendedSearchClientRefusesCheckBox"); // NOI18N
 
-        extendedSearchTakeButton.setAction(actionMap.get("showFingerprintDialog")); // NOI18N
+        extendedSearchTakeButton.setAction(actionMap.get("showFingerprintDialogExtended")); // NOI18N
         extendedSearchTakeButton.setText(resourceMap.getString("extendedSearchTakeButton.text")); // NOI18N
         extendedSearchTakeButton.setName("extendedSearchTakeButton"); // NOI18N
 
-        extendedSearchButton.setAction(actionMap.get("test")); // NOI18N
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, extendedSearchClientRefusesCheckBox, org.jdesktop.beansbinding.ELProperty.create("${!selected}"), extendedSearchTakeButton, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
+        extendedSearchButton.setAction(actionMap.get("searchExtended")); // NOI18N
         extendedSearchButton.setText(resourceMap.getString("extendedSearchButton.text")); // NOI18N
         extendedSearchButton.setName("extendedSearchButton"); // NOI18N
 
@@ -687,7 +710,7 @@ public class MainView extends FrameView {
             .addGroup(extendedSearchPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(extendedSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(extendedSearchButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
+                    .addComponent(extendedSearchButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
                     .addGroup(extendedSearchPanelLayout.createSequentialGroup()
                         .addComponent(extendedSearchFingerprintLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -705,20 +728,20 @@ public class MainView extends FrameView {
                             .addComponent(extendedSearchLastNameLabel)
                             .addComponent(extendedSearchSexLabel)
                             .addComponent(extendedSearchVillageLabel)
-                            .addComponent(extendedSearchDateOfBirthLabel))
+                            .addComponent(extendedSearchBirthdateLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(extendedSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(extendedSearchPanelLayout.createSequentialGroup()
-                                .addComponent(maleButton)
+                                .addComponent(extendedSearchMaleRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(femaleRadioButton))
-                            .addComponent(extendedSearchLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                            .addComponent(extendedSearchMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                            .addComponent(extendedSearchFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                            .addComponent(extendedSearchClinicNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                            .addComponent(extendedSearchVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                            .addComponent(extendedSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                            .addComponent(extendedSearchDateOfBirthChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE))))
+                                .addComponent(extendedSearchFemaleRadioButton))
+                            .addComponent(extendedSearchLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 502, Short.MAX_VALUE)
+                            .addComponent(extendedSearchMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 502, Short.MAX_VALUE)
+                            .addComponent(extendedSearchFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 502, Short.MAX_VALUE)
+                            .addComponent(extendedSearchClinicNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 502, Short.MAX_VALUE)
+                            .addComponent(extendedSearchVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 502, Short.MAX_VALUE)
+                            .addComponent(extendedSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 502, Short.MAX_VALUE)
+                            .addComponent(extendedSearchBirthdateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 502, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         extendedSearchPanelLayout.setVerticalGroup(
@@ -746,12 +769,12 @@ public class MainView extends FrameView {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(extendedSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(extendedSearchSexLabel)
-                    .addComponent(maleButton)
-                    .addComponent(femaleRadioButton))
+                    .addComponent(extendedSearchMaleRadioButton)
+                    .addComponent(extendedSearchFemaleRadioButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(extendedSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(extendedSearchDateOfBirthChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(extendedSearchDateOfBirthLabel))
+                    .addComponent(extendedSearchBirthdateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(extendedSearchBirthdateLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(extendedSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(extendedSearchVillageLabel)
@@ -844,9 +867,9 @@ public class MainView extends FrameView {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, searchResultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(searchResultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(searchResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
-                    .addComponent(notFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
-                    .addComponent(acceptButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE))
+                    .addComponent(searchResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
+                    .addComponent(notFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
+                    .addComponent(acceptButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE))
                 .addContainerGap())
         );
         searchResultsPanelLayout.setVerticalGroup(
@@ -1495,7 +1518,7 @@ public class MainView extends FrameView {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        wizardPanel.add(reviewCard, "card7");
+        wizardPanel.add(reviewCard, "reviewCard");
 
         javax.swing.GroupLayout rightPanelLayout = new javax.swing.GroupLayout(rightPanel);
         rightPanel.setLayout(rightPanelLayout);
@@ -1504,7 +1527,7 @@ public class MainView extends FrameView {
             .addGroup(rightPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 634, Short.MAX_VALUE)
+                    .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
                     .addGroup(rightPanelLayout.createSequentialGroup()
                         .addComponent(homeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1605,97 +1628,298 @@ public class MainView extends FrameView {
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void basicSearchClinicIdTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_basicSearchClinicIdTextFieldKeyTyped
+        prepareCard("basicSearchCard");
+    }//GEN-LAST:event_basicSearchClinicIdTextFieldKeyTyped
+
+    private void basicSearchClinicNameTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_basicSearchClinicNameTextFieldKeyTyped
+        prepareCard("basicSearchCard");
+    }//GEN-LAST:event_basicSearchClinicNameTextFieldKeyTyped
+
     @Action
     public void showFirstCard() {
-        cardLayout.first(wizardPanel);
+        showCard("homeCard");
     }
 
     @Action
     public void showPreviousCard() {
-        cardLayout.previous(wizardPanel);
+        if (!currentCardName.equalsIgnoreCase("homeCard")) {
+            if (currentCardName.equalsIgnoreCase("knowsClinicIdCard")) {
+                showCard("homeCard");
+            } else if (currentCardName.equalsIgnoreCase("basicSearchCard")) {
+                showCard("knowsClinicIdCard");
+            } else if (currentCardName.equalsIgnoreCase("extendedSearchCard")) {
+                showCard("basicSearchCard");
+            }
+        }
+    }
+
+    public void showCard(String cardName) {
+        cardLayout.show(wizardPanel, cardName);
+        previousCardName = currentCardName;
+        currentCardName = cardName;
+        prepareCard(cardName);
     }
 
     @Action
-    public void showClinicIdCard() {
-        cardLayout.show(wizardPanel, "knowsClinicIdCard");
-        session.setClientType(Session.CLIENT_TYPE.ENROLLED);
+    public void showClinicIdCardForEnrolled() {
+        Session.setClientType(Session.CLIENT_TYPE.ENROLLED);
+        showCard("knowsClinicIdCard");
+    }
+
+    @Action
+    public void showClinicIdCardForVisitor() {
+        Session.setClientType(Session.CLIENT_TYPE.VISITOR);
+        showCard("knowsClinicIdCard");
     }
 
     @Action
     public void showBasicSearchCard() {
-        cardLayout.show(wizardPanel, "basicSearchCard");
-        basicSearchFingerprintImagePanel.setImage(fingerprintNotTaken);
-        basicSearchClinicNameLabel.setVisible(session.getClientType() == Session.CLIENT_TYPE.VISITOR);
-        basicSearchClinicNameTextField.setVisible(session.getClientType() == Session.CLIENT_TYPE.VISITOR);
+        showCard("basicSearchCard");
+    }
+
+    private void prepareCard(String cardName) {
+        if (cardName.equalsIgnoreCase("basicSearchCard")) {
+            if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
+                basicSearchButton.setEnabled((!Session.getBasicRequestParameters().getFingerprintList().isEmpty()
+                        || Session.isNonFingerprint()) && !basicSearchClinicIdTextField.getText().isEmpty());
+            } else if (Session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
+                basicSearchButton.setEnabled((!Session.getBasicRequestParameters().getFingerprintList().isEmpty()
+                        || Session.isNonFingerprint())
+                        && !basicSearchClinicIdTextField.getText().isEmpty()
+                        && !basicSearchClinicNameTextField.getText().isEmpty());
+            }
+            basicSearchClinicNameLabel.setVisible(Session.getClientType() == Session.CLIENT_TYPE.VISITOR);
+            basicSearchClinicNameTextField.setVisible(Session.getClientType() == Session.CLIENT_TYPE.VISITOR);
+        } else if (cardName.equalsIgnoreCase("extendedSearchCard")) {
+            if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
+                basicSearchButton.setEnabled(!basicSearchClinicIdTextField.getText().isEmpty()
+                        && (!Session.getBasicRequestParameters().getFingerprintList().isEmpty()
+                        || Session.isNonFingerprint()));
+            } else if (Session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
+                basicSearchButton.setEnabled(!basicSearchClinicIdTextField.getText().isEmpty()
+                        && (!Session.getBasicRequestParameters().getFingerprintList().isEmpty()
+                        || Session.isNonFingerprint()
+                        && !basicSearchClinicNameTextField.getText().isEmpty()));
+            }
+            extendedSearchClinicIdLabel.setVisible(Session.getClientType() == Session.CLIENT_TYPE.NEW);
+            extendedSearchClinicIdTextField.setVisible(Session.getClientType() == Session.CLIENT_TYPE.NEW);
+            extendedSearchClinicNameLabel.setVisible(Session.getClientType() == Session.CLIENT_TYPE.NEW);
+            extendedSearchClinicNameTextField.setVisible(Session.getClientType() == Session.CLIENT_TYPE.NEW);
+        }
     }
 
     @Action
-    public void showFingerprintDialog() {
+    public void showExtendedSearchCard() {
+        showCard("extendedSearchCard");
+    }
+
+    @Action
+    public void showFingerprintDialogBasic() {
         FingerprintDialog fingerprintDialog = new FingerprintDialog(this.getFrame(), true);
         fingerprintDialog.setLocationRelativeTo(this.getFrame());
         fingerprintDialog.setSession(session);
         fingerprintDialog.setVisible(true);
-        showFingerprintImage(session.getCurrentFingerprintImage());
+        showFingerprintImageBasic(Session.getCurrentFingerprintImage());
+        prepareCard("basicSearchCard");
     }
 
-    public void showFingerprintImage(BufferedImage fingerprintImage) {
+    @Action
+    public void showFingerprintDialogExtended() {
+        FingerprintDialog fingerprintDialog = new FingerprintDialog(this.getFrame(), true);
+        fingerprintDialog.setLocationRelativeTo(this.getFrame());
+        fingerprintDialog.setSession(session);
+        fingerprintDialog.setVisible(true);
+        showFingerprintImageExtended(Session.getCurrentFingerprintImage());
+        prepareCard("extendedSearchCard");
+    }
+
+    public void showFingerprintImageBasic(BufferedImage fingerprintImage) {
         if (fingerprintImage != null) {
             basicSearchFingerprintImagePanel.setImage(fingerprintImage);
             basicSearchPanel.repaint();
         }
     }
 
-    @Action
-    public Task search() {
-        return new SearchTask(getApplication());
+    public void showFingerprintImageExtended(BufferedImage fingerprintImage) {
+        if (fingerprintImage != null) {
+            extendedSearchFingerprintImagePanel.setImage(fingerprintImage);
+            extendedSearchPanel.repaint();
+        }
     }
 
-    private class SearchTask extends org.jdesktop.application.Task<Object, Void> {
+    private ProcessResult doBasicSearch(int targetIndex) {
+        List<Person> mpiPersonList = null;
+        List<Person> lpiPersonList = null;
+        RequestResult mpiRequestResult = new RequestResult();
+        RequestResult lpiRequestResult = new RequestResult();
+        RequestDispatcher.findCandidates(Session.getBasicRequestParameters(),
+                mpiRequestResult, lpiRequestResult, targetIndex);
+        if (mpiRequestResult.getReturnCode() == RequestResult.SUCCESS
+                && lpiRequestResult.getReturnCode() == RequestResult.SUCCESS) {
+            mpiPersonList = (List<Person>) mpiRequestResult.getData();
+            lpiPersonList = (List<Person>) lpiRequestResult.getData();
+            if (Session.checkPersonListForLinkedCandidates(lpiPersonList)) {
+                return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
+            } else {
+                if (Session.checkPersonListForFingerprintCandidates(mpiPersonList)) {
+                    return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
+                } else {
+                    if (!session.hasAllFingerprintsTaken()) {
+                        return new ProcessResult(ProcessResult.Type.NEXT, null);
+                    } else {
+                        if (!lpiPersonList.isEmpty()) {
+                            return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
+                        } else {
+                            if (!mpiPersonList.isEmpty()) {
+                                return new ProcessResult(ProcessResult.Type.LIST, mpiPersonList);
+                            } else {
+                                return new ProcessResult(ProcessResult.Type.EXIT, null);
+                            }
+                        }
+                    }
 
-        SearchTask(org.jdesktop.application.Application app) {
+                }
+            }
+        } else {
+            if (mpiRequestResult.getReturnCode() == RequestResult.FAILURE
+                    && lpiRequestResult.getReturnCode() == RequestResult.FAILURE) {
+                if (JOptionPane.showConfirmDialog(this.getFrame(), "Both the Master and the Local Person Indices"
+                        + " could not be contacted. Would you like to try contacting them again?", "OEC Reception Software",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    return doBasicSearch(TargetIndex.BOTH);
+                }
+            } else {
+                if (mpiRequestResult.getReturnCode() == RequestResult.FAILURE) {
+                    if (JOptionPane.showConfirmDialog(this.getFrame(), "The Master Person Index could not be contacted. "
+                            + "Would you like to try contacting it again?", "OEC Reception Software",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                        return doBasicSearch(TargetIndex.MPI);
+                    }
+                }
+                if (lpiRequestResult.getReturnCode() == RequestResult.FAILURE) {
+                    if (JOptionPane.showConfirmDialog(this.getFrame(), "The Local Person Index could not be contacted. "
+                            + "Would you like to try contacting it again?", "OEC Reception Software",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                        return doBasicSearch(TargetIndex.LPI);
+                    }
+                }
+            }
+            return new ProcessResult(ProcessResult.Type.ERROR, null);
+        }
+    }
+
+    private ProcessResult doExtendedSearch(int targetIndex) {
+        List<Person> mpiPersonList = null;
+        List<Person> lpiPersonList = null;
+        RequestResult mpiRequestResult = new RequestResult();
+        RequestResult lpiRequestResult = new RequestResult();
+        RequestDispatcher.findCandidates(Session.getExtendedRequestParameters(),
+                mpiRequestResult, lpiRequestResult, targetIndex);
+        if (mpiRequestResult.getReturnCode() == RequestResult.SUCCESS
+                && lpiRequestResult.getReturnCode() == RequestResult.SUCCESS) {
+            mpiPersonList = (List<Person>) mpiRequestResult.getData();
+            lpiPersonList = (List<Person>) lpiRequestResult.getData();
+            if (Session.checkPersonListForLinkedCandidates(lpiPersonList)) {
+                return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
+            } else {
+                if (Session.checkPersonListForFingerprintCandidates(mpiPersonList)) {
+                    return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
+                } else {
+                    if (!session.hasAllFingerprintsTaken()) {
+                        return new ProcessResult(ProcessResult.Type.NEXT, null);
+                    } else {
+                        if (!lpiPersonList.isEmpty()) {
+                            return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
+                        } else {
+                            if (!mpiPersonList.isEmpty()) {
+                                return new ProcessResult(ProcessResult.Type.LIST, mpiPersonList);
+                            } else {
+                                return new ProcessResult(ProcessResult.Type.EXIT, null);
+                            }
+                        }
+                    }
+
+                }
+            }
+        } else {
+            if (mpiRequestResult.getReturnCode() == RequestResult.FAILURE
+                    && lpiRequestResult.getReturnCode() == RequestResult.FAILURE) {
+                if (JOptionPane.showConfirmDialog(this.getFrame(), "Both the Master and the Local Person Indices"
+                        + " could not be contacted. Would you like to try contacting them again?", "OEC Reception Software",
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    return doExtendedSearch(TargetIndex.BOTH);
+                }
+            } else {
+                if (mpiRequestResult.getReturnCode() == RequestResult.FAILURE) {
+                    if (JOptionPane.showConfirmDialog(this.getFrame(), "The Master Person Index could not be contacted. "
+                            + "Would you like to try contacting it again?", "OEC Reception Software",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                        return doExtendedSearch(TargetIndex.MPI);
+                    }
+                }
+                if (lpiRequestResult.getReturnCode() == RequestResult.FAILURE) {
+                    if (JOptionPane.showConfirmDialog(this.getFrame(), "The Local Person Index could not be contacted. "
+                            + "Would you like to try contacting it again?", "OEC Reception Software",
+                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                        return doExtendedSearch(TargetIndex.LPI);
+                    }
+                }
+            }
+            return new ProcessResult(ProcessResult.Type.ERROR, null);
+        }
+    }
+
+    @Action
+    public void refuseFingerprintingBasic() {
+        if (basicSearchClientRefusesCheckBox.isSelected()) {
+            showFingerprintImageBasic(refusedFingerprint);
+            Session.getBasicRequestParameters().setFingerprintList(new ArrayList<Fingerprint>());
+            session.setNonFingerprint(true);
+        } else {
+            showFingerprintImageBasic(fingerprintNotTaken);
+            session.setNonFingerprint(false);
+        }
+        prepareCard("basicSearchCard");
+    }
+
+    @Action
+    public void refuseFingerprintingExtended() {
+        if (extendedSearchClientRefusesCheckBox.isSelected()) {
+            showFingerprintImageExtended(refusedFingerprint);
+            Session.getExtendedRequestParameters().getBasicRequestParameters().setFingerprintList(new ArrayList<Fingerprint>());
+            session.setNonFingerprint(true);
+        } else {
+            showFingerprintImageExtended(fingerprintNotTaken);
+            session.setNonFingerprint(false);
+        }
+        prepareCard("extendedSearchCard");
+    }
+
+    @Action
+    public Task searchBasic() {
+        return new SearchBasicTask(getApplication());
+    }
+
+    private class SearchBasicTask extends org.jdesktop.application.Task<Object, Void> {
+
+        SearchBasicTask(org.jdesktop.application.Application app) {
             super(app);
         }
 
         @Override
         protected Object doInBackground() {
-            session.getBasicSearchParameters().setClinicId(basicSearchClinicIdTextField.getText());
-            //session.getBasicSearchParameters().setFingerprintList(session.get)
-            List<Person> mpiPersonList = null;
-            List<Person> lpiPersonList = null;
-            RequestResult mpiRequestResult = new RequestResult();
-            RequestResult lpiRequestResult = new RequestResult();
-            RequestDispatcher.findCandidates(session.getBasicSearchParameters(),
-                    mpiRequestResult, lpiRequestResult);
-            if (mpiRequestResult.getReturnCode() == RequestResult.SUCCESS
-                    && lpiRequestResult.getReturnCode() == RequestResult.SUCCESS) {
-                mpiPersonList = (List<Person>) mpiRequestResult.getData();
-                lpiPersonList = (List<Person>) lpiRequestResult.getData();
-                if (Session.checkPersonListForLinkedCandidates(lpiPersonList)) {
-                    return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
-                } else {
-                    if (Session.checkPersonListForFingerprintCandidates(mpiPersonList)) {
-                        return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
-                    } else {
-                        if (!session.hasAllFingerprintsTaken()) {
-                            return new ProcessResult(ProcessResult.Type.NEXT, null);
-                        } else {
-                            if (!lpiPersonList.isEmpty()) {
-                                return new ProcessResult(ProcessResult.Type.LIST, lpiPersonList);
-                            } else {
-                                if (!mpiPersonList.isEmpty()) {
-                                    return new ProcessResult(ProcessResult.Type.LIST, mpiPersonList);
-                                } else {
-                                    return new ProcessResult(ProcessResult.Type.EXIT, null);
-                                }
-                            }
-                        }
-
-                    }
-                }
+            String clinicId = basicSearchClinicIdTextField.getText();
+            if (Session.validateClinicId(clinicId)) {
+                Session.getBasicRequestParameters().setClinicId(clinicId);
+                return doBasicSearch(TargetIndex.BOTH);
             } else {
-                //TODO: Add code to handle what happes when the LPI or MPI cannot
-                //contacted
-                return new ProcessResult(ProcessResult.Type.ERROR, null);
+                JOptionPane.showMessageDialog(basicSearchButton, "The Clinic ID: '" + clinicId
+                        + "' you entered is in the wrong format. Please use the format '12345-00001' for "
+                        + "Universal Clinic IDs and '00001/2005' for Local Clinic IDs",
+                        "OEC Reception Software", JOptionPane.WARNING_MESSAGE);
+                basicSearchClinicIdTextField.requestFocus();
+                return new ProcessResult(ProcessResult.Type.ABORT, null);
             }
         }
 
@@ -1710,7 +1934,7 @@ public class MainView extends FrameView {
                 bindingGroup.bind();
                 searchResultsTable.repaint();
             } else if (processResult.getType() == ProcessResult.Type.NEXT) {
-                showFingerprintDialog();
+                showFingerprintDialogBasic();
             } else if (processResult.getType() == ProcessResult.Type.EXIT) {
                 cardLayout.show(wizardPanel, "extendedSearchCard");
             }
@@ -1718,43 +1942,48 @@ public class MainView extends FrameView {
     }
 
     @Action
-    public void refuseFingerprinting() {
-        if (basicSearchClientRefusesCheckBox.isSelected()) {
-            showFingerprintImage(refusedFingerprint);
-            session.getBasicSearchParameters().setFingerprintList(new ArrayList<Fingerprint>());
-            session.setNonFingerprint(true);
-        } else {
-            showFingerprintImage(fingerprintNotTaken);
-            session.setNonFingerprint(false);
-        }
+    public Task searchExtended() {
+        return new SearchExtendedTask(getApplication());
     }
 
-    @Action
-    public Task test() {
-        return new TestTask(getApplication());
-    }
+    private class SearchExtendedTask extends org.jdesktop.application.Task<Object, Void> {
 
-    private class TestTask extends org.jdesktop.application.Task<Object, Void> {
-
-        TestTask(org.jdesktop.application.Application app) {
-            // Runs on the EDT.  Copy GUI state that
-            // doInBackground() depends on from parameters
-            // to TestTask fields, here.
+        SearchExtendedTask(org.jdesktop.application.Application app) {
             super(app);
         }
 
         @Override
         protected Object doInBackground() {
-            // Your Task's code here.  This method runs
-            // on a background thread, so don't reference
-            // the Swing GUI from here.
-            return null;  // return your result
+            Session.getExtendedRequestParameters().getBasicRequestParameters().setClinicId(extendedSearchClinicIdTextField.getText());
+            Session.getExtendedRequestParameters().getBasicRequestParameters().setClinicName(extendedSearchClinicNameTextField.getText());
+            Session.getExtendedRequestParameters().setFirstName(extendedSearchFirstNameTextField.getText());
+            Session.getExtendedRequestParameters().setMiddleName(extendedSearchMiddleNameTextField.getText());
+            Session.getExtendedRequestParameters().setLastName(extendedSearchLastNameTextField.getText());
+            if (extendedSearchMaleRadioButton.isSelected()) {
+                Session.getExtendedRequestParameters().setSex(Person.Sex.M);
+            } else if (extendedSearchFemaleRadioButton.isSelected()) {
+                Session.getExtendedRequestParameters().setSex(Person.Sex.F);
+            }
+            Session.getExtendedRequestParameters().setBirthdate(extendedSearchBirthdateChooser.getDate());
+            Session.getExtendedRequestParameters().setVillageName(basicSearchClinicIdTextField.getText());
+            return doExtendedSearch(TargetIndex.BOTH);
         }
 
         @Override
         protected void succeeded(Object result) {
-            // Runs on the EDT.  Update the GUI based on
-            // the result computed by doInBackground().
+            ProcessResult processResult = (ProcessResult) result;
+            if (processResult.getType() == ProcessResult.Type.LIST) {
+                cardLayout.show(wizardPanel, "searchResultsCard");
+                bindingGroup.unbind();
+                searchResultsList.clear();
+                searchResultsList.addAll((List<Person>) processResult.getData());
+                bindingGroup.bind();
+                searchResultsTable.repaint();
+            } else if (processResult.getType() == ProcessResult.Type.NEXT) {
+                showFingerprintDialogExtended();
+            } else if (processResult.getType() == ProcessResult.Type.EXIT) {
+                cardLayout.show(wizardPanel, "reviewCard");
+            }
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1779,6 +2008,8 @@ public class MainView extends FrameView {
     private javax.swing.JButton clinicIdNoButton;
     private javax.swing.JButton clinicIdYesButton;
     private javax.swing.JButton enrolledButton;
+    private com.toedter.calendar.JDateChooser extendedSearchBirthdateChooser;
+    private javax.swing.JLabel extendedSearchBirthdateLabel;
     private javax.swing.JButton extendedSearchButton;
     private javax.swing.JPanel extendedSearchCard;
     private javax.swing.JCheckBox extendedSearchClientRefusesCheckBox;
@@ -1786,14 +2017,14 @@ public class MainView extends FrameView {
     private javax.swing.JTextField extendedSearchClinicIdTextField;
     private javax.swing.JLabel extendedSearchClinicNameLabel;
     private javax.swing.JTextField extendedSearchClinicNameTextField;
-    private com.toedter.calendar.JDateChooser extendedSearchDateOfBirthChooser;
-    private javax.swing.JLabel extendedSearchDateOfBirthLabel;
+    private javax.swing.JRadioButton extendedSearchFemaleRadioButton;
     private ke.go.moh.oec.reception.gui.custom.ImagePanel extendedSearchFingerprintImagePanel;
     private javax.swing.JLabel extendedSearchFingerprintLabel;
     private javax.swing.JLabel extendedSearchFirstNameLabel;
     private javax.swing.JTextField extendedSearchFirstNameTextField;
     private javax.swing.JLabel extendedSearchLastNameLabel;
     private javax.swing.JTextField extendedSearchLastNameTextField;
+    private javax.swing.JRadioButton extendedSearchMaleRadioButton;
     private javax.swing.JLabel extendedSearchMiddleNameLabel;
     private javax.swing.JTextField extendedSearchMiddleNameTextField;
     private javax.swing.JPanel extendedSearchPanel;
@@ -1801,7 +2032,6 @@ public class MainView extends FrameView {
     private javax.swing.JButton extendedSearchTakeButton;
     private javax.swing.JLabel extendedSearchVillageLabel;
     private javax.swing.JTextField extendedSearchVillageTextField;
-    private javax.swing.JRadioButton femaleRadioButton;
     private javax.swing.JButton homeButton;
     private javax.swing.JPanel homeCard;
     private javax.swing.JPanel homePanel;
@@ -1897,7 +2127,6 @@ public class MainView extends FrameView {
     private javax.swing.JPanel leftPanel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JSplitPane mainSplitPane;
-    private javax.swing.JRadioButton maleButton;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JButton newButton;
     private javax.swing.JButton notFoundButton;

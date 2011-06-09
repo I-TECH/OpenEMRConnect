@@ -33,25 +33,51 @@ import ke.go.moh.oec.reception.data.RequestParameters;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
+import ke.go.moh.oec.reception.data.TargetIndex;
 
 public class RequestDispatcher {
 
     private static Mediator mediator = new Mediator();
 
-    public static void findCandidates(RequestParameters requestParameters, RequestResult mpiRequestResult, RequestResult lpiRequestResult) {
-        RequestDispatchingThread mpiThread = new RequestDispatchingThread(mediator, requestParameters, RequestTypeId.FIND_PERSON_MPI, mpiRequestResult);
-        RequestDispatchingThread lpiThread = new RequestDispatchingThread(mediator, requestParameters, RequestTypeId.FIND_PERSON_LPI, lpiRequestResult);
-        mpiThread.start();
-        lpiThread.start();
-        try {
-            lpiThread.join();
-            mpiThread.join();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+    public static void findCandidates(RequestParameters requestParameters,
+            RequestResult mpiRequestResult, RequestResult lpiRequestResult, int targetIndex) {
+        RequestDispatchingThread mpiThread = null;
+        RequestDispatchingThread lpiThread = null;
+        if (targetIndex == TargetIndex.BOTH) {
+            mpiThread = new RequestDispatchingThread(
+                    mediator, requestParameters, RequestTypeId.FIND_PERSON_MPI, mpiRequestResult);
+            lpiThread = new RequestDispatchingThread(
+                    mediator, requestParameters, RequestTypeId.FIND_PERSON_LPI, lpiRequestResult);
+            mpiThread.start();
+            lpiThread.start();
+            try {
+                mpiThread.join();
+                lpiThread.join();
+            } catch (Exception e) {
+                System.out.println("Exception while trying to joing thread: " + e.getMessage());
+            }
+        } else if (targetIndex == TargetIndex.MPI) {
+            mpiThread = new RequestDispatchingThread(
+                    mediator, requestParameters, RequestTypeId.FIND_PERSON_MPI, mpiRequestResult);
+            mpiThread.start();
+            try {
+                mpiThread.join();
+            } catch (Exception e) {
+                System.out.println("Exception while trying to joing thread: " + e.getMessage());
+            }
+        } else if (targetIndex == TargetIndex.LPI) {
+            lpiThread = new RequestDispatchingThread(
+                    mediator, requestParameters, RequestTypeId.FIND_PERSON_LPI, lpiRequestResult);
+            lpiThread.start();
+            try {
+                lpiThread.join();
+            } catch (Exception e) {
+                System.out.println("Exception while trying to joing thread: " + e.getMessage());
+            }
         }
     }
 
-    public void modifyPersonInMPI(int requestTypeId) {
+    public void modifyPersonInMPI() {
         modifyPerson(RequestTypeId.MODIFY_PERSON_MPI);
     }
 
