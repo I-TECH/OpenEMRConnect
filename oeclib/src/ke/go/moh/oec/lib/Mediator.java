@@ -247,6 +247,12 @@ public class Mediator implements IService {
             return null;
         }
         /*
+         * If there is a response message type, then set responseExpected to true.
+         * Note that if the message type is createPerson or modifyPerson, this
+         * may be overridden by the caller's desire, below.
+         */
+        m.setResponseExpected(messageType.getResponseMessageType() != null);
+        /*
          * Find the destination address and name. This is usually the default
          * destination for the message type. However if our caller is passing
          * us <code>PersonRequest</code> data, they may choose to explicitly
@@ -267,6 +273,13 @@ public class Mediator implements IService {
                 m.setDestinationName(pr.getDestinationName());
             }
             m.setXml(pr.getXml());
+            if (!pr.isResponseRequested()) {
+                MessageType.TemplateType templateType = messageType.getTemplateType();
+                if (templateType == MessageType.TemplateType.modifyPerson
+                        || templateType == MessageType.TemplateType.modifyPerson) {
+                            m.setResponseExpected(false);
+                }
+            }
         }
         Object returnData = null;
         if (m.getDestinationAddress() == null) {
@@ -345,7 +358,7 @@ public class Mediator implements IService {
          * If we may get a response to this message, add it to the list of responses we are expecting.
          */
         MessagePendingQueue.Entry queueEntry = null;
-        if (messageType.getResponseMessageType() != null) {
+        if (m.isResponseExpected()) {
             queueEntry = pendingQueue.enqueue(m);
         }
         /*
@@ -358,7 +371,7 @@ public class Mediator implements IService {
          * When we get the response, return it to our caller. If there is no
          * response message after a defined timeout period, return failure.
          */
-        if (messageType.getResponseMessageType() != null) {
+        if (m.isResponseExpected()) {
             Message responseMessage = null;
             if (messageSent) {
                 responseMessage = pendingQueue.waitForResponse(queueEntry);
@@ -368,6 +381,8 @@ public class Mediator implements IService {
             MessageType.TemplateType templateType = m.getMessageType().getTemplateType();
             switch (templateType) {
                 case findPerson:
+                case createPersonAccepted:
+                case modifyPersonAccepted:
                     PersonResponse personResponse;
                     if (responseMessage != null) {
                         returnData = responseMessage.getData();

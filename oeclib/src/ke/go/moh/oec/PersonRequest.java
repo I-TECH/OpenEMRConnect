@@ -76,6 +76,12 @@ public class PersonRequest {
      */
     private String matchAlgorithm;
     /**
+     * Does the caller want a response to this message?
+     * This applies to createPerson and modifyPerson requests,
+     * where the response is optional. Default is false.
+     */
+    private boolean responseRequested = false;
+    /**
      * The message in XML form.
      * <p>
      * This can be used to deliver the message to a destination in raw, XML form.
@@ -122,6 +128,14 @@ public class PersonRequest {
 
     public void setRequestReference(String requestReference) {
         this.requestReference = requestReference;
+    }
+
+    public boolean isResponseRequested() {
+        return responseRequested;
+    }
+
+    public void setResponseRequested(boolean responseRequested) {
+        this.responseRequested = responseRequested;
     }
 
     public String getXml() {

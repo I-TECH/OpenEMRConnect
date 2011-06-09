@@ -272,11 +272,12 @@ public class PersonList {
      * 
      * @param PersonRequest person search parameters to be stored
      */
-    public void create(PersonRequest req) {
+    public Object create(PersonRequest req) {
+        PersonResponse returnData = null;
         Person p = req.getPerson();
         if (p == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "CREATE PERSON called with no person data.");
-            return;
+            return returnData;
         }
         Connection conn = Sql.connect();
         ResultSet rs = Sql.query(conn, "select uuid() as uuid");
@@ -334,6 +335,13 @@ public class PersonList {
         this.add(newPer);
         boolean matchFound = false; // Created a person, so no match was found.
         SearchHistory.update(req, matchFound);
+        if (req.isResponseRequested()) {
+            returnData = new PersonResponse();
+            List<Person> returnList = new ArrayList<Person>();
+            returnList.add(p);
+            returnData.setPersonList(returnList);
+        }
+        return returnData;
     }
 
     /**
@@ -341,23 +349,24 @@ public class PersonList {
      * 
      * @param req The modify request.
      */
-    public void modify(PersonRequest req) {
+    public Object modify(PersonRequest req) {
+        PersonResponse returnData = null;
         Person p = req.getPerson();
         if (p == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person data.");
-            return;
+            return returnData;
         }
 
         String personGuid = p.getPersonGuid();
         if (p == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person GUID.");
-            return;
+            return returnData;
         }
 
         PersonMatch oldPer = this.get(personGuid);
         if (oldPer == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON GUID {0} not found.", personGuid);
-            return;
+            return returnData;
         }
 
         int dbPersonId = oldPer.getDbPersonId();
@@ -411,5 +420,12 @@ public class PersonList {
         boolean matchFound = true; // Modified a person, so a match was found.
         SearchHistory.update(req, matchFound);
         Notifier.notify(p);
+        if (req.isResponseRequested()) {
+            returnData = new PersonResponse();
+            List<Person> returnList = new ArrayList<Person>();
+            returnList.add(p);
+            returnData.setPersonList(returnList);
+        }
+        return returnData;
     }
 }

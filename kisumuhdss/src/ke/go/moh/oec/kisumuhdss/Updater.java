@@ -144,12 +144,14 @@ public class Updater {
                 }
             }
             rsDetail.close();
-            updateTransaction(transId, hdssId, rowList);
+            if (updateTransaction(transId, hdssId, rowList)) {
+                
+            }
         }
         rsMaster.close();
     }
 
-    private void updateTransaction(int transId, String hdssId, List<Row> rowList) {
+    private boolean updateTransaction(int transId, String hdssId, List<Row> rowList) {
         Person p = getPersonFromMpi(hdssId);
         int requestTypeId = RequestTypeId.MODIFY_PERSON_MPI;
         if (p == null) {
@@ -278,7 +280,12 @@ public class Updater {
         } else {
             p.setFingerprintList(null); // No need to return exisiting fingerprints.
         }
-        requestMpi(p, requestTypeId);
+        PersonResponse pr = requestMpi(p, requestTypeId);
+        boolean returnStatus = false; // Assume failure for the moment.
+        if (pr != null && pr.isSuccessful()) {
+            returnStatus = true; // We succeeded!
+        }
+        return returnStatus;
     }
 
     private Person getPersonFromMpi(String hdssId) {
@@ -302,6 +309,7 @@ public class Updater {
     private PersonResponse requestMpi(Person p, int requestTypeId) {
         PersonRequest personRequest = new PersonRequest();
         personRequest.setPerson(p);
+        personRequest.setResponseRequested(true); // Always request a response.
         Mediator mediator = Main.getMediator();
         PersonResponse personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
         return personResponse;

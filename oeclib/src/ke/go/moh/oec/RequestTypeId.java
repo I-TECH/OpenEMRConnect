@@ -74,7 +74,11 @@ public class RequestTypeId {
      * <code>requestData</code>: {@link PersonRequest} object, filled
      * with the attribute to assign to the new person.
      * <p>
-     * returns: <code>null</code>
+     * If a response is requested, returns: {@link PersonResponse}
+     * - With one Person object if there was
+     * a response from the MPI, otherwise zero person objects.
+     * <p>
+     * If a response is not requested, returns: <code>null</code>
      */
     public final static int CREATE_PERSON_MPI = 3;
     /**
@@ -87,7 +91,11 @@ public class RequestTypeId {
      * <code>requestData</code>: {@link PersonRequest} object, filled
      * with the attribute to assign to the new person.
      * <p>
-     * returns: <code>null</code>
+     * If a response is requested, returns: {@link PersonResponse}
+     * - With one Person object if there was
+     * a response from the LPI, otherwise zero person objects.
+     * <p>
+     * If a response is not requested, returns: <code>null</code>
      */
     public final static int CREATE_PERSON_LPI = 4;
     /**
@@ -100,7 +108,11 @@ public class RequestTypeId {
      * <code>requestData</code>: {@link PersonRequest} object, filled
      * with the changed attribute(s) to assign to the existing person.
      * <p>
-     * returns: <code>null</code>
+     * If a response is requested, returns: {@link PersonResponse}
+     * - With one Person object if there was
+     * a response from the MPI, otherwise zero person objects.
+     * <p>
+     * If a response is not requested, returns: <code>null</code>
      */
     public final static int MODIFY_PERSON_MPI = 5;
     /**
@@ -113,7 +125,11 @@ public class RequestTypeId {
      * <code>requestData</code>: {@link PersonRequest} object, filled
      * with the changed attribute(s) to assign to the existing person.
      * <p>
-     * returns: <code>null</code>
+     * If a response is requested, returns: {@link PersonResponse}
+     * - With one Person object if there was
+     * a response from the LPI, otherwise zero person objects.
+     * <p>
+     * If a response is not requested, returns: <code>null</code>
      */
     public final static int MODIFY_PERSON_LPI = 6;
     /**

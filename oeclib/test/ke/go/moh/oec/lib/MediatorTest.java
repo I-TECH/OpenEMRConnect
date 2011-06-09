@@ -4,6 +4,8 @@
  */
 package ke.go.moh.oec.lib;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ke.go.moh.oec.RequestTypeId;
 import java.util.List;
 import ke.go.moh.oec.PersonResponse;
@@ -82,7 +84,12 @@ public class MediatorTest {
         pr = (PersonResponse) result;
         assertTrue(pr.isSuccessful());
         assertNull(pr.getPersonList());
-
+        try {
+            Thread.sleep(21 * 1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MediatorTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         // Clan name having 8 matches in the first 100 people
         p.setClanName("KONYANGO");
         result = mediator.getData(RequestTypeId.FIND_PERSON_MPI, requestData);
