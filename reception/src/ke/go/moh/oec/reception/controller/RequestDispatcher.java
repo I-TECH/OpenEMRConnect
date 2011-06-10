@@ -77,27 +77,52 @@ public class RequestDispatcher {
         }
     }
 
-    public void modifyPersonInMPI() {
-        modifyPerson(RequestTypeId.MODIFY_PERSON_MPI);
-    }
+//    public void modifyPersonInMPI() {
+//        modifyPerson(RequestTypeId.MODIFY_PERSON_MPI);
+//    }
+//
+//    public void modifyPersonInLPI() {
+//        modifyPerson(RequestTypeId.MODIFY_PERSON_LPI);
+//    }
 
-    public void modifyPersonInLPI() {
-        modifyPerson(RequestTypeId.MODIFY_PERSON_LPI);
-    }
-
-    public void createPersonInMPI(Person person) {
-        createPerson(RequestTypeId.CREATE_PERSON_MPI);
-    }
-
-    public void createPersonInLPI() {
-        createPerson(RequestTypeId.CREATE_PERSON_LPI);
-    }
-
-    private void modifyPerson(int requestTypeId) {
+//    public void createPersonInMPI(Person person) {
+//        createPerson(RequestTypeId.CREATE_PERSON_MPI);
+//    }
+//
+//    public void createPersonInLPI() {
+//        createPerson(RequestTypeId.CREATE_PERSON_LPI);
+//    }
+    private static void createPerson(RequestParameters requestParameters, int requestTypeId) {
         mediator.getData(requestTypeId, requestTypeId);
+
+        RequestDispatchingThread mpiThread = new RequestDispatchingThread(mediator, requestParameters, RequestTypeId.CREATE_PERSON_MPI);
+        RequestDispatchingThread lpiThread = new RequestDispatchingThread(mediator, requestParameters, RequestTypeId.CREATE_PERSON_LPI);
+
+        mpiThread.start();
+        lpiThread.start();
+
+        try {
+            mpiThread.join();
+            lpiThread.join();
+        } catch (Exception e) {
+            //log this error
+        }
     }
 
-    private void createPerson(int requestTypeId) {
+    private static void modifyPerson(RequestParameters requestParameters, int requestTypeId) {
         mediator.getData(requestTypeId, requestTypeId);
+
+        RequestDispatchingThread mpiThread = new RequestDispatchingThread(mediator, requestParameters, RequestTypeId.MODIFY_PERSON_MPI);
+        RequestDispatchingThread lpiThread = new RequestDispatchingThread(mediator, requestParameters, RequestTypeId.MODIFY_PERSON_LPI);
+
+        mpiThread.start();
+        lpiThread.start();
+
+        try {
+            mpiThread.join();
+            lpiThread.join();
+        } catch (Exception e) {
+            //log this error
+        }
     }
 }

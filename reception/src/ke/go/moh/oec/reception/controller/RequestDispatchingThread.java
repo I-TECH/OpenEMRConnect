@@ -55,6 +55,11 @@ public class RequestDispatchingThread extends Thread {
         this.requestTypeId = requestTypeId;
         this.requestResult = requestResult;
     }
+    //find out why this is needed
+
+    RequestDispatchingThread(Mediator mediator, RequestParameters requestParameters, int CREATE_PERSON_MPI) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
 
     @Override
     public void run() {
@@ -64,6 +69,18 @@ public class RequestDispatchingThread extends Thread {
                 break;
             case RequestTypeId.FIND_PERSON_LPI:
                 findCandidates(requestParameters, requestTypeId);
+                break;
+            case RequestTypeId.CREATE_PERSON_MPI:
+                createPerson(requestParameters, requestTypeId);
+                break;
+            case RequestTypeId.CREATE_PERSON_LPI:
+                createPerson(requestParameters, requestTypeId);
+                break;
+            case RequestTypeId.MODIFY_PERSON_MPI:
+                modifyPerson(requestParameters, requestTypeId);
+                break;
+            case RequestTypeId.MODIFY_PERSON_LPI:
+                modifyPerson(requestParameters, requestTypeId);
                 break;
             default:
                 //TODO: Add code to handle unspecified request types
@@ -159,5 +176,76 @@ public class RequestDispatchingThread extends Thread {
         } else {
             requestResult.setReturnCode(RequestResult.FAILURE);
         }
+    }
+
+    private void createPerson(RequestParameters createPersonParameters, int requestTypeId) {
+        PersonRequest personRequest = new PersonRequest();
+        Person person = new Person();
+        PersonIdentifier personIdentifier = new PersonIdentifier();
+        PersonResponse personResponse = null;
+
+        ComprehensiveRequestParameters comprehensiveRequestParameters = (ComprehensiveRequestParameters) createPersonParameters;
+        person.setFingerprintList(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprintList());
+        person.setFirstName(comprehensiveRequestParameters.getExtendedRequestParameters().getFirstName());
+        person.setMiddleName(comprehensiveRequestParameters.getExtendedRequestParameters().getMiddleName());
+        person.setLastName(comprehensiveRequestParameters.getExtendedRequestParameters().getLastName());
+        person.setSex(comprehensiveRequestParameters.getExtendedRequestParameters().getSex());
+        person.setBirthdate(comprehensiveRequestParameters.getExtendedRequestParameters().getBirthdate());
+        person.setVillageName(comprehensiveRequestParameters.getExtendedRequestParameters().getVillageName());
+
+        person.setMothersFirstName(comprehensiveRequestParameters.getMothersFirstName());
+        person.setMothersMiddleName(comprehensiveRequestParameters.getMothersMiddleName());
+        person.setMothersLastName(comprehensiveRequestParameters.getMothersLastName());
+
+        person.setFathersFirstName(comprehensiveRequestParameters.getFathersFirstName());
+        person.setFathersMiddleName(comprehensiveRequestParameters.getFathersMiddleName());
+        person.setFathersLastName(comprehensiveRequestParameters.getFathersLastName());
+
+        person.setMaritalStatus(comprehensiveRequestParameters.getMaritalStatus());
+
+        person.setCompoundHeadFirstName(comprehensiveRequestParameters.getCompoundHeadsFirstName());
+        person.setCompoundHeadMiddleName(comprehensiveRequestParameters.getCompoundHeadsMiddleName());
+        person.setCompoundHeadLastName(comprehensiveRequestParameters.getCompoundHeadsLastName());
+
+        personRequest.setPerson(person);
+        personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
+
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    private void modifyPerson(RequestParameters modifyPersonParameters, int requestTypeId) {
+
+        PersonRequest personRequest = new PersonRequest();
+        Person person = new Person();
+        PersonIdentifier personIdentifier = new PersonIdentifier();
+        PersonResponse personResponse = null;
+
+        ComprehensiveRequestParameters comprehensiveRequestParameters = (ComprehensiveRequestParameters) modifyPersonParameters;
+        person.setFingerprintList(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprintList());
+        person.setFirstName(comprehensiveRequestParameters.getExtendedRequestParameters().getFirstName());
+        person.setMiddleName(comprehensiveRequestParameters.getExtendedRequestParameters().getMiddleName());
+        person.setLastName(comprehensiveRequestParameters.getExtendedRequestParameters().getLastName());
+        person.setSex(comprehensiveRequestParameters.getExtendedRequestParameters().getSex());
+        person.setBirthdate(comprehensiveRequestParameters.getExtendedRequestParameters().getBirthdate());
+        person.setVillageName(comprehensiveRequestParameters.getExtendedRequestParameters().getVillageName());
+
+        person.setMothersFirstName(comprehensiveRequestParameters.getMothersFirstName());
+        person.setMothersMiddleName(comprehensiveRequestParameters.getMothersMiddleName());
+        person.setMothersLastName(comprehensiveRequestParameters.getMothersLastName());
+
+        person.setFathersFirstName(comprehensiveRequestParameters.getFathersFirstName());
+        person.setFathersMiddleName(comprehensiveRequestParameters.getFathersMiddleName());
+        person.setFathersLastName(comprehensiveRequestParameters.getFathersLastName());
+
+        person.setMaritalStatus(comprehensiveRequestParameters.getMaritalStatus());
+
+        person.setCompoundHeadFirstName(comprehensiveRequestParameters.getCompoundHeadsFirstName());
+        person.setCompoundHeadMiddleName(comprehensiveRequestParameters.getCompoundHeadsMiddleName());
+        person.setCompoundHeadLastName(comprehensiveRequestParameters.getCompoundHeadsLastName());
+
+        personRequest.setPerson(person);
+        personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
+
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
