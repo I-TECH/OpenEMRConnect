@@ -35,10 +35,17 @@ public class ImagedFingerprint {
 
     private Fingerprint fingerprint;
     private BufferedImage image;
+    private boolean sent = false;
 
     public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image) {
         this.fingerprint = fingerprint;
         this.image = image;
+    }
+
+    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image, boolean sent) {
+        this.fingerprint = fingerprint;
+        this.image = image;
+        this.sent = sent;
     }
 
     public Fingerprint getFingerprint() {
@@ -57,6 +64,14 @@ public class ImagedFingerprint {
         this.image = image;
     }
 
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -66,7 +81,7 @@ public class ImagedFingerprint {
             return false;
         }
         final ImagedFingerprint other = (ImagedFingerprint) obj;
-        if (this.fingerprint != other.fingerprint && (this.fingerprint == null || !this.fingerprint.equals(other.fingerprint))) {
+        if (this.fingerprint != other.fingerprint && (this.fingerprint == null || !this.fingerprint.getFingerprintType().equals(other.fingerprint.getFingerprintType()))) {
             return false;
         }
         return true;

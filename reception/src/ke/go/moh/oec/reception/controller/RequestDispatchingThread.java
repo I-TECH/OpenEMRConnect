@@ -30,6 +30,7 @@ import ke.go.moh.oec.reception.data.ExtendedRequestParameters;
 import ke.go.moh.oec.reception.data.BasicRequestParameters;
 import java.util.ArrayList;
 import java.util.List;
+import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
@@ -49,7 +50,8 @@ public class RequestDispatchingThread extends Thread {
     private final int requestTypeId;
     private RequestResult requestResult;
 
-    public RequestDispatchingThread(Mediator mediator, RequestParameters requestParameters, int requestTypeId, RequestResult requestResult) {
+    public RequestDispatchingThread(Mediator mediator, RequestParameters requestParameters,
+            int requestTypeId, RequestResult requestResult) {
         this.mediator = mediator;
         this.requestParameters = requestParameters;
         this.requestTypeId = requestTypeId;
@@ -74,52 +76,75 @@ public class RequestDispatchingThread extends Thread {
     private void findCandidates(RequestParameters searchParameters, int requestTypeId) {
         PersonRequest personRequest = new PersonRequest();
         Person person = new Person();
-        PersonIdentifier personIdentifier = new PersonIdentifier();
-        List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
         PersonResponse personResponse = null;
         if (searchParameters.getClass() == BasicRequestParameters.class) {
             BasicRequestParameters basicSearchParameters = (BasicRequestParameters) searchParameters;
             String clinicId = basicSearchParameters.getClinicId();
-            PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
-            if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
-                clinicId = Session.tweakLocalClinicId(clinicId);
+            if (clinicId != null && !clinicId.isEmpty()) {
+                PersonIdentifier personIdentifier = new PersonIdentifier();
+                List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
+                PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
+                if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
+                    clinicId = Session.prependClinicCode(clinicId);
+                }
+                personIdentifier.setIdentifierType(clinicIdType);
+                personIdentifier.setIdentifier(clinicId);
+                personIdentifierList.add(personIdentifier);
+                person.setPersonIdentifierList(personIdentifierList);
             }
-            personIdentifier.setIdentifierType(clinicIdType);
-            personIdentifier.setIdentifier(clinicId);
-            personIdentifierList.add(personIdentifier);
-            person.setPersonIdentifierList(personIdentifierList);
-            person.setFingerprintList(basicSearchParameters.getFingerprintList());
-            //person.setClanName("KONYANGO");
+            if (basicSearchParameters.getFingerprint() != null) {
+                List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
+                fingerprintList.add(basicSearchParameters.getFingerprint());
+                person.setFingerprintList(fingerprintList);
+            }
+            person.setSiteName(basicSearchParameters.getClinicName());
         } else if (searchParameters.getClass() == ExtendedRequestParameters.class) {
             ExtendedRequestParameters extendedSearchParameters = (ExtendedRequestParameters) searchParameters;
             String clinicId = extendedSearchParameters.getBasicRequestParameters().getClinicId();
-            PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
-            if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
-                clinicId = Session.tweakLocalClinicId(clinicId);
+            if (clinicId != null && !clinicId.isEmpty()) {
+                PersonIdentifier personIdentifier = new PersonIdentifier();
+                List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
+                PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
+                if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
+                    clinicId = Session.prependClinicCode(clinicId);
+                }
+                personIdentifier.setIdentifierType(clinicIdType);
+                personIdentifier.setIdentifier(clinicId);
+                personIdentifierList.add(personIdentifier);
+                person.setPersonIdentifierList(personIdentifierList);
             }
-            personIdentifier.setIdentifierType(clinicIdType);
-            personIdentifier.setIdentifier(clinicId);
-            personIdentifierList.add(personIdentifier);
-            person.setPersonIdentifierList(personIdentifierList);
-            person.setFingerprintList(extendedSearchParameters.getBasicRequestParameters().getFingerprintList());
+            if (extendedSearchParameters.getBasicRequestParameters().getFingerprint() != null) {
+                List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
+                fingerprintList.add(extendedSearchParameters.getBasicRequestParameters().getFingerprint());
+                person.setFingerprintList(fingerprintList);
+            }
             person.setFirstName(extendedSearchParameters.getFirstName());
             person.setMiddleName(extendedSearchParameters.getMiddleName());
             person.setLastName(extendedSearchParameters.getLastName());
             person.setSex(extendedSearchParameters.getSex());
             person.setBirthdate(extendedSearchParameters.getBirthdate());
             person.setVillageName(extendedSearchParameters.getVillageName());
+            person.setSiteName(extendedSearchParameters.getBasicRequestParameters().getClinicName());
         } else if (searchParameters.getClass() == ComprehensiveRequestParameters.class) {
             ComprehensiveRequestParameters comprehensiveRequestParameters = (ComprehensiveRequestParameters) searchParameters;
             String clinicId = comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getClinicId();
-            PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
-            if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
-                clinicId = Session.tweakLocalClinicId(clinicId);
+            if (clinicId != null && !clinicId.isEmpty()) {
+                PersonIdentifier personIdentifier = new PersonIdentifier();
+                List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
+                PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
+                if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
+                    clinicId = Session.prependClinicCode(clinicId);
+                }
+                personIdentifier.setIdentifierType(clinicIdType);
+                personIdentifier.setIdentifier(clinicId);
+                personIdentifierList.add(personIdentifier);
+                person.setPersonIdentifierList(personIdentifierList);
             }
-            personIdentifier.setIdentifierType(clinicIdType);
-            personIdentifier.setIdentifier(clinicId);
-            personIdentifierList.add(personIdentifier);
-            person.setPersonIdentifierList(personIdentifierList);
-            person.setFingerprintList(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprintList());
+            if (comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprint() != null) {
+                List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
+                fingerprintList.add(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprint());
+                person.setFingerprintList(fingerprintList);
+            }
             person.setFirstName(comprehensiveRequestParameters.getExtendedRequestParameters().getFirstName());
             person.setMiddleName(comprehensiveRequestParameters.getExtendedRequestParameters().getMiddleName());
             person.setLastName(comprehensiveRequestParameters.getExtendedRequestParameters().getLastName());
@@ -136,17 +161,12 @@ public class RequestDispatchingThread extends Thread {
             person.setCompoundHeadFirstName(comprehensiveRequestParameters.getCompoundHeadsFirstName());
             person.setCompoundHeadMiddleName(comprehensiveRequestParameters.getCompoundHeadsMiddleName());
             person.setCompoundHeadLastName(comprehensiveRequestParameters.getCompoundHeadsLastName());
+            person.setSiteName(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getClinicName());
         }
         personRequest.setPerson(person);
-        try {
-            personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
-        } catch (Exception e) {
-            System.out.println("mediator.getData(requestTypeId, personRequest); Exeption " + e.getMessage());
-            e.printStackTrace();
-        }
+        personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
         if (personResponse != null) {
             if (personResponse.isSuccessful()) {
-                requestResult.setReturnCode(RequestResult.SUCCESS);
                 List<Person> personList = personResponse.getPersonList();
                 if (personList != null) {
                     requestResult.setData(personList);
@@ -154,10 +174,10 @@ public class RequestDispatchingThread extends Thread {
                     requestResult.setData(new ArrayList<Person>());
                 }
             } else {
-                requestResult.setReturnCode(RequestResult.FAILURE);
+                requestResult.setSuccessful(false);
             }
         } else {
-            requestResult.setReturnCode(RequestResult.FAILURE);
+            requestResult.setSuccessful(false);
         }
     }
 }

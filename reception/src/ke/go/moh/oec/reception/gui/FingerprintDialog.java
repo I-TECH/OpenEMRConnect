@@ -30,9 +30,12 @@
 package ke.go.moh.oec.reception.gui;
 
 import com.griaule.grfingerjava.GrFingerJavaException;
+import java.awt.Component;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Fingerprint.TechnologyType;
 import ke.go.moh.oec.Fingerprint.Type;
@@ -52,10 +55,10 @@ public class FingerprintDialog extends javax.swing.JDialog {
 
     public void setSession(Session session) {
         this.session = session;
-        if (Session.getBasicRequestParameters().getFingerprintList() == null) {
+        if (session.getImagedFingerprintList() == null) {
             rightIndexRadioButton.setSelected(true);
         } else {
-            switch (Session.getBasicRequestParameters().getFingerprintList().size() - 1) {
+            switch (session.getImagedFingerprintList().size() - 1) {
                 case -1:
                     rightIndexRadioButton.setSelected(true);
                     break;
@@ -81,14 +84,12 @@ public class FingerprintDialog extends javax.swing.JDialog {
     }
 
     /** Creates new form FingerprintDialog */
-    public FingerprintDialog(java.awt.Frame parent, boolean modal) {
+    public FingerprintDialog(java.awt.Frame parent, boolean modal) throws GrFingerJavaException {
         super(parent, modal);
         initComponents();
         try {
             this.readerManager = new ReaderManager(this);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(FingerprintDialog.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (GrFingerJavaException ex) {
             Logger.getLogger(FingerprintDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -277,15 +278,19 @@ public class FingerprintDialog extends javax.swing.JDialog {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                FingerprintDialog dialog = new FingerprintDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                try {
+                    FingerprintDialog dialog = new FingerprintDialog(new javax.swing.JFrame(), true);
+                    dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+                        @Override
+                        public void windowClosing(java.awt.event.WindowEvent e) {
+                            System.exit(0);
+                        }
+                    });
+                    dialog.setVisible(true);
+                } catch (GrFingerJavaException ex) {
+                    Logger.getLogger(FingerprintDialog.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
@@ -354,7 +359,24 @@ public class FingerprintDialog extends javax.swing.JDialog {
         }
         fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
         fingerPrint.setTemplate(readerManager.getTemplate().getData());
-        session.addImagedFingerprint(new ImagedFingerprint(fingerPrint, fingerprintImagePanel.getImage()));
+        ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, fingerprintImagePanel.getImage(), false);
+        List<ImagedFingerprint> imagedFingerprintList = session.getImagedFingerprintList();
+        if (imagedFingerprintList != null
+                && imagedFingerprintList.contains(imagedFingerprint)) {
+            if (showConfirmMessage("A print has already been taken from the finger you want to"
+                    + " add. Would you like to overwite it?", this)) {
+                imagedFingerprintList.remove(imagedFingerprintList.indexOf(imagedFingerprint));
+                session.addImagedFingerprint(imagedFingerprint);
+                session.setCurrentImagedFingerprint(imagedFingerprint);
+            } else {
+                return;
+            }
+        }
         dispose();
+    }
+
+    public boolean showConfirmMessage(String message, Component parent) {
+        return JOptionPane.showConfirmDialog(this, message, Session.getApplicationName(),
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 }
