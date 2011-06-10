@@ -240,10 +240,10 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="newButton" alignment="0" pref="327" max="32767" attributes="0"/>
-                                          <Component id="visitorButton" alignment="0" pref="327" max="32767" attributes="0"/>
-                                          <Component id="enrolledButton" alignment="0" pref="327" max="32767" attributes="0"/>
-                                          <Component id="transferInButton" alignment="0" pref="327" max="32767" attributes="0"/>
+                                          <Component id="newButton" alignment="0" pref="307" max="32767" attributes="0"/>
+                                          <Component id="visitorButton" alignment="0" pref="307" max="32767" attributes="0"/>
+                                          <Component id="enrolledButton" alignment="0" pref="307" max="32767" attributes="0"/>
+                                          <Component id="transferInButton" alignment="0" pref="307" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -416,7 +416,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="basicSearchPanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="295" max="32767" attributes="0"/>
+                                  <EmptySpace pref="254" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -446,17 +446,24 @@
                                                   <Component id="basicSearchClinicIdLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="basicSearchFingerprintLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="509" max="32767" attributes="0"/>
-                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="509" max="32767" attributes="0"/>
-                                                  <Group type="102" alignment="0" attributes="0">
-                                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                                          <Component id="basicSearchTakeButton" alignment="0" max="32767" attributes="1"/>
-                                                          <Component id="basicSearchFingerprintImagePanel" alignment="0" max="32767" attributes="1"/>
-                                                      </Group>
+                                                  <Group type="102" attributes="0">
                                                       <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="basicSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
+                                                      <Group type="103" groupAlignment="0" attributes="0">
+                                                          <Component id="basicSearchClinicIdTextField" alignment="0" pref="509" max="32767" attributes="0"/>
+                                                          <Component id="basicSearchClinicNameTextField" alignment="0" pref="509" max="32767" attributes="0"/>
+                                                      </Group>
+                                                  </Group>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
+                                                      <Group type="103" groupAlignment="0" attributes="0">
+                                                          <Component id="basicSearchTakeButton" alignment="0" min="-2" max="-2" attributes="1"/>
+                                                          <Group type="102" alignment="0" attributes="0">
+                                                              <Component id="basicSearchFingerprintImagePanel" min="-2" max="-2" attributes="0"/>
+                                                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                                                              <Component id="basicSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
+                                                          </Group>
+                                                      </Group>
                                                   </Group>
                                               </Group>
                                           </Group>
@@ -480,17 +487,13 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="basicSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
-                                                  <Component id="basicSearchFingerprintImagePanel" min="-2" max="-2" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="basicSearchTakeButton" min="-2" max="-2" attributes="0"/>
-                                          </Group>
+                                          <Component id="basicSearchFingerprintLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="basicSearchFingerprintImagePanel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="basicSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="basicSearchTakeButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Component id="basicSearchButton" min="-2" pref="46" max="-2" attributes="0"/>
                                       <EmptySpace max="32767" attributes="0"/>
                                   </Group>
@@ -534,29 +537,6 @@
                                 <Property name="name" type="java.lang.String" value="basicSearchFingerprintLabel" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Container class="ke.go.moh.oec.reception.gui.custom.ImagePanel" name="basicSearchFingerprintImagePanel">
-                              <Properties>
-                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                                    <LineBorder/>
-                                  </Border>
-                                </Property>
-                                <Property name="name" type="java.lang.String" value="basicSearchFingerprintImagePanel" noResource="true"/>
-                              </Properties>
-
-                              <Layout>
-                                <DimensionLayout dim="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="75" max="32767" attributes="0"/>
-                                  </Group>
-                                </DimensionLayout>
-                                <DimensionLayout dim="1">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="74" max="32767" attributes="0"/>
-                                  </Group>
-                                </DimensionLayout>
-                              </Layout>
-                            </Container>
                             <Component class="javax.swing.JCheckBox" name="basicSearchClientRefusesCheckBox">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -587,6 +567,24 @@
                                 <Property name="name" type="java.lang.String" value="basicSearchButton" noResource="true"/>
                               </Properties>
                             </Component>
+                            <Container class="ke.go.moh.oec.reception.gui.custom.ImagePanel" name="basicSearchFingerprintImagePanel">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="ImagePanel" noResource="true"/>
+                              </Properties>
+
+                              <Layout>
+                                <DimensionLayout dim="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="100" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                                <DimensionLayout dim="1">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="100" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                              </Layout>
+                            </Container>
                           </SubComponents>
                         </Container>
                       </SubComponents>
@@ -616,7 +614,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="extendedSearchPanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="144" max="32767" attributes="0"/>
+                                  <EmptySpace pref="106" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -640,15 +638,11 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="extendedSearchButton" alignment="1" pref="567" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                                  <Component id="extendedSearchTakeButton" alignment="0" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchFingerprintImagePanel" alignment="0" min="-2" max="-2" attributes="1"/>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                                              <Component id="extendedSearchFingerprintImagePanel" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace type="separate" max="-2" attributes="0"/>
                                               <Component id="extendedSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
@@ -677,6 +671,12 @@
                                                   <Component id="extendedSearchClinicIdTextField" alignment="0" pref="502" max="32767" attributes="1"/>
                                                   <Component id="extendedSearchBirthdateChooser" alignment="0" pref="502" max="32767" attributes="0"/>
                                               </Group>
+                                          </Group>
+                                          <Component id="extendedSearchButton" alignment="1" pref="567" max="32767" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace min="62" pref="62" max="62" attributes="0"/>
+                                              <Component id="extendedSearchTakeButton" min="-2" max="-2" attributes="1"/>
+                                              <EmptySpace min="93" pref="93" max="93" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -726,16 +726,21 @@
                                           <Component id="extendedSearchVillageLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="extendedSearchVillageTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="extendedSearchFingerprintImagePanel" min="-2" max="-2" attributes="0"/>
+                                          <Group type="102" attributes="0">
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="extendedSearchTakeButton" min="-2" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="3" attributes="0">
+                                                  <Component id="extendedSearchFingerprintLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchClientRefusesCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              </Group>
                                           </Group>
-                                          <Component id="extendedSearchClientRefusesCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
+                                              <Component id="extendedSearchFingerprintImagePanel" min="-2" max="-2" attributes="0"/>
+                                          </Group>
                                       </Group>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="extendedSearchTakeButton" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="extendedSearchButton" min="-2" pref="46" max="-2" attributes="0"/>
                                       <EmptySpace max="32767" attributes="0"/>
@@ -855,29 +860,6 @@
                                 <Property name="name" type="java.lang.String" value="extendedSearchFingerprintLabel" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Container class="ke.go.moh.oec.reception.gui.custom.ImagePanel" name="extendedSearchFingerprintImagePanel">
-                              <Properties>
-                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-                                    <LineBorder/>
-                                  </Border>
-                                </Property>
-                                <Property name="name" type="java.lang.String" value="extendedSearchFingerprintImagePanel" noResource="true"/>
-                              </Properties>
-
-                              <Layout>
-                                <DimensionLayout dim="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="75" max="32767" attributes="0"/>
-                                  </Group>
-                                </DimensionLayout>
-                                <DimensionLayout dim="1">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <EmptySpace min="0" pref="74" max="32767" attributes="0"/>
-                                  </Group>
-                                </DimensionLayout>
-                              </Layout>
-                            </Container>
                             <Component class="javax.swing.JCheckBox" name="extendedSearchClientRefusesCheckBox">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -908,6 +890,24 @@
                                 <Property name="name" type="java.lang.String" value="extendedSearchButton" noResource="true"/>
                               </Properties>
                             </Component>
+                            <Container class="ke.go.moh.oec.reception.gui.custom.ImagePanel" name="extendedSearchFingerprintImagePanel">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="extendedSearchFingerprintImagePanel" noResource="true"/>
+                              </Properties>
+
+                              <Layout>
+                                <DimensionLayout dim="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="100" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                                <DimensionLayout dim="1">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="100" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                              </Layout>
+                            </Container>
                           </SubComponents>
                         </Container>
                       </SubComponents>
@@ -1038,6 +1038,9 @@
                             </Component>
                             <Component class="javax.swing.JButton" name="notFoundButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="showReviewCard" methodName="showReviewCard"/>
+                                </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="notFoundButton.text"/>
                                 <Property name="name" type="java.lang.String" value="notFoundButton" noResource="true"/>
                               </Properties>
