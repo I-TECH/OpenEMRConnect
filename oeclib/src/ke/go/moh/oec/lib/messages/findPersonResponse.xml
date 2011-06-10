@@ -68,6 +68,9 @@
                                 <given>Akero</given> <!-- Middle Name -->
                                 <family>Odhiambo</family> <!-- Last Name -->
                             </name>
+                            <administrativeGenderCode code="F"/> <!-- Gender: "F" or "M" -->
+                            <birthTime value="19630804"/> <!-- Birthdate: "yyyymmdd" -->
+                            <deceasedTime value="20041013"/> <!-- Deathdate: "yyyymmdd" -->
                             <!-- If including a table of household members, then
                                  repeat the following section for each household member.
                                  If not returning a table of household members,
@@ -86,9 +89,6 @@
                                     <birthTime value="198"/> <!-- Birthdate: "yyyymmdd" -->
                                 </person>
                             </personalRelationship>
-                            <administrativeGenderCode code="F"/> <!-- Gender: "F" or "M" -->
-                            <birthTime value="19630804"/> <!-- Birthdate: "yyyymmdd" -->
-                            <deceasedTime value="20041013"/> <!-- Deathdate: "yyyymmdd" -->
                             <id root="1.3.6.1.4.1.150.2474.11.1.4.1" extension="Bebe"/> <!-- OtherName -->
                             <id root="1.3.6.1.4.1.150.2474.11.1.4.2" extension="Omondi"/> <!-- ClanName -->
                             <id root="1.3.6.1.4.1.150.2474.11.1.4.3" extension="1"/> <!-- AliveStatus -->

@@ -46,6 +46,12 @@ public class DateMatch {
     private int yearMonth = 0;
     private int yearMonthDay = 0;
 
+    static { // Make sure that baseDate is always set to Jan 1, 1800.
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(1800, 1, 1);
+        baseDate = calendar.getTimeInMillis();
+    }
+    
     /**
      * Construct a DateMatch from a Date.
      * <p>
@@ -63,7 +69,7 @@ public class DateMatch {
         date = d;
         if (d != null) {
             year = Integer.parseInt(yearFormat.format(d));
-            yearMonth = year * 12 + Integer.parseInt(dayFormat.format(d));
+            yearMonth = year * 12 + Integer.parseInt(monthFormat.format(d));
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(d);
             long time = calendar.getTimeInMillis();
@@ -81,8 +87,6 @@ public class DateMatch {
      */
     synchronized public static void setToday() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(1800, 1, 1);
-        baseDate = calendar.getTimeInMillis();
         calendar.setTime(new Date());
         long todayDate = calendar.getTimeInMillis();
         today = (int) ((todayDate - baseDate) / (24 * 60 * 60 * 1000));
@@ -110,7 +114,7 @@ public class DateMatch {
                 s.addScore(100);
             } else if (yearMonth == dm.yearMonth) {
                 s.addScore(90);
-            } else if (yearMonthDay == dm.yearMonthDay) {
+            } else if (year == dm.year) {
                 s.addScore(80);
             } else {
                 int maxDate = dm.yearMonthDay;

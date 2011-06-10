@@ -373,7 +373,8 @@ class XmlPacker {
                 List<Element> elementList = new ArrayList<Element>();
                 elementList.add(subject); // Always the first element in the list.
                 for (int i = 1; i < personList.size(); i++) { // From 2nd person (index 1) onwards...
-                    elementList.add(packCloneElement(subject));
+                    subject = packCloneElement(subject);
+                    elementList.add(subject); // Add the elements in order to preserve order for debugging/testing
                 }
                 for (int i = 0; i < personList.size(); i++) { // From 1st person (index 0) ondwards...
                     packCandidate(elementList.get(i), personList.get(i));
@@ -1203,11 +1204,11 @@ class XmlPacker {
      * @return <code>String</code> containing the packed date.
      */
     private String packDate(Date date) {
+        String dateString = null;
         if (date != null) {
-            return SIMPLE_DATE_FORMAT.format(date);
-        } else {
-            return null;
+            dateString = SIMPLE_DATE_FORMAT.format(date);
         }
+        return dateString;
     }
 
     /**
@@ -1217,11 +1218,11 @@ class XmlPacker {
      * @return <code>String</code> containing the packed date and time.
      */
     private String packDateTime(Date dateTime) {
+        String dateString = null;
         if (dateTime != null) {
-            return SIMPLE_DATE_TIME_FORMAT.format(dateTime);
-        } else {
-            return null;
+            dateString = SIMPLE_DATE_TIME_FORMAT.format(dateTime);
         }
+        return dateString;
     }
 
     /*

@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,7 +154,8 @@ public class PersonList {
                 + "LEFT OUTER JOIN visit v_one ON v_one.person_id = p.person_id and v_one.visit_type_id = " + Sql.ONE_OFF_VISIT_TYPE_ID + "\n"
                 + "LEFT OUTER JOIN address a_reg ON a_reg.address_id = v_reg.address_id\n"
                 + "LEFT OUTER JOIN address a_one ON a_one.address_id = v_one.address_id\n"
-                + "GROUP BY p.person_id";
+                + "GROUP BY p.person_id\n"
+                + "ORDER BY p.person_id";
         String queryLimitString = Mediator.getProperty("Query.Limit");
         if (queryLimitString != null) {
             sql = sql + "\nLIMIT " + Integer.parseInt(queryLimitString);
@@ -162,6 +164,7 @@ public class PersonList {
         int recordCount = 0;
         try {
             while (rs.next()) {
+                Date d = rs.getDate("birthdate");
                 Person p = new Person();
                 int dbPersonId = rs.getInt("person_id");
                 p.setPersonGuid(rs.getString("person_guid"));

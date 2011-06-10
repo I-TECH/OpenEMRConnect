@@ -92,9 +92,12 @@ public class Candidate implements Comparable {
         if (cOther.score != score) {
             return cOther.score - score;
         } else {
+//            String thisGuid = getPersonMatch().getPerson().getPersonGuid();
+//            String otherGuid = cOther.getPersonMatch().getPerson().getPersonGuid();
+//            return thisGuid.compareTo(otherGuid);
             int dbId = getPersonMatch().getDbPersonId();
             int otherDbId = cOther.getPersonMatch().getDbPersonId();
-            return (dbId = otherDbId);
+            return (dbId - otherDbId);
         }
     }
 }

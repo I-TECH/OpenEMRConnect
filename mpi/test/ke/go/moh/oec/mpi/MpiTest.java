@@ -4,6 +4,11 @@
  */
 package ke.go.moh.oec.mpi;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.sql.Connection;
 import java.util.List;
 import ke.go.moh.oec.PersonResponse;
@@ -24,6 +29,7 @@ import static org.junit.Assert.*;
 public class MpiTest {
 
     static Mpi mpi = new Mpi(); // Make it static so it won't reinitialize between tests.
+    private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public MpiTest() {
     }
@@ -42,6 +48,30 @@ public class MpiTest {
 
     @After
     public void tearDown() {
+    }
+
+    private String n(String s) { // Protect against nulls for printing.
+        if (s == null) {
+            return "";
+        } else {
+            return s;
+        }
+    }
+
+    private String n(Date d) { // Protect against nulls for printing.
+        if (d == null) {
+            return "";
+        } else {
+            return d.toString();
+        }
+    }
+
+    private String n(Enum e) { // Protect against nulls for printing.
+        if (e == null) {
+            return "";
+        } else {
+            return e.name();
+        }
     }
 
     /**
@@ -79,13 +109,17 @@ public class MpiTest {
         List<Person> pList = pr.getPersonList();
 
         for (Person person : pList) {
-            System.out.println("GUID: " + person.getPersonGuid()
-                    + " NAME: " + person.getFirstName() + " " + person.getMiddleName()
-                    + " " + person.getLastName()
-                    + " CLAN: " + person.getClanName() 
-                    + " FFN: " + person.getFathersFirstName()
-                    + " FMN: " + person.getFathersMiddleName()
-                    + " FLN: " + person.getFathersLastName());
+            System.out.println("guid: " + person.getPersonGuid()
+                    + " score: " + person.getMatchScore()
+                    + " name: " + n(person.getFirstName()) + " " + n(person.getMiddleName()) + " " + n(person.getLastName()) + " [" + n(person.getOtherName()) + "]"
+                    + " sex: " + n(person.getSex())
+                    + " birth/death: " + n(person.getBirthdate()) + "/" + n(person.getDeathdate())
+                    + " clan: " + n(person.getClanName())
+                    + " mother: " + n(person.getMothersFirstName()) + " " + n(person.getMothersMiddleName()) + " " + n(person.getMothersLastName())
+                    + " father: " + n(person.getFathersFirstName()) + " " + n(person.getFathersMiddleName()) + " " + n(person.getFathersLastName())
+                    + " compHead: " + n(person.getCompoundHeadFirstName()) + " " + n(person.getCompoundHeadMiddleName()) + " " + n(person.getCompoundHeadLastName())
+                    + " village: " + n(person.getVillageName())
+                    + " marital: " + n(person.getMaritalStatus()));
         }
 
         assertNotNull(pList);
@@ -94,6 +128,27 @@ public class MpiTest {
         Person p0 = pList.get(0);
         int score = p0.getMatchScore();
         assertEquals(100, score);
+        
+        System.out.println("testFindPerson - Search by birthdate");
+        p = new Person(); // Start fresh
+        p.setBirthdate(parseDate("1933-06-15"));
+        String birthdate = p.getBirthdate().toString();
+        requestData.setPerson(p);
+        result = mpi.getData(requestTypeId, requestData);
+        assertNotNull(result);
+        assertSame(PersonResponse.class, result.getClass());
+        pr = (PersonResponse) result;
+        assertTrue(pr.isSuccessful());
+        assertNotNull(pr.getPersonList());
+        int listSize = pr.getPersonList().size();
+        for (Person q : pr.getPersonList()) {
+            score = q.getMatchScore();
+            Date dq = q.getBirthdate();
+            String ds = dq.toString();
+            ds = dq.toString();
+        }
+
+
     }
 
     /**
@@ -207,4 +262,24 @@ public class MpiTest {
         assertEquals(1, pCount);
 
     }
+    
+        /**
+     * Parses a date and time in MySQL string format into a <code>Date</code>
+     *
+     * @param sDateTime contains date and time
+     * @return the date and time in <code>Date</code> format
+     * Returns null if the date and time string was null.
+     */
+    private Date parseDate(String sDateTime) {
+        Date returnDateTime = null;
+        if (sDateTime != null) {
+            try {
+                returnDateTime = SIMPLE_DATE_TIME_FORMAT.parse(sDateTime);
+            } catch (ParseException ex) {
+                Logger.getLogger(MpiTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return returnDateTime;
+    }
+
 }

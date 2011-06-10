@@ -67,11 +67,12 @@ public class ValueMap {
         return val;
     }
 
-    public static final ValueMap MARITAL_STATUS = new ValueMap(Arrays.asList(
+    public static final ValueMap SEX = new ValueMap(Arrays.asList(
             new Value(Person.Sex.F, "F"),
             new Value(Person.Sex.M, "M")));
     
-    public static final ValueMap SEX = new ValueMap(Arrays.asList(
+    public static final ValueMap MARITAL_STATUS = new ValueMap(Arrays.asList(
+            new Value(Person.MaritalStatus.single, "Single"),
             new Value(Person.MaritalStatus.marriedPolygamous, "Married Polygamous"),
             new Value(Person.MaritalStatus.marriedMonogamous, "Married Monogamous"),
             new Value(Person.MaritalStatus.divorced, "Divorced"),
