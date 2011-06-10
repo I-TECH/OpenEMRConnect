@@ -30,14 +30,8 @@ package ke.go.moh.oec.reception.data;
  */
 public class RequestResult {
 
-    public static final int SUCCESS = 1;
-    public static final int FAILURE = 2;
-    public static final int INDETERMINATE = 3;
-    private int returnCode = INDETERMINATE;
+    private boolean successful = true;
     private Object data;
-
-    public RequestResult() {
-    }
 
     public Object getData() {
         return data;
@@ -47,11 +41,11 @@ public class RequestResult {
         this.data = data;
     }
 
-    public int getReturnCode() {
-        return returnCode;
+    public boolean isSuccessful() {
+        return successful;
     }
 
-    public void setReturnCode(int status) {
-        this.returnCode = status;
+    public void setSuccessful(boolean successful) {
+        this.successful = successful;
     }
 }

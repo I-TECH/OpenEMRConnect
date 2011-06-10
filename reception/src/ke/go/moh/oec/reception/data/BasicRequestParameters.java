@@ -24,8 +24,6 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.data;
 
-import java.util.ArrayList;
-import java.util.List;
 import ke.go.moh.oec.Fingerprint;
 
 /**
@@ -36,10 +34,10 @@ public class BasicRequestParameters implements RequestParameters {
 
     private String clinicId;
     private String clinicName;
-    List<Fingerprint> fingerprintList;
+    Fingerprint fingerprint;
 
     public BasicRequestParameters() {
-        this.fingerprintList = new ArrayList<Fingerprint>();
+        this.fingerprint = new Fingerprint();
     }
 
     public String getClinicId() {
@@ -58,11 +56,11 @@ public class BasicRequestParameters implements RequestParameters {
         this.clinicName = clinicName;
     }
 
-    public List<Fingerprint> getFingerprintList() {
-        return fingerprintList;
+    public Fingerprint getFingerprint() {
+        return fingerprint;
     }
 
-    public void setFingerprintList(List<Fingerprint> fingerprintList) {
-        this.fingerprintList = fingerprintList;
+    public void setFingerprint(Fingerprint fingerprint) {
+        this.fingerprint = fingerprint;
     }
 }

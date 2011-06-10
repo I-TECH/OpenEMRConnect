@@ -27,10 +27,8 @@ package ke.go.moh.oec.reception.controller;
 import ke.go.moh.oec.reception.data.ExtendedRequestParameters;
 import ke.go.moh.oec.reception.data.BasicRequestParameters;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.lib.Mediator;
@@ -49,50 +47,75 @@ public class Session {
         NEW,
         TRANSFER_IN
     }
-    private static CLIENT_TYPE clientType;
-    private static BasicRequestParameters basicRequestParameters = new BasicRequestParameters();
-    private static ExtendedRequestParameters extendedRequestParameters = new ExtendedRequestParameters();
-    private static ComprehensiveRequestParameters comprehensiveRequestParameters = new ComprehensiveRequestParameters();
-    private static BufferedImage currentFingerprintImage = null;
-    private static boolean nonFingerprint = false;
+    private CLIENT_TYPE clientType;
+    private BasicRequestParameters basicRequestParameters = new BasicRequestParameters();
+    private ExtendedRequestParameters extendedRequestParameters = new ExtendedRequestParameters();
+    private ComprehensiveRequestParameters comprehensiveRequestParameters = new ComprehensiveRequestParameters();
+    private List<ImagedFingerprint> imagedFingerprintList = new ArrayList<ImagedFingerprint>();
+    private ImagedFingerprint currentImagedFingerprint = null;
+    private boolean nonFingerprint = false;
+    private boolean knownClinicId = false;
+
+    public Session(CLIENT_TYPE clientType) {
+        this.clientType = clientType;
+        if (this.clientType == CLIENT_TYPE.NEW) {
+            this.knownClinicId = false;
+        }
+    }
 
     public Session() {
     }
 
-    public Session(CLIENT_TYPE clientType) {
-        Session.clientType = clientType;
-    }
-
-    public static BasicRequestParameters getBasicRequestParameters() {
+    public BasicRequestParameters getBasicRequestParameters() {
         return basicRequestParameters;
     }
 
-    public static CLIENT_TYPE getClientType() {
+    public CLIENT_TYPE getClientType() {
         return clientType;
     }
 
-    public static void setClientType(CLIENT_TYPE clientType) {
-        Session.clientType = clientType;
-    }
-
-    public static ComprehensiveRequestParameters getComprehensiveRequestParameters() {
+    public ComprehensiveRequestParameters getComprehensiveRequestParameters() {
         return comprehensiveRequestParameters;
     }
 
-    public static ExtendedRequestParameters getExtendedRequestParameters() {
+    public ExtendedRequestParameters getExtendedRequestParameters() {
         return extendedRequestParameters;
     }
 
-    public static boolean isNonFingerprint() {
+    public boolean isNonFingerprint() {
         return nonFingerprint;
     }
 
+    public void setNonFingerprint(boolean nonFingerprint) {
+        this.nonFingerprint = nonFingerprint;
+    }
+
+    public ImagedFingerprint getCurrentImagedFingerprint() {
+        return currentImagedFingerprint;
+    }
+
+    public void setCurrentImagedFingerprint(ImagedFingerprint currentImagedFingerprint) {
+        this.currentImagedFingerprint = currentImagedFingerprint;
+    }
+
+    public List<ImagedFingerprint> getImagedFingerprintList() {
+        return imagedFingerprintList;
+    }
+
+    public boolean hasKnownClinicId() {
+        return knownClinicId;
+    }
+
+    public void setKnownClinicId(boolean knownClinicId) {
+        this.knownClinicId = knownClinicId;
+    }
+
     public void addImagedFingerprint(ImagedFingerprint imagedFingerprint) {
-        if (basicRequestParameters.getFingerprintList() == null) {
-            basicRequestParameters.setFingerprintList(new ArrayList<Fingerprint>());
+        if (imagedFingerprintList == null) {
+            imagedFingerprintList = new ArrayList<ImagedFingerprint>();
         }
-        basicRequestParameters.getFingerprintList().add(imagedFingerprint.getFingerprint());
-        currentFingerprintImage = imagedFingerprint.getImage();
+        currentImagedFingerprint = imagedFingerprint;
+        imagedFingerprintList.add(imagedFingerprint);
     }
 
     public boolean hasAllFingerprintsTaken() {
@@ -100,24 +123,22 @@ public class Session {
         if (nonFingerprint) {
             allFingerprintsTaken = true;
         } else {
-            if (basicRequestParameters.getFingerprintList() != null
-                    && basicRequestParameters.getFingerprintList().size() > 5) {
+            if (imagedFingerprintList != null
+                    && imagedFingerprintList.size() > 5) {
                 allFingerprintsTaken = true;
             }
         }
         return allFingerprintsTaken;
     }
 
-    public void setNonFingerprint(boolean nonFingerprint) {
-        Session.nonFingerprint = nonFingerprint;
-    }
-
-    public static BufferedImage getCurrentFingerprintImage() {
-        return currentFingerprintImage;
-    }
-
-    public static void setCurrentFingerprintImage(BufferedImage currentFingerprintImage) {
-        Session.currentFingerprintImage = currentFingerprintImage;
+    public List<ImagedFingerprint> getAnyUnsentFingerprints() {
+        List<ImagedFingerprint> unsentFingerprintList = new ArrayList<ImagedFingerprint>();
+        for (ImagedFingerprint imagedFingerprint : imagedFingerprintList) {
+            if (!imagedFingerprint.isSent()) {
+                unsentFingerprintList.add(imagedFingerprint);
+            }
+        }
+        return unsentFingerprintList;
     }
 
     public static boolean checkPersonListForFingerprintCandidates(List<Person> personList) {
@@ -164,10 +185,19 @@ public class Session {
         return deducePersonIdentifierType(clinicId) != PersonIdentifier.Type.indeterminate;
     }
 
-    public static String tweakLocalClinicId(String clinicId) {
-        if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
-            clinicId = Mediator.getProperty("Instance.FacilityCode") + "-" + clinicId;
+    public static String prependClinicCode(String clinicId) {
+        String clinicCode = Mediator.getProperty("Instance.FacilityCode");
+        if (clinicCode != null) {
+            clinicId = clinicCode + "-" + clinicId;
         }
         return clinicId;
+    }
+
+    public static String getApplicationName() {
+        String instanceName = Mediator.getProperty("Instance.Name");
+        if (instanceName == null) {
+            instanceName = "OEC Clinic Reception Software";
+        }
+        return instanceName;
     }
 }
