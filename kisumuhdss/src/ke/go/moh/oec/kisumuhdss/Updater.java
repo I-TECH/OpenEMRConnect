@@ -340,7 +340,7 @@ public class Updater {
         PersonRequest personRequest = new PersonRequest();
         personRequest.setPerson(p);
         personRequest.setResponseRequested(true); // Always request a response.
-        Mediator mediator = Main.getMediator();
+        Mediator mediator = KisumuHdss.getMediator();
         PersonResponse personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
         return personResponse;
     }

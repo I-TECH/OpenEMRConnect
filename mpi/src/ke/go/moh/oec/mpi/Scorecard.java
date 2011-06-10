@@ -67,6 +67,10 @@ public class Scorecard {
         count++;
     }
 
+    public void raiseScore(int addedScore) {
+        this.sum += addedScore;
+    }
+
     public int getScore() {
         if (count != 0) { // Protect against divide by zero.
             return sum / count;

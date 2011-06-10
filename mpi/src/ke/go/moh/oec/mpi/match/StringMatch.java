@@ -43,10 +43,13 @@ public class StringMatch {
         }
     }
 
-    public void score(Scorecard s, StringMatch other) {
+    public int score(Scorecard s, StringMatch other) {
+        int returnScore = 0;
         if (original != null && other.original != null) {
-            s.addScore(stringScore(original, other.original));
+            returnScore = stringScore(original, other.original);
+            s.addScore(returnScore);
         }
+        return returnScore;
     }
 
     public static int stringScore(String s1, String s2) {

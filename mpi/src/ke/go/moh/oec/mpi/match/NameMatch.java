@@ -25,6 +25,9 @@
 package ke.go.moh.oec.mpi.match;
 
 import ke.go.moh.oec.mpi.Scorecard;
+import org.apache.commons.codec.language.DoubleMetaphone;
+import org.apache.commons.codec.language.RefinedSoundex;
+import org.apache.commons.codec.language.Soundex;
 
 /**
  * Represents a name string value for matching.
@@ -40,8 +43,14 @@ import ke.go.moh.oec.mpi.Scorecard;
  */
 public class NameMatch extends StringMatch {
 
+    private static Soundex soundex = new Soundex();
+    private static RefinedSoundex refinedSoundex = new RefinedSoundex();
+    private static DoubleMetaphone doubleMetaphone = new DoubleMetaphone();
+
     /** (modified) Soundex */
-    private String soundex = null;
+    private String soundexValue = null;
+    /** (modified) Soundex */
+    private String refinedSoundexValue = null;
     /** Metaphone result 1 */
     private String metaphone1 = null;
     /** Metaphone result 2 */
@@ -62,7 +71,13 @@ public class NameMatch extends StringMatch {
      */
     public NameMatch(String original) {
         super(original);
-        //TODO: Set soundex, metaphone1, metaphone2.
+        if (original != null) {
+            String modifiedOriginal = "A" + original;
+            soundexValue = soundex.encode(modifiedOriginal);
+            refinedSoundexValue = refinedSoundex.encode(modifiedOriginal);
+            metaphone1 = doubleMetaphone.doubleMetaphone(original);
+            metaphone2 = doubleMetaphone.doubleMetaphone(original, true);
+        }
     }
 
     /**
@@ -71,7 +86,10 @@ public class NameMatch extends StringMatch {
      * @param m The other name to match against.
      */
     public void score(Scorecard s, NameMatch m) {
-        super.score(s, m);
+        int superScore = super.score(s, m);
+        if (superScore < 100) {
+            
+        }
         //TODO: Test soundex, metaphone1, metaphone2.
     }
 }

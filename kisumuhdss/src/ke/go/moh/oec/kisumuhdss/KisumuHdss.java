@@ -33,7 +33,7 @@ import ke.go.moh.oec.lib.Mediator;
  *
  * @author EWere
  */
-public class Main {
+public class KisumuHdss {
 
     private static Mediator mediator = new Mediator();
 
@@ -52,7 +52,7 @@ public class Main {
         try {
             Class.forName(driverName).newInstance();
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+            Logger.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE,
                     "Can''t load JDBC driver " + driverName, ex);
             System.exit(1);
         }
@@ -64,9 +64,9 @@ public class Main {
                 updater.updateAllTransactions();
                 Thread.sleep(10 * 1000);
             } catch (SQLException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

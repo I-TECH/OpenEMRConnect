@@ -46,37 +46,37 @@ public class PersonMatch {
     /** Database person_id (primary key) for this person */
     private int DbPersonId;
     /** A person's first (or given) name. */
-    private StringMatch firstNameMatch;
+    private NameMatch firstNameMatch;
     /** The person's date of birth. */
     private DateMatch birthdateMatch;
     /** A person's middle (Luo: juok) name. */
-    private StringMatch middleNameMatch;
+    private NameMatch middleNameMatch;
     /** A person's last (or family) name. */
-    private StringMatch lastNameMatch;
+    private NameMatch lastNameMatch;
     /** Any other name by which a person is commonly known. */
-    private StringMatch otherNameMatch;
+    private NameMatch otherNameMatch;
     /** The name of the clan to which a person belongs. */
-    private StringMatch clanNameMatch;
+    private NameMatch clanNameMatch;
     /** The first (or given) name of the person's mother. */
-    private StringMatch mothersFirstNameMatch;
+    private NameMatch mothersFirstNameMatch;
     /** The middle (Luo: juok) name of the person's mother. */
-    private StringMatch mothersMiddleNameMatch;
+    private NameMatch mothersMiddleNameMatch;
     /** The last (or family) name of the person's mother. */
-    private StringMatch mothersLastNameMatch;
+    private NameMatch mothersLastNameMatch;
     /** The first (or given) name of the person's father. */
-    private StringMatch fathersFirstNameMatch;
+    private NameMatch fathersFirstNameMatch;
     /** The middle (Luo: juok) name of the person's father. */
-    private StringMatch fathersMiddleNameMatch;
+    private NameMatch fathersMiddleNameMatch;
     /** The last (or family) name of the person's father. */
-    private StringMatch fathersLastNameMatch;
+    private NameMatch fathersLastNameMatch;
     /** The first (or given) name of the head of the person's compound. */
-    private StringMatch compoundHeadFirstNameMatch;
+    private NameMatch compoundHeadFirstNameMatch;
     /** The middle (Luo: juok) name of the head of the person's compound. */
-    private StringMatch compoundHeadMiddleNameMatch;
+    private NameMatch compoundHeadMiddleNameMatch;
     /** The last (or family) name of the head of the person's compound. */
-    private StringMatch compoundHeadLastNameMatch;
+    private NameMatch compoundHeadLastNameMatch;
     /** The name of the village in which the person lives. */
-    private StringMatch villageNameMatch;
+    private NameMatch villageNameMatch;
     /** A list containing each FingerprintMatch for this person. */
     private List<FingerprintMatch> fingerprintMatchList;
 
@@ -96,21 +96,21 @@ public class PersonMatch {
     public PersonMatch(Person p) {
         person = p;
         birthdateMatch = new DateMatch(p.getBirthdate());
-        firstNameMatch = new StringMatch(p.getFirstName());
-        middleNameMatch = new StringMatch(p.getMiddleName());
-        lastNameMatch = new StringMatch(p.getLastName());
-        otherNameMatch = new StringMatch(p.getOtherName());
-        clanNameMatch = new StringMatch(p.getClanName());
-        mothersFirstNameMatch = new StringMatch(p.getMothersFirstName());
-        mothersMiddleNameMatch = new StringMatch(p.getMothersMiddleName());
-        mothersLastNameMatch = new StringMatch(p.getMothersLastName());
-        fathersFirstNameMatch = new StringMatch(p.getFathersFirstName());
-        fathersMiddleNameMatch = new StringMatch(p.getFathersMiddleName());
-        fathersLastNameMatch = new StringMatch(p.getFathersLastName());
-        compoundHeadFirstNameMatch = new StringMatch(p.getCompoundHeadFirstName());
-        compoundHeadMiddleNameMatch = new StringMatch(p.getCompoundHeadMiddleName());
-        compoundHeadLastNameMatch = new StringMatch(p.getCompoundHeadLastName());
-        villageNameMatch = new StringMatch(p.getVillageName());
+        firstNameMatch = new NameMatch(p.getFirstName());
+        middleNameMatch = new NameMatch(p.getMiddleName());
+        lastNameMatch = new NameMatch(p.getLastName());
+        otherNameMatch = new NameMatch(p.getOtherName());
+        clanNameMatch = new NameMatch(p.getClanName());
+        mothersFirstNameMatch = new NameMatch(p.getMothersFirstName());
+        mothersMiddleNameMatch = new NameMatch(p.getMothersMiddleName());
+        mothersLastNameMatch = new NameMatch(p.getMothersLastName());
+        fathersFirstNameMatch = new NameMatch(p.getFathersFirstName());
+        fathersMiddleNameMatch = new NameMatch(p.getFathersMiddleName());
+        fathersLastNameMatch = new NameMatch(p.getFathersLastName());
+        compoundHeadFirstNameMatch = new NameMatch(p.getCompoundHeadFirstName());
+        compoundHeadMiddleNameMatch = new NameMatch(p.getCompoundHeadMiddleName());
+        compoundHeadLastNameMatch = new NameMatch(p.getCompoundHeadLastName());
+        villageNameMatch = new NameMatch(p.getVillageName());
         if (p.getFingerprintList() != null) {
             List<FingerprintMatch> fml = new ArrayList<FingerprintMatch>();
             for (Fingerprint f : p.getFingerprintList()) {
@@ -140,7 +140,7 @@ public class PersonMatch {
         return clanNameMatch;
     }
 
-    public void setClanNameMatch(StringMatch clanNameMatch) {
+    public void setClanNameMatch(NameMatch clanNameMatch) {
         this.clanNameMatch = clanNameMatch;
     }
 
@@ -148,7 +148,7 @@ public class PersonMatch {
         return compoundHeadFirstNameMatch;
     }
 
-    public void setCompoundHeadFirstNameMatch(StringMatch compoundHeadFirstNameMatch) {
+    public void setCompoundHeadFirstNameMatch(NameMatch compoundHeadFirstNameMatch) {
         this.compoundHeadFirstNameMatch = compoundHeadFirstNameMatch;
     }
 
@@ -156,7 +156,7 @@ public class PersonMatch {
         return compoundHeadLastNameMatch;
     }
 
-    public void setCompoundHeadLastNameMatch(StringMatch compoundHeadLastNameMatch) {
+    public void setCompoundHeadLastNameMatch(NameMatch compoundHeadLastNameMatch) {
         this.compoundHeadLastNameMatch = compoundHeadLastNameMatch;
     }
 
@@ -164,7 +164,7 @@ public class PersonMatch {
         return compoundHeadMiddleNameMatch;
     }
 
-    public void setCompoundHeadMiddleNameMatch(StringMatch compoundHeadMiddleNameMatch) {
+    public void setCompoundHeadMiddleNameMatch(NameMatch compoundHeadMiddleNameMatch) {
         this.compoundHeadMiddleNameMatch = compoundHeadMiddleNameMatch;
     }
 
@@ -172,7 +172,7 @@ public class PersonMatch {
         return fathersFirstNameMatch;
     }
 
-    public void setFathersFirstNameMatch(StringMatch fathersFirstNameMatch) {
+    public void setFathersFirstNameMatch(NameMatch fathersFirstNameMatch) {
         this.fathersFirstNameMatch = fathersFirstNameMatch;
     }
 
@@ -180,7 +180,7 @@ public class PersonMatch {
         return fathersLastNameMatch;
     }
 
-    public void setFathersLastNameMatch(StringMatch fathersLastNameMatch) {
+    public void setFathersLastNameMatch(NameMatch fathersLastNameMatch) {
         this.fathersLastNameMatch = fathersLastNameMatch;
     }
 
@@ -188,7 +188,7 @@ public class PersonMatch {
         return fathersMiddleNameMatch;
     }
 
-    public void setFathersMiddleNameMatch(StringMatch fathersMiddleNameMatch) {
+    public void setFathersMiddleNameMatch(NameMatch fathersMiddleNameMatch) {
         this.fathersMiddleNameMatch = fathersMiddleNameMatch;
     }
 
@@ -204,7 +204,7 @@ public class PersonMatch {
         return firstNameMatch;
     }
 
-    public void setFirstNameMatch(StringMatch firstNameMatch) {
+    public void setFirstNameMatch(NameMatch firstNameMatch) {
         this.firstNameMatch = firstNameMatch;
     }
 
@@ -212,7 +212,7 @@ public class PersonMatch {
         return lastNameMatch;
     }
 
-    public void setLastNameMatch(StringMatch lastNameMatch) {
+    public void setLastNameMatch(NameMatch lastNameMatch) {
         this.lastNameMatch = lastNameMatch;
     }
 
@@ -220,7 +220,7 @@ public class PersonMatch {
         return middleNameMatch;
     }
 
-    public void setMiddleNameMatch(StringMatch middleNameMatch) {
+    public void setMiddleNameMatch(NameMatch middleNameMatch) {
         this.middleNameMatch = middleNameMatch;
     }
 
@@ -228,7 +228,7 @@ public class PersonMatch {
         return mothersFirstNameMatch;
     }
 
-    public void setMothersFirstNameMatch(StringMatch mothersFirstNameMatch) {
+    public void setMothersFirstNameMatch(NameMatch mothersFirstNameMatch) {
         this.mothersFirstNameMatch = mothersFirstNameMatch;
     }
 
@@ -236,7 +236,7 @@ public class PersonMatch {
         return mothersLastNameMatch;
     }
 
-    public void setMothersLastNameMatch(StringMatch mothersLastNameMatch) {
+    public void setMothersLastNameMatch(NameMatch mothersLastNameMatch) {
         this.mothersLastNameMatch = mothersLastNameMatch;
     }
 
@@ -244,7 +244,7 @@ public class PersonMatch {
         return mothersMiddleNameMatch;
     }
 
-    public void setMothersMiddleNameMatch(StringMatch mothersMiddleNameMatch) {
+    public void setMothersMiddleNameMatch(NameMatch mothersMiddleNameMatch) {
         this.mothersMiddleNameMatch = mothersMiddleNameMatch;
     }
 
@@ -252,7 +252,7 @@ public class PersonMatch {
         return otherNameMatch;
     }
 
-    public void setOtherNameMatch(StringMatch otherNameMatch) {
+    public void setOtherNameMatch(NameMatch otherNameMatch) {
         this.otherNameMatch = otherNameMatch;
     }
 
@@ -268,7 +268,7 @@ public class PersonMatch {
         return villageNameMatch;
     }
 
-    public void setVillageNameMatch(StringMatch villageNameMatch) {
+    public void setVillageNameMatch(NameMatch villageNameMatch) {
         this.villageNameMatch = villageNameMatch;
     }
 
