@@ -26,10 +26,12 @@ package ke.go.moh.oec.mpi.match;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.mpi.Scorecard;
+import ke.go.moh.oec.mpi.SiteCandidate;
 
 /**
  * Represents a Person for matching.
@@ -79,6 +81,8 @@ public class PersonMatch {
     private NameMatch villageNameMatch;
     /** A list containing each FingerprintMatch for this person. */
     private List<FingerprintMatch> fingerprintMatchList;
+    /** A list of possible site candidates if the site corresponding to an ID is uncertain. */
+    private Set<SiteCandidate> siteCandidateSet;
 
     /**
      * Construct a PersonMatch from a Person object.
@@ -136,7 +140,7 @@ public class PersonMatch {
         this.birthdateMatch = birthdateMatch;
     }
 
-    public StringMatch getClanNameMatch() {
+    public NameMatch getClanNameMatch() {
         return clanNameMatch;
     }
 
@@ -144,7 +148,7 @@ public class PersonMatch {
         this.clanNameMatch = clanNameMatch;
     }
 
-    public StringMatch getCompoundHeadFirstNameMatch() {
+    public NameMatch getCompoundHeadFirstNameMatch() {
         return compoundHeadFirstNameMatch;
     }
 
@@ -152,7 +156,7 @@ public class PersonMatch {
         this.compoundHeadFirstNameMatch = compoundHeadFirstNameMatch;
     }
 
-    public StringMatch getCompoundHeadLastNameMatch() {
+    public NameMatch getCompoundHeadLastNameMatch() {
         return compoundHeadLastNameMatch;
     }
 
@@ -160,7 +164,7 @@ public class PersonMatch {
         this.compoundHeadLastNameMatch = compoundHeadLastNameMatch;
     }
 
-    public StringMatch getCompoundHeadMiddleNameMatch() {
+    public NameMatch getCompoundHeadMiddleNameMatch() {
         return compoundHeadMiddleNameMatch;
     }
 
@@ -168,7 +172,7 @@ public class PersonMatch {
         this.compoundHeadMiddleNameMatch = compoundHeadMiddleNameMatch;
     }
 
-    public StringMatch getFathersFirstNameMatch() {
+    public NameMatch getFathersFirstNameMatch() {
         return fathersFirstNameMatch;
     }
 
@@ -176,7 +180,7 @@ public class PersonMatch {
         this.fathersFirstNameMatch = fathersFirstNameMatch;
     }
 
-    public StringMatch getFathersLastNameMatch() {
+    public NameMatch getFathersLastNameMatch() {
         return fathersLastNameMatch;
     }
 
@@ -184,7 +188,7 @@ public class PersonMatch {
         this.fathersLastNameMatch = fathersLastNameMatch;
     }
 
-    public StringMatch getFathersMiddleNameMatch() {
+    public NameMatch getFathersMiddleNameMatch() {
         return fathersMiddleNameMatch;
     }
 
@@ -200,7 +204,7 @@ public class PersonMatch {
         this.fingerprintMatchList = fingerprintMatchList;
     }
 
-    public StringMatch getFirstNameMatch() {
+    public NameMatch getFirstNameMatch() {
         return firstNameMatch;
     }
 
@@ -208,7 +212,7 @@ public class PersonMatch {
         this.firstNameMatch = firstNameMatch;
     }
 
-    public StringMatch getLastNameMatch() {
+    public NameMatch getLastNameMatch() {
         return lastNameMatch;
     }
 
@@ -216,7 +220,7 @@ public class PersonMatch {
         this.lastNameMatch = lastNameMatch;
     }
 
-    public StringMatch getMiddleNameMatch() {
+    public NameMatch getMiddleNameMatch() {
         return middleNameMatch;
     }
 
@@ -224,7 +228,7 @@ public class PersonMatch {
         this.middleNameMatch = middleNameMatch;
     }
 
-    public StringMatch getMothersFirstNameMatch() {
+    public NameMatch getMothersFirstNameMatch() {
         return mothersFirstNameMatch;
     }
 
@@ -232,7 +236,7 @@ public class PersonMatch {
         this.mothersFirstNameMatch = mothersFirstNameMatch;
     }
 
-    public StringMatch getMothersLastNameMatch() {
+    public NameMatch getMothersLastNameMatch() {
         return mothersLastNameMatch;
     }
 
@@ -240,7 +244,7 @@ public class PersonMatch {
         this.mothersLastNameMatch = mothersLastNameMatch;
     }
 
-    public StringMatch getMothersMiddleNameMatch() {
+    public NameMatch getMothersMiddleNameMatch() {
         return mothersMiddleNameMatch;
     }
 
@@ -248,7 +252,7 @@ public class PersonMatch {
         this.mothersMiddleNameMatch = mothersMiddleNameMatch;
     }
 
-    public StringMatch getOtherNameMatch() {
+    public NameMatch getOtherNameMatch() {
         return otherNameMatch;
     }
 
@@ -264,7 +268,15 @@ public class PersonMatch {
         this.person = person;
     }
 
-    public StringMatch getVillageNameMatch() {
+    public Set<SiteCandidate> getSiteCandidateSet() {
+        return siteCandidateSet;
+    }
+
+    public void setSiteCandidateSet(Set<SiteCandidate> siteCandidateSet) {
+        this.siteCandidateSet = siteCandidateSet;
+    }
+
+    public NameMatch getVillageNameMatch() {
         return villageNameMatch;
     }
 
@@ -304,7 +316,7 @@ public class PersonMatch {
             compoundHeadMiddleNameMatch.score(s, p.compoundHeadMiddleNameMatch);
             compoundHeadLastNameMatch.score(s, p.compoundHeadLastNameMatch);
             villageNameMatch.score(s, p.villageNameMatch);
-            scorePersonIdentifiers(s, person, p.getPerson());
+            scorePersonIdentifiers(s, p.getPerson());
         }
         return s;
     }
@@ -338,13 +350,22 @@ public class PersonMatch {
      * @param p1 One person identifier list to compare.
      * @param p2 The other person identifier list to compare.
      */
-    private void scorePersonIdentifiers(Scorecard s, Person p1, Person p2) {
-        List<PersonIdentifier> list1 = p1.getPersonIdentifierList();
-        List<PersonIdentifier> list2 = p2.getPersonIdentifierList();
+    private void scorePersonIdentifiers(Scorecard s, Person p) {
+        Person pSearch = this.getPerson();
+        List<PersonIdentifier> list1 = pSearch.getPersonIdentifierList();
+        List<PersonIdentifier> list2 = p.getPersonIdentifierList();
         if (list1 != null && list2 != null) {
             for (PersonIdentifier pi1 : list1) {
                 for (PersonIdentifier pi2 : list2) {
                     if (pi1.getIdentifierType() == pi2.getIdentifierType()) {
+                        if (identifierNeedsSite(pi1)) {
+                            for (SiteCandidate sc : this.getSiteCandidateSet()) {
+                                String identifier = sc.getSitePersonIdentifier();
+                                if (identifier.equals(pi2.getIdentifier())) {
+                                    s.addScore(100);
+                                }
+                            }
+                        }
                         if (pi1.getIdentifier().equals(pi2.getIdentifier())) {
                             s.addScore(100);
                         }
@@ -352,5 +373,15 @@ public class PersonMatch {
                 }
             }
         }
+    }
+    public static boolean identifierNeedsSite(PersonIdentifier pi) {
+        boolean returnValue = false;
+        if (pi.getIdentifierType() == PersonIdentifier.Type.cccLocalId) {
+            String identifier = pi.getIdentifier();
+            if (!identifier.matches("$[0-9]<5>-")) {
+                returnValue = true;
+            }
+        }
+        return returnValue;
     }
 }

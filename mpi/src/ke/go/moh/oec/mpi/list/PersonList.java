@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
@@ -50,6 +51,7 @@ import ke.go.moh.oec.mpi.Notifier;
 import ke.go.moh.oec.mpi.match.PersonMatch;
 import ke.go.moh.oec.mpi.Scorecard;
 import ke.go.moh.oec.mpi.SearchHistory;
+import ke.go.moh.oec.mpi.SiteCandidate;
 import ke.go.moh.oec.mpi.Sql;
 import ke.go.moh.oec.mpi.ValueMap;
 
@@ -68,14 +70,10 @@ public class PersonList {
 
     private List<PersonMatch> personList = new ArrayList<PersonMatch>();
     private Map<String, PersonMatch> personMap = new HashMap<String, PersonMatch>();
+    private SiteList siteList;
 
-    /**
-     * Returns the size of the in-memory person list.
-     * 
-     * @return size of the in-memory person list.
-     */
-    public int size() {
-        return personList.size();
+    public void setSiteList(SiteList siteList) {
+        this.siteList = siteList;
     }
 
     /**
@@ -199,6 +197,7 @@ public class PersonList {
                     Mediator.getLogger(PersonList.class.getName()).log(Level.FINE, "Loaded {0}.", recordCount);
                 }
             }
+            rs.close();
         } catch (SQLException ex) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
@@ -225,6 +224,8 @@ public class PersonList {
         }
         PersonMatch searchTerms = new PersonMatch(p);
         CandidateSet candidateSet = new CandidateSet();
+        Set<SiteCandidate> siteCandidateSet = siteList.findIfNeeded(searchTerms);
+        searchTerms.setSiteCandidateSet(siteCandidateSet);
         DateMatch.setToday();
         if (p.getPersonGuid() != null
                 && (p.getFingerprintList() == null || p.getFingerprintList().isEmpty())) {
@@ -293,6 +294,7 @@ public class PersonList {
         try {
             rs.next();
             guid = rs.getString("uuid");
+            rs.close();
         } catch (SQLException ex) { // Won't happen
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
         }

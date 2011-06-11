@@ -65,6 +65,10 @@ public class StringMatch {
                 score = 100;
             } else {
                 int distance = Levenshtein.damerauLevenshteinDistance(s1, s2);
+                int lengthDiff = Math.abs(s1.length() - s2.length());
+                if (lengthDiff > 2) {
+                    distance -= (lengthDiff - 2);
+                }
                 score = 100 - (20 * distance);
                 if (score < 0) {
                     score = 0;

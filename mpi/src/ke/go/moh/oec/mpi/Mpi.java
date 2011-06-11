@@ -32,6 +32,7 @@ import ke.go.moh.oec.IService;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
+import ke.go.moh.oec.mpi.list.SiteList;
 
 /**
  * Provides Master Patient Index (or Local Patient Index) services.
@@ -40,6 +41,7 @@ import ke.go.moh.oec.lib.Mediator;
  */
 public class Mpi implements IService {
 
+    private SiteList siteList = new SiteList();
     private PersonList personList = new PersonList();
     private static int maxThreadCount = 0;
 
@@ -58,7 +60,9 @@ public class Mpi implements IService {
                     "Can''t load JDBC driver " + driverName, ex);
             System.exit(1);
         }
+        siteList.load();
         personList.load();
+        personList.setSiteList(siteList); // PersonList will (also) need to know about this list.
     }
 
     /**

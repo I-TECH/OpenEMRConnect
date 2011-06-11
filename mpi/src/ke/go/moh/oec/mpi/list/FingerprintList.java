@@ -71,6 +71,7 @@ public class FingerprintList {
                 f.setTechnologyType(technologyType);
                 fingerprintList.add(f);
             }
+            rs.close();
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);

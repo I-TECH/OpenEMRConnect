@@ -4,6 +4,8 @@
  */
 package ke.go.moh.oec.mpi;
 
+import java.util.ArrayList;
+import ke.go.moh.oec.PersonIdentifier;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.text.ParseException;
@@ -80,7 +82,7 @@ public class MpiTest {
 
     private PersonResponse callFindPerson(PersonRequest personRequest) {
         Person p = personRequest.getPerson();
-        System.out.println("Searching for"
+        String log = "Searching for"
                 + searchTerm("guid", p.getPersonGuid())
                 + searchTerm("fname", p.getFirstName())
                 + searchTerm("mname", p.getMiddleName())
@@ -101,7 +103,15 @@ public class MpiTest {
                 + searchTerm("death", n(p.getDeathdate()))
                 + searchTerm("marital", n(p.getMaritalStatus()))
                 + searchTerm("village", p.getVillageName())
-                + searchTerm("clname", p.getCompoundHeadLastName()));
+                + searchTerm("clname", p.getCompoundHeadLastName()
+                + searchTerm("site", p.getSiteName()));
+        List<PersonIdentifier> piList = p.getPersonIdentifierList();
+        if (piList != null) {
+            for (PersonIdentifier pi : piList) {
+                log += " pi(" + pi.getIdentifierType().name() + "): " + pi.getIdentifier();
+            }
+        }
+        System.out.println(log);
         Object result = mpi.getData(RequestTypeId.FIND_PERSON_MPI, personRequest);
         assertNotNull(result);
         assertSame(PersonResponse.class, result.getClass());
@@ -112,7 +122,7 @@ public class MpiTest {
             System.out.println("No persons returned.");
         } else {
             for (Person person : pList) {
-                System.out.println("guid: " + person.getPersonGuid()
+                log = "guid: " + person.getPersonGuid()
                         + " score: " + person.getMatchScore()
                         + " name: " + n(person.getFirstName()) + " " + n(person.getMiddleName()) + " " + n(person.getLastName()) + " [" + n(person.getOtherName()) + "]"
                         + " sex: " + n(person.getSex())
@@ -122,10 +132,20 @@ public class MpiTest {
                         + " father: " + n(person.getFathersFirstName()) + " " + n(person.getFathersMiddleName()) + " " + n(person.getFathersLastName())
                         + " compHead: " + n(person.getCompoundHeadFirstName()) + " " + n(person.getCompoundHeadMiddleName()) + " " + n(person.getCompoundHeadLastName())
                         + " village: " + n(person.getVillageName())
-                        + " marital: " + n(person.getMaritalStatus()));
+                        + " site: " + n(person.getSiteName())
+                        + " marital: " + n(person.getMaritalStatus());
+                piList = person.getPersonIdentifierList();
+                if (piList != null) {
+                    for (PersonIdentifier pi : piList) {
+                        log += " pi(" + pi.getIdentifierType().name() + "): " + pi.getIdentifier();
+                    }
+                }
+                System.out.println(log);
             }
         }
+
         System.out.flush(); // (So debugging printing isn't interspersed with subsequent printing.)
+
         return personResponse;
     }
 
@@ -162,11 +182,37 @@ public class MpiTest {
 
         System.out.println("testFindPerson - Search by birthdate");
         p = new Person(); // Start fresh
-        p.setBirthdate(parseDate("1933-06-15"));
+        p.setBirthdate(parseDate("1986-06-15"));
         String birthdate = p.getBirthdate().toString();
         requestData.setPerson(p);
         pr = callFindPerson(requestData);
         assertNotNull(pr.getPersonList());
+    }
+
+    /**
+     * Test of getData method, of class Mpi.
+     */
+    @Test
+    public void testFindSomePeople() {
+        System.out.println("testFindSomePeople");
+
+        PersonRequest requestData = new PersonRequest();
+        Person p = new Person();
+        requestData.setPerson(p);
+        Object result;
+        PersonResponse pr;
+
+        // Clan name that will not be found
+        PersonIdentifier pi = new PersonIdentifier();
+        pi.setIdentifier("00007/2004");
+        pi.setIdentifierType(PersonIdentifier.Type.cccLocalId);
+        List<PersonIdentifier> piList = new ArrayList<PersonIdentifier>();
+        piList.add(pi);
+        p.setPersonIdentifierList(piList);
+        p.setSiteName("Siaya");
+        requestData.setPerson(p);
+        pr = callFindPerson(requestData);
+        // Inspect for results -- expect results if LPI data.
     }
 
     /**
@@ -212,7 +258,7 @@ public class MpiTest {
         assertNotNull(pList);
         int pCount = pList.size();
         assertEquals(1, pCount);
-        
+
         System.out.println("Exepect a high score: Edit distance = 1 and SOUNDEX Match.");
         p.setMiddleName("Hunan");
         pr = callFindPerson(requestData);
@@ -232,7 +278,7 @@ public class MpiTest {
         System.out.println("Lower score, string completely different (but still other strings matching.)");
         p.setMiddleName("XXXXXXXXX");
         pr = callFindPerson(requestData);
-        
+
     }
 
     /**
@@ -272,22 +318,31 @@ public class MpiTest {
         result = mpi.getData(requestTypeId, requestData);
         assertNull(result); // MODIFY PERSON returns no result object.
 
-        System.out.println("Search for residents of village Eden -- should find none.");
+        System.out.println("Search for residents of village Eden -- should find none at 100%.");
         p = new Person();
         p.setVillageName("Eden");
         requestData.setPerson(p);
         pr = callFindPerson(requestData);
         pList = pr.getPersonList();
-        assertNull(pList);
+        if (pList != null) {
+            for (Person per : pList) {
+                assertTrue(per.getMatchScore() < 100);
+            }
+        }
 
-        System.out.println("Search for residents of village OutOfEden -- should find one.");
+        System.out.println("Search for residents of village OutOfEden -- should find one at 100%.");
         p = new Person();
         p.setVillageName("OutOfEden");
         requestData.setPerson(p);
         pr = callFindPerson(requestData);
         pList = pr.getPersonList();
         assertNotNull(pList);
-        pCount = pList.size();
+        pCount = 0;
+        for (Person per : pList) {
+            if (per.getMatchScore() == 100) {
+                pCount++;
+            }
+        }
         assertEquals(1, pCount);
 
     }

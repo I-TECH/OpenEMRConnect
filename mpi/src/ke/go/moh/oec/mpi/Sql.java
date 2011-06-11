@@ -116,6 +116,7 @@ public class Sql {
         ResultSet rs = query(conn, sql);
         try {
             returnValue = !rs.isAfterLast();
+            rs.close();
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -188,6 +189,7 @@ public class Sql {
             if (rs.next()) {
                 returnId = rs.getString("LAST_INSERT_ID()");
             }
+            rs.close();
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Unexpected error getting LAST_INSERT_ID()", ex);
         }
@@ -215,6 +217,7 @@ public class Sql {
                 if (rs.next()) {
                     returnId = rs.getString(idColumn);
                 }
+                rs.close();
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "getLookupId() error executing query " + sql, ex);
             }
@@ -281,6 +284,7 @@ public class Sql {
                 if (rs.next()) {
                     returnId = Integer.toString(rs.getInt("village_id"));
                 }
+                rs.close();
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Error getting village ID for " + quote(villageName), ex);
             }
@@ -315,6 +319,7 @@ public class Sql {
                 if (rs.next()) {
                     returnId = Integer.toString(rs.getInt("address_id"));
                 }
+                rs.close();
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Error getting address ID for " + quote(address), ex);
             }
