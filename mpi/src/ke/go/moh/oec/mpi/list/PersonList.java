@@ -131,6 +131,7 @@ public class PersonList {
          */
         Connection personConn = Sql.connect();
         Connection listConn = Sql.connect();
+        long startTime = System.currentTimeMillis();
         /*
          * For quick debugging, set queryLimit to a limite number of rows,
          * to avoide loading the entire database. For production uses, set
@@ -202,6 +203,10 @@ public class PersonList {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
+        double timeInterval = (System.currentTimeMillis() - startTime);
+        Mediator.getLogger(PersonList.class.getName()).log(Level.INFO,
+                "Loaded {0} person entries in {1} milliseconds.",
+                new Object[]{personList.size(), timeInterval});
     }
 
     /**
