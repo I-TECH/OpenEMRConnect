@@ -32,10 +32,10 @@ public class ProcessResult {
 
     public enum Type {
 
-        LIST,
-        ERROR,
-        NEXT,
-        EXIT,
+        SHOW_LIST,
+        TAKE_NEXT_FINGERPRINT,
+        JUST_EXIT,
+        UNREACHABLE_INDICES,
         ABORT
     }
     private Type type;

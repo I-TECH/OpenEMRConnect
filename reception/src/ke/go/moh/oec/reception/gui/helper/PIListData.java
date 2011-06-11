@@ -22,15 +22,30 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-cancel.Action.text=
-cancel.Action.shortDescription=
-addFingerprint.Action.text=
-addFingerprint.Action.shortDescription=
-setNotAvailable.Action.shortDescription=
-setNotAvailable.Action.text=
-addUnavailableFingerprint.Action.shortDescription=
-addUnavailableFingerprint.Action.text=
-showExistingFingerprintImage.Action.shortDescription=
-showExistingFingerprintImage.Action.text=
-showTakenFingerprint.Action.text=
-showTakenFingerprint.Action.shortDescription=
+package ke.go.moh.oec.reception.gui.helper;
+
+import java.util.List;
+import ke.go.moh.oec.Person;
+
+/**
+ *
+ * @author Gitahi Ng'ang'a
+ */
+public class PIListData {
+
+    private final int targetIndex;
+    private final List<Person> personList;
+
+    public PIListData(int targetIndex, List<Person> personList) {
+        this.targetIndex = targetIndex;
+        this.personList = personList;
+    }
+
+    public List<Person> getPersonList() {
+        return personList;
+    }
+
+    public int getTargetIndex() {
+        return targetIndex;
+    }
+}

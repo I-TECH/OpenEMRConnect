@@ -24,11 +24,17 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ke.go.moh.oec.reception.data.ExtendedRequestParameters;
 import ke.go.moh.oec.reception.data.BasicRequestParameters;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
 import java.util.ArrayList;
 import java.util.List;
+import javax.imageio.ImageIO;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.lib.Mediator;
@@ -47,7 +53,7 @@ public class Session {
         NEW,
         TRANSFER_IN
     }
-    private CLIENT_TYPE clientType;
+    private static CLIENT_TYPE clientType;
     private BasicRequestParameters basicRequestParameters = new BasicRequestParameters();
     private ExtendedRequestParameters extendedRequestParameters = new ExtendedRequestParameters();
     private ComprehensiveRequestParameters comprehensiveRequestParameters = new ComprehensiveRequestParameters();
@@ -55,10 +61,12 @@ public class Session {
     private ImagedFingerprint currentImagedFingerprint = null;
     private boolean nonFingerprint = false;
     private boolean knownClinicId = false;
+    static BufferedImage missingFingerprintImage = null;
+    static BufferedImage refusedFingerprintImage = null;
 
     public Session(CLIENT_TYPE clientType) {
-        this.clientType = clientType;
-        if (this.clientType == CLIENT_TYPE.NEW) {
+        Session.clientType = clientType;
+        if (Session.clientType == CLIENT_TYPE.NEW) {
             this.knownClinicId = false;
         }
     }
@@ -70,7 +78,7 @@ public class Session {
         return basicRequestParameters;
     }
 
-    public CLIENT_TYPE getClientType() {
+    public static CLIENT_TYPE getClientType() {
         return clientType;
     }
 
@@ -111,9 +119,6 @@ public class Session {
     }
 
     public void addImagedFingerprint(ImagedFingerprint imagedFingerprint) {
-        if (imagedFingerprintList == null) {
-            imagedFingerprintList = new ArrayList<ImagedFingerprint>();
-        }
         currentImagedFingerprint = imagedFingerprint;
         imagedFingerprintList.add(imagedFingerprint);
     }
@@ -141,7 +146,7 @@ public class Session {
         return unsentFingerprintList;
     }
 
-    public static boolean checkPersonListForFingerprintCandidates(List<Person> personList) {
+    public static boolean checkForFingerprintCandidates(List<Person> personList) {
         for (Person person : personList) {
             if (person.isFingerprintMatched()) {
                 return true;
@@ -150,7 +155,7 @@ public class Session {
         return false;
     }
 
-    public static boolean checkPersonListForLinkedCandidates(List<Person> personList) {
+    public static boolean checkForLinkedCandidates(List<Person> personList) {
         for (Person person : personList) {
             for (PersonIdentifier personIdentifier : person.getPersonIdentifierList()) {
                 if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.masterPatientRegistryId) {
@@ -161,7 +166,7 @@ public class Session {
         return false;
     }
 
-    public static PersonIdentifier.Type deducePersonIdentifierType(String personIdentifier) {
+    public static PersonIdentifier.Type deduceIdentifierType(String personIdentifier) {
         PersonIdentifier.Type clinicIdType = PersonIdentifier.Type.indeterminate;
         if (personIdentifier != null && !personIdentifier.isEmpty()) {
             if (personIdentifier.contains("-") && !personIdentifier.contains("/")) {
@@ -182,7 +187,7 @@ public class Session {
     }
 
     public static boolean validateClinicId(String clinicId) {
-        return deducePersonIdentifierType(clinicId) != PersonIdentifier.Type.indeterminate;
+        return deduceIdentifierType(clinicId) != PersonIdentifier.Type.indeterminate;
     }
 
     public static String prependClinicCode(String clinicId) {
@@ -199,5 +204,27 @@ public class Session {
             instanceName = "OEC Clinic Reception Software";
         }
         return instanceName;
+    }
+
+    public static ImagedFingerprint getMissingFingerprint() {
+        if (missingFingerprintImage == null) {
+            try {
+                missingFingerprintImage = ImageIO.read(new File("missing_fingerprint.png"));
+            } catch (IOException ex) {
+                Logger.getLogger(Session.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return new ImagedFingerprint(missingFingerprintImage, true);
+    }
+
+    public static ImagedFingerprint getRefusedFingerprint() {
+        if (refusedFingerprintImage == null) {
+            try {
+                refusedFingerprintImage = ImageIO.read(new File("refused_fingerprint.png"));
+            } catch (IOException ex) {
+                Logger.getLogger(Session.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return new ImagedFingerprint(refusedFingerprintImage, true);
     }
 }

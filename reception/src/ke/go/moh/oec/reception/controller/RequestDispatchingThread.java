@@ -35,7 +35,6 @@ import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
-import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.reception.data.ComprehensiveRequestParameters;
 
@@ -57,128 +56,18 @@ public class RequestDispatchingThread extends Thread {
         this.requestTypeId = requestTypeId;
         this.requestResult = requestResult;
     }
-    //find out why this is needed
-
-    RequestDispatchingThread(Mediator mediator, RequestParameters requestParameters, int CREATE_PERSON_MPI) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
 
     @Override
     public void run() {
-        switch (requestTypeId) {
-            case RequestTypeId.FIND_PERSON_MPI:
-                findCandidates(requestParameters, requestTypeId);
-                break;
-            case RequestTypeId.FIND_PERSON_LPI:
-                findCandidates(requestParameters, requestTypeId);
-                break;
-            case RequestTypeId.CREATE_PERSON_MPI:
-                createPerson(requestParameters, requestTypeId);
-                break;
-            case RequestTypeId.CREATE_PERSON_LPI:
-                createPerson(requestParameters, requestTypeId);
-                break;
-            case RequestTypeId.MODIFY_PERSON_MPI:
-                modifyPerson(requestParameters, requestTypeId);
-                break;
-            case RequestTypeId.MODIFY_PERSON_LPI:
-                modifyPerson(requestParameters, requestTypeId);
-                break;
-            default:
-                //TODO: Add code to handle unspecified request types
-                throw new AssertionError();
-        }
-    }
-
-    private void findCandidates(RequestParameters searchParameters, int requestTypeId) {
         PersonRequest personRequest = new PersonRequest();
         Person person = new Person();
         PersonResponse personResponse = null;
-        if (searchParameters.getClass() == BasicRequestParameters.class) {
-            BasicRequestParameters basicSearchParameters = (BasicRequestParameters) searchParameters;
-            String clinicId = basicSearchParameters.getClinicId();
-            if (clinicId != null && !clinicId.isEmpty()) {
-                PersonIdentifier personIdentifier = new PersonIdentifier();
-                List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-                PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
-                if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
-                    clinicId = Session.prependClinicCode(clinicId);
-                }
-                personIdentifier.setIdentifierType(clinicIdType);
-                personIdentifier.setIdentifier(clinicId);
-                personIdentifierList.add(personIdentifier);
-                person.setPersonIdentifierList(personIdentifierList);
-            }
-            if (basicSearchParameters.getFingerprint() != null) {
-                List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
-                fingerprintList.add(basicSearchParameters.getFingerprint());
-                person.setFingerprintList(fingerprintList);
-            }
-            person.setSiteName(basicSearchParameters.getClinicName());
-        } else if (searchParameters.getClass() == ExtendedRequestParameters.class) {
-            ExtendedRequestParameters extendedSearchParameters = (ExtendedRequestParameters) searchParameters;
-            String clinicId = extendedSearchParameters.getBasicRequestParameters().getClinicId();
-            if (clinicId != null && !clinicId.isEmpty()) {
-                PersonIdentifier personIdentifier = new PersonIdentifier();
-                List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-                PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
-                if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
-                    clinicId = Session.prependClinicCode(clinicId);
-                }
-                personIdentifier.setIdentifierType(clinicIdType);
-                personIdentifier.setIdentifier(clinicId);
-                personIdentifierList.add(personIdentifier);
-                person.setPersonIdentifierList(personIdentifierList);
-            }
-            if (extendedSearchParameters.getBasicRequestParameters().getFingerprint() != null) {
-                List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
-                fingerprintList.add(extendedSearchParameters.getBasicRequestParameters().getFingerprint());
-                person.setFingerprintList(fingerprintList);
-            }
-            person.setFirstName(extendedSearchParameters.getFirstName());
-            person.setMiddleName(extendedSearchParameters.getMiddleName());
-            person.setLastName(extendedSearchParameters.getLastName());
-            person.setSex(extendedSearchParameters.getSex());
-            person.setBirthdate(extendedSearchParameters.getBirthdate());
-            person.setVillageName(extendedSearchParameters.getVillageName());
-            person.setSiteName(extendedSearchParameters.getBasicRequestParameters().getClinicName());
-        } else if (searchParameters.getClass() == ComprehensiveRequestParameters.class) {
-            ComprehensiveRequestParameters comprehensiveRequestParameters = (ComprehensiveRequestParameters) searchParameters;
-            String clinicId = comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getClinicId();
-            if (clinicId != null && !clinicId.isEmpty()) {
-                PersonIdentifier personIdentifier = new PersonIdentifier();
-                List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-                PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
-                if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
-                    clinicId = Session.prependClinicCode(clinicId);
-                }
-                personIdentifier.setIdentifierType(clinicIdType);
-                personIdentifier.setIdentifier(clinicId);
-                personIdentifierList.add(personIdentifier);
-                person.setPersonIdentifierList(personIdentifierList);
-            }
-            if (comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprint() != null) {
-                List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
-                fingerprintList.add(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprint());
-                person.setFingerprintList(fingerprintList);
-            }
-            person.setFirstName(comprehensiveRequestParameters.getExtendedRequestParameters().getFirstName());
-            person.setMiddleName(comprehensiveRequestParameters.getExtendedRequestParameters().getMiddleName());
-            person.setLastName(comprehensiveRequestParameters.getExtendedRequestParameters().getLastName());
-            person.setSex(comprehensiveRequestParameters.getExtendedRequestParameters().getSex());
-            person.setBirthdate(comprehensiveRequestParameters.getExtendedRequestParameters().getBirthdate());
-            person.setVillageName(comprehensiveRequestParameters.getExtendedRequestParameters().getVillageName());
-            person.setMaritalStatus(comprehensiveRequestParameters.getMaritalStatus());
-            person.setFathersFirstName(comprehensiveRequestParameters.getFathersFirstName());
-            person.setFathersMiddleName(comprehensiveRequestParameters.getFathersMiddleName());
-            person.setFathersLastName(comprehensiveRequestParameters.getFathersLastName());
-            person.setMothersFirstName(comprehensiveRequestParameters.getMothersFirstName());
-            person.setMothersMiddleName(comprehensiveRequestParameters.getMothersMiddleName());
-            person.setMothersLastName(comprehensiveRequestParameters.getMothersLastName());
-            person.setCompoundHeadFirstName(comprehensiveRequestParameters.getCompoundHeadsFirstName());
-            person.setCompoundHeadMiddleName(comprehensiveRequestParameters.getCompoundHeadsMiddleName());
-            person.setCompoundHeadLastName(comprehensiveRequestParameters.getCompoundHeadsLastName());
-            person.setSiteName(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getClinicName());
+        if (requestParameters.getClass() == BasicRequestParameters.class) {
+            packageRequestParameters(person, (BasicRequestParameters) requestParameters);
+        } else if (requestParameters.getClass() == ExtendedRequestParameters.class) {
+            packageRequestParameters(person, (ExtendedRequestParameters) requestParameters);
+        } else if (requestParameters.getClass() == ComprehensiveRequestParameters.class) {
+            packageRequestParameters(person, (ComprehensiveRequestParameters) requestParameters);
         }
         personRequest.setPerson(person);
         personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
@@ -198,74 +87,54 @@ public class RequestDispatchingThread extends Thread {
         }
     }
 
-    private void createPerson(RequestParameters createPersonParameters, int requestTypeId) {
-        PersonRequest personRequest = new PersonRequest();
-        Person person = new Person();
-        PersonIdentifier personIdentifier = new PersonIdentifier();
-        PersonResponse personResponse = null;
-
-        ComprehensiveRequestParameters comprehensiveRequestParameters = (ComprehensiveRequestParameters) createPersonParameters;
-        person.setFingerprintList(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprintList());
-        person.setFirstName(comprehensiveRequestParameters.getExtendedRequestParameters().getFirstName());
-        person.setMiddleName(comprehensiveRequestParameters.getExtendedRequestParameters().getMiddleName());
-        person.setLastName(comprehensiveRequestParameters.getExtendedRequestParameters().getLastName());
-        person.setSex(comprehensiveRequestParameters.getExtendedRequestParameters().getSex());
-        person.setBirthdate(comprehensiveRequestParameters.getExtendedRequestParameters().getBirthdate());
-        person.setVillageName(comprehensiveRequestParameters.getExtendedRequestParameters().getVillageName());
-
-        person.setMothersFirstName(comprehensiveRequestParameters.getMothersFirstName());
-        person.setMothersMiddleName(comprehensiveRequestParameters.getMothersMiddleName());
-        person.setMothersLastName(comprehensiveRequestParameters.getMothersLastName());
-
-        person.setFathersFirstName(comprehensiveRequestParameters.getFathersFirstName());
-        person.setFathersMiddleName(comprehensiveRequestParameters.getFathersMiddleName());
-        person.setFathersLastName(comprehensiveRequestParameters.getFathersLastName());
-
-        person.setMaritalStatus(comprehensiveRequestParameters.getMaritalStatus());
-
-        person.setCompoundHeadFirstName(comprehensiveRequestParameters.getCompoundHeadsFirstName());
-        person.setCompoundHeadMiddleName(comprehensiveRequestParameters.getCompoundHeadsMiddleName());
-        person.setCompoundHeadLastName(comprehensiveRequestParameters.getCompoundHeadsLastName());
-
-        personRequest.setPerson(person);
-        personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
-
-        throw new UnsupportedOperationException("Not yet implemented");
+    private Person packageRequestParameters(Person person, BasicRequestParameters basicRequestParameters) {
+        String clinicId = basicRequestParameters.getClinicId();
+        if (clinicId != null && !clinicId.isEmpty()) {
+            PersonIdentifier personIdentifier = new PersonIdentifier();
+            List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
+            PersonIdentifier.Type clinicIdType = Session.deduceIdentifierType(clinicId);
+            if (clinicIdType == PersonIdentifier.Type.cccLocalId
+                    && Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
+                clinicId = Session.prependClinicCode(clinicId);
+            }
+            personIdentifier.setIdentifierType(clinicIdType);
+            personIdentifier.setIdentifier(clinicId);
+            personIdentifierList.add(personIdentifier);
+            person.setPersonIdentifierList(personIdentifierList);
+        }
+        if (basicRequestParameters.getFingerprint() != null) {
+            List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
+            fingerprintList.add(basicRequestParameters.getFingerprint());
+            person.setFingerprintList(fingerprintList);
+        }
+        person.setSiteName(basicRequestParameters.getClinicName());
+        return person;
     }
 
-    private void modifyPerson(RequestParameters modifyPersonParameters, int requestTypeId) {
+    private Person packageRequestParameters(Person person, ExtendedRequestParameters extendedRequestParameters) {
+        packageRequestParameters(person, extendedRequestParameters.getBasicRequestParameters());
+        person.setFirstName(extendedRequestParameters.getFirstName());
+        person.setMiddleName(extendedRequestParameters.getMiddleName());
+        person.setLastName(extendedRequestParameters.getLastName());
+        person.setSex(extendedRequestParameters.getSex());
+        person.setBirthdate(extendedRequestParameters.getBirthdate());
+        person.setVillageName(extendedRequestParameters.getVillageName());
+        return person;
+    }
 
-        PersonRequest personRequest = new PersonRequest();
-        Person person = new Person();
-        PersonIdentifier personIdentifier = new PersonIdentifier();
-        PersonResponse personResponse = null;
-
-        ComprehensiveRequestParameters comprehensiveRequestParameters = (ComprehensiveRequestParameters) modifyPersonParameters;
-        person.setFingerprintList(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprintList());
-        person.setFirstName(comprehensiveRequestParameters.getExtendedRequestParameters().getFirstName());
-        person.setMiddleName(comprehensiveRequestParameters.getExtendedRequestParameters().getMiddleName());
-        person.setLastName(comprehensiveRequestParameters.getExtendedRequestParameters().getLastName());
-        person.setSex(comprehensiveRequestParameters.getExtendedRequestParameters().getSex());
-        person.setBirthdate(comprehensiveRequestParameters.getExtendedRequestParameters().getBirthdate());
-        person.setVillageName(comprehensiveRequestParameters.getExtendedRequestParameters().getVillageName());
-
-        person.setMothersFirstName(comprehensiveRequestParameters.getMothersFirstName());
-        person.setMothersMiddleName(comprehensiveRequestParameters.getMothersMiddleName());
-        person.setMothersLastName(comprehensiveRequestParameters.getMothersLastName());
-
+    private Person packageRequestParameters(Person person, ComprehensiveRequestParameters comprehensiveRequestParameters) {
+        packageRequestParameters(person, comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters());
+        packageRequestParameters(person, comprehensiveRequestParameters.getExtendedRequestParameters());
+        person.setMaritalStatus(comprehensiveRequestParameters.getMaritalStatus());
         person.setFathersFirstName(comprehensiveRequestParameters.getFathersFirstName());
         person.setFathersMiddleName(comprehensiveRequestParameters.getFathersMiddleName());
         person.setFathersLastName(comprehensiveRequestParameters.getFathersLastName());
-
-        person.setMaritalStatus(comprehensiveRequestParameters.getMaritalStatus());
-
+        person.setMothersFirstName(comprehensiveRequestParameters.getMothersFirstName());
+        person.setMothersMiddleName(comprehensiveRequestParameters.getMothersMiddleName());
+        person.setMothersLastName(comprehensiveRequestParameters.getMothersLastName());
         person.setCompoundHeadFirstName(comprehensiveRequestParameters.getCompoundHeadsFirstName());
         person.setCompoundHeadMiddleName(comprehensiveRequestParameters.getCompoundHeadsMiddleName());
         person.setCompoundHeadLastName(comprehensiveRequestParameters.getCompoundHeadsLastName());
-
-        personRequest.setPerson(person);
-        personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
-
-        throw new UnsupportedOperationException("Not yet implemented");
+        return person;
     }
 }

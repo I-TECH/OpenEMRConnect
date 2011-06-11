@@ -131,7 +131,7 @@ public class MpiTest {
         
         System.out.println("testFindPerson - Search by birthdate");
         p = new Person(); // Start fresh
-        p.setBirthdate(parseDate("1933-06-15"));
+        p.setBirthdate(parseDate("1986-06-15"));
         String birthdate = p.getBirthdate().toString();
         requestData.setPerson(p);
         result = mpi.getData(requestTypeId, requestData);
