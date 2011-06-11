@@ -131,7 +131,8 @@ class HttpService {
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
         Mediator.getLogger(HttpService.class.getName()).log(Level.INFO,
-                Mediator.getProperty("Instance.Address") + " listening on port {0}", port);
+                Mediator.getProperty("Instance.Address") + " listening on port {0}",
+                Integer.toString(port)); // (Explicitly convert to string to avoid "," thousands seperator formatting.)
     }
 
     /**

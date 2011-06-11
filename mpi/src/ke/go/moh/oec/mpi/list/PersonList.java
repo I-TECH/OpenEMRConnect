@@ -258,9 +258,9 @@ public class PersonList {
                     Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "Error joining FindPersonThread", ex);
                 }
             }
-            double timeInterval = (System.currentTimeMillis() - startTime) / 1000.0;
+            double timeInterval = (System.currentTimeMillis() - startTime);
             Mediator.getLogger(PersonList.class.getName()).log(Level.INFO,
-                    "Searched {0} entries in {1} seconds.",
+                    "Searched {0} entries in {1} milliseconds.",
                     new Object[]{personMatchCount, timeInterval});
         }
         List<Person> candidateList = candidateSet.export();
@@ -277,7 +277,7 @@ public class PersonList {
      */
     public Object create(PersonRequest req) {
         PersonResponse returnData = null;
-        Person p = req.getPerson();
+        Person p = req.getPerson().clone(); // Clone because we may modify our copy below.
         if (p == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "CREATE PERSON called with no person data.");
             return returnData;
@@ -333,7 +333,7 @@ public class PersonList {
         VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
         VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
         Sql.commit(conn);
-        PersonMatch newPer = new PersonMatch(p);
+        PersonMatch newPer = new PersonMatch(p.clone()); // Clone to protect from unit test modifications.
         newPer.setDbPersonId(dbPersonId);
         this.add(newPer);
         boolean matchFound = false; // Created a person, so no match was found.
