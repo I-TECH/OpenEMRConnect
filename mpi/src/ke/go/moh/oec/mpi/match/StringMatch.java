@@ -40,7 +40,7 @@ public class StringMatch {
 
     public StringMatch(String original) {
         if (original != null) {
-            this.original = original.toLowerCase();
+            this.original = original.toLowerCase().trim();
         }
     }
 
