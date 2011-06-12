@@ -145,7 +145,7 @@ public class MpiTest {
             score = q.getMatchScore();
             Date dq = q.getBirthdate();
             String ds = dq.toString();
-            ds = dq.toString();
+            ds = "DOB: " + dq.toString();
         }
 
 

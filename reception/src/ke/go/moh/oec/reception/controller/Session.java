@@ -57,7 +57,7 @@ public class Session {
     private BasicRequestParameters basicRequestParameters = new BasicRequestParameters();
     private ExtendedRequestParameters extendedRequestParameters = new ExtendedRequestParameters();
     private ComprehensiveRequestParameters comprehensiveRequestParameters = new ComprehensiveRequestParameters();
-    private List<ImagedFingerprint> imagedFingerprintList = new ArrayList<ImagedFingerprint>();
+    private static List<ImagedFingerprint> imagedFingerprintList = new ArrayList<ImagedFingerprint>();
     private ImagedFingerprint currentImagedFingerprint = null;
     private boolean nonFingerprint = false;
     private boolean knownClinicId = false;
@@ -69,9 +69,7 @@ public class Session {
         if (Session.clientType == CLIENT_TYPE.NEW) {
             this.knownClinicId = false;
         }
-    }
-
-    public Session() {
+        imagedFingerprintList = new ArrayList<ImagedFingerprint>();
     }
 
     public BasicRequestParameters getBasicRequestParameters() {
@@ -106,7 +104,7 @@ public class Session {
         this.currentImagedFingerprint = currentImagedFingerprint;
     }
 
-    public List<ImagedFingerprint> getImagedFingerprintList() {
+    public static List<ImagedFingerprint> getImagedFingerprintList() {
         return imagedFingerprintList;
     }
 

@@ -35,6 +35,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Fingerprint.TechnologyType;
@@ -55,7 +56,7 @@ public class FingerprintDialog extends javax.swing.JDialog {
 
     public void setSession(Session session) {
         this.session = session;
-        switch (session.getImagedFingerprintList().size() - 1) {
+        switch (Session.getImagedFingerprintList().size() - 1) {
             case -1:
                 rightIndexRadioButton.setSelected(true);
                 break;
@@ -362,10 +363,15 @@ public class FingerprintDialog extends javax.swing.JDialog {
         } else if (leftRingRadioButton.isSelected()) {
             fingerPrint.setFingerprintType(Type.leftRingFinger);
         }
-        fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
-        fingerPrint.setTemplate(readerManager.getTemplate().getData());
+        try {
+            fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
+            fingerPrint.setTemplate(readerManager.getTemplate().getData());
+        } catch (Exception ex) {
+            showWarningMessage("Please ask the client to place a finger on the reader.", this, fingerprintImagePanel);
+            return;
+        }
         ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, fingerprintImagePanel.getImage(), false);
-        List<ImagedFingerprint> imagedFingerprintList = session.getImagedFingerprintList();
+        List<ImagedFingerprint> imagedFingerprintList = Session.getImagedFingerprintList();
         if (imagedFingerprintList.contains(imagedFingerprint)) {
             if (showConfirmMessage("A print has already been taken from the finger you want to"
                     + " add. Would you like to overwite it?", this)) {
@@ -379,6 +385,11 @@ public class FingerprintDialog extends javax.swing.JDialog {
             session.addImagedFingerprint(imagedFingerprint);
         }
         dispose();
+    }
+
+    private void showWarningMessage(String message, Component parent, JComponent toFocus) {
+        JOptionPane.showMessageDialog(parent, message, Session.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+        toFocus.requestFocus();
     }
 
     public boolean showConfirmMessage(String message, Component parent) {
@@ -405,7 +416,7 @@ public class FingerprintDialog extends javax.swing.JDialog {
         }
         fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
         ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, fingerprintImagePanel.getImage(), false);
-        List<ImagedFingerprint> imagedFingerprintList = session.getImagedFingerprintList();
+        List<ImagedFingerprint> imagedFingerprintList = Session.getImagedFingerprintList();
         if (imagedFingerprintList.contains(imagedFingerprint) || !imagedFingerprint.isPlaceholder()) {
             if (showConfirmMessage("A print has already been taken from the finger you want to"
                     + " add. Would you like to overwite it?", this)) {
@@ -422,7 +433,7 @@ public class FingerprintDialog extends javax.swing.JDialog {
 
     @Action
     public void showTakenFingerprint() {
-        List<ImagedFingerprint> imagedFingerprintList = session.getImagedFingerprintList();
+        List<ImagedFingerprint> imagedFingerprintList = Session.getImagedFingerprintList();
         Fingerprint fingerprint = new Fingerprint();
         if (rightIndexRadioButton.isSelected()) {
             fingerprint.setFingerprintType(Type.rightIndexFinger);
