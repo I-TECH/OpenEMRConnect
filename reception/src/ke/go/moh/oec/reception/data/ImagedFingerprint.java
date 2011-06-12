@@ -36,10 +36,20 @@ public class ImagedFingerprint {
     private Fingerprint fingerprint;
     private BufferedImage image;
     private boolean sent = false;
+    private boolean placeholder = false;
+
+    public ImagedFingerprint(Fingerprint fingerprint) {
+        this.fingerprint = fingerprint;
+    }
 
     public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image) {
         this.fingerprint = fingerprint;
         this.image = image;
+    }
+
+    public ImagedFingerprint(BufferedImage image, boolean placeholder) {
+        this.image = image;
+        this.placeholder = placeholder;
     }
 
     public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image, boolean sent) {
@@ -70,6 +80,10 @@ public class ImagedFingerprint {
 
     public void setSent(boolean sent) {
         this.sent = sent;
+    }
+
+    public boolean isPlaceholder() {
+        return placeholder;
     }
 
     @Override

@@ -33,7 +33,7 @@ import ke.go.moh.oec.Person.Sex;
  */
 public class ExtendedRequestParameters implements RequestParameters {
 
-    public BasicRequestParameters basicRequestParameters;
+    private BasicRequestParameters basicRequestParameters;
     private String firstName;
     private String middleName;
     private String lastName;

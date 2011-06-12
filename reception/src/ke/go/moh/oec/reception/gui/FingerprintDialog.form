@@ -44,7 +44,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="fingerprintPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="14" max="32767" attributes="0"/>
+                  <EmptySpace pref="76" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -65,7 +65,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="fingerprintPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="55" max="32767" attributes="0"/>
+                  <EmptySpace pref="61" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -164,50 +164,62 @@
           <SubComponents>
             <Component class="javax.swing.JRadioButton" name="rightIndexRadioButton">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="showTakenFingerprint" methodName="showTakenFingerprint"/>
+                </Property>
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Right index"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="leftIndexRadioButton">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="showTakenFingerprint" methodName="showTakenFingerprint"/>
+                </Property>
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Left index"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="rightMiddleRadioButton">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="showTakenFingerprint" methodName="showTakenFingerprint"/>
+                </Property>
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Right middle"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="leftMiddleRadioButton">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="showTakenFingerprint" methodName="showTakenFingerprint"/>
+                </Property>
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Left middle"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="rightRingRadioButton">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="showTakenFingerprint" methodName="showTakenFingerprint"/>
+                </Property>
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Right ring"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="leftRingRadioButton">
               <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="showTakenFingerprint" methodName="showTakenFingerprint"/>
+                </Property>
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Left ring"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -243,7 +255,9 @@
         </Component>
         <Component class="javax.swing.JCheckBox" name="notAvailableCheckBox">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Not available"/>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+              <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="addUnavailableFingerprint" methodName="addUnavailableFingerprint"/>
+            </Property>
           </Properties>
         </Component>
       </SubComponents>
@@ -253,7 +267,6 @@
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
           <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="addFingerprint" methodName="addFingerprint"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="OK"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="cancelButton">
@@ -261,7 +274,6 @@
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
           <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="cancel" methodName="cancel"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Cancel"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="statusLabel">

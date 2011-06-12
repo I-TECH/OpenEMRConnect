@@ -187,6 +187,13 @@ public class MpiTest {
         requestData.setPerson(p);
         pr = callFindPerson(requestData);
         assertNotNull(pr.getPersonList());
+        int listSize = pr.getPersonList().size();
+        for (Person q : pr.getPersonList()) {
+            score = q.getMatchScore();
+            Date dq = q.getBirthdate();
+            String ds = dq.toString();
+            ds = "DOB: " + dq.toString();
+        }
     }
 
     /**
