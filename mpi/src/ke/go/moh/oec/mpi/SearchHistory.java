@@ -105,7 +105,7 @@ public class SearchHistory {
                     sql = "INSERT INTO search_history_person_identifier (search_history_id, identifier_type_id, identifier) VALUES (\n"
                             + searchHistoryId + ", "
                             + Sql.quote(dbType) + ", "
-                            + pi.getIdentifier() + ")";
+                            + Sql.quote(pi.getIdentifier()) + ")";
                     try {
                         Sql.execute(conn, sql);
                     } catch (Exception ex) {
