@@ -105,6 +105,7 @@ public class CandidateSet {
             for (Candidate c : candidateSet) {
                 Person p = c.getPersonMatch().getPerson().clone();
                 p.setMatchScore(c.getScore());
+                p.setSiteName(c.getSiteName());
                 p.setFingerprintMatched(c.isFingerprintMatched());
                 personList.add(p);
             }

@@ -445,6 +445,7 @@ class XmlPacker {
         packId(e, OID_EXPECTED_DELIVERY_DATE, packDate(p.getExpectedDeliveryDate()));
         packId(e, OID_PREGNANCY_END_DATE, packDate(p.getPregnancyEndDate()));
         packId(e, OID_PREGNANCY_OUTCOME, packEnum(p.getPregnancyOutcome()));
+        packId(e, OID_SITE_NAME, p.getSiteName());
         packId(e, OID_FINGERPRINT_MATCHED, packBoolean(p.isFingerprintMatched()));
         packVisit(e, p.getLastRegularVisit(), OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE);
         packVisit(e, p.getLastOneOffVisit(), OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE);
@@ -1495,6 +1496,7 @@ class XmlPacker {
         p.setExpectedDeliveryDate(unpackDate(unpackId(e, OID_EXPECTED_DELIVERY_DATE)));
         p.setPregnancyEndDate(unpackDate(unpackId(e, OID_PREGNANCY_END_DATE)));
         p.setPregnancyOutcome((Person.PregnancyOutcome) unpackEnum(Person.PregnancyOutcome.values(), unpackId(e, OID_PREGNANCY_OUTCOME)));
+        p.setSiteName(unpackId(e, OID_SITE_NAME));
         p.setFingerprintMatched(unpackBoolean(unpackId(e, OID_FINGERPRINT_MATCHED)));
         p.setLastRegularVisit(unpackVisit(e, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE));
         p.setLastOneOffVisit(unpackVisit(e, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE));

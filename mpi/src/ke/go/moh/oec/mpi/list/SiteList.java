@@ -98,18 +98,18 @@ public class SiteList {
 
         for (SiteMatch s : siteList) {
             int score = s.computeScore(testNameMatch);
-            System.out.println("Site " + s.getSiteCode() + " " + s.getSiteName() + " score " + score);
+            // System.out.println("Site " + s.getSiteCode() + " " + s.getSiteName() + " score " + score);
             if (score > 0) {
                 if (siteCandidateSet.size() < MAX_SITE_SET_SIZE) {
                     siteCandidateSet.add(new SiteCandidate(s, score, identifier));
-                    System.out.println("---> " + s.getSiteCode() + " " + s.getSiteName() + " score " + score);
+                    // System.out.println("---> " + s.getSiteCode() + " " + s.getSiteName() + " score " + score);
                     if (score < minScore) {
                         minScore = score;
                     }
                 } else if (score > minScore) {
                     siteCandidateSet.remove(siteCandidateSet.last());
                     siteCandidateSet.add(new SiteCandidate(s, score, identifier));
-                    System.out.println("++++ " + s.getSiteCode() + " " + s.getSiteName() + " score " + score);
+                    // System.out.println("++++ " + s.getSiteCode() + " " + s.getSiteName() + " score " + score);
                     minScore = siteCandidateSet.last().getScore();
                 }
             }

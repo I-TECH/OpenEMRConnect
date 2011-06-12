@@ -36,7 +36,7 @@ public class SiteMatch {
     
     public SiteMatch(int siteCode, String siteName) {
         this.siteCode = siteCode;
-        this.siteName = siteName;
+        this.siteName = siteName.trim(); // Just in case.
         this.siteNameMatch = new NameMatch(siteName);
     }
 

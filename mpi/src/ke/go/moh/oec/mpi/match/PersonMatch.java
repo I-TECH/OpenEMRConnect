@@ -363,6 +363,7 @@ public class PersonMatch {
                                 String identifier = sc.getSitePersonIdentifier();
                                 if (identifier.equals(pi2.getIdentifier())) {
                                     s.addScore(100);
+                                    s.setSiteName(sc.getSiteMatch().getSiteName());
                                 }
                             }
                         }

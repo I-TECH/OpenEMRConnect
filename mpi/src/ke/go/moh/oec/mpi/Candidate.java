@@ -37,12 +37,15 @@ public class Candidate implements Comparable {
     private PersonMatch personMatch;
     /** Match score for this candidate. */
     private int score;
+    /** If we did approximate matching on clinic name, which clinic name did we match against? */
+    private String siteName;
     /** Did this candidate have a fingerprint match? */
     private boolean fingerprintMatched;
 
     public Candidate(PersonMatch personMatch, Scorecard s) {
         this.personMatch = personMatch;
         this.score = s.getScore();
+        this.siteName = s.getSiteName();
         this.fingerprintMatched = s.isFingerprintMatched();
     }
 
@@ -56,6 +59,10 @@ public class Candidate implements Comparable {
 
     public int getScore() {
         return score;
+    }
+
+    public String getSiteName() {
+        return siteName;
     }
 
     /**
