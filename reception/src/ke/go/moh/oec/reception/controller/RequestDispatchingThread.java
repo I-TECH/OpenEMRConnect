@@ -88,7 +88,7 @@ public class RequestDispatchingThread extends Thread {
     }
 
     private Person packageRequestParameters(Person person, BasicRequestParameters basicRequestParameters) {
-        String clinicId = basicRequestParameters.getClinicId();
+        String clinicId = basicRequestParameters.getIdentifier();
         if (clinicId != null && !clinicId.isEmpty()) {
             PersonIdentifier personIdentifier = new PersonIdentifier();
             List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();

@@ -59,6 +59,9 @@ public class MainView extends FrameView {
     private List<Person> lpiPersonList = null;
     private boolean mpiShown = false;
     private boolean lpiShown = false;
+    private Person mpiPersonMatch = null;
+    private Person lpiPersonMatch = null;
+    private boolean mpiIdentifierSearchDone;
 
     public MainView(SingleFrameApplication app) {
         super(app);
@@ -1846,6 +1849,12 @@ public class MainView extends FrameView {
     public void goBack() {
         int i = visitedCardList.indexOf(currentCardName);
         if (i > 0) {
+            if (currentCardName.equalsIgnoreCase("mpiResultsCard")) {
+                mpiShown = false;
+            }
+            if (currentCardName.equalsIgnoreCase("lpiResultsCard")) {
+                mpiShown = false;
+            }
             visitedCardList.remove(i);
             if (i == 1) {
                 showCard(visitedCardList.get(i - 1), true);
@@ -2210,7 +2219,7 @@ public class MainView extends FrameView {
                         + "for Local Clinic IDs", basicSearchButton, basicSearchClinicIdTextField);
                 return new ProcessResult(ProcessResult.Type.ABORT, null);
             } else {
-                session.getBasicRequestParameters().setClinicId(clinicId);
+                session.getBasicRequestParameters().setIdentifier(clinicId);
                 if (session.getCurrentImagedFingerprint() != null) {
                     session.getBasicRequestParameters().setFingerprint(session.getCurrentImagedFingerprint().getFingerprint());
                     session.getCurrentImagedFingerprint().setSent(true);
@@ -2265,7 +2274,7 @@ public class MainView extends FrameView {
                         + "for Local Clinic IDs", basicSearchButton, basicSearchClinicIdTextField);
                 return new ProcessResult(ProcessResult.Type.ABORT, null);
             } else {
-                session.getExtendedRequestParameters().getBasicRequestParameters().setClinicId(clinicId);
+                session.getExtendedRequestParameters().getBasicRequestParameters().setIdentifier(clinicId);
                 if (session.getCurrentImagedFingerprint() != null) {
                     session.getExtendedRequestParameters().getBasicRequestParameters().setFingerprint(session.getCurrentImagedFingerprint().getFingerprint());
                     session.getCurrentImagedFingerprint().setSent(true);
@@ -2375,44 +2384,66 @@ public class MainView extends FrameView {
 
     @Action
     public void acceptMPIMatch() {
-        acceptMatch(TargetIndex.MPI);
+        int selectedRow = -1;
+        selectedRow = mpiResultsTable.getSelectedRow();
+        if (selectedRow > -1) {
+            mpiPersonMatch = mpiPersonList.get(selectedRow);
+            if (!lpiShown && lpiPersonList != null
+                    && !lpiPersonList.isEmpty()) {
+                showSearchResults(new PIListData(TargetIndex.LPI, lpiPersonList));
+            } else {
+                populateReviewCards(mpiPersonMatch, lpiPersonMatch);
+                showCard("reviewCard1");
+            }
+        } else {
+            showWarningMessage("Please select a candidate to accept.", mpiAcceptButton, mpiResultsTable);
+        }
     }
 
     @Action
     public void acceptLPIMatch() {
-        acceptMatch(TargetIndex.LPI);
-    }
 
-    private void acceptMatch(int targetIndex) {
         int selectedRow = -1;
-        if (targetIndex == TargetIndex.MPI) {
-            selectedRow = mpiResultsTable.getSelectedRow();
-        } else if (targetIndex == TargetIndex.LPI) {
-            selectedRow = lpiResultsTable.getSelectedRow();
-        }
+        selectedRow = lpiResultsTable.getSelectedRow();
         if (selectedRow > -1) {
-            if (!mpiShown) {
+            lpiPersonMatch = lpiPersonList.get(selectedRow);
+            String mpiIdentifier = Session.getMPIIdentifier(lpiPersonMatch);
+            if (mpiIdentifier != null) {
+                mpiPersonMatch = null;
                 if (mpiPersonList != null && !mpiPersonList.isEmpty()) {
-                    showSearchResults(new PIListData(TargetIndex.MPI, mpiPersonList));
-                } else {
-                    if (targetIndex == TargetIndex.MPI) {
-                        populateReviewCards(mpiSearchResultList.get(selectedRow));
-                    } else if (targetIndex == TargetIndex.LPI) {
-                        populateReviewCards(lpiSearchResultList.get(selectedRow));
+                    for (Person person : mpiPersonList) {
+                        if (person.getPersonGuid().equalsIgnoreCase(mpiIdentifier)) {
+                            mpiPersonMatch = person;
+                            break;
+                        }
                     }
-                    showCard("reviewCard1");
                 }
-            }
-            if (!lpiShown) {
-                if (lpiPersonList != null && !lpiPersonList.isEmpty()) {
-                    showSearchResults(new PIListData(TargetIndex.LPI, lpiPersonList));
-                } else {
-                    if (targetIndex == TargetIndex.MPI) {
-                        populateReviewCards(mpiSearchResultList.get(selectedRow));
-                    } else if (targetIndex == TargetIndex.LPI) {
-                        populateReviewCards(lpiSearchResultList.get(selectedRow));
-                    }
+                if (mpiPersonMatch != null) {
+                    //reset mpiIdentifierSearchDone
+                    mpiIdentifierSearchDone = false;
+                    populateReviewCards(mpiPersonMatch, lpiPersonMatch);
                     showCard("reviewCard1");
+                } else {
+                    //the person is linked but their mpi data is unavailable
+                    //TODO: query mpi again
+                    if (!mpiIdentifierSearchDone) {
+                        session.getBasicRequestParameters().setIdentifier(mpiIdentifier);
+                        doBasicSearch(TargetIndex.MPI);
+                        mpiIdentifierSearchDone = true;
+                    } else {
+                        //reset mpiIdentifierSearchDone
+                        mpiIdentifierSearchDone = false;
+                    }
+                }
+            } else {
+                if (!mpiShown) {
+                    if (mpiPersonList != null
+                            && !mpiPersonList.isEmpty()) {
+                        showSearchResults(new PIListData(TargetIndex.MPI, mpiPersonList));
+                    } else {
+                        populateReviewCards(mpiPersonMatch, lpiPersonMatch);
+                        showCard("reviewCard1");
+                    }
                 }
             }
         } else {
@@ -2420,10 +2451,10 @@ public class MainView extends FrameView {
         }
     }
 
-    private void populateReviewCards(Person person) {
-        if (person.getPersonIdentifierList() != null
-                && !person.getPersonIdentifierList().isEmpty()) {
-            for (PersonIdentifier personIdentifier : person.getPersonIdentifierList()) {
+    private void populateReviewCards(Person mpiPerson, Person lpiPerson) {
+        if (lpiPerson.getPersonIdentifierList() != null
+                && !lpiPerson.getPersonIdentifierList().isEmpty()) {
+            for (PersonIdentifier personIdentifier : lpiPerson.getPersonIdentifierList()) {
                 if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccLocalId
                         || personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccUniqueId) {
                     clinicIdTextField.setText(personIdentifier.getIdentifier());
@@ -2431,10 +2462,10 @@ public class MainView extends FrameView {
                 }
             }
         }
-        firstNameTextField.setText(person.getFirstName());
-        middleNameTextField.setText(person.getMiddleName());
-        altFirstNameTextField.setText(person.getFirstName());
-        altMiddleNameTextField.setText(person.getMiddleName() + " XYZ");
+        firstNameTextField.setText(lpiPerson.getFirstName());
+        middleNameTextField.setText(lpiPerson.getMiddleName());
+        altFirstNameTextField.setText(lpiPerson.getFirstName());
+        altMiddleNameTextField.setText(lpiPerson.getMiddleName() + " XYZ");
         hideUnnecessaryAlternativeFields(reviewCard1);
     }
 

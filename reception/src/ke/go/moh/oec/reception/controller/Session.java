@@ -155,33 +155,45 @@ public class Session {
 
     public static boolean checkForLinkedCandidates(List<Person> personList) {
         for (Person person : personList) {
-            for (PersonIdentifier personIdentifier : person.getPersonIdentifierList()) {
-                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.masterPatientRegistryId) {
-                    return true;
-                }
+            if (Session.getMPIIdentifier(person) != null) {
+                return true;
             }
         }
         return false;
     }
 
+    public static String getMPIIdentifier(Person person) {
+        String mpiIdentifier = null;
+        for (PersonIdentifier personIdentifier : person.getPersonIdentifierList()) {
+            if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.masterPatientRegistryId) {
+                return personIdentifier.getIdentifier();
+            }
+        }
+        return mpiIdentifier;
+    }
+
     public static PersonIdentifier.Type deduceIdentifierType(String personIdentifier) {
-        PersonIdentifier.Type clinicIdType = PersonIdentifier.Type.indeterminate;
+        PersonIdentifier.Type identifierType = PersonIdentifier.Type.indeterminate;
         if (personIdentifier != null && !personIdentifier.isEmpty()) {
             if (personIdentifier.contains("-") && !personIdentifier.contains("/")) {
                 if ((personIdentifier.split("-").length == 2 && personIdentifier.split("-")[0].length() == 5)
                         && (personIdentifier.split("-").length == 2 && personIdentifier.split("-")[1].length() == 5)) {
-                    clinicIdType = PersonIdentifier.Type.cccUniqueId;
-                } else if (personIdentifier.split("-").length == 4) {
-                    clinicIdType = PersonIdentifier.Type.kisumuHdssId;
+                    identifierType = PersonIdentifier.Type.cccUniqueId;
+                } else if (personIdentifier.length() < 20
+                        && personIdentifier.split("-").length == 4) {
+                    identifierType = PersonIdentifier.Type.kisumuHdssId;
                 }
             } else if (personIdentifier.contains("/") && !personIdentifier.contains("-")) {
                 if ((personIdentifier.split("/").length == 2 && personIdentifier.split("/")[0].length() == 5)
                         && (personIdentifier.split("/").length == 2 && personIdentifier.split("/")[1].length() == 4)) {
-                    clinicIdType = PersonIdentifier.Type.cccLocalId;
+                    identifierType = PersonIdentifier.Type.cccLocalId;
                 }
             }
+            if (personIdentifier.length() > 20) {
+                identifierType = PersonIdentifier.Type.masterPatientRegistryId;
+            }
         }
-        return clinicIdType;
+        return identifierType;
     }
 
     public static boolean validateClinicId(String clinicId) {

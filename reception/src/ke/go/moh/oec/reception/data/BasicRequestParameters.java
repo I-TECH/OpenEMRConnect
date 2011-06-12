@@ -32,7 +32,7 @@ import ke.go.moh.oec.Fingerprint;
  */
 public class BasicRequestParameters implements RequestParameters {
 
-    private String clinicId;
+    private String identifier;
     private String clinicName;
     Fingerprint fingerprint;
 
@@ -40,12 +40,12 @@ public class BasicRequestParameters implements RequestParameters {
         this.fingerprint = new Fingerprint();
     }
 
-    public String getClinicId() {
-        return clinicId;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setClinicId(String clinicId) {
-        this.clinicId = clinicId;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getClinicName() {
