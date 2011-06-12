@@ -5,8 +5,6 @@
 package ke.go.moh.oec.lib;
 
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import ke.go.moh.oec.RequestTypeId;
 import java.util.List;
 import ke.go.moh.oec.PersonResponse;
@@ -102,7 +100,7 @@ public class MediatorTest {
         List<Person> pList;
 
         // Clan name that will not be found
-        p.setClanName("ThisClanNameWillNotBeFound");
+        p.setClanName("NotAClanName");
         result = mediator.getData(RequestTypeId.FIND_PERSON_MPI, requestData);
         assertNotNull(result);
         assertSame(PersonResponse.class, result.getClass());
@@ -152,5 +150,8 @@ public class MediatorTest {
         Person p0 = pList.get(0);
         int score = p0.getMatchScore();
         assertEquals(score, 100);
+        requestData.setPerson(p0);
+        requestData.setRequestReference(pr.getRequestReference());
+        result = mediator.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
     }
 }

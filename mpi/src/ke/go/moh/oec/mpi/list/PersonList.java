@@ -343,8 +343,7 @@ public class PersonList {
         PersonMatch newPer = new PersonMatch(p.clone()); // Clone to protect from unit test modifications.
         newPer.setDbPersonId(dbPersonId);
         this.add(newPer);
-        boolean matchFound = false; // Created a person, so no match was found.
-        SearchHistory.update(req, matchFound);
+        SearchHistory.update(req, null, null); // Update search history showing that no candidate was selected.
         if (req.isResponseRequested()) {
             returnData = new PersonResponse();
             List<Person> returnList = new ArrayList<Person>();
@@ -379,6 +378,7 @@ public class PersonList {
             return returnData;
         }
 
+        SearchHistory.update(req, oldPer, p); // Log the search result (if any) BEFORE modifying the person.
         int dbPersonId = oldPer.getDbPersonId();
         Person oldP = oldPer.getPerson();
         Connection conn = Sql.connect();
@@ -427,8 +427,6 @@ public class PersonList {
         newPer.setDbPersonId(dbPersonId);
         this.remove(oldPer); // Remove old person from our in-memory list.
         this.add(newPer); // Add new person to our in-memory list.
-        boolean matchFound = true; // Modified a person, so a match was found.
-        SearchHistory.update(req, matchFound);
         Notifier.notify(p);
         if (req.isResponseRequested()) {
             returnData = new PersonResponse();

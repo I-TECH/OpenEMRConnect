@@ -34,9 +34,7 @@ import java.util.logging.LogManager;
 import ke.go.moh.oec.IService;
 import java.io.FileInputStream;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
-import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
 
@@ -227,7 +225,7 @@ public class Mediator implements IService {
      */
     public Object getData(int requestTypeId, Object requestData) {
         Message m = new Message();
-        m.setData(requestData);
+        m.setMessageData(requestData);
         m.setSourceAddress(getProperty("Instance.Address"));
         m.setSourceName(getProperty("Instance.Name"));
 
@@ -264,6 +262,8 @@ public class Mediator implements IService {
         String defaultDestinationAddress = getProperty(messageType.getDefaultDestinationAddressProperty());
         m.setDestinationAddress(defaultDestinationAddress);
         m.setDestinationName(messageType.getDefaultDestinationName());
+        String messageId = generateMessageId();
+        m.setMessageId(messageId);
         if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest) requestData;
             if (pr.getDestinationAddress() != null) {
@@ -273,11 +273,14 @@ public class Mediator implements IService {
                 m.setDestinationName(pr.getDestinationName());
             }
             m.setXml(pr.getXml());
+            if (pr.getRequestReference() != null) {
+                m.setMessageId(pr.getRequestReference()); // Overwrite the auto-generated message ID.
+            }
             if (!pr.isResponseRequested()) {
                 MessageType.TemplateType templateType = messageType.getTemplateType();
                 if (templateType == MessageType.TemplateType.modifyPerson
                         || templateType == MessageType.TemplateType.modifyPerson) {
-                            m.setResponseExpected(false);
+                    m.setResponseExpected(false);
                 }
             }
         }
@@ -288,10 +291,8 @@ public class Mediator implements IService {
                     messageType.getRequestTypeId());
         } else {
             /*
-             * Generate a new request ID, and send the request to the server.
+             * Send the request to the server.
              */
-            String messageId = generateMessageId();
-            m.setMessageId(messageId);
             returnData = sendData(m);
         }
         return returnData;
@@ -385,7 +386,7 @@ public class Mediator implements IService {
                 case modifyPersonAccepted:
                     PersonResponse personResponse;
                     if (responseMessage != null) {
-                        returnData = responseMessage.getData();
+                        returnData = responseMessage.getMessageData();
                         personResponse = (PersonResponse) returnData;
                         personResponse.setSuccessful(true);
                     } else {
@@ -492,6 +493,17 @@ public class Mediator implements IService {
                      * message destination. It is really destined for us. Process it.
                      */
                     xmlPacker.unpack(m);
+                    if (m.getMessageData().getClass() == PersonRequest.class) {
+                        PersonRequest req = (PersonRequest) m.getMessageData();
+                        req.setSourceAddress(m.getSourceAddress());
+                        req.setSourceName(m.getSourceName());
+                        req.setRequestReference(m.getMessageId());
+                        req.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
+                    } else if (m.getMessageData().getClass() == PersonResponse.class) {
+                        PersonResponse rsp = (PersonResponse) m.getMessageData();
+                        rsp.setSuccessful(true);
+                        rsp.setRequestReference(m.getMessageId());
+                    }
                     boolean responseDelivered = pendingQueue.findRequest(m);
                     if (responseDelivered) { // Was the message a response to a request that we just delivered?
                         Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Response matched and delivered to API.");

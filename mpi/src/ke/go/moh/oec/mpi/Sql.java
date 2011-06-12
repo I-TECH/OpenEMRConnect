@@ -141,7 +141,6 @@ public class Sql {
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Error executing SQL statement " + sql, ex);
-            System.exit(1);
         }
         return returnValue;
     }
