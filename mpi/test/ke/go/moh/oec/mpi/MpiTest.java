@@ -352,6 +352,11 @@ public class MpiTest {
         }
         assertEquals(1, pCount);
 
+        System.out.println("Set marital status to single.");
+        p0.setMaritalStatus(Person.MaritalStatus.single);
+        requestData.setPerson(p0);
+        result = mpi.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
+        
     }
 
     /**

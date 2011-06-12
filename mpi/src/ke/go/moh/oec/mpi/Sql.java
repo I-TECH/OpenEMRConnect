@@ -210,7 +210,7 @@ public class Sql {
         if (lookupString == null) {
             returnId = "null";
         } else {
-            String sql = "SELECT " + idColumn + " FROM " + nameColumn + " WHERE " + nameColumn + " = " + quote(lookupString);
+            String sql = "SELECT " + idColumn + " FROM " + lookupTable + " WHERE " + nameColumn + " = " + quote(lookupString);
             ResultSet rs = query(conn, sql);
             try {
                 if (rs.next()) {
@@ -234,30 +234,6 @@ public class Sql {
     public static String getMaritalStatusId(Connection conn, Person.MaritalStatus maritalStatus) {
         String maritalStatusName = ValueMap.MARITAL_STATUS.getDb().get(maritalStatus);
         return getLookupId(conn, "marital_status_type", "marital_status_type_id", "marital_status_name", maritalStatusName);
-    }
-
-    /**
-     * Gets the database ID for a Java enum Fingerprint.Type value
-     * 
-     * @param conn Connection to use.
-     * @param fingerprintType Enum value to look up
-     * @return database ID for that fingerprint type. Returns null if not found or value not supplied.
-     */
-    public static String getFingerprintTypeId(Connection conn, Fingerprint.Type fingerprintType) {
-        String fingerprintTypeName = ValueMap.FINGERPRINT_TYPE.getDb().get(fingerprintType);
-        return getLookupId(conn, "marital_status_type", "marital_status_type_id", "marital_status_name", fingerprintTypeName);
-    }
-
-    /**
-     * Gets the database ID for a Java enum Fingerprint.TechnologyType value
-     * 
-     * @param conn Connection to use.
-     * @param fingerprintTechnologyType Enum value to look up
-     * @return database ID for that marital status. Returns null if not found or value not supplied.
-     */
-    public static String getFingerprintTechnologyTypeId(Connection conn, Fingerprint.TechnologyType fingerprintTechnologyType) {
-        String fingerprintTechnologyTypeName = ValueMap.FINGERPRINT_TYPE.getDb().get(fingerprintTechnologyType);
-        return getLookupId(conn, "marital_status_type", "marital_status_type_id", "marital_status_name", fingerprintTechnologyTypeName);
     }
 
     /**
