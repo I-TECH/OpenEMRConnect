@@ -122,9 +122,9 @@ public class SearchHistory {
                     Fingerprint.Type fType = f.getFingerprintType();
                     String dbType = ValueMap.FINGERPRINT_TYPE.getDb().get(fType);
                     sql = "INSERT INTO search_history_fingerprint (search_history_id, fingerprint_type_id,\n"
-                            + "fingerprint_template, fingerprint_technology_id) VALUES (\n"
+                            + "fingerprint_template, fingerprint_technology_type_id) VALUES (\n"
                             + searchHistoryId + ", "
-                            + Sql.quote(dbType) + ", "
+                            + dbType + ", "
                             + Sql.quote(f.getTemplate()) + ", "
                             + "1)";
                     try {

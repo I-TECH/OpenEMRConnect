@@ -379,7 +379,7 @@ public class PersonMatch {
         boolean returnValue = false;
         if (pi.getIdentifierType() == PersonIdentifier.Type.cccLocalId) {
             String identifier = pi.getIdentifier();
-            if (!identifier.matches("$[0-9]<5>-")) {
+            if (!identifier.matches("^[0-9]{5}-*.")) {
                 returnValue = true;
             }
         }
