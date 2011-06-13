@@ -2488,7 +2488,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="reviewPanel3" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="221" max="32767" attributes="0"/>
+                                  <EmptySpace pref="217" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -2510,14 +2510,15 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="finishButton" alignment="1" pref="464" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="fingerprintLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="compoundHeadsLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="hdssDataConsentLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                               <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="hdssDataConsentCheckBox" min="-2" max="-2" attributes="0"/>
                                                   <Component id="compoundHeadsLastNameTextField" alignment="1" pref="294" max="32767" attributes="1"/>
                                                   <Group type="102" alignment="1" attributes="1">
                                                       <Component id="altCompoundHeadsLastNameTextField" pref="254" max="32767" attributes="0"/>
@@ -2526,26 +2527,30 @@
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsLastNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                              </Group>
-                                          </Group>
-                                          <Group type="102" alignment="1" attributes="0">
-                                              <Component id="fingerprintLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" attributes="0">
                                                   <Group type="102" attributes="0">
-                                                      <Component id="fingerprintImagePanel" min="-2" max="-2" attributes="1"/>
+                                                      <Component id="hdssDataConsentYesRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="clientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="hdssDataConsentNoRadioButton" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="hdssDataConsentNoAnswerRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="takeButton" alignment="0" min="-2" max="-2" attributes="1"/>
-                                                  <Component id="altHdssDataConsentTextField" alignment="0" pref="254" max="32767" attributes="0"/>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Group type="103" groupAlignment="0" attributes="0">
+                                                          <Group type="102" attributes="0">
+                                                              <Component id="fingerprintImagePanel" min="-2" max="-2" attributes="1"/>
+                                                              <EmptySpace max="-2" attributes="0"/>
+                                                              <Component id="clientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
+                                                          </Group>
+                                                          <Component id="takeButton" alignment="0" min="-2" max="-2" attributes="1"/>
+                                                          <Component id="altHdssDataConsentTextField" alignment="0" pref="254" max="32767" attributes="0"/>
+                                                      </Group>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="hdssDataConsentAcceptRadioButton" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="hdssDataConsentRejectRadioButton" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
                                               </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="hdssDataConsentAcceptRadioButton" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="hdssDataConsentRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="finishButton" alignment="1" pref="464" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -2564,9 +2569,13 @@
                                           <Group type="102" attributes="0">
                                               <Component id="altCompoundHeadsLastNameTextField" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="3" attributes="0">
-                                                  <Component id="hdssDataConsentLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                                  <Component id="hdssDataConsentCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="1" attributes="0">
+                                                  <Component id="hdssDataConsentLabel" min="-2" max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="3" attributes="0">
+                                                      <Component id="hdssDataConsentNoRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="hdssDataConsentNoAnswerRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="hdssDataConsentYesRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
                                               </Group>
                                           </Group>
                                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -2650,10 +2659,31 @@
                                 <Property name="name" type="java.lang.String" value="hdssDataConsentLabel" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JCheckBox" name="hdssDataConsentCheckBox">
+                            <Component class="javax.swing.JRadioButton" name="hdssDataConsentYesRadioButton">
                               <Properties>
-                                <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentCheckBox.text"/>
-                                <Property name="name" type="java.lang.String" value="hdssDataConsentCheckBox" noResource="true"/>
+                                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                                  <ComponentRef name="hdssDataConsentButtonGroup"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentYesRadioButton.text"/>
+                                <Property name="name" type="java.lang.String" value="hdssDataConsentYesRadioButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JRadioButton" name="hdssDataConsentNoRadioButton">
+                              <Properties>
+                                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                                  <ComponentRef name="hdssDataConsentButtonGroup"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentNoRadioButton.text"/>
+                                <Property name="name" type="java.lang.String" value="hdssDataConsentNoRadioButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JRadioButton" name="hdssDataConsentNoAnswerRadioButton">
+                              <Properties>
+                                <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                                  <ComponentRef name="hdssDataConsentButtonGroup"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentNoAnswerRadioButton.text"/>
+                                <Property name="name" type="java.lang.String" value="hdssDataConsentNoAnswerRadioButton" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JTextField" name="altHdssDataConsentTextField">
@@ -2668,7 +2698,7 @@
                                   <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                                  <ComponentRef name="hdssDataConsentButtonGroup"/>
+                                  <ComponentRef name="altHdssDataConsentButtonGroup"/>
                                 </Property>
                                 <Property name="icon" type="javax.swing.Icon" resourceKey="hdssDataConsentAcceptRadioButton.icon"/>
                                 <Property name="name" type="java.lang.String" value="hdssDataConsentAcceptRadioButton" noResource="true"/>
@@ -2678,7 +2708,7 @@
                             <Component class="javax.swing.JRadioButton" name="hdssDataConsentRejectRadioButton">
                               <Properties>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                                  <ComponentRef name="hdssDataConsentButtonGroup"/>
+                                  <ComponentRef name="altHdssDataConsentButtonGroup"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentRejectRadioButton.text"/>
                                 <Property name="icon" type="javax.swing.Icon" resourceKey="hdssDataConsentRejectRadioButton.icon"/>
@@ -2905,7 +2935,7 @@
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;ke.go.moh.oec.Person&gt;"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.ButtonGroup" name="hdssDataConsentButtonGroup">
+    <Component class="javax.swing.ButtonGroup" name="altHdssDataConsentButtonGroup">
     </Component>
     <Component class="javax.swing.ButtonGroup" name="compoundHeadsLastNameButtonGroup">
     </Component>
@@ -2948,6 +2978,8 @@
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="DisplayableMaritalStatus.getList()"/>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;DisplayableMaritalStatus&gt;"/>
       </AuxValues>
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="hdssDataConsentButtonGroup">
     </Component>
   </NonVisualComponents>
   <Properties>

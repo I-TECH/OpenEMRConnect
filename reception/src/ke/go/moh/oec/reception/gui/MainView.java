@@ -30,12 +30,12 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.text.JTextComponent;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
+import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.reception.controller.RequestDispatcher;
 import ke.go.moh.oec.reception.data.RequestResult;
 import ke.go.moh.oec.reception.controller.Session;
@@ -313,7 +313,9 @@ public class MainView extends FrameView {
         compoundHeadsLastNameAcceptRadioButton = new javax.swing.JRadioButton();
         compoundHeadsLastNameRejectRadioButton = new javax.swing.JRadioButton();
         hdssDataConsentLabel = new javax.swing.JLabel();
-        hdssDataConsentCheckBox = new javax.swing.JCheckBox();
+        hdssDataConsentYesRadioButton = new javax.swing.JRadioButton();
+        hdssDataConsentNoRadioButton = new javax.swing.JRadioButton();
+        hdssDataConsentNoAnswerRadioButton = new javax.swing.JRadioButton();
         altHdssDataConsentTextField = new javax.swing.JTextField();
         hdssDataConsentAcceptRadioButton = new javax.swing.JRadioButton();
         hdssDataConsentRejectRadioButton = new javax.swing.JRadioButton();
@@ -335,7 +337,7 @@ public class MainView extends FrameView {
         extendedSearchSexButtonGroup = new javax.swing.ButtonGroup();
         mpiSearchResultList = new ArrayList<Person>();
         lpiSearchResultList = new ArrayList<Person>();
-        hdssDataConsentButtonGroup = new javax.swing.ButtonGroup();
+        altHdssDataConsentButtonGroup = new javax.swing.ButtonGroup();
         compoundHeadsLastNameButtonGroup = new javax.swing.ButtonGroup();
         clinicIdButtonGroup = new javax.swing.ButtonGroup();
         firstNameButtonGroup = new javax.swing.ButtonGroup();
@@ -355,6 +357,7 @@ public class MainView extends FrameView {
         compoundHeadsFirstNameButtonGroup = new javax.swing.ButtonGroup();
         compoundHeadsMiddleNameButtonGroup = new javax.swing.ButtonGroup();
         maritalStatusList = DisplayableMaritalStatus.getList();
+        hdssDataConsentButtonGroup = new javax.swing.ButtonGroup();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -1842,19 +1845,28 @@ public class MainView extends FrameView {
         hdssDataConsentLabel.setText(resourceMap.getString("hdssDataConsentLabel.text")); // NOI18N
         hdssDataConsentLabel.setName("hdssDataConsentLabel"); // NOI18N
 
-        hdssDataConsentCheckBox.setText(resourceMap.getString("hdssDataConsentCheckBox.text")); // NOI18N
-        hdssDataConsentCheckBox.setName("hdssDataConsentCheckBox"); // NOI18N
+        hdssDataConsentButtonGroup.add(hdssDataConsentYesRadioButton);
+        hdssDataConsentYesRadioButton.setText(resourceMap.getString("hdssDataConsentYesRadioButton.text")); // NOI18N
+        hdssDataConsentYesRadioButton.setName("hdssDataConsentYesRadioButton"); // NOI18N
+
+        hdssDataConsentButtonGroup.add(hdssDataConsentNoRadioButton);
+        hdssDataConsentNoRadioButton.setText(resourceMap.getString("hdssDataConsentNoRadioButton.text")); // NOI18N
+        hdssDataConsentNoRadioButton.setName("hdssDataConsentNoRadioButton"); // NOI18N
+
+        hdssDataConsentButtonGroup.add(hdssDataConsentNoAnswerRadioButton);
+        hdssDataConsentNoAnswerRadioButton.setText(resourceMap.getString("hdssDataConsentNoAnswerRadioButton.text")); // NOI18N
+        hdssDataConsentNoAnswerRadioButton.setName("hdssDataConsentNoAnswerRadioButton"); // NOI18N
 
         altHdssDataConsentTextField.setEditable(false);
         altHdssDataConsentTextField.setName("altHdssDataConsentTextField"); // NOI18N
 
         hdssDataConsentAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
-        hdssDataConsentButtonGroup.add(hdssDataConsentAcceptRadioButton);
+        altHdssDataConsentButtonGroup.add(hdssDataConsentAcceptRadioButton);
         hdssDataConsentAcceptRadioButton.setIcon(resourceMap.getIcon("hdssDataConsentAcceptRadioButton.icon")); // NOI18N
         hdssDataConsentAcceptRadioButton.setName("hdssDataConsentAcceptRadioButton"); // NOI18N
         hdssDataConsentAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("hdssDataConsentAcceptRadioButton.selectedIcon")); // NOI18N
 
-        hdssDataConsentButtonGroup.add(hdssDataConsentRejectRadioButton);
+        altHdssDataConsentButtonGroup.add(hdssDataConsentRejectRadioButton);
         hdssDataConsentRejectRadioButton.setText(resourceMap.getString("hdssDataConsentRejectRadioButton.text")); // NOI18N
         hdssDataConsentRejectRadioButton.setIcon(resourceMap.getIcon("hdssDataConsentRejectRadioButton.icon")); // NOI18N
         hdssDataConsentRejectRadioButton.setName("hdssDataConsentRejectRadioButton"); // NOI18N
@@ -1899,35 +1911,39 @@ public class MainView extends FrameView {
             .addGroup(reviewPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(finishButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
                     .addGroup(reviewPanel3Layout.createSequentialGroup()
                         .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fingerprintLabel)
                             .addComponent(compoundHeadsLastNameLabel)
                             .addComponent(hdssDataConsentLabel))
                         .addGap(33, 33, 33)
                         .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(hdssDataConsentCheckBox)
                             .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
                                 .addComponent(altCompoundHeadsLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(compoundHeadsLastNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(compoundHeadsLastNameRejectRadioButton))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
-                        .addComponent(fingerprintLabel)
-                        .addGap(118, 118, 118)
-                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(compoundHeadsLastNameRejectRadioButton))
                             .addGroup(reviewPanel3Layout.createSequentialGroup()
-                                .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(hdssDataConsentYesRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(clientRefusesCheckBox))
-                            .addComponent(takeButton)
-                            .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(hdssDataConsentAcceptRadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(hdssDataConsentRejectRadioButton))
-                    .addComponent(finishButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE))
+                                .addComponent(hdssDataConsentNoRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentNoAnswerRadioButton))
+                            .addGroup(reviewPanel3Layout.createSequentialGroup()
+                                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(reviewPanel3Layout.createSequentialGroup()
+                                        .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(clientRefusesCheckBox))
+                                    .addComponent(takeButton)
+                                    .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentRejectRadioButton)))))
                 .addContainerGap())
         );
         reviewPanel3Layout.setVerticalGroup(
@@ -1942,9 +1958,12 @@ public class MainView extends FrameView {
                     .addGroup(reviewPanel3Layout.createSequentialGroup()
                         .addComponent(altCompoundHeadsLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(11, 11, 11)
-                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(hdssDataConsentLabel)
-                            .addComponent(hdssDataConsentCheckBox)))
+                            .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(hdssDataConsentNoRadioButton)
+                                .addComponent(hdssDataConsentNoAnswerRadioButton)
+                                .addComponent(hdssDataConsentYesRadioButton))))
                     .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(compoundHeadsLastNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
                         .addComponent(compoundHeadsLastNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING)))
@@ -1983,7 +2002,7 @@ public class MainView extends FrameView {
             .addGroup(reviewCard3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(reviewPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(221, Short.MAX_VALUE))
+                .addContainerGap(217, Short.MAX_VALUE))
         );
 
         wizardPanel.add(reviewCard3, "reviewCard3");
@@ -2719,106 +2738,42 @@ public class MainView extends FrameView {
     }
 
     private void populateReviewCards(Person mpiPerson, Person lpiPerson) {
-        Person sourcePerson = null;
-        Person altPerson = null;
-        if (mpiPerson != null && lpiPerson != null) {
-            sourcePerson = lpiPerson;
-            altPerson = mpiPerson;
-        } else {
-            if (mpiPerson != null && lpiPerson == null) {
-                sourcePerson = mpiPerson;
-            } else if (mpiPerson == null && lpiPerson != null) {
-                sourcePerson = lpiPerson;
-            } else {
-                return;
-            }
-        }
-        if (sourcePerson != null && altPerson != null) {
-            firstNameTextField.setText(sourcePerson.getFirstName());
-            altFirstNameTextField.setText(altPerson.getFirstName());
-            if (firstNameTextField.getText().equalsIgnoreCase(altFirstNameTextField.getText())) {
-                altFirstNameTextField.setVisible(false);
-                //firstNameToggleButton.setVisible(false);
-            }
-        }
-        if (lpiPerson.getPersonIdentifierList() != null
-                && !lpiPerson.getPersonIdentifierList().isEmpty()) {
-            for (PersonIdentifier personIdentifier : lpiPerson.getPersonIdentifierList()) {
-                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccLocalId
-                        || personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccUniqueId) {
-                    clinicIdTextField.setText(personIdentifier.getIdentifier());
-                    break;
-                }
-            }
-        }
-        firstNameTextField.setText(lpiPerson.getFirstName());
-        middleNameTextField.setText(lpiPerson.getMiddleName());
-        altFirstNameTextField.setText(lpiPerson.getFirstName());
+//        Person sourcePerson = null;
+//        Person altPerson = null;
+//        if (mpiPerson != null && lpiPerson != null) {
+//            sourcePerson = lpiPerson;
+//            altPerson = mpiPerson;
+//        } else {
+//            if (mpiPerson != null && lpiPerson == null) {
+//                sourcePerson = mpiPerson;
+//            } else if (mpiPerson == null && lpiPerson != null) {
+//                sourcePerson = lpiPerson;
+//            } else {
+//                return;
+//            }
+//        }
+//        if (sourcePerson != null && altPerson != null) {
+//            firstNameTextField.setText(sourcePerson.getFirstName());
+//            altFirstNameTextField.setText(altPerson.getFirstName());
+//            if (firstNameTextField.getText().equalsIgnoreCase(altFirstNameTextField.getText())) {
+//                altFirstNameTextField.setVisible(false);
+//                //firstNameToggleButton.setVisible(false);
+//            }
+//        }
+//        if (lpiPerson.getPersonIdentifierList() != null
+//                && !lpiPerson.getPersonIdentifierList().isEmpty()) {
+//            for (PersonIdentifier personIdentifier : lpiPerson.getPersonIdentifierList()) {
+//                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccLocalId
+//                        || personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccUniqueId) {
+//                    clinicIdTextField.setText(personIdentifier.getIdentifier());
+//                    break;
+//                }
+//            }
+//        }
+//        firstNameTextField.setText(lpiPerson.getFirstName());
+//        middleNameTextField.setText(lpiPerson.getMiddleName());
+//        altFirstNameTextField.setText(lpiPerson.getFirstName());
         //altMiddleNameTextField.setText(lpiPerson.getMiddleName() + " XYZ");
-        hideUnnecessaryAlternativeFields(reviewCard1);
-    }
-
-    private void hideUnnecessaryAlternativeFields(JPanel reviewCard) {
-        List<Component> mainComponentList = getMainComponentList(reviewCard);
-        List<Component> alternativeComponentList = getAlternativeComponentList(reviewCard);
-        for (Component mainComponent : mainComponentList) {
-            for (Component alternativeComponent : alternativeComponentList) {
-                if (mainComponent.getName().equalsIgnoreCase(alternativeComponent.getName().split("alt")[1])) {
-                    if (mainComponent instanceof JTextComponent
-                            || alternativeComponent instanceof JTextComponent) {
-                        JTextComponent mainTextComponent = (JTextComponent) mainComponent;
-                        JTextComponent alternativeTextComponent = (JTextComponent) mainComponent;
-                        if (!mainTextComponent.getText().equals(alternativeTextComponent.getText())) {
-                            mainTextComponent.setVisible(false);
-                        }
-                    }
-//                    else if (mainComponent instanceof JToggleButton) {
-//                        JToggleButton toggleButton = (JToggleButton) mainComponent;
-//                        if (toggleButton.getText().isEmpty()) {
-//                            toggleButton.setVisible(false);
-//                        }
-//                    } else if (mainComponent instanceof JDateChooser) {
-//                        JDateChooser dateChooser = (JDateChooser) mainComponent;
-//                        if (dateChooser.) {
-//                        }
-//                        ((JDateChooser) mainComponent).setDate(new Date());
-//                    } else if (mainComponent instanceof JComboBox) {
-//                        ((JComboBox) mainComponent).setSelectedItem(null);
-//                    }
-                    alternativeComponentList.remove(alternativeComponent);
-                }
-            }
-        }
-    }
-
-    private List<Component> getMainComponentList(Container reviewCard) {
-        List<Component> mainComponentList = new ArrayList<Component>();
-        for (Component component : reviewCard.getComponents()) {
-            if (component instanceof Container) {
-                mainComponentList.addAll(getMainComponentList((Container) component));
-            } else {
-                if (component.getName() != null
-                        && !component.getName().substring(0, 2).equalsIgnoreCase("alt")) {
-                    mainComponentList.add(component);
-                }
-            }
-        }
-        return mainComponentList;
-    }
-
-    private List<Component> getAlternativeComponentList(Container reviewCard) {
-        List<Component> alternativeComponentList = new ArrayList<Component>();
-        for (Component component : reviewCard.getComponents()) {
-            if (component instanceof Container) {
-                alternativeComponentList.addAll(getAlternativeComponentList((Container) component));
-            } else {
-                if (component.getName() != null
-                        && !component.getName().substring(0, 2).equalsIgnoreCase("alt")) {
-                    alternativeComponentList.add(component);
-                }
-            }
-        }
-        return alternativeComponentList;
     }
 
     private void clearFields(Container container) {
@@ -2869,40 +2824,49 @@ public class MainView extends FrameView {
 
     @Action
     public void finish() {
-        if (mpiPersonMatch == null
-                && lpiPersonMatch == null) {
-            //create in MPI
-            //create in LPI
-            RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
-                    RequestDispatcher.CREATE, TargetIndex.BOTH);
+        String clinicId = clinicIdTextField.getText();
+        if (!Session.validateClinicId(clinicId)) {
+            showWarningMessage("The Clinic ID: '" + clinicId + "' you entered is in the wrong format. "
+                    + "Please use the format '12345-00001' for Universal Clinic IDs and '00001/2005' "
+                    + "for Local Clinic IDs", finishButton, clinicIdTextField);
+            showCard("reviewCard1");
+            return;
         } else {
             if (mpiPersonMatch == null
-                    && lpiPersonMatch != null) {
-                //create in MPI
-                //modify in LPI
-                RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.CREATE, TargetIndex.MPI);
-                RequestDispatcher.dispatch(wrapPerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.MODIFY, TargetIndex.LPI);
-            } else if (mpiPersonMatch != null
                     && lpiPersonMatch == null) {
-                //modify in MPI
+                //create in MPI
                 //create in LPI
-                RequestDispatcher.dispatch(wrapPerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.MODIFY, TargetIndex.MPI);
                 RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.CREATE, TargetIndex.LPI);
+                        RequestDispatcher.CREATE, TargetIndex.BOTH);
             } else {
-                //modify in MPI
-                //modify in LPI
-                //TODO: Revise this logic
-                RequestDispatcher.dispatch(wrapPerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.MODIFY, TargetIndex.MPI);
-                RequestDispatcher.dispatch(wrapPerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.MODIFY, TargetIndex.LPI);
+                if (mpiPersonMatch == null
+                        && lpiPersonMatch != null) {
+                    //create in MPI
+                    //modify in LPI
+                    RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.CREATE, TargetIndex.MPI);
+                    RequestDispatcher.dispatch(wrapPerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.MODIFY, TargetIndex.LPI);
+                } else if (mpiPersonMatch != null
+                        && lpiPersonMatch == null) {
+                    //modify in MPI
+                    //create in LPI
+                    RequestDispatcher.dispatch(wrapPerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.MODIFY, TargetIndex.MPI);
+                    RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.CREATE, TargetIndex.LPI);
+                } else {
+                    //modify in MPI
+                    //modify in LPI
+                    //TODO: Revise this logic
+                    RequestDispatcher.dispatch(wrapPerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.MODIFY, TargetIndex.MPI);
+                    RequestDispatcher.dispatch(wrapPerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.MODIFY, TargetIndex.LPI);
+                }
             }
+            showCard("homeCard");
         }
-        showCard("homeCard");
     }
 
     public ComprehensiveRequestParameters wrapPerson(Person person) {
@@ -2959,8 +2923,27 @@ public class MainView extends FrameView {
                     }
                     crp.getPerson().setFingerprintList(fingerprintList);
                 } else {
-                    //ask for fingerprints maybe
+                    //return and ask for fingerprints maybe
                 }
+            }
+            if (hdssDataConsentYesRadioButton.isSelected()) {
+                crp.getPerson().setConsentSigned(Person.ConsentSigned.yes);
+            } else if (hdssDataConsentNoRadioButton.isSelected()) {
+                crp.getPerson().setConsentSigned(Person.ConsentSigned.no);
+            } else if (hdssDataConsentNoAnswerRadioButton.isSelected()) {
+                crp.getPerson().setConsentSigned(Person.ConsentSigned.notAnswered);
+            }
+            Visit visit = new Visit();
+            visit.setAddress(Session.getApplicationName());
+            visit.setVisitDate(new Date());
+            if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED
+                    || Session.getClientType() == Session.CLIENT_TYPE.NEW) {
+                crp.getPerson().setLastRegularVisit(visit);
+            } else if (Session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
+                crp.getPerson().setLastOneOffVisit(visit);
+            } else if (Session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN) {
+                crp.getPerson().setLastRegularVisit(visit);
+                crp.getPerson().setLastMoveDate(new Date());
             }
             return crp;
         } else {
@@ -3001,6 +2984,7 @@ public class MainView extends FrameView {
     private javax.swing.JTextField altFathersLastNameTextField;
     private javax.swing.JTextField altFathersMiddleNameTextField;
     private javax.swing.JTextField altFirstNameTextField;
+    private javax.swing.ButtonGroup altHdssDataConsentButtonGroup;
     private javax.swing.JTextField altHdssDataConsentTextField;
     private javax.swing.JTextField altLastNameTextField;
     private javax.swing.JTextField altMaritalStatusTextField;
@@ -3105,9 +3089,11 @@ public class MainView extends FrameView {
     private javax.swing.JTextField firstNameTextField;
     private javax.swing.JRadioButton hdssDataConsentAcceptRadioButton;
     private javax.swing.ButtonGroup hdssDataConsentButtonGroup;
-    private javax.swing.JCheckBox hdssDataConsentCheckBox;
     private javax.swing.JLabel hdssDataConsentLabel;
+    private javax.swing.JRadioButton hdssDataConsentNoAnswerRadioButton;
+    private javax.swing.JRadioButton hdssDataConsentNoRadioButton;
     private javax.swing.JRadioButton hdssDataConsentRejectRadioButton;
+    private javax.swing.JRadioButton hdssDataConsentYesRadioButton;
     private javax.swing.JButton homeButton;
     private javax.swing.JPanel homeCard;
     private javax.swing.JPanel homePanel;

@@ -209,7 +209,7 @@ public class Sql {
         if (lookupString == null) {
             returnId = "null";
         } else {
-            String sql = "SELECT " + idColumn + " FROM " + nameColumn + " WHERE " + nameColumn + " = " + quote(lookupString);
+            String sql = "SELECT " + idColumn + " FROM " + lookupTable + " WHERE " + nameColumn + " = " + quote(lookupString);
             ResultSet rs = query(conn, sql);
             try {
                 if (rs.next()) {

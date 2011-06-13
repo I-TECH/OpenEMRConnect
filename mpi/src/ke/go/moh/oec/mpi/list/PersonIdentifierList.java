@@ -93,13 +93,13 @@ public class PersonIdentifierList {
                             deleteList.add(oldP);
                             sql = "DELETE FROM person_identifier "
                                     + " WHERE person_id = " + personId
-                                    + " AND identifier_type = " + dbType
+                                    + " AND identifier_type_id = " + dbType
                                     + " AND identifier = " + Sql.quote(oldId);
                             Sql.execute(conn, sql);
                         }
                     }
                 }
-                sql = "INSERT INTO person_identifier (person_id, identifier_type, identifier) values ("
+                sql = "INSERT INTO person_identifier (person_id, identifier_type_id, identifier) values ("
                         + personId + ", " + dbType + ", " + Sql.quote(id) + ")";
                 Sql.execute(conn, sql);
             }
