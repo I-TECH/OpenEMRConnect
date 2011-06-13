@@ -105,7 +105,7 @@ public class RequestDispatcher {
                 spawn(new RequestDispatchingThread(
                         mediator, requestParameters, RequestTypeId.CREATE_PERSON_MPI, mpiRequestResult), false);
                 spawn(new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.CREATE_PERSON_MPI, mpiRequestResult), false);
+                        mediator, requestParameters, RequestTypeId.CREATE_PERSON_LPI, lpiRequestResult), false);
             } else if (dispatchType == MODIFY) {
                 spawn(new RequestDispatchingThread(
                         mediator, requestParameters, RequestTypeId.MODIFY_PERSON_MPI, mpiRequestResult), false);
