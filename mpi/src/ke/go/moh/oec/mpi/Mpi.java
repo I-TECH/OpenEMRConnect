@@ -80,7 +80,7 @@ public class Mpi implements IService {
             if (fingerprintLimit > 0 && fingerprintLimit < maxThreadCount) {
                 maxThreadCount = fingerprintLimit;
             }
-            Mediator.getLogger(Mpi.class.getName()).log(Level.INFO, "Maximum thead count = {0}.", maxThreadCount);
+            Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "Maximum thread count = {0}.", maxThreadCount);
         }
         return maxThreadCount;
     }

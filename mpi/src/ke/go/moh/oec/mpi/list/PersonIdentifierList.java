@@ -85,7 +85,7 @@ public class PersonIdentifierList {
             for (PersonIdentifier newP : newList) {
                 PersonIdentifier.Type piType = newP.getIdentifierType();
                 String id = newP.getIdentifier();
-                String dbType = ValueMap.FINGERPRINT_TYPE.getDb().get(piType);
+                String dbType = ValueMap.PERSON_IDENTIFIER_TYPE.getDb().get(piType);
                 for (PersonIdentifier oldP : oldList) {
                     if (oldP.getIdentifierType() == piType) {
                         String oldId = oldP.getIdentifier();
@@ -94,13 +94,13 @@ public class PersonIdentifierList {
                             deleteList.add(oldP);
                             sql = "DELETE FROM person_identifier "
                                     + " WHERE person_id = " + personId
-                                    + " AND identifier_type = " + dbType
+                                    + " AND identifier_type_id = " + dbType
                                     + " AND identifier = " + Sql.quote(oldId);
                             Sql.execute(conn, sql);
                         }
                     }
                 }
-                sql = "INSERT INTO person_identifier (person_id, identifier_type, identifier) values ("
+                sql = "INSERT INTO person_identifier (person_id, identifier_type_id, identifier) values ("
                         + personId + ", " + dbType + ", " + Sql.quote(id) + ")";
                 Sql.execute(conn, sql);
             }

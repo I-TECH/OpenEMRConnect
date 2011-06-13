@@ -203,7 +203,7 @@ public class PersonList {
             System.exit(1);
         }
         double timeInterval = (System.currentTimeMillis() - startTime);
-        Mediator.getLogger(PersonList.class.getName()).log(Level.INFO,
+        Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
                 "Loaded {0} person entries in {1} milliseconds.",
                 new Object[]{personList.size(), timeInterval});
     }
@@ -236,8 +236,6 @@ public class PersonList {
                 candidateSet.add(match, scorecard);
             }
         } else {
-            // TODO: If search by clinic ID with clinic name, do fuzzy match on clinic name.
-
             int personMatchCount = personList.size();
             int threadCount = Mpi.getMaxThreadCount();
             if (threadCount > personMatchCount) {
@@ -265,7 +263,7 @@ public class PersonList {
                 }
             }
             double timeInterval = (System.currentTimeMillis() - startTime);
-            Mediator.getLogger(PersonList.class.getName()).log(Level.INFO,
+            Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
                     "Searched {0} entries in {1} milliseconds.",
                     new Object[]{personMatchCount, timeInterval});
         }

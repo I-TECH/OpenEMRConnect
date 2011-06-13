@@ -39,6 +39,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Formatter;
+import java.util.logging.SimpleFormatter;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
 
@@ -112,10 +114,23 @@ public class Mediator implements IService {
      * A copy of the properties from standard file location
      */
     static Properties properties = null;
+    /** Lock the properties file we are using, so multiple instances will use multiple properties files. */
     static FileLock propertiesLock = null;
+    /** The logger level to use, configured from the properties file. */
     static Level loggerLevel = null;
+    /** Should we use the logging service? */
+    static boolean useLoggingService = true;
 
     public Mediator() {
+        setLoggerLevel();
+        if (useLoggingService) {
+            LogManager man = LogManager.getLogManager();
+            Logger rootLogger = man.getLogger("");
+            Handler oecHandler = new LoggingHandler(this);
+            Formatter formatter = new SimpleFormatter();
+            oecHandler.setFormatter(formatter);
+            rootLogger.addHandler(oecHandler);
+        }
         httpService = new HttpService(this);
         queueManager = new QueueManager(httpService);
         xmlPacker = new XmlPacker();
@@ -125,7 +140,7 @@ public class Mediator implements IService {
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
         }
         queueManager.start();
-        Logger.getLogger(Mediator.class.getName()).log(Level.INFO,
+        Logger.getLogger(Mediator.class.getName()).log(Level.FINE,
                 "{0} started.", getProperty("Instance.Name"));
     }
 
@@ -144,14 +159,21 @@ public class Mediator implements IService {
     }
 
     /**
-     * Gets a standard java.util.logging.Logger, set to the logging level property, if any.
-     * If the logging level property is not the default Level.INFO, the logging level
-     * is also changed in the root logging handler currently defined.
-     * 
-     * @param loggerName Name of the logger to create.
-     * @return The Logger requested.
+     * Supresses the use of the logging service to send messages to the logging server.
+     * This method is intended for use by the logging service itself,
+     * so it won't try to send all log entries to itself.
      */
-    public static Logger getLogger(String loggerName) {
+    public static void suppressLoggingService() {
+        useLoggingService = false;
+    }
+
+    /**
+     * Sets the logging level according to the properties file.
+     * The logging level is also set in the root handler if it is not the default.
+     * Otherwise, new loggers will not be able to log anything at a
+     * lower level than the default level.
+     */
+    private static void setLoggerLevel() {
         if (loggerLevel == null) {
             loggerLevel = Level.INFO; // Default unless changed below.
             String loggerLevelName = getProperty("Logger.Level");
@@ -170,6 +192,18 @@ public class Mediator implements IService {
                 }
             }
         }
+    }
+
+    /**
+     * Gets a standard java.util.logging.Logger, set to the logging level property, if any.
+     * If the logging level property is not the default Level.INFO, the logging level
+     * is also changed in the root logging handler currently defined.
+     * 
+     * @param loggerName Name of the logger to create.
+     * @return The Logger requested.
+     */
+    public static Logger getLogger(String loggerName) {
+        setLoggerLevel();
         Logger logger = Logger.getLogger(loggerName);
         logger.setLevel(loggerLevel);
         return logger;
@@ -507,7 +541,7 @@ public class Mediator implements IService {
         } else {
             String ourInstanceAddress = getProperty("Instance.Address");
             String ipAddressPort = getIpAddressPort(destinationAddress);
-            if (destinationAddress.equals(ourInstanceAddress)) { // If the message is addressed to us:
+            if (destinationAddress.equalsIgnoreCase(ourInstanceAddress)) { // If the message is addressed to us:
                 if (ipAddressPort == null) {
                     /*
                      * The message destination matches our own instance address

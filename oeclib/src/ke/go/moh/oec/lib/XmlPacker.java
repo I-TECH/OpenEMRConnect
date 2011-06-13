@@ -1912,7 +1912,7 @@ class XmlPacker {
         logEntry.setClassName(e.getElementsByTagName("class").item(0).getTextContent());
         logEntry.setDateTime(unpackDateTime(e.getElementsByTagName("dateTime").item(0).getTextContent()));
         logEntry.setMessage(e.getElementsByTagName("message").item(0).getTextContent());
-        logEntry.setInstance(e.getElementsByTagName("instance").item(0).getTextContent());
+        logEntry.setInstance(e.getElementsByTagName("sourceAddress").item(0).getTextContent());
     }
 
     /**

@@ -47,6 +47,7 @@ import java.io.BufferedReader;
 import java.io.Writer;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.concurrent.Executors;
@@ -100,6 +101,9 @@ class HttpService {
                 //content not required, just acknowlegment that message was received.
             }
             returnStatus = true;
+        } catch (ConnectException ex) {
+            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
+                    "Can''t connect to {0}", m.getDestinationAddress());
         } catch (MalformedURLException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
                     "While sending to " + m.getDestinationAddress(), ex);
@@ -131,7 +135,8 @@ class HttpService {
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
         Mediator.getLogger(HttpService.class.getName()).log(Level.INFO,
-                Mediator.getProperty("Instance.Address") + " listening on port {0}",
+                Mediator.getProperty("Instance.Name") + " "
+                + Mediator.getProperty("Instance.Address") + " listening on port {0}",
                 Integer.toString(port)); // (Explicitly convert to string to avoid "," thousands seperator formatting.)
     }
 
