@@ -116,10 +116,10 @@ public class PersonMatch {
         compoundHeadLastNameMatch = new NameMatch(p.getCompoundHeadLastName());
         villageNameMatch = new NameMatch(p.getVillageName());
         if (p.getFingerprintList() != null) {
-            List<FingerprintMatch> fml = new ArrayList<FingerprintMatch>();
+            fingerprintMatchList = new ArrayList<FingerprintMatch>();
             for (Fingerprint f : p.getFingerprintList()) {
                 FingerprintMatch mf = new FingerprintMatch(f);
-                fml.add(mf);
+                fingerprintMatchList.add(mf);
             }
         }
     }

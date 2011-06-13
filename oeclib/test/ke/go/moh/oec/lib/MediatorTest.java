@@ -4,6 +4,7 @@
  */
 package ke.go.moh.oec.lib;
 
+import ke.go.moh.oec.Fingerprint;
 import java.util.ArrayList;
 import ke.go.moh.oec.PersonIdentifier;
 import java.util.Date;
@@ -229,6 +230,19 @@ public class MediatorTest {
         requestData.setPerson(p0);
         requestData.setRequestReference(pr.getRequestReference());
         result = mediator.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
+        
+        // Exercise fingerprint matching code
+        p0 = new Person();
+        List<Fingerprint> fpList = new ArrayList<Fingerprint>();
+        byte[] b = {1, 2, 3};
+        Fingerprint f = new Fingerprint();
+        f.setTemplate(b);
+        f.setFingerprintType(Fingerprint.Type.rightRingFinger);
+        f.setTechnologyType(Fingerprint.TechnologyType.griauleTemplate);
+        fpList.add(f);
+        p0.setFingerprintList(fpList);
+        requestData.setPerson(p0);
+        pr = callFindPerson(requestData);
     }
 
     /**
