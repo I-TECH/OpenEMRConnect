@@ -343,8 +343,8 @@ public class Mediator implements IService {
         Object returnData = null;
         if (m.getDestinationAddress() == null) {
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                    "getData() - Destination not found for Request type ''{0}''",
-                    messageType.getRequestTypeId());
+                    "getData() - Can''t find {0} in properties file.",
+                    messageType.getDefaultDestinationAddressProperty());
         } else {
             /*
              * Send the request to the server.

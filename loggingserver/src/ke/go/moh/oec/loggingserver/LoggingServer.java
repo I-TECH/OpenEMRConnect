@@ -101,8 +101,8 @@ public class LoggingServer implements IService {
             Logger logger = Logger.getLogger(le.getClassName());
             logger.addHandler(fileHandler);
             Level level = Level.parse(le.getSeverity());
-            logger.log(level, "{0} {1} {2}", new Object[]{le.getDateTime().toString(), le.getInstance(), le.getMessage()});
-            fileHandler.flush();
+            logger.log(level, "++++ {0} {1} {2}", new Object[]{le.getDateTime().toString(), le.getInstance(), le.getMessage()});
+            // fileHandler.flush();
         }
         return null; // No object returned.
     }
