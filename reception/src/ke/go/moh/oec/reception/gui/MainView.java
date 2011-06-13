@@ -30,16 +30,17 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.text.JTextComponent;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
+import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.reception.controller.RequestDispatcher;
 import ke.go.moh.oec.reception.data.RequestResult;
 import ke.go.moh.oec.reception.controller.Session;
 import ke.go.moh.oec.reception.data.ComprehensiveRequestParameters;
+import ke.go.moh.oec.reception.data.DisplayableMaritalStatus;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
 import ke.go.moh.oec.reception.data.TargetIndex;
 import ke.go.moh.oec.reception.gui.custom.ImagePanel;
@@ -63,7 +64,7 @@ public class MainView extends FrameView {
     private boolean lpiShown = false;
     private Person mpiPersonMatch = null;
     private Person lpiPersonMatch = null;
-    private boolean mpiIdentifierSearchDone;
+    private boolean mpiIdentifierSearchDone = false;
 
     public MainView(SingleFrameApplication app) {
         super(app);
@@ -222,82 +223,102 @@ public class MainView extends FrameView {
         clinicIdLabel = new javax.swing.JLabel();
         clinicIdTextField = new javax.swing.JTextField();
         altClinicIdTextField = new javax.swing.JTextField();
-        ClinicIdToggleButton = new javax.swing.JToggleButton();
+        clinicIdAcceptRadioButton = new javax.swing.JRadioButton();
+        clinicIdRejectRadioButton = new javax.swing.JRadioButton();
         firstNameLabel = new javax.swing.JLabel();
         firstNameTextField = new javax.swing.JTextField();
         altFirstNameTextField = new javax.swing.JTextField();
-        firstNameToggleButton = new javax.swing.JToggleButton();
+        firstNameAcceptRadioButton = new javax.swing.JRadioButton();
+        firstNameRejectRadioButton = new javax.swing.JRadioButton();
         middleNameLabel = new javax.swing.JLabel();
         middleNameTextField = new javax.swing.JTextField();
         altMiddleNameTextField = new javax.swing.JTextField();
-        middleNameToggleButton = new javax.swing.JToggleButton();
+        middleNameAcceptRadioButton = new javax.swing.JRadioButton();
+        middleNameRejectRadioButton = new javax.swing.JRadioButton();
         lastNameLabel = new javax.swing.JLabel();
         lastNameTextField = new javax.swing.JTextField();
         altLastNameTextField = new javax.swing.JTextField();
-        lastNameToggleButton = new javax.swing.JToggleButton();
+        lastNameAcceptRadioButton = new javax.swing.JRadioButton();
+        lastNameRejectRadioButton = new javax.swing.JRadioButton();
         sexLabel = new javax.swing.JLabel();
         maleRadioButton = new javax.swing.JRadioButton();
         femaleRadioButton = new javax.swing.JRadioButton();
         altSexTextField = new javax.swing.JTextField();
-        sexToggleButton = new javax.swing.JToggleButton();
+        sexAcceptRadioButton = new javax.swing.JRadioButton();
+        sexRejectRadioButton = new javax.swing.JRadioButton();
         birthDateLabel = new javax.swing.JLabel();
         birthDateChooser = new com.toedter.calendar.JDateChooser();
         altBirthDateTextField = new javax.swing.JTextField();
-        birthDateToggleButton = new javax.swing.JToggleButton();
+        birthDateAcceptRadioButton = new javax.swing.JRadioButton();
+        birthDateRejectRadioButton = new javax.swing.JRadioButton();
         maritalStatusLabel = new javax.swing.JLabel();
         maritalStatusComboBox = new javax.swing.JComboBox();
         altMaritalStatusTextField = new javax.swing.JTextField();
-        maritalStatusToggleButton = new javax.swing.JToggleButton();
+        maritalStatusAcceptRadioButton = new javax.swing.JRadioButton();
+        maritalStatusRejectRadioButton = new javax.swing.JRadioButton();
         villageLabel = new javax.swing.JLabel();
         villageTextField = new javax.swing.JTextField();
-        alrVillageTextField = new javax.swing.JTextField();
-        altVillageToggleButton = new javax.swing.JToggleButton();
+        altVillageTextField = new javax.swing.JTextField();
+        villageAcceptRadioButton = new javax.swing.JRadioButton();
+        villageRejectRadioButton = new javax.swing.JRadioButton();
         reviewCard1NextButton = new javax.swing.JButton();
         reviewCard2 = new javax.swing.JPanel();
         reviewPanel2 = new javax.swing.JPanel();
         fathersFirstNameLabel = new javax.swing.JLabel();
         fathersFirstNameTextField = new javax.swing.JTextField();
         altFathersFirstNameTextField = new javax.swing.JTextField();
-        fathersFirstNameToggleButton = new javax.swing.JToggleButton();
+        fathersFirstNameAcceptRadioButton = new javax.swing.JRadioButton();
+        fathersFirstNameRejectRadioButton = new javax.swing.JRadioButton();
         fathersMiddleNameLabel = new javax.swing.JLabel();
         fathersMiddleNameTextField = new javax.swing.JTextField();
         altFathersMiddleNameTextField = new javax.swing.JTextField();
-        fathersMiddleNameToggleButton = new javax.swing.JToggleButton();
+        fathersMiddleNameAcceptRadioButton = new javax.swing.JRadioButton();
+        fathersMiddleNameRejectRadioButton = new javax.swing.JRadioButton();
         fathersLastNameLabel = new javax.swing.JLabel();
         fathersLastNameTextField = new javax.swing.JTextField();
         altFathersLastNameTextField = new javax.swing.JTextField();
-        fathersLastNameToggleButton = new javax.swing.JToggleButton();
+        fathersLastNameAcceptRadioButton = new javax.swing.JRadioButton();
+        fathersLastNameRejectRadioButton = new javax.swing.JRadioButton();
         mothersFirstNameLabel = new javax.swing.JLabel();
         mothersFirstNameTextField = new javax.swing.JTextField();
         altMothersFirstNameTextField = new javax.swing.JTextField();
-        mothersFirstNameToggleButton = new javax.swing.JToggleButton();
+        mothersFirstNameAcceptRadioButton = new javax.swing.JRadioButton();
+        mothersFirstNameRejectRadioButton = new javax.swing.JRadioButton();
         mothersMiddleNameLabel = new javax.swing.JLabel();
         mothersMiddleNameTextField = new javax.swing.JTextField();
         altMothersMiddleNameTextField = new javax.swing.JTextField();
-        mothersMiddleNameToggleButton = new javax.swing.JToggleButton();
+        mothersMiddleNameAcceptRadioButton = new javax.swing.JRadioButton();
+        mothersMiddleNameNameRejectRadioButton = new javax.swing.JRadioButton();
         mothersLastNameLabel = new javax.swing.JLabel();
         mothersLastNameTextField = new javax.swing.JTextField();
         altMothersLastNameTextField = new javax.swing.JTextField();
-        mothersLastNameToggleButton = new javax.swing.JToggleButton();
+        mothersLastNameAcceptRadioButton = new javax.swing.JRadioButton();
+        mothersLastNameRejectRadioButton = new javax.swing.JRadioButton();
         compoundHeadsFirstNameLabel = new javax.swing.JLabel();
         compoundHeadsFirstNameTextField = new javax.swing.JTextField();
         altCompoundHeadsFirstNameTextField = new javax.swing.JTextField();
+        compoundHeadsFirstNameAcceptRadioButton = new javax.swing.JRadioButton();
+        compoundHeadsFirstNameRejectRadioButton = new javax.swing.JRadioButton();
         compoundHeadsMiddleNameLabel = new javax.swing.JLabel();
         compoundHeadsMiddleNameTextField = new javax.swing.JTextField();
         altCompoundHeadsMiddleNameTextField = new javax.swing.JTextField();
-        compoundHeadsMiddleNameButton = new javax.swing.JButton();
-        compoundHeadsFirstNameToggleButton = new javax.swing.JToggleButton();
-        compoundHeadsMiddleNameToggleButton = new javax.swing.JToggleButton();
+        compoundHeadsMiddleNameAcceptRadioButton = new javax.swing.JRadioButton();
+        compoundHeadsMiddleNameRejectRadioButton = new javax.swing.JRadioButton();
+        review2NextButton = new javax.swing.JButton();
         reviewCard3 = new javax.swing.JPanel();
         reviewPanel3 = new javax.swing.JPanel();
         compoundHeadsLastNameLabel = new javax.swing.JLabel();
         compoundHeadsLastNameTextField = new javax.swing.JTextField();
         altCompoundHeadsLastNameTextField = new javax.swing.JTextField();
-        compoundHeadsLastNameToggleButton = new javax.swing.JToggleButton();
+        compoundHeadsLastNameAcceptRadioButton = new javax.swing.JRadioButton();
+        compoundHeadsLastNameRejectRadioButton = new javax.swing.JRadioButton();
         hdssDataConsentLabel = new javax.swing.JLabel();
-        hdssDataConsentCheckBox = new javax.swing.JCheckBox();
+        hdssDataConsentYesRadioButton = new javax.swing.JRadioButton();
+        hdssDataConsentNoRadioButton = new javax.swing.JRadioButton();
+        hdssDataConsentNoAnswerRadioButton = new javax.swing.JRadioButton();
         altHdssDataConsentTextField = new javax.swing.JTextField();
-        hdssDataConsentToggleButton = new javax.swing.JToggleButton();
+        hdssDataConsentAcceptRadioButton = new javax.swing.JRadioButton();
+        hdssDataConsentRejectRadioButton = new javax.swing.JRadioButton();
         fingerprintLabel = new javax.swing.JLabel();
         fingerprintImagePanel = new ke.go.moh.oec.reception.gui.custom.ImagePanel();
         clientRefusesCheckBox = new javax.swing.JCheckBox();
@@ -313,9 +334,30 @@ public class MainView extends FrameView {
         statusMessageLabel = new javax.swing.JLabel();
         statusAnimationLabel = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
-        sexButtonGroup = new javax.swing.ButtonGroup();
+        extendedSearchSexButtonGroup = new javax.swing.ButtonGroup();
         mpiSearchResultList = new ArrayList<Person>();
         lpiSearchResultList = new ArrayList<Person>();
+        altHdssDataConsentButtonGroup = new javax.swing.ButtonGroup();
+        compoundHeadsLastNameButtonGroup = new javax.swing.ButtonGroup();
+        clinicIdButtonGroup = new javax.swing.ButtonGroup();
+        firstNameButtonGroup = new javax.swing.ButtonGroup();
+        middleNameButtonGroup = new javax.swing.ButtonGroup();
+        lastNameButtonGroup = new javax.swing.ButtonGroup();
+        altReviewSexButtonGroup = new javax.swing.ButtonGroup();
+        reviewSexButtonGroup = new javax.swing.ButtonGroup();
+        birthDateButtonGroup = new javax.swing.ButtonGroup();
+        maritalStatusButtonGroup = new javax.swing.ButtonGroup();
+        villageButtonGroup = new javax.swing.ButtonGroup();
+        fathersFirstNameButtonGroup = new javax.swing.ButtonGroup();
+        fathersMiddleNameButtonGroup = new javax.swing.ButtonGroup();
+        fathersLastNameButtonGroup = new javax.swing.ButtonGroup();
+        mothersFirstNameButtonGroup = new javax.swing.ButtonGroup();
+        mothersMiddleNameButtonGroup = new javax.swing.ButtonGroup();
+        mothersLastNameButtonGroup = new javax.swing.ButtonGroup();
+        compoundHeadsFirstNameButtonGroup = new javax.swing.ButtonGroup();
+        compoundHeadsMiddleNameButtonGroup = new javax.swing.ButtonGroup();
+        maritalStatusList = DisplayableMaritalStatus.getList();
+        hdssDataConsentButtonGroup = new javax.swing.ButtonGroup();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -385,10 +427,12 @@ public class MainView extends FrameView {
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(MainView.class, this);
         homeButton.setAction(actionMap.get("goHome")); // NOI18N
+        homeButton.setBackground(resourceMap.getColor("backButton.background")); // NOI18N
         homeButton.setText(resourceMap.getString("homeButton.text")); // NOI18N
         homeButton.setName("homeButton"); // NOI18N
 
         backButton.setAction(actionMap.get("goBack")); // NOI18N
+        backButton.setBackground(resourceMap.getColor("backButton.background")); // NOI18N
         backButton.setText(resourceMap.getString("backButton.text")); // NOI18N
         backButton.setName("backButton"); // NOI18N
 
@@ -424,10 +468,10 @@ public class MainView extends FrameView {
             .addGroup(homePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-                    .addComponent(visitorButton, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-                    .addComponent(enrolledButton, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-                    .addComponent(transferInButton, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
+                    .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+                    .addComponent(visitorButton, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+                    .addComponent(enrolledButton, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+                    .addComponent(transferInButton, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE))
                 .addContainerGap())
         );
         homePanelLayout.setVerticalGroup(
@@ -483,8 +527,8 @@ public class MainView extends FrameView {
             .addGroup(clientIdPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(clientIdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(clinicIdNoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-                    .addComponent(clinicIdYesButton, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
+                    .addComponent(clinicIdNoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+                    .addComponent(clinicIdYesButton, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE))
                 .addContainerGap())
         );
         clientIdPanelLayout.setVerticalGroup(
@@ -587,15 +631,15 @@ public class MainView extends FrameView {
                             .addComponent(basicSearchFingerprintLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(basicSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(basicSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                            .addComponent(basicSearchClinicNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
+                            .addComponent(basicSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+                            .addComponent(basicSearchClinicNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
                             .addGroup(basicSearchPanelLayout.createSequentialGroup()
                                 .addGroup(basicSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(basicSearchTakeButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(basicSearchFingerprintImagePanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(basicSearchClientRefusesCheckBox))))
-                    .addComponent(basicSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
+                    .addComponent(basicSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE))
                 .addContainerGap())
         );
         basicSearchPanelLayout.setVerticalGroup(
@@ -677,11 +721,11 @@ public class MainView extends FrameView {
         extendedSearchSexLabel.setText(resourceMap.getString("extendedSearchSexLabel.text")); // NOI18N
         extendedSearchSexLabel.setName("extendedSearchSexLabel"); // NOI18N
 
-        sexButtonGroup.add(extendedSearchMaleRadioButton);
+        extendedSearchSexButtonGroup.add(extendedSearchMaleRadioButton);
         extendedSearchMaleRadioButton.setText(resourceMap.getString("extendedSearchMaleRadioButton.text")); // NOI18N
         extendedSearchMaleRadioButton.setName("extendedSearchMaleRadioButton"); // NOI18N
 
-        sexButtonGroup.add(extendedSearchFemaleRadioButton);
+        extendedSearchSexButtonGroup.add(extendedSearchFemaleRadioButton);
         extendedSearchFemaleRadioButton.setText(resourceMap.getString("extendedSearchFemaleRadioButton.text")); // NOI18N
         extendedSearchFemaleRadioButton.setName("extendedSearchFemaleRadioButton"); // NOI18N
 
@@ -735,7 +779,7 @@ public class MainView extends FrameView {
             .addGroup(extendedSearchPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(extendedSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(extendedSearchButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
+                    .addComponent(extendedSearchButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
                     .addGroup(extendedSearchPanelLayout.createSequentialGroup()
                         .addComponent(extendedSearchFingerprintLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -760,13 +804,13 @@ public class MainView extends FrameView {
                                 .addComponent(extendedSearchMaleRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(extendedSearchFemaleRadioButton))
-                            .addComponent(extendedSearchLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
-                            .addComponent(extendedSearchMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
-                            .addComponent(extendedSearchFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
-                            .addComponent(extendedSearchClinicNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
-                            .addComponent(extendedSearchVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
-                            .addComponent(extendedSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
-                            .addComponent(extendedSearchBirthdateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE))))
+                            .addComponent(extendedSearchLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+                            .addComponent(extendedSearchMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+                            .addComponent(extendedSearchFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+                            .addComponent(extendedSearchClinicNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+                            .addComponent(extendedSearchVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+                            .addComponent(extendedSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+                            .addComponent(extendedSearchBirthdateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         extendedSearchPanelLayout.setVerticalGroup(
@@ -898,6 +942,7 @@ public class MainView extends FrameView {
         mpiAcceptButton.setText(resourceMap.getString("mpiAcceptButton.text")); // NOI18N
         mpiAcceptButton.setName("mpiAcceptButton"); // NOI18N
 
+        mpiNotFoundButton.setAction(actionMap.get("noMPIMatchFound")); // NOI18N
         mpiNotFoundButton.setText(resourceMap.getString("mpiNotFoundButton.text")); // NOI18N
         mpiNotFoundButton.setName("mpiNotFoundButton"); // NOI18N
 
@@ -908,9 +953,9 @@ public class MainView extends FrameView {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mpiResultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(mpiResultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(mpiResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-                    .addComponent(mpiNotFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-                    .addComponent(mpiAcceptButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
+                    .addComponent(mpiResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+                    .addComponent(mpiNotFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+                    .addComponent(mpiAcceptButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE))
                 .addContainerGap())
         );
         mpiResultsPanelLayout.setVerticalGroup(
@@ -1005,6 +1050,7 @@ public class MainView extends FrameView {
         lpiAcceptButton.setText(resourceMap.getString("lpiAcceptButton.text")); // NOI18N
         lpiAcceptButton.setName("lpiAcceptButton"); // NOI18N
 
+        lpiNotFoundButton.setAction(actionMap.get("noLPIMatchFound")); // NOI18N
         lpiNotFoundButton.setText(resourceMap.getString("lpiNotFoundButton.text")); // NOI18N
         lpiNotFoundButton.setName("lpiNotFoundButton"); // NOI18N
 
@@ -1015,9 +1061,9 @@ public class MainView extends FrameView {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lpiResultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(lpiResultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lpiResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-                    .addComponent(lpiNotFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE)
-                    .addComponent(lpiAcceptButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 461, Short.MAX_VALUE))
+                    .addComponent(lpiResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+                    .addComponent(lpiNotFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
+                    .addComponent(lpiAcceptButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE))
                 .addContainerGap())
         );
         lpiResultsPanelLayout.setVerticalGroup(
@@ -1065,8 +1111,16 @@ public class MainView extends FrameView {
         altClinicIdTextField.setText(resourceMap.getString("altClinicIdTextField.text")); // NOI18N
         altClinicIdTextField.setName("altClinicIdTextField"); // NOI18N
 
-        ClinicIdToggleButton.setText(resourceMap.getString("ClinicIdToggleButton.text")); // NOI18N
-        ClinicIdToggleButton.setName("ClinicIdToggleButton"); // NOI18N
+        clinicIdAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        clinicIdButtonGroup.add(clinicIdAcceptRadioButton);
+        clinicIdAcceptRadioButton.setIcon(resourceMap.getIcon("clinicIdAcceptRadioButton.icon")); // NOI18N
+        clinicIdAcceptRadioButton.setName("clinicIdAcceptRadioButton"); // NOI18N
+        clinicIdAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("clinicIdAcceptRadioButton.selectedIcon")); // NOI18N
+
+        clinicIdButtonGroup.add(clinicIdRejectRadioButton);
+        clinicIdRejectRadioButton.setIcon(resourceMap.getIcon("clinicIdRejectRadioButton.icon")); // NOI18N
+        clinicIdRejectRadioButton.setName("clinicIdRejectRadioButton"); // NOI18N
+        clinicIdRejectRadioButton.setSelectedIcon(resourceMap.getIcon("clinicIdRejectRadioButton.selectedIcon")); // NOI18N
 
         firstNameLabel.setText(resourceMap.getString("firstNameLabel.text")); // NOI18N
         firstNameLabel.setName("firstNameLabel"); // NOI18N
@@ -1076,8 +1130,16 @@ public class MainView extends FrameView {
         altFirstNameTextField.setEditable(false);
         altFirstNameTextField.setName("altFirstNameTextField"); // NOI18N
 
-        firstNameToggleButton.setText(resourceMap.getString("firstNameToggleButton.text")); // NOI18N
-        firstNameToggleButton.setName("firstNameToggleButton"); // NOI18N
+        firstNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        firstNameButtonGroup.add(firstNameAcceptRadioButton);
+        firstNameAcceptRadioButton.setIcon(resourceMap.getIcon("firstNameAcceptRadioButton.icon")); // NOI18N
+        firstNameAcceptRadioButton.setName("firstNameAcceptRadioButton"); // NOI18N
+        firstNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("firstNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        firstNameButtonGroup.add(firstNameRejectRadioButton);
+        firstNameRejectRadioButton.setIcon(resourceMap.getIcon("firstNameRejectRadioButton.icon")); // NOI18N
+        firstNameRejectRadioButton.setName("firstNameRejectRadioButton"); // NOI18N
+        firstNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("firstNameRejectRadioButton.selectedIcon")); // NOI18N
 
         middleNameLabel.setText(resourceMap.getString("middleNameLabel.text")); // NOI18N
         middleNameLabel.setName("middleNameLabel"); // NOI18N
@@ -1087,8 +1149,16 @@ public class MainView extends FrameView {
         altMiddleNameTextField.setEditable(false);
         altMiddleNameTextField.setName("altMiddleNameTextField"); // NOI18N
 
-        middleNameToggleButton.setText(resourceMap.getString("middleNameToggleButton.text")); // NOI18N
-        middleNameToggleButton.setName("middleNameToggleButton"); // NOI18N
+        middleNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        middleNameButtonGroup.add(middleNameAcceptRadioButton);
+        middleNameAcceptRadioButton.setIcon(resourceMap.getIcon("middleNameAcceptRadioButton.icon")); // NOI18N
+        middleNameAcceptRadioButton.setName("middleNameAcceptRadioButton"); // NOI18N
+        middleNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("middleNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        middleNameButtonGroup.add(middleNameRejectRadioButton);
+        middleNameRejectRadioButton.setIcon(resourceMap.getIcon("middleNameRejectRadioButton.icon")); // NOI18N
+        middleNameRejectRadioButton.setName("middleNameRejectRadioButton"); // NOI18N
+        middleNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("middleNameRejectRadioButton.selectedIcon")); // NOI18N
 
         lastNameLabel.setText(resourceMap.getString("lastNameLabel.text")); // NOI18N
         lastNameLabel.setName("lastNameLabel"); // NOI18N
@@ -1098,15 +1168,25 @@ public class MainView extends FrameView {
         altLastNameTextField.setEditable(false);
         altLastNameTextField.setName("altLastNameTextField"); // NOI18N
 
-        lastNameToggleButton.setText(resourceMap.getString("lastNameToggleButton.text")); // NOI18N
-        lastNameToggleButton.setName("lastNameToggleButton"); // NOI18N
+        lastNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        lastNameButtonGroup.add(lastNameAcceptRadioButton);
+        lastNameAcceptRadioButton.setIcon(resourceMap.getIcon("lastNameAcceptRadioButton.icon")); // NOI18N
+        lastNameAcceptRadioButton.setName("lastNameAcceptRadioButton"); // NOI18N
+        lastNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("lastNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        lastNameButtonGroup.add(lastNameRejectRadioButton);
+        lastNameRejectRadioButton.setIcon(resourceMap.getIcon("lastNameRejectRadioButton.icon")); // NOI18N
+        lastNameRejectRadioButton.setName("lastNameRejectRadioButton"); // NOI18N
+        lastNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("lastNameRejectRadioButton.selectedIcon")); // NOI18N
 
         sexLabel.setText(resourceMap.getString("sexLabel.text")); // NOI18N
         sexLabel.setName("sexLabel"); // NOI18N
 
+        reviewSexButtonGroup.add(maleRadioButton);
         maleRadioButton.setText(resourceMap.getString("maleRadioButton.text")); // NOI18N
         maleRadioButton.setName("maleRadioButton"); // NOI18N
 
+        reviewSexButtonGroup.add(femaleRadioButton);
         femaleRadioButton.setText(resourceMap.getString("femaleRadioButton.text")); // NOI18N
         femaleRadioButton.setName("femaleRadioButton"); // NOI18N
 
@@ -1114,8 +1194,16 @@ public class MainView extends FrameView {
         altSexTextField.setText(resourceMap.getString("altSexTextField.text")); // NOI18N
         altSexTextField.setName("altSexTextField"); // NOI18N
 
-        sexToggleButton.setText(resourceMap.getString("sexToggleButton.text")); // NOI18N
-        sexToggleButton.setName("sexToggleButton"); // NOI18N
+        sexAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        altReviewSexButtonGroup.add(sexAcceptRadioButton);
+        sexAcceptRadioButton.setIcon(resourceMap.getIcon("sexAcceptRadioButton.icon")); // NOI18N
+        sexAcceptRadioButton.setName("sexAcceptRadioButton"); // NOI18N
+        sexAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("sexAcceptRadioButton.selectedIcon")); // NOI18N
+
+        altReviewSexButtonGroup.add(sexRejectRadioButton);
+        sexRejectRadioButton.setIcon(resourceMap.getIcon("sexRejectRadioButton.icon")); // NOI18N
+        sexRejectRadioButton.setName("sexRejectRadioButton"); // NOI18N
+        sexRejectRadioButton.setSelectedIcon(resourceMap.getIcon("sexRejectRadioButton.selectedIcon")); // NOI18N
 
         birthDateLabel.setText(resourceMap.getString("birthDateLabel.text")); // NOI18N
         birthDateLabel.setName("birthDateLabel"); // NOI18N
@@ -1126,32 +1214,58 @@ public class MainView extends FrameView {
         altBirthDateTextField.setText(resourceMap.getString("altBirthDateTextField.text")); // NOI18N
         altBirthDateTextField.setName("altBirthDateTextField"); // NOI18N
 
-        birthDateToggleButton.setText(resourceMap.getString("birthDateToggleButton.text")); // NOI18N
-        birthDateToggleButton.setName("birthDateToggleButton"); // NOI18N
+        birthDateAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        birthDateButtonGroup.add(birthDateAcceptRadioButton);
+        birthDateAcceptRadioButton.setIcon(resourceMap.getIcon("birthDateAcceptRadioButton.icon")); // NOI18N
+        birthDateAcceptRadioButton.setName("birthDateAcceptRadioButton"); // NOI18N
+        birthDateAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("birthDateAcceptRadioButton.selectedIcon")); // NOI18N
+
+        birthDateButtonGroup.add(birthDateRejectRadioButton);
+        birthDateRejectRadioButton.setIcon(resourceMap.getIcon("birthDateRejectRadioButton.icon")); // NOI18N
+        birthDateRejectRadioButton.setName("birthDateRejectRadioButton"); // NOI18N
+        birthDateRejectRadioButton.setSelectedIcon(resourceMap.getIcon("birthDateRejectRadioButton.selectedIcon")); // NOI18N
 
         maritalStatusLabel.setText(resourceMap.getString("maritalStatusLabel.text")); // NOI18N
         maritalStatusLabel.setName("maritalStatusLabel"); // NOI18N
 
-        maritalStatusComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         maritalStatusComboBox.setName("maritalStatusComboBox"); // NOI18N
+
+        org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, maritalStatusList, maritalStatusComboBox);
+        bindingGroup.addBinding(jComboBoxBinding);
 
         altMaritalStatusTextField.setEditable(false);
         altMaritalStatusTextField.setText(resourceMap.getString("altMaritalStatusTextField.text")); // NOI18N
         altMaritalStatusTextField.setName("altMaritalStatusTextField"); // NOI18N
 
-        maritalStatusToggleButton.setText(resourceMap.getString("maritalStatusToggleButton.text")); // NOI18N
-        maritalStatusToggleButton.setName("maritalStatusToggleButton"); // NOI18N
+        maritalStatusAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        maritalStatusButtonGroup.add(maritalStatusAcceptRadioButton);
+        maritalStatusAcceptRadioButton.setIcon(resourceMap.getIcon("maritalStatusAcceptRadioButton.icon")); // NOI18N
+        maritalStatusAcceptRadioButton.setName("maritalStatusAcceptRadioButton"); // NOI18N
+        maritalStatusAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("maritalStatusAcceptRadioButton.selectedIcon")); // NOI18N
+
+        maritalStatusButtonGroup.add(maritalStatusRejectRadioButton);
+        maritalStatusRejectRadioButton.setIcon(resourceMap.getIcon("maritalStatusRejectRadioButton.icon")); // NOI18N
+        maritalStatusRejectRadioButton.setName("maritalStatusRejectRadioButton"); // NOI18N
+        maritalStatusRejectRadioButton.setSelectedIcon(resourceMap.getIcon("maritalStatusRejectRadioButton.selectedIcon")); // NOI18N
 
         villageLabel.setText(resourceMap.getString("villageLabel.text")); // NOI18N
         villageLabel.setName("villageLabel"); // NOI18N
 
         villageTextField.setName("villageTextField"); // NOI18N
 
-        alrVillageTextField.setEditable(false);
-        alrVillageTextField.setName("alrVillageTextField"); // NOI18N
+        altVillageTextField.setEditable(false);
+        altVillageTextField.setName("altVillageTextField"); // NOI18N
 
-        altVillageToggleButton.setText(resourceMap.getString("altVillageToggleButton.text")); // NOI18N
-        altVillageToggleButton.setName("altVillageToggleButton"); // NOI18N
+        villageAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        villageButtonGroup.add(villageAcceptRadioButton);
+        villageAcceptRadioButton.setIcon(resourceMap.getIcon("villageAcceptRadioButton.icon")); // NOI18N
+        villageAcceptRadioButton.setName("villageAcceptRadioButton"); // NOI18N
+        villageAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("villageAcceptRadioButton.selectedIcon")); // NOI18N
+
+        villageButtonGroup.add(villageRejectRadioButton);
+        villageRejectRadioButton.setIcon(resourceMap.getIcon("villageRejectRadioButton.icon")); // NOI18N
+        villageRejectRadioButton.setName("villageRejectRadioButton"); // NOI18N
+        villageRejectRadioButton.setSelectedIcon(resourceMap.getIcon("villageRejectRadioButton.selectedIcon")); // NOI18N
 
         reviewCard1NextButton.setAction(actionMap.get("showReviewCard2")); // NOI18N
         reviewCard1NextButton.setText(resourceMap.getString("reviewCard1NextButton.text")); // NOI18N
@@ -1171,41 +1285,51 @@ public class MainView extends FrameView {
                             .addComponent(sexLabel))
                         .addGap(10, 10, 10)
                         .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
+                                .addComponent(altFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(firstNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(firstNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(firstNameRejectRadioButton))
                             .addGroup(reviewPanel1Layout.createSequentialGroup()
                                 .addComponent(maleRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(femaleRadioButton))
-                            .addComponent(lastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                            .addComponent(lastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                                .addComponent(altMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(middleNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(middleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                                .addComponent(middleNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(middleNameRejectRadioButton))
+                            .addComponent(middleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(altSexTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
-                                    .addComponent(altLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE))
+                                .addComponent(altSexTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(sexToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(lastNameToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)))))
+                                .addComponent(sexAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sexRejectRadioButton))
+                            .addGroup(reviewPanel1Layout.createSequentialGroup()
+                                .addComponent(altLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lastNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lastNameRejectRadioButton))))
                     .addGroup(reviewPanel1Layout.createSequentialGroup()
                         .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(firstNameLabel)
                             .addComponent(clinicIdLabel))
                         .addGap(18, 18, 18)
                         .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(clinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE)
-                            .addGroup(reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+                            .addComponent(clinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
+                                .addComponent(altClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(ClinicIdToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(firstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE)))
-                    .addComponent(reviewCard1NextButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+                                .addComponent(clinicIdAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(clinicIdRejectRadioButton))
+                            .addComponent(firstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)))
+                    .addComponent(reviewCard1NextButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
                     .addGroup(reviewPanel1Layout.createSequentialGroup()
                         .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(birthDateLabel)
@@ -1213,21 +1337,27 @@ public class MainView extends FrameView {
                             .addComponent(villageLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(birthDateChooser, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                            .addComponent(birthDateChooser, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(alrVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                                .addComponent(altVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(altVillageToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(villageTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                                .addComponent(villageAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(villageRejectRadioButton))
+                            .addComponent(villageTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altBirthDateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                                .addComponent(altBirthDateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(birthDateToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(birthDateAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(birthDateRejectRadioButton))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altMaritalStatusTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                                .addComponent(altMaritalStatusTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(maritalStatusToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(maritalStatusComboBox, javax.swing.GroupLayout.Alignment.TRAILING, 0, 400, Short.MAX_VALUE))))
+                                .addComponent(maritalStatusAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(maritalStatusRejectRadioButton))
+                            .addComponent(maritalStatusComboBox, javax.swing.GroupLayout.Alignment.TRAILING, 0, 395, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         reviewPanel1Layout.setVerticalGroup(
@@ -1238,43 +1368,51 @@ public class MainView extends FrameView {
                     .addComponent(clinicIdLabel)
                     .addComponent(clinicIdTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(clinicIdRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(clinicIdAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altClinicIdTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altClinicIdTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ClinicIdToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
-                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(firstNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(reviewPanel1Layout.createSequentialGroup()
-                        .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(firstNameLabel)
-                            .addComponent(firstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(altFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(firstNameLabel)
+                    .addComponent(firstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(firstNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(firstNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(middleNameLabel)
+                    .addComponent(middleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(middleNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(reviewPanel1Layout.createSequentialGroup()
-                        .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(middleNameLabel)
-                            .addComponent(middleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(altMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(middleNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(middleNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lastNameLabel)
                     .addComponent(lastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lastNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(lastNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(lastNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(8, 8, 8)
                 .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(maleRadioButton)
                     .addComponent(sexLabel)
                     .addComponent(femaleRadioButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sexToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(sexRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(sexAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
                     .addComponent(altSexTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1283,25 +1421,31 @@ public class MainView extends FrameView {
                         .addComponent(birthDateLabel))
                     .addComponent(birthDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(birthDateToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(birthDateRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(birthDateAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
                     .addComponent(altBirthDateTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(7, 7, 7)
                 .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(maritalStatusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(maritalStatusLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(maritalStatusToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(maritalStatusRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(maritalStatusAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
                     .addComponent(altMaritalStatusTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(villageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(villageLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(alrVillageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(altVillageToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(villageRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(villageAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altVillageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(reviewCard1NextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1321,7 +1465,7 @@ public class MainView extends FrameView {
             .addGroup(reviewCard1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(reviewPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         wizardPanel.add(reviewCard1, "reviewCard1");
@@ -1339,8 +1483,16 @@ public class MainView extends FrameView {
         altFathersFirstNameTextField.setEditable(false);
         altFathersFirstNameTextField.setName("altFathersFirstNameTextField"); // NOI18N
 
-        fathersFirstNameToggleButton.setText(resourceMap.getString("fathersFirstNameToggleButton.text")); // NOI18N
-        fathersFirstNameToggleButton.setName("fathersFirstNameToggleButton"); // NOI18N
+        fathersFirstNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        fathersFirstNameButtonGroup.add(fathersFirstNameAcceptRadioButton);
+        fathersFirstNameAcceptRadioButton.setIcon(resourceMap.getIcon("fathersFirstNameAcceptRadioButton.icon")); // NOI18N
+        fathersFirstNameAcceptRadioButton.setName("fathersFirstNameAcceptRadioButton"); // NOI18N
+        fathersFirstNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("fathersFirstNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        fathersFirstNameButtonGroup.add(fathersFirstNameRejectRadioButton);
+        fathersFirstNameRejectRadioButton.setIcon(resourceMap.getIcon("fathersFirstNameRejectRadioButton.icon")); // NOI18N
+        fathersFirstNameRejectRadioButton.setName("fathersFirstNameRejectRadioButton"); // NOI18N
+        fathersFirstNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("fathersFirstNameRejectRadioButton.selectedIcon")); // NOI18N
 
         fathersMiddleNameLabel.setText(resourceMap.getString("fathersMiddleNameLabel.text")); // NOI18N
         fathersMiddleNameLabel.setName("fathersMiddleNameLabel"); // NOI18N
@@ -1350,8 +1502,16 @@ public class MainView extends FrameView {
         altFathersMiddleNameTextField.setEditable(false);
         altFathersMiddleNameTextField.setName("altFathersMiddleNameTextField"); // NOI18N
 
-        fathersMiddleNameToggleButton.setText(resourceMap.getString("fathersMiddleNameToggleButton.text")); // NOI18N
-        fathersMiddleNameToggleButton.setName("fathersMiddleNameToggleButton"); // NOI18N
+        fathersMiddleNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        fathersMiddleNameButtonGroup.add(fathersMiddleNameAcceptRadioButton);
+        fathersMiddleNameAcceptRadioButton.setIcon(resourceMap.getIcon("fathersMiddleNameAcceptRadioButton.icon")); // NOI18N
+        fathersMiddleNameAcceptRadioButton.setName("fathersMiddleNameAcceptRadioButton"); // NOI18N
+        fathersMiddleNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("fathersMiddleNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        fathersMiddleNameButtonGroup.add(fathersMiddleNameRejectRadioButton);
+        fathersMiddleNameRejectRadioButton.setIcon(resourceMap.getIcon("fathersMiddleNameRejectRadioButton.icon")); // NOI18N
+        fathersMiddleNameRejectRadioButton.setName("fathersMiddleNameRejectRadioButton"); // NOI18N
+        fathersMiddleNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("fathersMiddleNameRejectRadioButton.selectedIcon")); // NOI18N
 
         fathersLastNameLabel.setText(resourceMap.getString("fathersLastNameLabel.text")); // NOI18N
         fathersLastNameLabel.setName("fathersLastNameLabel"); // NOI18N
@@ -1361,8 +1521,16 @@ public class MainView extends FrameView {
         altFathersLastNameTextField.setEditable(false);
         altFathersLastNameTextField.setName("altFathersLastNameTextField"); // NOI18N
 
-        fathersLastNameToggleButton.setText(resourceMap.getString("fathersLastNameToggleButton.text")); // NOI18N
-        fathersLastNameToggleButton.setName("fathersLastNameToggleButton"); // NOI18N
+        fathersLastNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        fathersLastNameButtonGroup.add(fathersLastNameAcceptRadioButton);
+        fathersLastNameAcceptRadioButton.setIcon(resourceMap.getIcon("fathersLastNameAcceptRadioButton.icon")); // NOI18N
+        fathersLastNameAcceptRadioButton.setName("fathersLastNameAcceptRadioButton"); // NOI18N
+        fathersLastNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("fathersLastNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        fathersLastNameButtonGroup.add(fathersLastNameRejectRadioButton);
+        fathersLastNameRejectRadioButton.setIcon(resourceMap.getIcon("fathersLastNameRejectRadioButton.icon")); // NOI18N
+        fathersLastNameRejectRadioButton.setName("fathersLastNameRejectRadioButton"); // NOI18N
+        fathersLastNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("fathersLastNameRejectRadioButton.selectedIcon")); // NOI18N
 
         mothersFirstNameLabel.setText(resourceMap.getString("mothersFirstNameLabel.text")); // NOI18N
         mothersFirstNameLabel.setName("mothersFirstNameLabel"); // NOI18N
@@ -1372,8 +1540,16 @@ public class MainView extends FrameView {
         altMothersFirstNameTextField.setEditable(false);
         altMothersFirstNameTextField.setName("altMothersFirstNameTextField"); // NOI18N
 
-        mothersFirstNameToggleButton.setText(resourceMap.getString("mothersFirstNameToggleButton.text")); // NOI18N
-        mothersFirstNameToggleButton.setName("mothersFirstNameToggleButton"); // NOI18N
+        mothersFirstNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        mothersFirstNameButtonGroup.add(mothersFirstNameAcceptRadioButton);
+        mothersFirstNameAcceptRadioButton.setIcon(resourceMap.getIcon("mothersFirstNameAcceptRadioButton.icon")); // NOI18N
+        mothersFirstNameAcceptRadioButton.setName("mothersFirstNameAcceptRadioButton"); // NOI18N
+        mothersFirstNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("mothersFirstNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        mothersFirstNameButtonGroup.add(mothersFirstNameRejectRadioButton);
+        mothersFirstNameRejectRadioButton.setIcon(resourceMap.getIcon("mothersFirstNameRejectRadioButton.icon")); // NOI18N
+        mothersFirstNameRejectRadioButton.setName("mothersFirstNameRejectRadioButton"); // NOI18N
+        mothersFirstNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("mothersFirstNameRejectRadioButton.selectedIcon")); // NOI18N
 
         mothersMiddleNameLabel.setText(resourceMap.getString("mothersMiddleNameLabel.text")); // NOI18N
         mothersMiddleNameLabel.setName("mothersMiddleNameLabel"); // NOI18N
@@ -1383,8 +1559,16 @@ public class MainView extends FrameView {
         altMothersMiddleNameTextField.setEditable(false);
         altMothersMiddleNameTextField.setName("altMothersMiddleNameTextField"); // NOI18N
 
-        mothersMiddleNameToggleButton.setText(resourceMap.getString("mothersMiddleNameToggleButton.text")); // NOI18N
-        mothersMiddleNameToggleButton.setName("mothersMiddleNameToggleButton"); // NOI18N
+        mothersMiddleNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        mothersMiddleNameButtonGroup.add(mothersMiddleNameAcceptRadioButton);
+        mothersMiddleNameAcceptRadioButton.setIcon(resourceMap.getIcon("mothersMiddleNameAcceptRadioButton.icon")); // NOI18N
+        mothersMiddleNameAcceptRadioButton.setName("mothersMiddleNameAcceptRadioButton"); // NOI18N
+        mothersMiddleNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("mothersMiddleNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        mothersMiddleNameButtonGroup.add(mothersMiddleNameNameRejectRadioButton);
+        mothersMiddleNameNameRejectRadioButton.setIcon(resourceMap.getIcon("mothersMiddleNameNameRejectRadioButton.icon")); // NOI18N
+        mothersMiddleNameNameRejectRadioButton.setName("mothersMiddleNameNameRejectRadioButton"); // NOI18N
+        mothersMiddleNameNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("mothersMiddleNameNameRejectRadioButton.selectedIcon")); // NOI18N
 
         mothersLastNameLabel.setText(resourceMap.getString("mothersLastNameLabel.text")); // NOI18N
         mothersLastNameLabel.setName("mothersLastNameLabel"); // NOI18N
@@ -1394,8 +1578,16 @@ public class MainView extends FrameView {
         altMothersLastNameTextField.setEditable(false);
         altMothersLastNameTextField.setName("altMothersLastNameTextField"); // NOI18N
 
-        mothersLastNameToggleButton.setText(resourceMap.getString("mothersLastNameToggleButton.text")); // NOI18N
-        mothersLastNameToggleButton.setName("mothersLastNameToggleButton"); // NOI18N
+        mothersLastNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        mothersLastNameButtonGroup.add(mothersLastNameAcceptRadioButton);
+        mothersLastNameAcceptRadioButton.setIcon(resourceMap.getIcon("mothersLastNameAcceptRadioButton.icon")); // NOI18N
+        mothersLastNameAcceptRadioButton.setName("mothersLastNameAcceptRadioButton"); // NOI18N
+        mothersLastNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("mothersLastNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        mothersLastNameButtonGroup.add(mothersLastNameRejectRadioButton);
+        mothersLastNameRejectRadioButton.setIcon(resourceMap.getIcon("mothersLastNameRejectRadioButton.icon")); // NOI18N
+        mothersLastNameRejectRadioButton.setName("mothersLastNameRejectRadioButton"); // NOI18N
+        mothersLastNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("mothersLastNameRejectRadioButton.selectedIcon")); // NOI18N
 
         compoundHeadsFirstNameLabel.setText(resourceMap.getString("compoundHeadsFirstNameLabel.text")); // NOI18N
         compoundHeadsFirstNameLabel.setName("compoundHeadsFirstNameLabel"); // NOI18N
@@ -1405,6 +1597,17 @@ public class MainView extends FrameView {
         altCompoundHeadsFirstNameTextField.setEditable(false);
         altCompoundHeadsFirstNameTextField.setName("altCompoundHeadsFirstNameTextField"); // NOI18N
 
+        compoundHeadsFirstNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        compoundHeadsFirstNameButtonGroup.add(compoundHeadsFirstNameAcceptRadioButton);
+        compoundHeadsFirstNameAcceptRadioButton.setIcon(resourceMap.getIcon("compoundHeadsFirstNameAcceptRadioButton.icon")); // NOI18N
+        compoundHeadsFirstNameAcceptRadioButton.setName("compoundHeadsFirstNameAcceptRadioButton"); // NOI18N
+        compoundHeadsFirstNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("compoundHeadsFirstNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        compoundHeadsFirstNameButtonGroup.add(compoundHeadsFirstNameRejectRadioButton);
+        compoundHeadsFirstNameRejectRadioButton.setIcon(resourceMap.getIcon("compoundHeadsFirstNameRejectRadioButton.icon")); // NOI18N
+        compoundHeadsFirstNameRejectRadioButton.setName("compoundHeadsFirstNameRejectRadioButton"); // NOI18N
+        compoundHeadsFirstNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("compoundHeadsFirstNameRejectRadioButton.selectedIcon")); // NOI18N
+
         compoundHeadsMiddleNameLabel.setText(resourceMap.getString("compoundHeadsMiddleNameLabel.text")); // NOI18N
         compoundHeadsMiddleNameLabel.setName("compoundHeadsMiddleNameLabel"); // NOI18N
 
@@ -1413,15 +1616,20 @@ public class MainView extends FrameView {
         altCompoundHeadsMiddleNameTextField.setEditable(false);
         altCompoundHeadsMiddleNameTextField.setName("altCompoundHeadsMiddleNameTextField"); // NOI18N
 
-        compoundHeadsMiddleNameButton.setAction(actionMap.get("showReviewCard3")); // NOI18N
-        compoundHeadsMiddleNameButton.setText(resourceMap.getString("compoundHeadsMiddleNameButton.text")); // NOI18N
-        compoundHeadsMiddleNameButton.setName("compoundHeadsMiddleNameButton"); // NOI18N
+        compoundHeadsMiddleNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        compoundHeadsMiddleNameButtonGroup.add(compoundHeadsMiddleNameAcceptRadioButton);
+        compoundHeadsMiddleNameAcceptRadioButton.setIcon(resourceMap.getIcon("compoundHeadsMiddleNameAcceptRadioButton.icon")); // NOI18N
+        compoundHeadsMiddleNameAcceptRadioButton.setName("compoundHeadsMiddleNameAcceptRadioButton"); // NOI18N
+        compoundHeadsMiddleNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("compoundHeadsMiddleNameAcceptRadioButton.selectedIcon")); // NOI18N
 
-        compoundHeadsFirstNameToggleButton.setText(resourceMap.getString("compoundHeadsFirstNameToggleButton.text")); // NOI18N
-        compoundHeadsFirstNameToggleButton.setName("compoundHeadsFirstNameToggleButton"); // NOI18N
+        compoundHeadsMiddleNameButtonGroup.add(compoundHeadsMiddleNameRejectRadioButton);
+        compoundHeadsMiddleNameRejectRadioButton.setIcon(resourceMap.getIcon("compoundHeadsMiddleNameRejectRadioButton.icon")); // NOI18N
+        compoundHeadsMiddleNameRejectRadioButton.setName("compoundHeadsMiddleNameRejectRadioButton"); // NOI18N
+        compoundHeadsMiddleNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("compoundHeadsMiddleNameRejectRadioButton.selectedIcon")); // NOI18N
 
-        compoundHeadsMiddleNameToggleButton.setText(resourceMap.getString("compoundHeadsMiddleNameToggleButton.text")); // NOI18N
-        compoundHeadsMiddleNameToggleButton.setName("compoundHeadsMiddleNameToggleButton"); // NOI18N
+        review2NextButton.setAction(actionMap.get("showReviewCard3")); // NOI18N
+        review2NextButton.setText(resourceMap.getString("review2NextButton.text")); // NOI18N
+        review2NextButton.setName("review2NextButton"); // NOI18N
 
         javax.swing.GroupLayout reviewPanel2Layout = new javax.swing.GroupLayout(reviewPanel2);
         reviewPanel2.setLayout(reviewPanel2Layout);
@@ -1431,7 +1639,7 @@ public class MainView extends FrameView {
                 .addContainerGap()
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                        .addComponent(compoundHeadsMiddleNameButton, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+                        .addComponent(review2NextButton, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
                         .addGap(10, 10, 10))
                     .addGroup(reviewPanel2Layout.createSequentialGroup()
                         .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1445,46 +1653,62 @@ public class MainView extends FrameView {
                             .addComponent(fathersFirstNameLabel))
                         .addGap(20, 20, 20)
                         .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(fathersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                            .addComponent(fathersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                .addComponent(altFathersFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                                .addComponent(altFathersFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fathersFirstNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(fathersMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                                .addComponent(fathersFirstNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fathersFirstNameRejectRadioButton))
+                            .addComponent(fathersMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                .addComponent(altMothersFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                                .addComponent(altMothersFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(mothersFirstNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(mothersFirstNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(mothersFirstNameRejectRadioButton))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                .addComponent(altFathersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                                .addComponent(altFathersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fathersMiddleNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(fathersLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                                .addComponent(fathersMiddleNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(fathersMiddleNameRejectRadioButton))
+                            .addComponent(fathersLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                .addComponent(altFathersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                                .addComponent(altFathersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(fathersLastNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
-                            .addComponent(mothersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
-                            .addGroup(reviewPanel2Layout.createSequentialGroup()
-                                .addComponent(altMothersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                                .addComponent(fathersLastNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(mothersLastNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
-                            .addGroup(reviewPanel2Layout.createSequentialGroup()
-                                .addComponent(altCompoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(compoundHeadsFirstNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(fathersLastNameRejectRadioButton))
+                            .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+                            .addComponent(mothersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                .addComponent(altCompoundHeadsMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                                .addComponent(altMothersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(compoundHeadsMiddleNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(compoundHeadsMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                                .addComponent(mothersLastNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(mothersLastNameRejectRadioButton))
+                            .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                .addComponent(altMothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                                .addComponent(altCompoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(mothersMiddleNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE))
+                                .addComponent(compoundHeadsFirstNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(compoundHeadsFirstNameRejectRadioButton))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
+                                .addComponent(altCompoundHeadsMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(compoundHeadsMiddleNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(compoundHeadsMiddleNameRejectRadioButton))
+                            .addComponent(compoundHeadsMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
+                                .addComponent(altMothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(mothersMiddleNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(mothersMiddleNameNameRejectRadioButton))
+                            .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE))
                         .addContainerGap())))
         );
         reviewPanel2Layout.setVerticalGroup(
@@ -1495,69 +1719,83 @@ public class MainView extends FrameView {
                     .addComponent(fathersFirstNameLabel)
                     .addComponent(fathersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(fathersFirstNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(fathersFirstNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altFathersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altFathersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(fathersFirstNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
-                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(fathersMiddleNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(reviewPanel2Layout.createSequentialGroup()
-                        .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(fathersMiddleNameLabel)
-                            .addComponent(fathersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(altFathersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(fathersMiddleNameLabel)
+                    .addComponent(fathersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(fathersMiddleNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(fathersMiddleNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altFathersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fathersLastNameLabel)
+                    .addComponent(fathersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(fathersLastNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(reviewPanel2Layout.createSequentialGroup()
-                        .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(fathersLastNameLabel)
-                            .addComponent(fathersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(altFathersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(fathersLastNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(fathersLastNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altFathersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(mothersFirstNameLabel)
                     .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altMothersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mothersFirstNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(mothersFirstNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(mothersFirstNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altMothersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(mothersMiddleNameLabel))
                 .addGap(7, 7, 7)
-                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altMothersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mothersMiddleNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(mothersMiddleNameNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(mothersMiddleNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altMothersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(mothersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(mothersLastNameLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altMothersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mothersLastNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(mothersLastNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(mothersLastNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altMothersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(compoundHeadsFirstNameLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altCompoundHeadsFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(compoundHeadsFirstNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(compoundHeadsFirstNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(compoundHeadsFirstNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altCompoundHeadsFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(compoundHeadsMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(compoundHeadsMiddleNameLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altCompoundHeadsMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(compoundHeadsMiddleNameToggleButton))
+                .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(compoundHeadsMiddleNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(compoundHeadsMiddleNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(altCompoundHeadsMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(compoundHeadsMiddleNameButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(review2NextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1575,7 +1813,7 @@ public class MainView extends FrameView {
             .addGroup(reviewCard2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(reviewPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         wizardPanel.add(reviewCard2, "reviewCard2");
@@ -1593,20 +1831,46 @@ public class MainView extends FrameView {
         altCompoundHeadsLastNameTextField.setEditable(false);
         altCompoundHeadsLastNameTextField.setName("altCompoundHeadsLastNameTextField"); // NOI18N
 
-        compoundHeadsLastNameToggleButton.setText(resourceMap.getString("compoundHeadsLastNameToggleButton.text")); // NOI18N
-        compoundHeadsLastNameToggleButton.setName("compoundHeadsLastNameToggleButton"); // NOI18N
+        compoundHeadsLastNameAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        compoundHeadsLastNameButtonGroup.add(compoundHeadsLastNameAcceptRadioButton);
+        compoundHeadsLastNameAcceptRadioButton.setIcon(resourceMap.getIcon("compoundHeadsLastNameAcceptRadioButton.icon")); // NOI18N
+        compoundHeadsLastNameAcceptRadioButton.setName("compoundHeadsLastNameAcceptRadioButton"); // NOI18N
+        compoundHeadsLastNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("compoundHeadsLastNameAcceptRadioButton.selectedIcon")); // NOI18N
+
+        compoundHeadsLastNameButtonGroup.add(compoundHeadsLastNameRejectRadioButton);
+        compoundHeadsLastNameRejectRadioButton.setIcon(resourceMap.getIcon("hdssDataConsentRejectRadioButton.icon")); // NOI18N
+        compoundHeadsLastNameRejectRadioButton.setName("compoundHeadsLastNameRejectRadioButton"); // NOI18N
+        compoundHeadsLastNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("hdssDataConsentRejectRadioButton.selectedIcon")); // NOI18N
 
         hdssDataConsentLabel.setText(resourceMap.getString("hdssDataConsentLabel.text")); // NOI18N
         hdssDataConsentLabel.setName("hdssDataConsentLabel"); // NOI18N
 
-        hdssDataConsentCheckBox.setText(resourceMap.getString("hdssDataConsentCheckBox.text")); // NOI18N
-        hdssDataConsentCheckBox.setName("hdssDataConsentCheckBox"); // NOI18N
+        hdssDataConsentButtonGroup.add(hdssDataConsentYesRadioButton);
+        hdssDataConsentYesRadioButton.setText(resourceMap.getString("hdssDataConsentYesRadioButton.text")); // NOI18N
+        hdssDataConsentYesRadioButton.setName("hdssDataConsentYesRadioButton"); // NOI18N
+
+        hdssDataConsentButtonGroup.add(hdssDataConsentNoRadioButton);
+        hdssDataConsentNoRadioButton.setText(resourceMap.getString("hdssDataConsentNoRadioButton.text")); // NOI18N
+        hdssDataConsentNoRadioButton.setName("hdssDataConsentNoRadioButton"); // NOI18N
+
+        hdssDataConsentButtonGroup.add(hdssDataConsentNoAnswerRadioButton);
+        hdssDataConsentNoAnswerRadioButton.setText(resourceMap.getString("hdssDataConsentNoAnswerRadioButton.text")); // NOI18N
+        hdssDataConsentNoAnswerRadioButton.setName("hdssDataConsentNoAnswerRadioButton"); // NOI18N
 
         altHdssDataConsentTextField.setEditable(false);
         altHdssDataConsentTextField.setName("altHdssDataConsentTextField"); // NOI18N
 
-        hdssDataConsentToggleButton.setText(resourceMap.getString("hdssDataConsentToggleButton.text")); // NOI18N
-        hdssDataConsentToggleButton.setName("hdssDataConsentToggleButton"); // NOI18N
+        hdssDataConsentAcceptRadioButton.setAction(actionMap.get("dummy")); // NOI18N
+        altHdssDataConsentButtonGroup.add(hdssDataConsentAcceptRadioButton);
+        hdssDataConsentAcceptRadioButton.setIcon(resourceMap.getIcon("hdssDataConsentAcceptRadioButton.icon")); // NOI18N
+        hdssDataConsentAcceptRadioButton.setName("hdssDataConsentAcceptRadioButton"); // NOI18N
+        hdssDataConsentAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("hdssDataConsentAcceptRadioButton.selectedIcon")); // NOI18N
+
+        altHdssDataConsentButtonGroup.add(hdssDataConsentRejectRadioButton);
+        hdssDataConsentRejectRadioButton.setText(resourceMap.getString("hdssDataConsentRejectRadioButton.text")); // NOI18N
+        hdssDataConsentRejectRadioButton.setIcon(resourceMap.getIcon("hdssDataConsentRejectRadioButton.icon")); // NOI18N
+        hdssDataConsentRejectRadioButton.setName("hdssDataConsentRejectRadioButton"); // NOI18N
+        hdssDataConsentRejectRadioButton.setSelectedIcon(resourceMap.getIcon("hdssDataConsentRejectRadioButton.selectedIcon")); // NOI18N
 
         fingerprintLabel.setText(resourceMap.getString("fingerprintLabel.text")); // NOI18N
         fingerprintLabel.setName("fingerprintLabel"); // NOI18N
@@ -1647,31 +1911,39 @@ public class MainView extends FrameView {
             .addGroup(reviewPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(finishButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
                     .addGroup(reviewPanel3Layout.createSequentialGroup()
                         .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fingerprintLabel)
                             .addComponent(compoundHeadsLastNameLabel)
                             .addComponent(hdssDataConsentLabel))
                         .addGap(33, 33, 33)
                         .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(hdssDataConsentCheckBox)
-                            .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                            .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
-                                .addComponent(altCompoundHeadsLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                                .addComponent(altCompoundHeadsLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(compoundHeadsLastNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
-                        .addComponent(fingerprintLabel)
-                        .addGap(118, 118, 118)
-                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(compoundHeadsLastNameAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(compoundHeadsLastNameRejectRadioButton))
                             .addGroup(reviewPanel3Layout.createSequentialGroup()
-                                .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(hdssDataConsentYesRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(clientRefusesCheckBox))
-                            .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
-                            .addComponent(takeButton))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(hdssDataConsentToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(finishButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE))
+                                .addComponent(hdssDataConsentNoRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentNoAnswerRadioButton))
+                            .addGroup(reviewPanel3Layout.createSequentialGroup()
+                                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(reviewPanel3Layout.createSequentialGroup()
+                                        .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(clientRefusesCheckBox))
+                                    .addComponent(takeButton)
+                                    .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentRejectRadioButton)))))
                 .addContainerGap())
         );
         reviewPanel3Layout.setVerticalGroup(
@@ -1682,26 +1954,35 @@ public class MainView extends FrameView {
                     .addComponent(compoundHeadsLastNameLabel)
                     .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altCompoundHeadsLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(compoundHeadsLastNameToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(11, 11, 11)
-                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(hdssDataConsentLabel)
-                    .addComponent(hdssDataConsentCheckBox))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(hdssDataConsentToggleButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
                 .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(reviewPanel3Layout.createSequentialGroup()
-                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(clientRefusesCheckBox))
+                        .addComponent(altCompoundHeadsLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11)
+                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(hdssDataConsentLabel)
+                            .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(hdssDataConsentNoRadioButton)
+                                .addComponent(hdssDataConsentNoAnswerRadioButton)
+                                .addComponent(hdssDataConsentYesRadioButton))))
+                    .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(compoundHeadsLastNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(compoundHeadsLastNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(reviewPanel3Layout.createSequentialGroup()
+                        .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(takeButton))
-                    .addComponent(fingerprintLabel))
+                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(reviewPanel3Layout.createSequentialGroup()
+                                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(clientRefusesCheckBox))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(takeButton))
+                            .addComponent(fingerprintLabel)))
+                    .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(hdssDataConsentRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(hdssDataConsentAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(finishButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1721,7 +2002,7 @@ public class MainView extends FrameView {
             .addGroup(reviewCard3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(reviewPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(219, Short.MAX_VALUE))
+                .addContainerGap(217, Short.MAX_VALUE))
         );
 
         wizardPanel.add(reviewCard3, "reviewCard3");
@@ -1735,7 +2016,7 @@ public class MainView extends FrameView {
                 .addGroup(rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(rightPanelLayout.createSequentialGroup()
                         .addGap(1, 1, 1)
-                        .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 510, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(rightPanelLayout.createSequentialGroup()
                         .addComponent(homeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2457,84 +2738,42 @@ public class MainView extends FrameView {
     }
 
     private void populateReviewCards(Person mpiPerson, Person lpiPerson) {
-        if (lpiPerson.getPersonIdentifierList() != null
-                && !lpiPerson.getPersonIdentifierList().isEmpty()) {
-            for (PersonIdentifier personIdentifier : lpiPerson.getPersonIdentifierList()) {
-                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccLocalId
-                        || personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccUniqueId) {
-                    clinicIdTextField.setText(personIdentifier.getIdentifier());
-                    break;
-                }
-            }
-        }
-        firstNameTextField.setText(lpiPerson.getFirstName());
-        middleNameTextField.setText(lpiPerson.getMiddleName());
-        altFirstNameTextField.setText(lpiPerson.getFirstName());
+//        Person sourcePerson = null;
+//        Person altPerson = null;
+//        if (mpiPerson != null && lpiPerson != null) {
+//            sourcePerson = lpiPerson;
+//            altPerson = mpiPerson;
+//        } else {
+//            if (mpiPerson != null && lpiPerson == null) {
+//                sourcePerson = mpiPerson;
+//            } else if (mpiPerson == null && lpiPerson != null) {
+//                sourcePerson = lpiPerson;
+//            } else {
+//                return;
+//            }
+//        }
+//        if (sourcePerson != null && altPerson != null) {
+//            firstNameTextField.setText(sourcePerson.getFirstName());
+//            altFirstNameTextField.setText(altPerson.getFirstName());
+//            if (firstNameTextField.getText().equalsIgnoreCase(altFirstNameTextField.getText())) {
+//                altFirstNameTextField.setVisible(false);
+//                //firstNameToggleButton.setVisible(false);
+//            }
+//        }
+//        if (lpiPerson.getPersonIdentifierList() != null
+//                && !lpiPerson.getPersonIdentifierList().isEmpty()) {
+//            for (PersonIdentifier personIdentifier : lpiPerson.getPersonIdentifierList()) {
+//                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccLocalId
+//                        || personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccUniqueId) {
+//                    clinicIdTextField.setText(personIdentifier.getIdentifier());
+//                    break;
+//                }
+//            }
+//        }
+//        firstNameTextField.setText(lpiPerson.getFirstName());
+//        middleNameTextField.setText(lpiPerson.getMiddleName());
+//        altFirstNameTextField.setText(lpiPerson.getFirstName());
         //altMiddleNameTextField.setText(lpiPerson.getMiddleName() + " XYZ");
-        hideUnnecessaryAlternativeFields(reviewCard1);
-    }
-
-    private void hideUnnecessaryAlternativeFields(JPanel reviewCard) {
-        List<Component> mainComponentList = getMainComponentList(reviewCard);
-        List<Component> alternativeComponentList = getAlternativeComponentList(reviewCard);
-        for (Component mainComponent : mainComponentList) {
-            for (Component alternativeComponent : alternativeComponentList) {
-                if (mainComponent.getName().equalsIgnoreCase(alternativeComponent.getName().split("alt")[1])) {
-                    if (mainComponent instanceof JTextComponent
-                            || alternativeComponent instanceof JTextComponent) {
-                        JTextComponent mainTextComponent = (JTextComponent) mainComponent;
-                        JTextComponent alternativeTextComponent = (JTextComponent) mainComponent;
-                        if (!mainTextComponent.getText().equals(alternativeTextComponent.getText())) {
-                            mainTextComponent.setVisible(false);
-                        }
-                    }
-//                    else if (mainComponent instanceof JToggleButton) {
-//                        JToggleButton toggleButton = (JToggleButton) mainComponent;
-//                        if (toggleButton.getText().isEmpty()) {
-//                            toggleButton.setVisible(false);
-//                        }
-//                    } else if (mainComponent instanceof JDateChooser) {
-//                        JDateChooser dateChooser = (JDateChooser) mainComponent;
-//                        if (dateChooser.) {
-//                        }
-//                        ((JDateChooser) mainComponent).setDate(new Date());
-//                    } else if (mainComponent instanceof JComboBox) {
-//                        ((JComboBox) mainComponent).setSelectedItem(null);
-//                    }
-                    alternativeComponentList.remove(alternativeComponent);
-                }
-            }
-        }
-    }
-
-    private List<Component> getMainComponentList(Container reviewCard) {
-        List<Component> mainComponentList = new ArrayList<Component>();
-        for (Component component : reviewCard.getComponents()) {
-            if (component instanceof Container) {
-                mainComponentList.addAll(getMainComponentList((Container) component));
-            } else {
-                if (component.getName() != null
-                        && !component.getName().substring(0, 2).equalsIgnoreCase("alt")) {
-                    mainComponentList.add(component);
-                }
-            }
-        }
-        return mainComponentList;
-    }
-
-    private List<Component> getAlternativeComponentList(Container reviewCard) {
-        List<Component> alternativeComponentList = new ArrayList<Component>();
-        for (Component component : reviewCard.getComponents()) {
-            if (component instanceof Container) {
-                alternativeComponentList.addAll(getAlternativeComponentList((Container) component));
-            } else {
-                if (component.getName() != null
-                        && !component.getName().substring(0, 2).equalsIgnoreCase("alt")) {
-                    alternativeComponentList.add(component);
-                }
-            }
-        }
-        return alternativeComponentList;
     }
 
     private void clearFields(Container container) {
@@ -2568,6 +2807,9 @@ public class MainView extends FrameView {
         lpiPersonList = null;
         mpiShown = false;
         lpiShown = false;
+        mpiPersonMatch = null;
+        lpiPersonMatch = null;
+        mpiIdentifierSearchDone = false;
     }
 
     @Action
@@ -2582,42 +2824,52 @@ public class MainView extends FrameView {
 
     @Action
     public void finish() {
-        if (mpiPersonMatch == null
-                && lpiPersonMatch == null) {
-            //create in MPI
-            //create in LPI
-            RequestDispatcher.dispatch(packckagePerson(new Person()), mpiRequestResult, lpiRequestResult,
-                    RequestDispatcher.CREATE, TargetIndex.BOTH);
+        String clinicId = clinicIdTextField.getText();
+        if (!Session.validateClinicId(clinicId)) {
+            showWarningMessage("The Clinic ID: '" + clinicId + "' you entered is in the wrong format. "
+                    + "Please use the format '12345-00001' for Universal Clinic IDs and '00001/2005' "
+                    + "for Local Clinic IDs", finishButton, clinicIdTextField);
+            showCard("reviewCard1");
+            return;
         } else {
             if (mpiPersonMatch == null
-                    && lpiPersonMatch != null) {
-                //create in MPI
-                //modify in LPI
-                RequestDispatcher.dispatch(packckagePerson(new Person()), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.CREATE, TargetIndex.MPI);
-                RequestDispatcher.dispatch(packckagePerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.MODIFY, TargetIndex.LPI);
-            } else if (mpiPersonMatch != null
                     && lpiPersonMatch == null) {
-                //modify in MPI
+                //create in MPI
                 //create in LPI
-                RequestDispatcher.dispatch(packckagePerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.MODIFY, TargetIndex.MPI);
-                RequestDispatcher.dispatch(packckagePerson(new Person()), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.CREATE, TargetIndex.LPI);
+                RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
+                        RequestDispatcher.CREATE, TargetIndex.BOTH);
             } else {
-                //modify in MPI
-                //modify in LPI
-                RequestDispatcher.dispatch(packckagePerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.MODIFY, TargetIndex.MPI);
-                RequestDispatcher.dispatch(packckagePerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.MODIFY, TargetIndex.LPI);
+                if (mpiPersonMatch == null
+                        && lpiPersonMatch != null) {
+                    //create in MPI
+                    //modify in LPI
+                    RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.CREATE, TargetIndex.MPI);
+                    RequestDispatcher.dispatch(wrapPerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.MODIFY, TargetIndex.LPI);
+                } else if (mpiPersonMatch != null
+                        && lpiPersonMatch == null) {
+                    //modify in MPI
+                    //create in LPI
+                    RequestDispatcher.dispatch(wrapPerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.MODIFY, TargetIndex.MPI);
+                    RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.CREATE, TargetIndex.LPI);
+                } else {
+                    //modify in MPI
+                    //modify in LPI
+                    //TODO: Revise this logic
+                    RequestDispatcher.dispatch(wrapPerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.MODIFY, TargetIndex.MPI);
+                    RequestDispatcher.dispatch(wrapPerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                            RequestDispatcher.MODIFY, TargetIndex.LPI);
+                }
             }
+            showCard("homeCard");
         }
-        showCard("homeCard");
     }
 
-    public ComprehensiveRequestParameters packckagePerson(Person person) {
+    public ComprehensiveRequestParameters wrapPerson(Person person) {
         if (person != null) {
             ComprehensiveRequestParameters crp = new ComprehensiveRequestParameters(person);
 
@@ -2649,9 +2901,7 @@ public class MainView extends FrameView {
             }
             crp.getPerson().setBirthdate(birthDateChooser.getDate());
             crp.getPerson().setVillageName(villageTextField.getText());
-
-            //TODO: set from combox
-            //crp.getPerson().setMaritalStatus(Person.MaritalStatus.marriedPolygamous);
+            crp.getPerson().setMaritalStatus(((DisplayableMaritalStatus) maritalStatusComboBox.getSelectedItem()).getMaritalStatus());
             crp.getPerson().setFathersFirstName(fathersFirstNameTextField.getText());
             crp.getPerson().setFathersMiddleName(fathersMiddleNameTextField.getText());
             crp.getPerson().setFathersLastName(fathersLastNameTextField.getText());
@@ -2673,8 +2923,27 @@ public class MainView extends FrameView {
                     }
                     crp.getPerson().setFingerprintList(fingerprintList);
                 } else {
-                    //ask for fingerprints maybe
+                    //return and ask for fingerprints maybe
                 }
+            }
+            if (hdssDataConsentYesRadioButton.isSelected()) {
+                crp.getPerson().setConsentSigned(Person.ConsentSigned.yes);
+            } else if (hdssDataConsentNoRadioButton.isSelected()) {
+                crp.getPerson().setConsentSigned(Person.ConsentSigned.no);
+            } else if (hdssDataConsentNoAnswerRadioButton.isSelected()) {
+                crp.getPerson().setConsentSigned(Person.ConsentSigned.notAnswered);
+            }
+            Visit visit = new Visit();
+            visit.setAddress(Session.getApplicationName());
+            visit.setVisitDate(new Date());
+            if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED
+                    || Session.getClientType() == Session.CLIENT_TYPE.NEW) {
+                crp.getPerson().setLastRegularVisit(visit);
+            } else if (Session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
+                crp.getPerson().setLastOneOffVisit(visit);
+            } else if (Session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN) {
+                crp.getPerson().setLastRegularVisit(visit);
+                crp.getPerson().setLastMoveDate(new Date());
             }
             return crp;
         } else {
@@ -2682,12 +2951,30 @@ public class MainView extends FrameView {
 
         }
     }
+
+    @Action
+    public void noLPIMatchFound() {
+        if (!mpiShown && mpiPersonList != null && !mpiPersonList.isEmpty()) {
+            showSearchResults(new PIListData(TargetIndex.MPI, mpiPersonList));
+        } else {
+            populateReviewCards(mpiPersonMatch, lpiPersonMatch);
+            showCard("reviewCard1");
+        }
+    }
+
+    @Action
+    public void noMPIMatchFound() {
+        if (!lpiShown && lpiPersonList != null && !lpiPersonList.isEmpty()) {
+            showSearchResults(new PIListData(TargetIndex.LPI, lpiPersonList));
+        } else {
+            populateReviewCards(mpiPersonMatch, lpiPersonMatch);
+            showCard("reviewCard1");
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JToggleButton ClinicIdToggleButton;
     private javax.swing.JList alertsList;
     private javax.swing.JPanel alertsListPanel;
     private javax.swing.JScrollPane alertsScrollPane;
-    private javax.swing.JTextField alrVillageTextField;
     private javax.swing.JTextField altBirthDateTextField;
     private javax.swing.JTextField altClinicIdTextField;
     private javax.swing.JTextField altCompoundHeadsFirstNameTextField;
@@ -2697,6 +2984,7 @@ public class MainView extends FrameView {
     private javax.swing.JTextField altFathersLastNameTextField;
     private javax.swing.JTextField altFathersMiddleNameTextField;
     private javax.swing.JTextField altFirstNameTextField;
+    private javax.swing.ButtonGroup altHdssDataConsentButtonGroup;
     private javax.swing.JTextField altHdssDataConsentTextField;
     private javax.swing.JTextField altLastNameTextField;
     private javax.swing.JTextField altMaritalStatusTextField;
@@ -2704,8 +2992,9 @@ public class MainView extends FrameView {
     private javax.swing.JTextField altMothersFirstNameTextField;
     private javax.swing.JTextField altMothersLastNameTextField;
     private javax.swing.JTextField altMothersMiddleNameTextField;
+    private javax.swing.ButtonGroup altReviewSexButtonGroup;
     private javax.swing.JTextField altSexTextField;
-    private javax.swing.JToggleButton altVillageToggleButton;
+    private javax.swing.JTextField altVillageTextField;
     private javax.swing.JButton backButton;
     private javax.swing.JButton basicSearchButton;
     private javax.swing.JPanel basicSearchCard;
@@ -2718,26 +3007,36 @@ public class MainView extends FrameView {
     private javax.swing.JLabel basicSearchFingerprintLabel;
     private javax.swing.JPanel basicSearchPanel;
     private javax.swing.JButton basicSearchTakeButton;
+    private javax.swing.JRadioButton birthDateAcceptRadioButton;
+    private javax.swing.ButtonGroup birthDateButtonGroup;
     private com.toedter.calendar.JDateChooser birthDateChooser;
     private javax.swing.JLabel birthDateLabel;
-    private javax.swing.JToggleButton birthDateToggleButton;
+    private javax.swing.JRadioButton birthDateRejectRadioButton;
     private javax.swing.JPanel clientIdPanel;
     private javax.swing.JCheckBox clientRefusesCheckBox;
+    private javax.swing.JRadioButton clinicIdAcceptRadioButton;
+    private javax.swing.ButtonGroup clinicIdButtonGroup;
     private javax.swing.JPanel clinicIdCard;
     private javax.swing.JLabel clinicIdLabel;
     private javax.swing.JButton clinicIdNoButton;
+    private javax.swing.JRadioButton clinicIdRejectRadioButton;
     private javax.swing.JTextField clinicIdTextField;
     private javax.swing.JButton clinicIdYesButton;
+    private javax.swing.JRadioButton compoundHeadsFirstNameAcceptRadioButton;
+    private javax.swing.ButtonGroup compoundHeadsFirstNameButtonGroup;
     private javax.swing.JLabel compoundHeadsFirstNameLabel;
+    private javax.swing.JRadioButton compoundHeadsFirstNameRejectRadioButton;
     private javax.swing.JTextField compoundHeadsFirstNameTextField;
-    private javax.swing.JToggleButton compoundHeadsFirstNameToggleButton;
+    private javax.swing.JRadioButton compoundHeadsLastNameAcceptRadioButton;
+    private javax.swing.ButtonGroup compoundHeadsLastNameButtonGroup;
     private javax.swing.JLabel compoundHeadsLastNameLabel;
+    private javax.swing.JRadioButton compoundHeadsLastNameRejectRadioButton;
     private javax.swing.JTextField compoundHeadsLastNameTextField;
-    private javax.swing.JToggleButton compoundHeadsLastNameToggleButton;
-    private javax.swing.JButton compoundHeadsMiddleNameButton;
+    private javax.swing.JRadioButton compoundHeadsMiddleNameAcceptRadioButton;
+    private javax.swing.ButtonGroup compoundHeadsMiddleNameButtonGroup;
     private javax.swing.JLabel compoundHeadsMiddleNameLabel;
+    private javax.swing.JRadioButton compoundHeadsMiddleNameRejectRadioButton;
     private javax.swing.JTextField compoundHeadsMiddleNameTextField;
-    private javax.swing.JToggleButton compoundHeadsMiddleNameToggleButton;
     private javax.swing.JButton enrolledButton;
     private com.toedter.calendar.JDateChooser extendedSearchBirthdateChooser;
     private javax.swing.JLabel extendedSearchBirthdateLabel;
@@ -2759,35 +3058,50 @@ public class MainView extends FrameView {
     private javax.swing.JLabel extendedSearchMiddleNameLabel;
     private javax.swing.JTextField extendedSearchMiddleNameTextField;
     private javax.swing.JPanel extendedSearchPanel;
+    private javax.swing.ButtonGroup extendedSearchSexButtonGroup;
     private javax.swing.JLabel extendedSearchSexLabel;
     private javax.swing.JButton extendedSearchTakeButton;
     private javax.swing.JLabel extendedSearchVillageLabel;
     private javax.swing.JTextField extendedSearchVillageTextField;
+    private javax.swing.JRadioButton fathersFirstNameAcceptRadioButton;
+    private javax.swing.ButtonGroup fathersFirstNameButtonGroup;
     private javax.swing.JLabel fathersFirstNameLabel;
+    private javax.swing.JRadioButton fathersFirstNameRejectRadioButton;
     private javax.swing.JTextField fathersFirstNameTextField;
-    private javax.swing.JToggleButton fathersFirstNameToggleButton;
+    private javax.swing.JRadioButton fathersLastNameAcceptRadioButton;
+    private javax.swing.ButtonGroup fathersLastNameButtonGroup;
     private javax.swing.JLabel fathersLastNameLabel;
+    private javax.swing.JRadioButton fathersLastNameRejectRadioButton;
     private javax.swing.JTextField fathersLastNameTextField;
-    private javax.swing.JToggleButton fathersLastNameToggleButton;
+    private javax.swing.JRadioButton fathersMiddleNameAcceptRadioButton;
+    private javax.swing.ButtonGroup fathersMiddleNameButtonGroup;
     private javax.swing.JLabel fathersMiddleNameLabel;
+    private javax.swing.JRadioButton fathersMiddleNameRejectRadioButton;
     private javax.swing.JTextField fathersMiddleNameTextField;
-    private javax.swing.JToggleButton fathersMiddleNameToggleButton;
     private javax.swing.JRadioButton femaleRadioButton;
     private ke.go.moh.oec.reception.gui.custom.ImagePanel fingerprintImagePanel;
     private javax.swing.JLabel fingerprintLabel;
     private javax.swing.JButton finishButton;
+    private javax.swing.JRadioButton firstNameAcceptRadioButton;
+    private javax.swing.ButtonGroup firstNameButtonGroup;
     private javax.swing.JLabel firstNameLabel;
+    private javax.swing.JRadioButton firstNameRejectRadioButton;
     private javax.swing.JTextField firstNameTextField;
-    private javax.swing.JToggleButton firstNameToggleButton;
-    private javax.swing.JCheckBox hdssDataConsentCheckBox;
+    private javax.swing.JRadioButton hdssDataConsentAcceptRadioButton;
+    private javax.swing.ButtonGroup hdssDataConsentButtonGroup;
     private javax.swing.JLabel hdssDataConsentLabel;
-    private javax.swing.JToggleButton hdssDataConsentToggleButton;
+    private javax.swing.JRadioButton hdssDataConsentNoAnswerRadioButton;
+    private javax.swing.JRadioButton hdssDataConsentNoRadioButton;
+    private javax.swing.JRadioButton hdssDataConsentRejectRadioButton;
+    private javax.swing.JRadioButton hdssDataConsentYesRadioButton;
     private javax.swing.JButton homeButton;
     private javax.swing.JPanel homeCard;
     private javax.swing.JPanel homePanel;
+    private javax.swing.JRadioButton lastNameAcceptRadioButton;
+    private javax.swing.ButtonGroup lastNameButtonGroup;
     private javax.swing.JLabel lastNameLabel;
+    private javax.swing.JRadioButton lastNameRejectRadioButton;
     private javax.swing.JTextField lastNameTextField;
-    private javax.swing.JToggleButton lastNameToggleButton;
     private javax.swing.JPanel leftPanel;
     private javax.swing.JButton lpiAcceptButton;
     private javax.swing.JButton lpiNotFoundButton;
@@ -2799,22 +3113,33 @@ public class MainView extends FrameView {
     private javax.swing.JPanel mainPanel;
     private javax.swing.JSplitPane mainSplitPane;
     private javax.swing.JRadioButton maleRadioButton;
+    private javax.swing.JRadioButton maritalStatusAcceptRadioButton;
+    private javax.swing.ButtonGroup maritalStatusButtonGroup;
     private javax.swing.JComboBox maritalStatusComboBox;
     private javax.swing.JLabel maritalStatusLabel;
-    private javax.swing.JToggleButton maritalStatusToggleButton;
+    private java.util.List<DisplayableMaritalStatus> maritalStatusList;
+    private javax.swing.JRadioButton maritalStatusRejectRadioButton;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JRadioButton middleNameAcceptRadioButton;
+    private javax.swing.ButtonGroup middleNameButtonGroup;
     private javax.swing.JLabel middleNameLabel;
+    private javax.swing.JRadioButton middleNameRejectRadioButton;
     private javax.swing.JTextField middleNameTextField;
-    private javax.swing.JToggleButton middleNameToggleButton;
+    private javax.swing.JRadioButton mothersFirstNameAcceptRadioButton;
+    private javax.swing.ButtonGroup mothersFirstNameButtonGroup;
     private javax.swing.JLabel mothersFirstNameLabel;
+    private javax.swing.JRadioButton mothersFirstNameRejectRadioButton;
     private javax.swing.JTextField mothersFirstNameTextField;
-    private javax.swing.JToggleButton mothersFirstNameToggleButton;
+    private javax.swing.JRadioButton mothersLastNameAcceptRadioButton;
+    private javax.swing.ButtonGroup mothersLastNameButtonGroup;
     private javax.swing.JLabel mothersLastNameLabel;
+    private javax.swing.JRadioButton mothersLastNameRejectRadioButton;
     private javax.swing.JTextField mothersLastNameTextField;
-    private javax.swing.JToggleButton mothersLastNameToggleButton;
+    private javax.swing.JRadioButton mothersMiddleNameAcceptRadioButton;
+    private javax.swing.ButtonGroup mothersMiddleNameButtonGroup;
     private javax.swing.JLabel mothersMiddleNameLabel;
+    private javax.swing.JRadioButton mothersMiddleNameNameRejectRadioButton;
     private javax.swing.JTextField mothersMiddleNameTextField;
-    private javax.swing.JToggleButton mothersMiddleNameToggleButton;
     private javax.swing.JButton mpiAcceptButton;
     private javax.swing.JButton mpiNotFoundButton;
     private javax.swing.JPanel mpiResultsCard;
@@ -2825,6 +3150,7 @@ public class MainView extends FrameView {
     private javax.swing.JButton newButton;
     private javax.swing.JButton processButton;
     private javax.swing.JProgressBar progressBar;
+    private javax.swing.JButton review2NextButton;
     private javax.swing.JPanel reviewCard1;
     private javax.swing.JButton reviewCard1NextButton;
     private javax.swing.JPanel reviewCard2;
@@ -2832,16 +3158,20 @@ public class MainView extends FrameView {
     private javax.swing.JPanel reviewPanel1;
     private javax.swing.JPanel reviewPanel2;
     private javax.swing.JPanel reviewPanel3;
+    private javax.swing.ButtonGroup reviewSexButtonGroup;
     private javax.swing.JPanel rightPanel;
-    private javax.swing.ButtonGroup sexButtonGroup;
+    private javax.swing.JRadioButton sexAcceptRadioButton;
     private javax.swing.JLabel sexLabel;
-    private javax.swing.JToggleButton sexToggleButton;
+    private javax.swing.JRadioButton sexRejectRadioButton;
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
     private javax.swing.JButton takeButton;
     private javax.swing.JButton transferInButton;
+    private javax.swing.JRadioButton villageAcceptRadioButton;
+    private javax.swing.ButtonGroup villageButtonGroup;
     private javax.swing.JLabel villageLabel;
+    private javax.swing.JRadioButton villageRejectRadioButton;
     private javax.swing.JTextField villageTextField;
     private javax.swing.JButton visitorButton;
     private javax.swing.JPanel wizardPanel;

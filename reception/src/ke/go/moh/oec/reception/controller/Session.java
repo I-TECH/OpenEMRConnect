@@ -59,8 +59,8 @@ public class Session {
     private ImagedFingerprint currentImagedFingerprint = null;
     private boolean nonFingerprint = false;
     private boolean knownClinicId = false;
-    static BufferedImage missingFingerprintImage = null;
-    static BufferedImage refusedFingerprintImage = null;
+    private static BufferedImage missingFingerprintImage = null;
+    private static BufferedImage refusedFingerprintImage = null;
 
     public Session(CLIENT_TYPE clientType) {
         Session.clientType = clientType;
@@ -158,9 +158,13 @@ public class Session {
 
     public static String getMPIIdentifier(Person person) {
         String mpiIdentifier = null;
-        for (PersonIdentifier personIdentifier : person.getPersonIdentifierList()) {
-            if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.masterPatientRegistryId) {
-                mpiIdentifier = personIdentifier.getIdentifier();
+        if (person != null
+                && person.getPersonIdentifierList() != null
+                && !person.getPersonIdentifierList().isEmpty()) {
+            for (PersonIdentifier personIdentifier : person.getPersonIdentifierList()) {
+                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.masterPatientRegistryId) {
+                    mpiIdentifier = personIdentifier.getIdentifier();
+                }
             }
         }
         return mpiIdentifier;
