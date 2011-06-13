@@ -106,7 +106,9 @@ public class PersonIdentifierList {
                         + personId + ", " + dbType + ", " + Sql.quote(id) + ")";
                 Sql.execute(conn, sql);
             }
-            oldList.removeAll(deleteList);
+            if (oldList != null) {
+                oldList.removeAll(deleteList);
+            }
         } else {
             newList = new ArrayList<PersonIdentifier>();
         }

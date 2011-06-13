@@ -226,6 +226,14 @@ public class Session {
         return instanceName;
     }
 
+    public static String getApplicationAddress() {
+        String instanceName = Mediator.getProperty("Instance.Address");
+        if (instanceName == null) {
+            instanceName = getApplicationName();
+        }
+        return instanceName;
+    }
+
     public static ImagedFingerprint getMissingFingerprint() {
         if (missingFingerprintImage == null) {
             try {
@@ -246,5 +254,17 @@ public class Session {
             }
         }
         return new ImagedFingerprint(refusedFingerprintImage, true);
+    }
+
+    public static String getSexString(Person.Sex sex) {
+        String sexString = "";
+        if (sex != null) {
+            if (sex == Person.Sex.M) {
+                sexString = "Male";
+            } else if (sex == Person.Sex.F) {
+                sexString = "Female";
+            }
+        }
+        return sexString;
     }
 }
