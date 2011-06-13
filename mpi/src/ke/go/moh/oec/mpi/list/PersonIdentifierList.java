@@ -86,17 +86,19 @@ public class PersonIdentifierList {
                 PersonIdentifier.Type piType = newP.getIdentifierType();
                 String id = newP.getIdentifier();
                 String dbType = ValueMap.PERSON_IDENTIFIER_TYPE.getDb().get(piType);
-                for (PersonIdentifier oldP : oldList) {
-                    if (oldP.getIdentifierType() == piType) {
-                        String oldId = oldP.getIdentifier();
-                        if ((piType != PersonIdentifier.Type.cccLocalId && piType != PersonIdentifier.Type.cccLocalId)
-                                || (id.substring(0, 4).equals(oldId.substring(0, 4)))) {
-                            deleteList.add(oldP);
-                            sql = "DELETE FROM person_identifier "
-                                    + " WHERE person_id = " + personId
-                                    + " AND identifier_type_id = " + dbType
-                                    + " AND identifier = " + Sql.quote(oldId);
-                            Sql.execute(conn, sql);
+                if (oldList != null) {
+                    for (PersonIdentifier oldP : oldList) {
+                        if (oldP.getIdentifierType() == piType) {
+                            String oldId = oldP.getIdentifier();
+                            if ((piType != PersonIdentifier.Type.cccLocalId && piType != PersonIdentifier.Type.cccLocalId)
+                                    || (id.substring(0, 4).equals(oldId.substring(0, 4)))) {
+                                deleteList.add(oldP);
+                                sql = "DELETE FROM person_identifier "
+                                        + " WHERE person_id = " + personId
+                                        + " AND identifier_type_id = " + dbType
+                                        + " AND identifier = " + Sql.quote(oldId);
+                                Sql.execute(conn, sql);
+                            }
                         }
                     }
                 }

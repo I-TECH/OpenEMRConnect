@@ -78,7 +78,7 @@ import ke.go.moh.oec.lib.Mediator;
  * just stay running, while the oeclib handles all the message forwarding functions.
  * @author Jim Grace
  */
-public class Main {
+public class Esb {
 
     /**
      * Allocate an instance of the OEC Library,
