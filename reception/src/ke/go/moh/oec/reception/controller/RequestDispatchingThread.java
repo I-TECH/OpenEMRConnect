@@ -67,7 +67,7 @@ public class RequestDispatchingThread extends Thread {
         } else if (requestParameters.getClass() == ExtendedRequestParameters.class) {
             packageRequestParameters(person, (ExtendedRequestParameters) requestParameters);
         } else if (requestParameters.getClass() == ComprehensiveRequestParameters.class) {
-            packageRequestParameters(person, (ComprehensiveRequestParameters) requestParameters);
+            person = packageRequestParameters((ComprehensiveRequestParameters) requestParameters);
         }
         personRequest.setPerson(person);
         personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
@@ -89,19 +89,24 @@ public class RequestDispatchingThread extends Thread {
 
     private Person packageRequestParameters(Person person, BasicRequestParameters basicRequestParameters) {
         String clinicId = basicRequestParameters.getIdentifier();
+
         if (clinicId != null && !clinicId.isEmpty()) {
-            PersonIdentifier personIdentifier = new PersonIdentifier();
-            List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
+            List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
+            if (personIdentifierList == null) {
+                personIdentifierList = new ArrayList<PersonIdentifier>();
+            }
+            PersonIdentifier clinicIdentifier = new PersonIdentifier();
             PersonIdentifier.Type clinicIdType = Session.deduceIdentifierType(clinicId);
             if (clinicIdType == PersonIdentifier.Type.cccLocalId
                     && Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
                 clinicId = Session.prependClinicCode(clinicId);
             }
-            personIdentifier.setIdentifierType(clinicIdType);
-            personIdentifier.setIdentifier(clinicId);
-            personIdentifierList.add(personIdentifier);
+            clinicIdentifier.setIdentifierType(clinicIdType);
+            clinicIdentifier.setIdentifier(clinicId);
+            personIdentifierList.add(clinicIdentifier);
             person.setPersonIdentifierList(personIdentifierList);
         }
+
         if (basicRequestParameters.getFingerprint() != null) {
             List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
             fingerprintList.add(basicRequestParameters.getFingerprint());
@@ -122,19 +127,7 @@ public class RequestDispatchingThread extends Thread {
         return person;
     }
 
-    private Person packageRequestParameters(Person person, ComprehensiveRequestParameters comprehensiveRequestParameters) {
-        packageRequestParameters(person, comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters());
-        packageRequestParameters(person, comprehensiveRequestParameters.getExtendedRequestParameters());
-        person.setMaritalStatus(comprehensiveRequestParameters.getMaritalStatus());
-        person.setFathersFirstName(comprehensiveRequestParameters.getFathersFirstName());
-        person.setFathersMiddleName(comprehensiveRequestParameters.getFathersMiddleName());
-        person.setFathersLastName(comprehensiveRequestParameters.getFathersLastName());
-        person.setMothersFirstName(comprehensiveRequestParameters.getMothersFirstName());
-        person.setMothersMiddleName(comprehensiveRequestParameters.getMothersMiddleName());
-        person.setMothersLastName(comprehensiveRequestParameters.getMothersLastName());
-        person.setCompoundHeadFirstName(comprehensiveRequestParameters.getCompoundHeadsFirstName());
-        person.setCompoundHeadMiddleName(comprehensiveRequestParameters.getCompoundHeadsMiddleName());
-        person.setCompoundHeadLastName(comprehensiveRequestParameters.getCompoundHeadsLastName());
-        return person;
+    private Person packageRequestParameters(ComprehensiveRequestParameters comprehensiveRequestParameters) {
+        return comprehensiveRequestParameters.getPerson();
     }
 }
