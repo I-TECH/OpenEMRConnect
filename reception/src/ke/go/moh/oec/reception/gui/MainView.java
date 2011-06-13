@@ -54,7 +54,7 @@ import org.jdesktop.beansbinding.Binding;
  * The application's main frame.
  */
 public class MainView extends FrameView {
-    
+
     private CardLayout cardLayout;
     private Session session;
     private String currentCardName = "homeCard";
@@ -68,7 +68,7 @@ public class MainView extends FrameView {
     private Person mpiPersonMatch = null;
     private Person lpiPersonMatch = null;
     private boolean mpiIdentifierSearchDone = false;
-    
+
     public MainView(SingleFrameApplication app) {
         super(app);
         initComponents();
@@ -79,7 +79,7 @@ public class MainView extends FrameView {
         ResourceMap resourceMap = getResourceMap();
         int messageTimeout = resourceMap.getInteger("StatusBar.messageTimeout");
         messageTimer = new Timer(messageTimeout, new ActionListener() {
-            
+
             public void actionPerformed(ActionEvent e) {
                 statusMessageLabel.setText("");
             }
@@ -90,7 +90,7 @@ public class MainView extends FrameView {
             busyIcons[i] = resourceMap.getIcon("StatusBar.busyIcons[" + i + "]");
         }
         busyIconTimer = new Timer(busyAnimationRate, new ActionListener() {
-            
+
             public void actionPerformed(ActionEvent e) {
                 busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
                 statusAnimationLabel.setIcon(busyIcons[busyIconIndex]);
@@ -103,7 +103,7 @@ public class MainView extends FrameView {
         // connecting action tasks to status bar via TaskMonitor
         TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
         taskMonitor.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            
+
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 String propertyName = evt.getPropertyName();
                 if ("started".equals(propertyName)) {
@@ -132,7 +132,7 @@ public class MainView extends FrameView {
             }
         });
     }
-    
+
     @Action
     public void showAboutBox() {
         if (aboutBox == null) {
@@ -2123,16 +2123,16 @@ public class MainView extends FrameView {
     private void basicSearchClinicIdTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_basicSearchClinicIdTextFieldKeyTyped
         prepareCard("basicSearchCard");
     }//GEN-LAST:event_basicSearchClinicIdTextFieldKeyTyped
-    
+
     private void basicSearchClinicNameTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_basicSearchClinicNameTextFieldKeyTyped
         prepareCard("basicSearchCard");
     }//GEN-LAST:event_basicSearchClinicNameTextFieldKeyTyped
-    
+
     @Action
     public void goHome() {
         showCard("homeCard", true);
     }
-    
+
     @Action
     public void goBack() {
         int i = visitedCardList.indexOf(currentCardName);
@@ -2151,11 +2151,11 @@ public class MainView extends FrameView {
             }
         }
     }
-    
+
     private void showCard(String cardName) {
         showCard(cardName, false);
     }
-    
+
     public void showCard(String cardName, boolean home) {
         if (home && !currentCardName.equalsIgnoreCase("homeCard")) {
             if (!showConfirmMessage("Are you sure you want to go back to the home page and"
@@ -2170,7 +2170,7 @@ public class MainView extends FrameView {
         currentCardName = cardName;
         prepareCard(cardName);
     }
-    
+
     private void prepareCard(String cardName) {
         if (cardName.equalsIgnoreCase("basicSearchCard")) {
             if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
@@ -2220,7 +2220,7 @@ public class MainView extends FrameView {
             }
         }
     }
-    
+
     @Action
     public void showFingerprintDialogBasic() {
         try {
@@ -2239,7 +2239,7 @@ public class MainView extends FrameView {
             return;
         }
     }
-    
+
     @Action
     public void showFingerprintDialogExtended() {
         try {
@@ -2258,7 +2258,7 @@ public class MainView extends FrameView {
             return;
         }
     }
-    
+
     @Action
     public void showFingerprintDialogReview() {
         try {
@@ -2277,38 +2277,38 @@ public class MainView extends FrameView {
             return;
         }
     }
-    
+
     public void showFingerprintImageBasic(BufferedImage fingerprintImage) {
         if (fingerprintImage != null) {
             basicSearchFingerprintImagePanel.setImage(fingerprintImage);
             basicSearchPanel.repaint();
         }
     }
-    
+
     public void showFingerprintImageExtended(BufferedImage fingerprintImage) {
         if (fingerprintImage != null) {
             extendedSearchFingerprintImagePanel.setImage(fingerprintImage);
             extendedSearchPanel.repaint();
         }
     }
-    
+
     public void showFingerprintImageReview(BufferedImage fingerprintImage) {
         if (fingerprintImage != null) {
             fingerprintImagePanel.setImage(fingerprintImage);
             reviewPanel3.repaint();
         }
     }
-    
+
     private void showWarningMessage(String message, Component parent, JComponent toFocus) {
         JOptionPane.showMessageDialog(parent, message, Session.getApplicationName(), JOptionPane.WARNING_MESSAGE);
         toFocus.requestFocus();
     }
-    
+
     public boolean showConfirmMessage(String message, Component parent) {
         return JOptionPane.showConfirmDialog(this.getFrame(), message, Session.getApplicationName(),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
-    
+
     private ProcessResult doBasicSearch(int targetIndex) {
         if (targetIndex == TargetIndex.BOTH || targetIndex == TargetIndex.MPI) {
             mpiRequestResult = new RequestResult();
@@ -2351,7 +2351,7 @@ public class MainView extends FrameView {
                             }
                         }
                     }
-                    
+
                 }
             }
         } else {
@@ -2379,7 +2379,7 @@ public class MainView extends FrameView {
             return new ProcessResult(ProcessResult.Type.UNREACHABLE_INDICES, null);
         }
     }
-    
+
     private ProcessResult doExtendedSearch(int targetIndex) {
         if (targetIndex == TargetIndex.BOTH || targetIndex == TargetIndex.MPI) {
             mpiRequestResult = new RequestResult();
@@ -2422,7 +2422,7 @@ public class MainView extends FrameView {
                             }
                         }
                     }
-                    
+
                 }
             }
         } else {
@@ -2450,7 +2450,7 @@ public class MainView extends FrameView {
             return new ProcessResult(ProcessResult.Type.UNREACHABLE_INDICES, null);
         }
     }
-    
+
     @Action
     public void refuseFingerprintingBasic() {
         if (basicSearchClientRefusesCheckBox.isSelected()) {
@@ -2462,7 +2462,7 @@ public class MainView extends FrameView {
         }
         prepareCard("basicSearchCard");
     }
-    
+
     @Action
     public void refuseFingerprintingExtended() {
         if (extendedSearchClientRefusesCheckBox.isSelected()) {
@@ -2474,7 +2474,7 @@ public class MainView extends FrameView {
         }
         prepareCard("extendedSearchCard");
     }
-    
+
     @Action
     public void refuseFingerprintingReview() {
         if (clientRefusesCheckBox.isSelected()) {
@@ -2486,18 +2486,18 @@ public class MainView extends FrameView {
         }
         prepareCard("reviewCard3");
     }
-    
+
     @Action
     public Task searchBasic() {
         return new SearchBasicTask(getApplication());
     }
-    
+
     private class SearchBasicTask extends org.jdesktop.application.Task<Object, Void> {
-        
+
         SearchBasicTask(org.jdesktop.application.Application app) {
             super(app);
         }
-        
+
         @Override
         protected Object doInBackground() {
             String clinicId = basicSearchClinicIdTextField.getText();
@@ -2524,7 +2524,7 @@ public class MainView extends FrameView {
                 return doBasicSearch(TargetIndex.BOTH);
             }
         }
-        
+
         @Override
         protected void succeeded(Object result) {
             ProcessResult processResult = (ProcessResult) result;
@@ -2541,18 +2541,18 @@ public class MainView extends FrameView {
             }
         }
     }
-    
+
     @Action
     public Task searchExtended() {
         return new SearchExtendedTask(getApplication());
     }
-    
+
     private class SearchExtendedTask extends org.jdesktop.application.Task<Object, Void> {
-        
+
         SearchExtendedTask(org.jdesktop.application.Application app) {
             super(app);
         }
-        
+
         @Override
         protected Object doInBackground() {
             String clinicId = extendedSearchClinicIdTextField.getText();
@@ -2589,7 +2589,7 @@ public class MainView extends FrameView {
                 return doExtendedSearch(TargetIndex.BOTH);
             }
         }
-        
+
         @Override
         protected void succeeded(Object result) {
             ProcessResult processResult = (ProcessResult) result;
@@ -2607,47 +2607,47 @@ public class MainView extends FrameView {
             }
         }
     }
-    
+
     @Action
     public void startEnrolledClientSession() {
         session = new Session(Session.CLIENT_TYPE.ENROLLED);
         clearFields(wizardPanel);
         showCard("clinicIdCard");
     }
-    
+
     @Action
     public void startVisitorClientSession() {
         session = new Session(Session.CLIENT_TYPE.VISITOR);
         clearFields(wizardPanel);
         showCard("clinicIdCard");
     }
-    
+
     @Action
     public void startNewClientSession() {
         session = new Session(Session.CLIENT_TYPE.NEW);
         clearFields(wizardPanel);
         showCard("extendedSearchCard");
     }
-    
+
     @Action
     public void startTransferInClientSession() {
         session = new Session(Session.CLIENT_TYPE.TRANSFER_IN);
         clearFields(wizardPanel);
         showCard("clinicIdCard");
     }
-    
+
     @Action
     public void setKnownClinicIdToYes() {
         session.setKnownClinicId(true);
         showCard("basicSearchCard");
     }
-    
+
     @Action
     public void setKnownClinicIdToNo() {
         session.setKnownClinicId(false);
         showCard("extendedSearchCard");
     }
-    
+
     private void showSearchResults(PIListData piListData) {
         Binding binding = null;
         if (piListData.getTargetIndex() == TargetIndex.MPI) {
@@ -2670,7 +2670,7 @@ public class MainView extends FrameView {
             showCard("lpiResultsCard");
         }
     }
-    
+
     @Action
     public void acceptMPIMatch() {
         int selectedRow = -1;
@@ -2688,10 +2688,10 @@ public class MainView extends FrameView {
             showWarningMessage("Please select a candidate to accept.", mpiAcceptButton, mpiResultsTable);
         }
     }
-    
+
     @Action
     public void acceptLPIMatch() {
-        
+
         int selectedRow = -1;
         selectedRow = lpiResultsTable.getSelectedRow();
         if (selectedRow > -1) {
@@ -2739,7 +2739,7 @@ public class MainView extends FrameView {
             showWarningMessage("Please select a candidate to accept.", mpiAcceptButton, mpiResultsTable);
         }
     }
-    
+
     private void populateReviewCards(Person mpiPerson, Person lpiPerson) {
         Person sourcePerson = null;
         Person altPerson = null;
@@ -2752,18 +2752,18 @@ public class MainView extends FrameView {
             } else if (mpiPerson == null && lpiPerson != null) {
                 sourcePerson = lpiPerson;
             } else {
-                return;
+                hideAllAlternativeFields();
             }
         }
         if (sourcePerson != null && altPerson != null) {
             populateReviewCardsWithSourcePerson(sourcePerson);
             populateReviewCardsWithAltPerson(altPerson);
-        } else {
+        } else if (sourcePerson != null && altPerson == null) {
             populateReviewCardsWithSourcePerson(sourcePerson);
         }
         hideUnnecessaryFields();
     }
-    
+
     private void populateReviewCardsWithSourcePerson(Person sourcePerson) {
         if (sourcePerson.getPersonIdentifierList() != null
                 && !sourcePerson.getPersonIdentifierList().isEmpty()) {
@@ -2778,10 +2778,10 @@ public class MainView extends FrameView {
         firstNameTextField.setText(sourcePerson.getFirstName());
         middleNameTextField.setText(sourcePerson.getMiddleName());
         lastNameTextField.setText(sourcePerson.getLastName());
-        
+
         maleRadioButton.setSelected(sourcePerson.getSex() == Person.Sex.M);
         femaleRadioButton.setSelected(sourcePerson.getSex() == Person.Sex.F);
-        
+
         birthDateChooser.setDate(sourcePerson.getBirthdate());
         villageTextField.setText(sourcePerson.getVillageName());
         fathersFirstNameTextField.setText(sourcePerson.getFathersFirstName());
@@ -2793,12 +2793,12 @@ public class MainView extends FrameView {
         compoundHeadsFirstNameTextField.setText(sourcePerson.getCompoundHeadFirstName());
         compoundHeadsMiddleNameTextField.setText(sourcePerson.getCompoundHeadMiddleName());
         compoundHeadsLastNameTextField.setText(sourcePerson.getCompoundHeadLastName());
-        
+
         hdssDataConsentYesRadioButton.setSelected(sourcePerson.getConsentSigned() == Person.ConsentSigned.yes);
         hdssDataConsentNoRadioButton.setSelected(sourcePerson.getConsentSigned() == Person.ConsentSigned.no);
         hdssDataConsentNoAnswerRadioButton.setSelected(sourcePerson.getConsentSigned() == Person.ConsentSigned.notAnswered);
     }
-    
+
     private void populateReviewCardsWithAltPerson(Person altPerson) {
         if (altPerson.getPersonIdentifierList() != null
                 && !altPerson.getPersonIdentifierList().isEmpty()) {
@@ -2813,7 +2813,7 @@ public class MainView extends FrameView {
         altFirstNameTextField.setText(altPerson.getFirstName());
         altMiddleNameTextField.setText(altPerson.getMiddleName());
         altLastNameTextField.setText(altPerson.getLastName());
-        
+
         altSexTextField.setText(Session.getSexString(altPerson.getSex()));
 
 //        altBirthDateTextField.setText(altPerson.getBirthdate());
@@ -2833,7 +2833,7 @@ public class MainView extends FrameView {
 //        hdssDataConsentNoRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.no);
 //        hdssDataConsentNoAnswerRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.notAnswered);
     }
-    
+
     private void hideUnnecessaryFields() {
         boolean clinicIdVisible = clinicIdTextField.getText().equalsIgnoreCase(altClinicIdTextField.getText());
         altClinicIdTextField.setVisible(!clinicIdVisible);
@@ -2851,7 +2851,7 @@ public class MainView extends FrameView {
         altLastNameTextField.setVisible(!lastNameVisible);
         lastNameAcceptRadioButton.setVisible(!lastNameVisible);
         lastNameRejectRadioButton.setVisible(!lastNameVisible);
-        
+
         boolean sexVisible = false;
         JRadioButton selectedSexRadioButton = getSelectedButton(reviewSexButtonGroup);
         if (selectedSexRadioButton != null) {
@@ -2862,7 +2862,7 @@ public class MainView extends FrameView {
         altSexTextField.setVisible(!sexVisible);
         sexAcceptRadioButton.setVisible(!sexVisible);
         sexRejectRadioButton.setVisible(!sexVisible);
-        
+
         boolean villlageVisible = villageTextField.getText().equalsIgnoreCase(altVillageTextField.getText());
         altVillageTextField.setVisible(!villlageVisible);
         villageAcceptRadioButton.setVisible(!villlageVisible);
@@ -2903,7 +2903,7 @@ public class MainView extends FrameView {
         altCompoundHeadsLastNameTextField.setVisible(!compoundHeadsLastNameVisible);
         compoundHeadsLastNameAcceptRadioButton.setVisible(!compoundHeadsLastNameVisible);
         compoundHeadsLastNameRejectRadioButton.setVisible(!compoundHeadsLastNameVisible);
-        
+
         boolean hdssDataConsentVisible = false;
         JRadioButton selectedHdssDataRadioButton = getSelectedButton(hdssDataConsentButtonGroup);
         if (selectedHdssDataRadioButton != null) {
@@ -2915,7 +2915,69 @@ public class MainView extends FrameView {
         hdssDataConsentAcceptRadioButton.setVisible(!hdssDataConsentVisible);
         hdssDataConsentRejectRadioButton.setVisible(!hdssDataConsentVisible);
     }
-    
+
+    private void hideAllAlternativeFields() {
+        altClinicIdTextField.setVisible(false);
+        clinicIdAcceptRadioButton.setVisible(false);
+        clinicIdRejectRadioButton.setVisible(false);
+        altFirstNameTextField.setVisible(false);
+        firstNameAcceptRadioButton.setVisible(false);
+        firstNameRejectRadioButton.setVisible(false);
+        altMiddleNameTextField.setVisible(false);
+        middleNameAcceptRadioButton.setVisible(false);
+        middleNameRejectRadioButton.setVisible(false);
+        altLastNameTextField.setVisible(false);
+        lastNameAcceptRadioButton.setVisible(false);
+        lastNameRejectRadioButton.setVisible(false);
+
+        altSexTextField.setVisible(false);
+        sexAcceptRadioButton.setVisible(false);
+        sexRejectRadioButton.setVisible(false);
+
+        altBirthDateTextField.setVisible(false);
+        birthDateAcceptRadioButton.setVisible(false);
+        birthDateRejectRadioButton.setVisible(false);
+
+        altMaritalStatusTextField.setVisible(false);
+        maritalStatusAcceptRadioButton.setVisible(false);
+        maritalStatusRejectRadioButton.setVisible(false);
+
+        altVillageTextField.setVisible(false);
+        villageAcceptRadioButton.setVisible(false);
+        villageRejectRadioButton.setVisible(false);
+        altFathersFirstNameTextField.setVisible(false);
+        fathersFirstNameAcceptRadioButton.setVisible(false);
+        fathersFirstNameRejectRadioButton.setVisible(false);
+        altFathersMiddleNameTextField.setVisible(false);
+        fathersMiddleNameAcceptRadioButton.setVisible(false);
+        fathersMiddleNameRejectRadioButton.setVisible(false);
+        altFathersLastNameTextField.setVisible(false);
+        fathersLastNameAcceptRadioButton.setVisible(false);
+        fathersLastNameRejectRadioButton.setVisible(false);
+        altMothersFirstNameTextField.setVisible(false);
+        mothersFirstNameAcceptRadioButton.setVisible(false);
+        mothersFirstNameRejectRadioButton.setVisible(false);
+        altMothersMiddleNameTextField.setVisible(false);
+        mothersMiddleNameAcceptRadioButton.setVisible(false);
+        mothersMiddleNameRejectRadioButton.setVisible(false);
+        altMothersLastNameTextField.setVisible(false);
+        mothersLastNameAcceptRadioButton.setVisible(false);
+        mothersLastNameRejectRadioButton.setVisible(false);
+        altCompoundHeadsFirstNameTextField.setVisible(false);
+        compoundHeadsFirstNameAcceptRadioButton.setVisible(false);
+        compoundHeadsFirstNameRejectRadioButton.setVisible(false);
+        altCompoundHeadsMiddleNameTextField.setVisible(false);
+        compoundHeadsMiddleNameAcceptRadioButton.setVisible(false);
+        compoundHeadsMiddleNameRejectRadioButton.setVisible(false);
+        altCompoundHeadsLastNameTextField.setVisible(false);
+        compoundHeadsLastNameAcceptRadioButton.setVisible(false);
+        compoundHeadsLastNameRejectRadioButton.setVisible(false);
+
+        altHdssDataConsentTextField.setVisible(false);
+        hdssDataConsentAcceptRadioButton.setVisible(false);
+        hdssDataConsentRejectRadioButton.setVisible(false);
+    }
+
     private JRadioButton getSelectedButton(ButtonGroup buttonGroup) {
         for (Enumeration enumeration = buttonGroup.getElements(); enumeration.hasMoreElements();) {
             JRadioButton radioButton = (JRadioButton) enumeration.nextElement();
@@ -2925,7 +2987,7 @@ public class MainView extends FrameView {
         }
         return null;
     }
-    
+
     private void clearFields(Container container) {
         for (Component component : container.getComponents()) {
             if (component instanceof Container) {
@@ -2947,7 +3009,7 @@ public class MainView extends FrameView {
         }
         resetState();
     }
-    
+
     private void resetState() {
         visitedCardList.clear();
         visitedCardList.add("homeCard");
@@ -2961,17 +3023,17 @@ public class MainView extends FrameView {
         lpiPersonMatch = null;
         mpiIdentifierSearchDone = false;
     }
-    
+
     @Action
     public void showReviewCard2() {
         showCard("reviewCard2");
     }
-    
+
     @Action
     public void showReviewCard3() {
         showCard("reviewCard3");
     }
-    
+
     @Action
     public void finish() {
         String clinicId = clinicIdTextField.getText();
@@ -3018,11 +3080,11 @@ public class MainView extends FrameView {
             showCard("homeCard");
         }
     }
-    
+
     public ComprehensiveRequestParameters wrapPerson(Person person) {
         if (person != null) {
             ComprehensiveRequestParameters crp = new ComprehensiveRequestParameters(person);
-            
+
             String clinicId = clinicIdTextField.getText();
             if (clinicId != null && !clinicId.isEmpty()) {
                 List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
@@ -3040,7 +3102,7 @@ public class MainView extends FrameView {
                 personIdentifierList.add(clinicIdentifier);
                 crp.getPerson().setPersonIdentifierList(personIdentifierList);
             }
-            
+
             crp.getPerson().setFirstName(firstNameTextField.getText());
             crp.getPerson().setMiddleName(middleNameTextField.getText());
             crp.getPerson().setLastName(lastNameTextField.getText());
@@ -3098,10 +3160,10 @@ public class MainView extends FrameView {
             return crp;
         } else {
             return null;
-            
+
         }
     }
-    
+
     @Action
     public void noLPIMatchFound() {
         if (!mpiShown && mpiPersonList != null && !mpiPersonList.isEmpty()) {
@@ -3111,7 +3173,7 @@ public class MainView extends FrameView {
             showCard("reviewCard1");
         }
     }
-    
+
     @Action
     public void noMPIMatchFound() {
         if (!lpiShown && lpiPersonList != null && !lpiPersonList.isEmpty()) {
