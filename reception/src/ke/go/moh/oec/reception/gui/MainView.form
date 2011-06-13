@@ -2314,7 +2314,7 @@
                             <Component class="javax.swing.JCheckBox" name="clientRefusesCheckBox">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="refuseFingerprintingExtended" methodName="refuseFingerprintingExtended"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="refuseFingerprintingReview" methodName="refuseFingerprintingReview"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" resourceKey="clientRefusesCheckBox.text"/>
                                 <Property name="name" type="java.lang.String" value="clientRefusesCheckBox" noResource="true"/>
@@ -2328,6 +2328,9 @@
                                 <Property name="text" type="java.lang.String" resourceKey="takeButton.text"/>
                                 <Property name="name" type="java.lang.String" value="takeButton" noResource="true"/>
                               </Properties>
+                              <BindingProperties>
+                                <BindingProperty name="enabled" source="clientRefusesCheckBox" sourcePath="${!selected}" target="takeButton" targetPath="enabled" updateStrategy="0" immediately="false"/>
+                              </BindingProperties>
                             </Component>
                             <Component class="javax.swing.JButton" name="finishButton">
                               <Properties>

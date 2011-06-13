@@ -33,11 +33,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.text.JTextComponent;
+import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.reception.controller.RequestDispatcher;
 import ke.go.moh.oec.reception.data.RequestResult;
 import ke.go.moh.oec.reception.controller.Session;
+import ke.go.moh.oec.reception.data.ComprehensiveRequestParameters;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
 import ke.go.moh.oec.reception.data.TargetIndex;
 import ke.go.moh.oec.reception.gui.custom.ImagePanel;
@@ -1623,13 +1625,16 @@ public class MainView extends FrameView {
             .addGap(0, 74, Short.MAX_VALUE)
         );
 
-        clientRefusesCheckBox.setAction(actionMap.get("refuseFingerprintingExtended")); // NOI18N
+        clientRefusesCheckBox.setAction(actionMap.get("refuseFingerprintingReview")); // NOI18N
         clientRefusesCheckBox.setText(resourceMap.getString("clientRefusesCheckBox.text")); // NOI18N
         clientRefusesCheckBox.setName("clientRefusesCheckBox"); // NOI18N
 
         takeButton.setAction(actionMap.get("showFingerprintDialogReview")); // NOI18N
         takeButton.setText(resourceMap.getString("takeButton.text")); // NOI18N
         takeButton.setName("takeButton"); // NOI18N
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, clientRefusesCheckBox, org.jdesktop.beansbinding.ELProperty.create("${!selected}"), takeButton, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
 
         finishButton.setAction(actionMap.get("finish")); // NOI18N
         finishButton.setText(resourceMap.getString("finishButton.text")); // NOI18N
@@ -2007,7 +2012,7 @@ public class MainView extends FrameView {
     public void showFingerprintImageReview(BufferedImage fingerprintImage) {
         if (fingerprintImage != null) {
             fingerprintImagePanel.setImage(fingerprintImage);
-            extendedSearchPanel.repaint();
+            reviewPanel3.repaint();
         }
     }
 
@@ -2028,7 +2033,7 @@ public class MainView extends FrameView {
         if (targetIndex == TargetIndex.BOTH || targetIndex == TargetIndex.LPI) {
             lpiRequestResult = new RequestResult();
         }
-        RequestDispatcher.dispatchRequest(session.getBasicRequestParameters(),
+        RequestDispatcher.dispatch(session.getBasicRequestParameters(),
                 mpiRequestResult, lpiRequestResult, RequestDispatcher.FIND, targetIndex);
         mpiPersonList = (List<Person>) mpiRequestResult.getData();
         lpiPersonList = (List<Person>) lpiRequestResult.getData();
@@ -2099,7 +2104,7 @@ public class MainView extends FrameView {
         if (targetIndex == TargetIndex.BOTH || targetIndex == TargetIndex.LPI) {
             lpiRequestResult = new RequestResult();
         }
-        RequestDispatcher.dispatchRequest(session.getExtendedRequestParameters(),
+        RequestDispatcher.dispatch(session.getExtendedRequestParameters(),
                 mpiRequestResult, lpiRequestResult, RequestDispatcher.FIND, targetIndex);
         mpiPersonList = (List<Person>) mpiRequestResult.getData();
         lpiPersonList = (List<Person>) lpiRequestResult.getData();
@@ -2189,7 +2194,7 @@ public class MainView extends FrameView {
 
     @Action
     public void refuseFingerprintingReview() {
-        if (extendedSearchClientRefusesCheckBox.isSelected()) {
+        if (clientRefusesCheckBox.isSelected()) {
             showFingerprintImageReview(Session.getRefusedFingerprint().getImage());
             session.setNonFingerprint(true);
         } else {
@@ -2465,7 +2470,7 @@ public class MainView extends FrameView {
         firstNameTextField.setText(lpiPerson.getFirstName());
         middleNameTextField.setText(lpiPerson.getMiddleName());
         altFirstNameTextField.setText(lpiPerson.getFirstName());
-        altMiddleNameTextField.setText(lpiPerson.getMiddleName() + " XYZ");
+        //altMiddleNameTextField.setText(lpiPerson.getMiddleName() + " XYZ");
         hideUnnecessaryAlternativeFields(reviewCard1);
     }
 
@@ -2577,7 +2582,105 @@ public class MainView extends FrameView {
 
     @Action
     public void finish() {
+        if (mpiPersonMatch == null
+                && lpiPersonMatch == null) {
+            //create in MPI
+            //create in LPI
+            RequestDispatcher.dispatch(packckagePerson(new Person()), mpiRequestResult, lpiRequestResult,
+                    RequestDispatcher.CREATE, TargetIndex.BOTH);
+        } else {
+            if (mpiPersonMatch == null
+                    && lpiPersonMatch != null) {
+                //create in MPI
+                //modify in LPI
+                RequestDispatcher.dispatch(packckagePerson(new Person()), mpiRequestResult, lpiRequestResult,
+                        RequestDispatcher.CREATE, TargetIndex.MPI);
+                RequestDispatcher.dispatch(packckagePerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                        RequestDispatcher.MODIFY, TargetIndex.LPI);
+            } else if (mpiPersonMatch != null
+                    && lpiPersonMatch == null) {
+                //modify in MPI
+                //create in LPI
+                RequestDispatcher.dispatch(packckagePerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                        RequestDispatcher.MODIFY, TargetIndex.MPI);
+                RequestDispatcher.dispatch(packckagePerson(new Person()), mpiRequestResult, lpiRequestResult,
+                        RequestDispatcher.CREATE, TargetIndex.LPI);
+            } else {
+                //modify in MPI
+                //modify in LPI
+                RequestDispatcher.dispatch(packckagePerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                        RequestDispatcher.MODIFY, TargetIndex.MPI);
+                RequestDispatcher.dispatch(packckagePerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
+                        RequestDispatcher.MODIFY, TargetIndex.LPI);
+            }
+        }
         showCard("homeCard");
+    }
+
+    public ComprehensiveRequestParameters packckagePerson(Person person) {
+        if (person != null) {
+            ComprehensiveRequestParameters crp = new ComprehensiveRequestParameters(person);
+
+            String clinicId = clinicIdTextField.getText();
+            if (clinicId != null && !clinicId.isEmpty()) {
+                List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
+                if (personIdentifierList == null) {
+                    personIdentifierList = new ArrayList<PersonIdentifier>();
+                }
+                PersonIdentifier clinicIdentifier = new PersonIdentifier();
+                PersonIdentifier.Type clinicIdType = Session.deduceIdentifierType(clinicId);
+                if (clinicIdType == PersonIdentifier.Type.cccLocalId
+                        && Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
+                    clinicId = Session.prependClinicCode(clinicId);
+                }
+                clinicIdentifier.setIdentifierType(clinicIdType);
+                clinicIdentifier.setIdentifier(clinicId);
+                personIdentifierList.add(clinicIdentifier);
+                crp.getPerson().setPersonIdentifierList(personIdentifierList);
+            }
+
+            crp.getPerson().setFirstName(firstNameTextField.getText());
+            crp.getPerson().setMiddleName(middleNameTextField.getText());
+            crp.getPerson().setLastName(lastNameTextField.getText());
+            if (maleRadioButton.isSelected()) {
+                crp.getPerson().setSex(Person.Sex.M);
+            } else if (femaleRadioButton.isSelected()) {
+                crp.getPerson().setSex(Person.Sex.F);
+            }
+            crp.getPerson().setBirthdate(birthDateChooser.getDate());
+            crp.getPerson().setVillageName(villageTextField.getText());
+
+            //TODO: set from combox
+            //crp.getPerson().setMaritalStatus(Person.MaritalStatus.marriedPolygamous);
+            crp.getPerson().setFathersFirstName(fathersFirstNameTextField.getText());
+            crp.getPerson().setFathersMiddleName(fathersMiddleNameTextField.getText());
+            crp.getPerson().setFathersLastName(fathersLastNameTextField.getText());
+            crp.getPerson().setMothersFirstName(mothersFirstNameTextField.getText());
+            crp.getPerson().setMothersMiddleName(mothersMiddleNameTextField.getText());
+            crp.getPerson().setMothersLastName(mothersLastNameTextField.getText());
+            crp.getPerson().setCompoundHeadFirstName(compoundHeadsFirstNameTextField.getText());
+            crp.getPerson().setCompoundHeadMiddleName(compoundHeadsMiddleNameTextField.getText());
+            crp.getPerson().setCompoundHeadLastName(compoundHeadsLastNameTextField.getText());
+            if (crp.getPerson().getFingerprintList() == null) {
+                if (Session.getImagedFingerprintList() != null
+                        && !Session.getImagedFingerprintList().isEmpty()) {
+                    List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
+                    for (ImagedFingerprint imagedFingerprint : Session.getImagedFingerprintList()) {
+                        Fingerprint fingerprint = imagedFingerprint.getFingerprint();
+                        if (fingerprint != null) {
+                            fingerprintList.add(fingerprint);
+                        }
+                    }
+                    crp.getPerson().setFingerprintList(fingerprintList);
+                } else {
+                    //ask for fingerprints maybe
+                }
+            }
+            return crp;
+        } else {
+            return null;
+
+        }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton ClinicIdToggleButton;

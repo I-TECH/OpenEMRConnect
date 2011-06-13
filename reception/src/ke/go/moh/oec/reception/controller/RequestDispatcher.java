@@ -25,7 +25,7 @@
 package ke.go.moh.oec.reception.controller;
 
 /**
- *
+ * 
  * @author Gitahi Ng'ang'a
  */
 import java.util.logging.Level;
@@ -36,78 +36,118 @@ import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.reception.data.TargetIndex;
 
+/**  
+ * The RequestDispatcher class provides a unified way of forwarding
+ * FIND, CREATE and MODIFY requests to Person Indices (MPI/LPI).
+ * <p>
+ * Depending on the dispatch type and targeted indices specified, 
+ * it spawns the necessary number of {@link RequestDispatchingThread}s 
+ * to satisfy the operation.
+ */
 public class RequestDispatcher {
 
+    /**
+     * Searches a Person Index to find a person.
+     * <p>
+     * This value makes no assumptions about the index to contact. That must
+     * be specified by setting the value {@link TargetIndex}
+     */
     public static final int FIND = 1;
+    /**
+     * Requests a Person Index to create a new person entry.
+     * <p>
+     * This value makes no assumptions about the index to contact. That must
+     * be specified by setting the value {@link TargetIndex}
+     */
     public static final int CREATE = 2;
+    /**
+     * Requests a Person Index to modify a person entry.
+     * <p>
+     * This value makes no assumptions about the index to contact. That must
+     * be specified by setting the value {@link TargetIndex}
+     */
     public static final int MODIFY = 3;
     private static Mediator mediator = new Mediator();
 
-    public static void dispatchRequest(RequestParameters requestParameters,
-            RequestResult mpiRequestResult, RequestResult lpiRequestResult, int dispatchType, int targetIndex) {
-        RequestDispatchingThread mpiThread = null;
-        RequestDispatchingThread lpiThread = null;
+    /**
+     * Dispatches a request of a specific type to the specified indices.
+     * <p>
+     * If the dispatchType specified is FIND, any {@link RequestDispatchingThread}s
+     * spawned join the current thread and cause this method to wait until they 
+     * return.
+     * <p>
+     * If the dispatchType specified is CREATE or MODIFY, any 
+     * {@link RequestDispatchingThread}s spawned do not join the current thread 
+     * and this method returns immediately.
+     * <p>
+     * The number of {@link RequestDispatchingThread}s spawned depends on the
+     * {@link TargetIndex} specified. Only one is spawned for {@link TargetIndex#LPI}
+     * or {@link TargetIndex#MPI} and two for {@link TargetIndex#BOTH}.
+     *
+     * @param requestParameters object containing data for the request
+     * @param mpiRequestResult object to contain the MPI results of the request
+     * if any
+     * @param lpiRequestResult object to contain the LPI results of the request
+     * if any
+     * @param dispatchType the general type of request to be dispatched
+     * @param targetIndex the Person Index (Indices) to be contacted
+     */
+    public static void dispatch(RequestParameters requestParameters,
+            RequestResult mpiRequestResult, RequestResult lpiRequestResult,
+            int dispatchType, int targetIndex) {
         if (targetIndex == TargetIndex.BOTH) {
             if (dispatchType == FIND) {
-                mpiThread = new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.FIND_PERSON_MPI, mpiRequestResult);
-                lpiThread = new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.FIND_PERSON_LPI, lpiRequestResult);
-                mpiThread.start();
-                lpiThread.start();
-                try {
-                    mpiThread.join();
-                    lpiThread.join();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(RequestDispatcher.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.FIND_PERSON_MPI, mpiRequestResult), true);
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.FIND_PERSON_LPI, lpiRequestResult), true);
             } else if (dispatchType == CREATE) {
-                mpiThread = new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.CREATE_PERSON_MPI, mpiRequestResult);
-                lpiThread = new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.CREATE_PERSON_LPI, lpiRequestResult);
-                mpiThread.start();
-                lpiThread.start();
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.CREATE_PERSON_MPI, mpiRequestResult), false);
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.CREATE_PERSON_MPI, mpiRequestResult), false);
             } else if (dispatchType == MODIFY) {
-                mpiThread = new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.MODIFY_PERSON_MPI, mpiRequestResult);
-                lpiThread = new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.MODIFY_PERSON_LPI, lpiRequestResult);
-                mpiThread.start();
-                lpiThread.start();
-            } else if (targetIndex == TargetIndex.MPI) {
-                if (dispatchType == FIND) {
-                    mpiThread = new RequestDispatchingThread(
-                            mediator, requestParameters, RequestTypeId.FIND_PERSON_MPI, mpiRequestResult);
-                    mpiThread.start();
-                } else if (dispatchType == CREATE) {
-                    mpiThread = new RequestDispatchingThread(
-                            mediator, requestParameters, RequestTypeId.CREATE_PERSON_MPI, mpiRequestResult);
-                    mpiThread.start();
-                } else if (dispatchType == MODIFY) {
-                    mpiThread = new RequestDispatchingThread(
-                            mediator, requestParameters, RequestTypeId.MODIFY_PERSON_MPI, mpiRequestResult);
-                    mpiThread.start();
-                }
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.MODIFY_PERSON_MPI, mpiRequestResult), false);
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.MODIFY_PERSON_LPI, lpiRequestResult), false);
+            }
+        } else if (targetIndex == TargetIndex.MPI) {
+            if (dispatchType == FIND) {
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.FIND_PERSON_MPI, mpiRequestResult), true);
+            } else if (dispatchType == CREATE) {
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.CREATE_PERSON_MPI, mpiRequestResult), false);
+            } else if (dispatchType == MODIFY) {
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.MODIFY_PERSON_MPI, mpiRequestResult), false);
             }
         } else if (targetIndex == TargetIndex.LPI) {
             if (dispatchType == FIND) {
-                lpiThread = new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.FIND_PERSON_LPI, lpiRequestResult);
-                lpiThread.start();
-                try {
-                    lpiThread.join();
-                } catch (Exception ex) {
-                    Logger.getLogger(RequestDispatcher.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.FIND_PERSON_LPI, lpiRequestResult), true);
             } else if (dispatchType == CREATE) {
-                lpiThread = new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.CREATE_PERSON_LPI, lpiRequestResult);
-                lpiThread.start();
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.CREATE_PERSON_LPI, lpiRequestResult), false);
             } else if (dispatchType == MODIFY) {
-                lpiThread = new RequestDispatchingThread(
-                        mediator, requestParameters, RequestTypeId.MODIFY_PERSON_LPI, lpiRequestResult);
-                lpiThread.start();
+                spawn(new RequestDispatchingThread(
+                        mediator, requestParameters, RequestTypeId.MODIFY_PERSON_LPI, lpiRequestResult), true);
+            }
+        }
+    }
+
+    /*
+     * Spawn a new thread and specify whether or not it should join
+     * the current one.
+     */
+    private static void spawn(RequestDispatchingThread rdt, boolean join) {
+        rdt.start();
+        if (join) {
+            try {
+                rdt.join();
+            } catch (Exception ex) {
+                Logger.getLogger(RequestDispatcher.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
