@@ -27,6 +27,7 @@ package ke.go.moh.oec.lib;
 import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import ke.go.moh.oec.LogEntry;
 import ke.go.moh.oec.RequestTypeId;
@@ -68,7 +69,7 @@ public class LoggingHandler extends Handler {
      */
     @Override
     public void publish(LogRecord record) {
-        if (isLoggable(record)) {
+        if (isLoggable(record) && record.getLevel().intValue() >= Level.INFO.intValue()) {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             for (int i = 2; i < stackTrace.length; i++) {
                 StackTraceElement e = stackTrace[i];
