@@ -76,6 +76,10 @@ class Message {
      */
     private String xml;
     /**
+     * An excerpt of the message to identify its type for logging.
+     */
+    private String xmlExcerpt;
+    /**
      * Is a response expected to this message?
      */
     private boolean responseExpected;
@@ -174,5 +178,13 @@ class Message {
 
     public void setXml(String xml) {
         this.xml = xml;
+    }
+
+    public String getXmlExcerpt() {
+        return xmlExcerpt;
+    }
+
+    public void setXmlExcerpt(String xmlExcerpt) {
+        this.xmlExcerpt = xmlExcerpt;
     }
 }

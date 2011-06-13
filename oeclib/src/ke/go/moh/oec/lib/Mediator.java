@@ -574,7 +574,7 @@ public class Mediator implements IService {
                      * destination that is not us. Somehing is misconfigured.
                      */
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "Message destination ''{0}'' matches our own name, but router returns IP Address/port of ''{1}''",
+                            "Message destination ''{0}'' matches our own name, but router returns IP Address:port of ''{1}''",
                             new Object[]{destinationAddress, ipAddressPort});
                 }
             } else {    // If the message is not addressed to us:
@@ -585,8 +585,7 @@ public class Mediator implements IService {
                      * This is a configuration error.
                      */
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "IP Address/port not found for message with destination ''{0}'', our instance address is ''{1}''",
-                            new Object[]{destinationAddress, ourInstanceAddress});
+                            "IP Address:port not found for destination ''{0}''", destinationAddress);
                 } else {
                     /*
                      * The message destination does not match our own,
@@ -594,7 +593,8 @@ public class Mediator implements IService {
                      * It is not destined for us, so we will pass it though
                      * to its destination.
                      */
-                    Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Relaying message to next hop.");
+                    Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                            "Relaying message {0} to {1}", new Object[]{m.getXmlExcerpt(), ipAddressPort});
                     m.setIpAddressPort(ipAddressPort);
                     int hopCount = m.getHopCount();
                     hopCount++;

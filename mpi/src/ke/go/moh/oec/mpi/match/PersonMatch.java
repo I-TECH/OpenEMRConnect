@@ -358,7 +358,7 @@ public class PersonMatch {
             for (PersonIdentifier pi1 : list1) {
                 for (PersonIdentifier pi2 : list2) {
                     if (pi1.getIdentifierType() == pi2.getIdentifierType()) {
-                        if (identifierNeedsSite(pi1)) {
+                        if (identifierNeedsSite(pi1) && this.getSiteCandidateSet() != null) {
                             for (SiteCandidate sc : this.getSiteCandidateSet()) {
                                 String identifier = sc.getSitePersonIdentifier();
                                 if (identifier.equals(pi2.getIdentifier())) {

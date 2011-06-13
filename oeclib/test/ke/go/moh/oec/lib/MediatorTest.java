@@ -58,7 +58,7 @@ public class MediatorTest {
         assertEquals(expResult, result);
 
         propertyName = "HTTPHandler.ListenPort";
-        expResult = "9724";
+        expResult = "9723";
         result = Mediator.getProperty(propertyName);
         assertEquals(expResult, result);
     }

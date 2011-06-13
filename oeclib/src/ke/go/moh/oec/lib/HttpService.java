@@ -93,9 +93,9 @@ class HttpService {
             Writer output = new OutputStreamWriter(connection.getOutputStream());
             output.write(xml);
             output.close();
-            
+
             Object o = connection.getInputStream();
-            
+
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             while (br.readLine() != null) {
                 //content not required, just acknowlegment that message was received.
@@ -183,19 +183,27 @@ class HttpService {
                     m.setToBeQueued(Boolean.parseBoolean(pair[1]));
                 }
             }
-            Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Received {0}", query);
             if (requestMethod.equals("POST")) {
                 /*
                  * Read the posted content
                  */
                 BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
                 String st;
+                m.setXmlExcerpt("");
+                int lineNumber = 0;
                 String request = "";
                 while ((st = br.readLine()) != null) {
+                    if (++lineNumber <= 2) {
+                        String excerpt = st.split(" ")[0] + "...";
+                        m.setXmlExcerpt(excerpt);
+                    }
                     request = request + st + "\n";
                 }
                 br.close();
                 m.setXml(request);
+                String remoteIp = exchange.getRemoteAddress().getAddress().getHostAddress();
+                Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Received from {0} {1} {2}",
+                        new Object[]{remoteIp, query, m.getXmlExcerpt()});
                 Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message:\n{0}", request);
                 /*
                  * Process the message.
