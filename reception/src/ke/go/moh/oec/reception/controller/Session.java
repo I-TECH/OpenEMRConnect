@@ -38,7 +38,6 @@ import javax.imageio.ImageIO;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.lib.Mediator;
-import ke.go.moh.oec.reception.data.ComprehensiveRequestParameters;
 
 /**
  *
@@ -56,7 +55,6 @@ public class Session {
     private static CLIENT_TYPE clientType;
     private BasicRequestParameters basicRequestParameters = new BasicRequestParameters();
     private ExtendedRequestParameters extendedRequestParameters = new ExtendedRequestParameters();
-    private ComprehensiveRequestParameters comprehensiveRequestParameters = new ComprehensiveRequestParameters();
     private static List<ImagedFingerprint> imagedFingerprintList = new ArrayList<ImagedFingerprint>();
     private ImagedFingerprint currentImagedFingerprint = null;
     private boolean nonFingerprint = false;
@@ -78,10 +76,6 @@ public class Session {
 
     public static CLIENT_TYPE getClientType() {
         return clientType;
-    }
-
-    public ComprehensiveRequestParameters getComprehensiveRequestParameters() {
-        return comprehensiveRequestParameters;
     }
 
     public ExtendedRequestParameters getExtendedRequestParameters() {
@@ -166,10 +160,22 @@ public class Session {
         String mpiIdentifier = null;
         for (PersonIdentifier personIdentifier : person.getPersonIdentifierList()) {
             if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.masterPatientRegistryId) {
-                return personIdentifier.getIdentifier();
+                mpiIdentifier = personIdentifier.getIdentifier();
             }
         }
         return mpiIdentifier;
+    }
+
+    public static PersonIdentifier getGUID(Person person) {
+        PersonIdentifier guid = null;
+        if (person != null && person.getPersonIdentifierList() != null) {
+            for (PersonIdentifier personIdentifier : person.getPersonIdentifierList()) {
+                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.masterPatientRegistryId) {
+                    guid = personIdentifier;
+                }
+            }
+        }
+        return guid;
     }
 
     public static PersonIdentifier.Type deduceIdentifierType(String personIdentifier) {

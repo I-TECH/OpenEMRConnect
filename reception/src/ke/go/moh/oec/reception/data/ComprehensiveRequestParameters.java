@@ -24,7 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.data;
 
-import ke.go.moh.oec.Person.MaritalStatus;
+import ke.go.moh.oec.Person;
 
 /**
  *
@@ -32,107 +32,13 @@ import ke.go.moh.oec.Person.MaritalStatus;
  */
 public class ComprehensiveRequestParameters implements RequestParameters {
 
-    private ExtendedRequestParameters extendedRequestParameters;
-    private String fathersFirstName;
-    private String fathersMiddleName;
-    private String fathersLastName;
-    private String mothersFirstName;
-    private String mothersMiddleName;
-    private String mothersLastName;
-    private String compoundHeadsFirstName;
-    private String compoundHeadsMiddleName;
-    private String compoundHeadsLastName;
-    private MaritalStatus maritalStatus;
+    private final Person person;
 
-    public ComprehensiveRequestParameters() {
-        this.extendedRequestParameters = new ExtendedRequestParameters();
+    public ComprehensiveRequestParameters(Person person) {
+        this.person = person;
     }
 
-    public String getCompoundHeadsFirstName() {
-        return compoundHeadsFirstName;
-    }
-
-    public void setCompoundHeadsFirstName(String compoundHeadsFirstName) {
-        this.compoundHeadsFirstName = compoundHeadsFirstName;
-    }
-
-    public String getCompoundHeadsLastName() {
-        return compoundHeadsLastName;
-    }
-
-    public void setCompoundHeadsLastName(String compoundHeadsLastName) {
-        this.compoundHeadsLastName = compoundHeadsLastName;
-    }
-
-    public String getCompoundHeadsMiddleName() {
-        return compoundHeadsMiddleName;
-    }
-
-    public void setCompoundHeadsMiddleName(String compoundHeadsMiddleName) {
-        this.compoundHeadsMiddleName = compoundHeadsMiddleName;
-    }
-
-    public ExtendedRequestParameters getExtendedRequestParameters() {
-        return extendedRequestParameters;
-    }
-
-    public void setExtendedRequestParameters(ExtendedRequestParameters extendedRequestParameters) {
-        this.extendedRequestParameters = extendedRequestParameters;
-    }
-
-    public String getFathersFirstName() {
-        return fathersFirstName;
-    }
-
-    public void setFathersFirstName(String fathersFirstName) {
-        this.fathersFirstName = fathersFirstName;
-    }
-
-    public String getFathersLastName() {
-        return fathersLastName;
-    }
-
-    public void setFathersLastName(String fathersLastName) {
-        this.fathersLastName = fathersLastName;
-    }
-
-    public String getFathersMiddleName() {
-        return fathersMiddleName;
-    }
-
-    public void setFathersMiddleName(String fathersMiddleName) {
-        this.fathersMiddleName = fathersMiddleName;
-    }
-
-    public MaritalStatus getMaritalStatus() {
-        return maritalStatus;
-    }
-
-    public void setMaritalStatus(MaritalStatus maritalStatus) {
-        this.maritalStatus = maritalStatus;
-    }
-
-    public String getMothersFirstName() {
-        return mothersFirstName;
-    }
-
-    public void setMothersFirstName(String mothersFirstName) {
-        this.mothersFirstName = mothersFirstName;
-    }
-
-    public String getMothersLastName() {
-        return mothersLastName;
-    }
-
-    public void setMothersLastName(String mothersLastName) {
-        this.mothersLastName = mothersLastName;
-    }
-
-    public String getMothersMiddleName() {
-        return mothersMiddleName;
-    }
-
-    public void setMothersMiddleName(String mothersMiddleName) {
-        this.mothersMiddleName = mothersMiddleName;
+    public Person getPerson() {
+        return person;
     }
 }
