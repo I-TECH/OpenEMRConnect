@@ -68,6 +68,7 @@ public class PersonIdentifierList {
                 pi.setIdentifierType(pit);
                 personIdentifierList.add(pi);
             }
+            rs.close();
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
@@ -84,7 +85,7 @@ public class PersonIdentifierList {
             for (PersonIdentifier newP : newList) {
                 PersonIdentifier.Type piType = newP.getIdentifierType();
                 String id = newP.getIdentifier();
-                String dbType = ValueMap.FINGERPRINT_TYPE.getDb().get(piType);
+                String dbType = ValueMap.PERSON_IDENTIFIER_TYPE.getDb().get(piType);
                 for (PersonIdentifier oldP : oldList) {
                     if (oldP.getIdentifierType() == piType) {
                         String oldId = oldP.getIdentifier();

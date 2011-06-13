@@ -45,7 +45,6 @@ public class KisumuHdss {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
         FindPersonResponder fpr = new FindPersonResponder();
         Mediator.registerCallback(fpr);
         String driverName = Mediator.getProperty("Shadow.driver");

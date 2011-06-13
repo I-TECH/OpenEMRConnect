@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
@@ -50,6 +51,7 @@ import ke.go.moh.oec.mpi.Notifier;
 import ke.go.moh.oec.mpi.match.PersonMatch;
 import ke.go.moh.oec.mpi.Scorecard;
 import ke.go.moh.oec.mpi.SearchHistory;
+import ke.go.moh.oec.mpi.SiteCandidate;
 import ke.go.moh.oec.mpi.Sql;
 import ke.go.moh.oec.mpi.ValueMap;
 
@@ -68,14 +70,10 @@ public class PersonList {
 
     private List<PersonMatch> personList = new ArrayList<PersonMatch>();
     private Map<String, PersonMatch> personMap = new HashMap<String, PersonMatch>();
+    private SiteList siteList;
 
-    /**
-     * Returns the size of the in-memory person list.
-     * 
-     * @return size of the in-memory person list.
-     */
-    public int size() {
-        return personList.size();
+    public void setSiteList(SiteList siteList) {
+        this.siteList = siteList;
     }
 
     /**
@@ -131,6 +129,7 @@ public class PersonList {
          */
         Connection personConn = Sql.connect();
         Connection listConn = Sql.connect();
+        long startTime = System.currentTimeMillis();
         /*
          * For quick debugging, set queryLimit to a limite number of rows,
          * to avoide loading the entire database. For production uses, set
@@ -198,10 +197,15 @@ public class PersonList {
                     Mediator.getLogger(PersonList.class.getName()).log(Level.FINE, "Loaded {0}.", recordCount);
                 }
             }
+            rs.close();
         } catch (SQLException ex) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
+        double timeInterval = (System.currentTimeMillis() - startTime);
+        Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
+                "Loaded {0} person entries in {1} milliseconds.",
+                new Object[]{personList.size(), timeInterval});
     }
 
     /**
@@ -220,6 +224,8 @@ public class PersonList {
         }
         PersonMatch searchTerms = new PersonMatch(p);
         CandidateSet candidateSet = new CandidateSet();
+        Set<SiteCandidate> siteCandidateSet = siteList.findIfNeeded(searchTerms);
+        searchTerms.setSiteCandidateSet(siteCandidateSet);
         DateMatch.setToday();
         if (p.getPersonGuid() != null
                 && (p.getFingerprintList() == null || p.getFingerprintList().isEmpty())) {
@@ -230,8 +236,6 @@ public class PersonList {
                 candidateSet.add(match, scorecard);
             }
         } else {
-            // TODO: If search by clinic ID with clinic name, do fuzzy match on clinic name.
-
             int personMatchCount = personList.size();
             int threadCount = Mpi.getMaxThreadCount();
             if (threadCount > personMatchCount) {
@@ -258,9 +262,9 @@ public class PersonList {
                     Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "Error joining FindPersonThread", ex);
                 }
             }
-            double timeInterval = (System.currentTimeMillis() - startTime) / 1000.0;
-            Mediator.getLogger(PersonList.class.getName()).log(Level.INFO,
-                    "Searched {0} entries in {1} seconds.",
+            double timeInterval = (System.currentTimeMillis() - startTime);
+            Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
+                    "Searched {0} entries in {1} milliseconds.",
                     new Object[]{personMatchCount, timeInterval});
         }
         List<Person> candidateList = candidateSet.export();
@@ -277,7 +281,7 @@ public class PersonList {
      */
     public Object create(PersonRequest req) {
         PersonResponse returnData = null;
-        Person p = req.getPerson();
+        Person p = req.getPerson().clone(); // Clone because we may modify our copy below.
         if (p == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "CREATE PERSON called with no person data.");
             return returnData;
@@ -288,6 +292,7 @@ public class PersonList {
         try {
             rs.next();
             guid = rs.getString("uuid");
+            rs.close();
         } catch (SQLException ex) { // Won't happen
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -333,11 +338,10 @@ public class PersonList {
         VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
         VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
         Sql.commit(conn);
-        PersonMatch newPer = new PersonMatch(p);
+        PersonMatch newPer = new PersonMatch(p.clone()); // Clone to protect from unit test modifications.
         newPer.setDbPersonId(dbPersonId);
         this.add(newPer);
-        boolean matchFound = false; // Created a person, so no match was found.
-        SearchHistory.update(req, matchFound);
+        SearchHistory.update(req, null, null); // Update search history showing that no candidate was selected.
         if (req.isResponseRequested()) {
             returnData = new PersonResponse();
             List<Person> returnList = new ArrayList<Person>();
@@ -372,6 +376,7 @@ public class PersonList {
             return returnData;
         }
 
+        SearchHistory.update(req, oldPer, p); // Log the search result (if any) BEFORE modifying the person.
         int dbPersonId = oldPer.getDbPersonId();
         Person oldP = oldPer.getPerson();
         Connection conn = Sql.connect();
@@ -420,8 +425,6 @@ public class PersonList {
         newPer.setDbPersonId(dbPersonId);
         this.remove(oldPer); // Remove old person from our in-memory list.
         this.add(newPer); // Add new person to our in-memory list.
-        boolean matchFound = true; // Modified a person, so a match was found.
-        SearchHistory.update(req, matchFound);
         Notifier.notify(p);
         if (req.isResponseRequested()) {
             returnData = new PersonResponse();

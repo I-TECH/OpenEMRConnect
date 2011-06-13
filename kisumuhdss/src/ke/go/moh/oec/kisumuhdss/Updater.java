@@ -207,6 +207,8 @@ public class Updater {
                 p.setSex(Person.Sex.valueOf(r.value));
             } else if (r.name.equals("dob")) {
                 p.setBirthdate(parseDate(r.value));
+            } else if (r.name.equals("deathdate")) {
+                p.setDeathdate(parseDate(r.value));
             } else if (r.name.equals("mfname")) {
                 p.setMothersFirstName(r.value);
             } else if (r.name.equals("mjname")) {
@@ -231,7 +233,6 @@ public class Updater {
                 p.setCompoundHeadLastName(r.value);
             } else if (r.name.equals("village")) {
                 p.setFathersMiddleName(r.value);
-                // TODO: Death Date?
             } else if (r.name.equals("lasemoveddate")) {
                 p.setLastMoveDate(parseDate(r.value));
             } else if (r.name.equals("expDeliveryDate")) {

@@ -50,6 +50,20 @@ public class PersonRequest {
      */
     private String requestReference;
     /**
+     * Address of the source this request came from.
+     * Used when the library delivers a request to a server.
+     * Not meaningful in the context of a client giving a request to the
+     * OEC library for sending.
+     */
+    private String sourceAddress;
+    /**
+     * Name of the source this request came from.
+     * Used when the library delivers a request to a server.
+     * Not meaningful in the context of a client giving a request to the
+     * OEC library for sending.
+     */
+    private String sourceName;
+    /**
      * Address of the destination to send this request to. In most cases
      * this is null because the OEC library will determine the request
      * destination address based on the request type. However in the
@@ -136,6 +150,22 @@ public class PersonRequest {
 
     public void setResponseRequested(boolean responseRequested) {
         this.responseRequested = responseRequested;
+    }
+
+    public String getSourceAddress() {
+        return sourceAddress;
+    }
+
+    public void setSourceAddress(String sourceAddress) {
+        this.sourceAddress = sourceAddress;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
     }
 
     public String getXml() {

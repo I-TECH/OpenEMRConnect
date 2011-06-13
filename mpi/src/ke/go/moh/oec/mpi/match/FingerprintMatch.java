@@ -57,8 +57,8 @@ public class FingerprintMatch implements Cloneable {
     private Template grTemplate = null;
     private MatchingContext grMatchingContext = null;
     private boolean nonSdkMatch;
-    static boolean grInitialized = false;
-    static boolean useFingerprintSdk = false;
+    static boolean grInitialized = true;
+    static boolean useFingerprintSdk = true;
 
     private synchronized static void init() {
         if (!grInitialized) {

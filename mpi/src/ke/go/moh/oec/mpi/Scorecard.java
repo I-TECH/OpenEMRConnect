@@ -37,6 +37,7 @@ public class Scorecard {
     private int sum = 0;
     private int count = 0;
     private boolean fingerprintMatched = false;
+    private String siteName = null;
 
     public int getCount() {
         return count;
@@ -52,6 +53,14 @@ public class Scorecard {
 
     public void setFingerprintMatched(boolean fingerprintMatched) {
         this.fingerprintMatched = fingerprintMatched;
+    }
+
+    public String getSiteName() {
+        return siteName;
+    }
+
+    public void setSiteName(String clinicName) {
+        this.siteName = clinicName;
     }
 
     public int getSum() {

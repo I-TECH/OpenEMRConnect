@@ -36,8 +36,25 @@ import java.util.List;
  * @author Jim Grace
  */
 public class PersonResponse {
+
     /** Data for a list of zero or more persons to satisfy the request. */
     private List<Person> personList;
+    /**
+     * A request reference number. This is not
+     * supplied by the client when making a new request.
+     * But it is always supplied by the library to the server when the
+     * request is delivered to the server. It may also be specified by the caller
+     * in order to associate a request with an earlier request.
+     * <p>
+     * For example, a client would specify the reference number from
+     * a prior person search when making a subsequent call relating
+     * to the same search. It is also supplied by the client when taking
+     * action such as add person or modify person, based on the results
+     * of a previous find person. This lets the server know which person
+     * was chosen (or, in the event of ADD PERSON, that no person was
+     * chosen from the search results.)
+     */
+    private String requestReference;
     /**
      * Is the request successful? Note that in the case of a person search,
      * this does not indicate whether matching entries were found. It
@@ -54,6 +71,14 @@ public class PersonResponse {
         this.personList = personList;
     }
 
+    public String getRequestReference() {
+        return requestReference;
+    }
+
+    public void setRequestReference(String requestReference) {
+        this.requestReference = requestReference;
+    }
+
     public boolean isSuccessful() {
         return successful;
     }
@@ -61,5 +86,4 @@ public class PersonResponse {
     public void setSuccessful(boolean successful) {
         this.successful = successful;
     }
-    
 }

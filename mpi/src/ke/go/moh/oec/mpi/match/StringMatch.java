@@ -24,8 +24,9 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi.match;
 
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Scorecard;
-
 
 /**
  * Represents a string value for matching.
@@ -39,29 +40,43 @@ public class StringMatch {
 
     public StringMatch(String original) {
         if (original != null) {
-            this.original = original.toLowerCase();
+            this.original = original.toLowerCase().trim();
         }
     }
 
-    public int score(Scorecard s, StringMatch other) {
-        int returnScore = 0;
-        if (original != null && other.original != null) {
-            returnScore = stringScore(original, other.original);
-            s.addScore(returnScore);
-        }
-        return returnScore;
+    public String getOriginal() {
+        return original;
     }
 
-    public static int stringScore(String s1, String s2) {
-        int returnScore = 0;
+    public void score(Scorecard s, StringMatch other) {
+        int score = computeScore(this, other);
+        if (score >= 0) {
+            s.addScore(score);
+        }
+    }
+
+    public static int computeScore(StringMatch sm1, StringMatch sm2) {
+        int score = -1;
+        String s1 = sm1.original;
+        String s2 = sm2.original;
         if (s1 != null && s2 != null) {
+            score = 0;
             if (s1.equals(s2)) {
-                returnScore = 100;
+                score = 100;
             } else {
-                returnScore = 0;
+                int distance = Levenshtein.damerauLevenshteinDistance(s1, s2);
+                int lengthDiff = Math.abs(s1.length() - s2.length());
+                if (lengthDiff > 2) {
+                    distance -= (lengthDiff - 2);
+                }
+                score = 100 - (20 * distance);
+                if (score < 0) {
+                    score = 0;
+                }
             }
+            Mediator.getLogger(StringMatch.class.getName()).log(Level.FINEST,
+                    "StringMatch.computeScore({0},{1}) = {2}", new Object[]{s1, s2, score});
         }
-        return returnScore;
+        return score;
     }
-
 }

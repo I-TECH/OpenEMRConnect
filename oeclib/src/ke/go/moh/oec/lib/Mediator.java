@@ -25,6 +25,7 @@
 package ke.go.moh.oec.lib;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
@@ -33,10 +34,13 @@ import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import ke.go.moh.oec.IService;
 import java.io.FileInputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
-import ke.go.moh.oec.Person;
+import java.util.logging.Formatter;
+import java.util.logging.SimpleFormatter;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
 
@@ -110,9 +114,23 @@ public class Mediator implements IService {
      * A copy of the properties from standard file location
      */
     static Properties properties = null;
+    /** Lock the properties file we are using, so multiple instances will use multiple properties files. */
+    static FileLock propertiesLock = null;
+    /** The logger level to use, configured from the properties file. */
     static Level loggerLevel = null;
+    /** Should we use the logging service? */
+    static boolean useLoggingService = true;
 
     public Mediator() {
+        setLoggerLevel();
+        if (useLoggingService) {
+            LogManager man = LogManager.getLogManager();
+            Logger rootLogger = man.getLogger("");
+            Handler oecHandler = new LoggingHandler(this);
+            Formatter formatter = new SimpleFormatter();
+            oecHandler.setFormatter(formatter);
+            rootLogger.addHandler(oecHandler);
+        }
         httpService = new HttpService(this);
         queueManager = new QueueManager(httpService);
         xmlPacker = new XmlPacker();
@@ -122,7 +140,7 @@ public class Mediator implements IService {
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
         }
         queueManager.start();
-        Logger.getLogger(Mediator.class.getName()).log(Level.INFO,
+        Logger.getLogger(Mediator.class.getName()).log(Level.FINE,
                 "{0} started.", getProperty("Instance.Name"));
     }
 
@@ -141,14 +159,21 @@ public class Mediator implements IService {
     }
 
     /**
-     * Gets a standard java.util.logging.Logger, set to the logging level property, if any.
-     * If the logging level property is not the default Level.INFO, the logging level
-     * is also changed in the root logging handler currently defined.
-     * 
-     * @param loggerName Name of the logger to create.
-     * @return The Logger requested.
+     * Supresses the use of the logging service to send messages to the logging server.
+     * This method is intended for use by the logging service itself,
+     * so it won't try to send all log entries to itself.
      */
-    public static Logger getLogger(String loggerName) {
+    public static void suppressLoggingService() {
+        useLoggingService = false;
+    }
+
+    /**
+     * Sets the logging level according to the properties file.
+     * The logging level is also set in the root handler if it is not the default.
+     * Otherwise, new loggers will not be able to log anything at a
+     * lower level than the default level.
+     */
+    private static void setLoggerLevel() {
         if (loggerLevel == null) {
             loggerLevel = Level.INFO; // Default unless changed below.
             String loggerLevelName = getProperty("Logger.Level");
@@ -167,6 +192,18 @@ public class Mediator implements IService {
                 }
             }
         }
+    }
+
+    /**
+     * Gets a standard java.util.logging.Logger, set to the logging level property, if any.
+     * If the logging level property is not the default Level.INFO, the logging level
+     * is also changed in the root logging handler currently defined.
+     * 
+     * @param loggerName Name of the logger to create.
+     * @return The Logger requested.
+     */
+    public static Logger getLogger(String loggerName) {
+        setLoggerLevel();
         Logger logger = Logger.getLogger(loggerName);
         logger.setLevel(loggerLevel);
         return logger;
@@ -178,22 +215,39 @@ public class Mediator implements IService {
      * @param propertyName name of the property whose value we want
      * @return the value of the requested property,
      * or null if the property is not found.
+     * <p>
+     * The default property file is named openemrconnect.properties.
+     * For debugging it may be
      */
     public static String getProperty(String propertyName) {
         if (properties == null) {
             properties = new Properties();
-            final String propertiesFileName = "openemrconnect.properties";
-            File propFile = new File(propertiesFileName);
-            String propFilePath = propFile.getAbsolutePath();
-            System.out.println("Properties file = " + propFilePath);
+            String fileName = "openemrconnect.properties"; // Try that one first.
+            String propFilePath = null;
             try {
-                FileInputStream fis = new FileInputStream(propFilePath);
-                properties.load(fis);
-            } catch (Exception e) {
-                /*
-                 * We somehow failed to open our default propoerties file.
-                 * This should not happen. It should always be there.
-                 */
+                for (int i = 2;; i++) {
+                    File propFile = new File(fileName);
+                    propFilePath = propFile.getAbsolutePath();
+                    if (!propFile.exists()) {
+                        throw new FileNotFoundException();
+                    }
+                    RandomAccessFile raf = new RandomAccessFile(fileName, "r");
+                    raf.close();
+                    raf = new RandomAccessFile(fileName, "rw");
+                    FileChannel fc = raf.getChannel();
+                    propertiesLock = fc.tryLock();
+                    if (propertiesLock != null) {
+                        propertiesLock.release(); // Unlock the properties file temporarily.
+                        System.out.println("Properties file = " + propFilePath);
+                        FileInputStream fis = new FileInputStream(propFilePath);
+                        properties.load(fis);
+                        fis.close();
+                        propertiesLock = fc.lock(); // Put the lock back on.
+                        break;
+                    }
+                    fileName = "openemrconnect" + i + ".properties"; // Now add "2", "3", etc. to the properties file name.
+                }
+            } catch (Exception ex) {
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                         "getProperty() Can''t open ''{0}'' -- Please create the properties file if it doesn''t exist and then restart the app",
                         propFilePath);
@@ -227,7 +281,7 @@ public class Mediator implements IService {
      */
     public Object getData(int requestTypeId, Object requestData) {
         Message m = new Message();
-        m.setData(requestData);
+        m.setMessageData(requestData);
         m.setSourceAddress(getProperty("Instance.Address"));
         m.setSourceName(getProperty("Instance.Name"));
 
@@ -264,6 +318,8 @@ public class Mediator implements IService {
         String defaultDestinationAddress = getProperty(messageType.getDefaultDestinationAddressProperty());
         m.setDestinationAddress(defaultDestinationAddress);
         m.setDestinationName(messageType.getDefaultDestinationName());
+        String messageId = generateMessageId();
+        m.setMessageId(messageId);
         if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest) requestData;
             if (pr.getDestinationAddress() != null) {
@@ -273,25 +329,26 @@ public class Mediator implements IService {
                 m.setDestinationName(pr.getDestinationName());
             }
             m.setXml(pr.getXml());
+            if (pr.getRequestReference() != null) {
+                m.setMessageId(pr.getRequestReference()); // Overwrite the auto-generated message ID.
+            }
             if (!pr.isResponseRequested()) {
                 MessageType.TemplateType templateType = messageType.getTemplateType();
                 if (templateType == MessageType.TemplateType.modifyPerson
                         || templateType == MessageType.TemplateType.modifyPerson) {
-                            m.setResponseExpected(false);
+                    m.setResponseExpected(false);
                 }
             }
         }
         Object returnData = null;
         if (m.getDestinationAddress() == null) {
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                    "getData() - Destination not found for Request type ''{0}''",
-                    messageType.getRequestTypeId());
+                    "getData() - Can''t find {0} in properties file.",
+                    messageType.getDefaultDestinationAddressProperty());
         } else {
             /*
-             * Generate a new request ID, and send the request to the server.
+             * Send the request to the server.
              */
-            String messageId = generateMessageId();
-            m.setMessageId(messageId);
             returnData = sendData(m);
         }
         return returnData;
@@ -385,7 +442,7 @@ public class Mediator implements IService {
                 case modifyPersonAccepted:
                     PersonResponse personResponse;
                     if (responseMessage != null) {
-                        returnData = responseMessage.getData();
+                        returnData = responseMessage.getMessageData();
                         personResponse = (PersonResponse) returnData;
                         personResponse.setSuccessful(true);
                     } else {
@@ -484,7 +541,7 @@ public class Mediator implements IService {
         } else {
             String ourInstanceAddress = getProperty("Instance.Address");
             String ipAddressPort = getIpAddressPort(destinationAddress);
-            if (destinationAddress.equals(ourInstanceAddress)) { // If the message is addressed to us:
+            if (destinationAddress.equalsIgnoreCase(ourInstanceAddress)) { // If the message is addressed to us:
                 if (ipAddressPort == null) {
                     /*
                      * The message destination matches our own instance address
@@ -492,6 +549,17 @@ public class Mediator implements IService {
                      * message destination. It is really destined for us. Process it.
                      */
                     xmlPacker.unpack(m);
+                    if (m.getMessageData().getClass() == PersonRequest.class) {
+                        PersonRequest req = (PersonRequest) m.getMessageData();
+                        req.setSourceAddress(m.getSourceAddress());
+                        req.setSourceName(m.getSourceName());
+                        req.setRequestReference(m.getMessageId());
+                        req.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
+                    } else if (m.getMessageData().getClass() == PersonResponse.class) {
+                        PersonResponse rsp = (PersonResponse) m.getMessageData();
+                        rsp.setSuccessful(true);
+                        rsp.setRequestReference(m.getMessageId());
+                    }
                     boolean responseDelivered = pendingQueue.findRequest(m);
                     if (responseDelivered) { // Was the message a response to a request that we just delivered?
                         Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Response matched and delivered to API.");

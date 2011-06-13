@@ -24,6 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi.match;
 
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Scorecard;
 import org.apache.commons.codec.language.DoubleMetaphone;
 import org.apache.commons.codec.language.RefinedSoundex;
@@ -46,7 +48,6 @@ public class NameMatch extends StringMatch {
     private static Soundex soundex = new Soundex();
     private static RefinedSoundex refinedSoundex = new RefinedSoundex();
     private static DoubleMetaphone doubleMetaphone = new DoubleMetaphone();
-
     /** (modified) Soundex */
     private String soundexValue = null;
     /** (modified) Soundex */
@@ -81,15 +82,32 @@ public class NameMatch extends StringMatch {
     }
 
     /**
-     * Find the score for a match between two names.
+     * Finds the score for a match between two names.
+     * 
      * @param s The Scorecard in which to add the score.
-     * @param m The other name to match against.
+     * @param other The other name to match against.
      */
-    public void score(Scorecard s, NameMatch m) {
-        int superScore = super.score(s, m);
-        if (superScore < 100) {
-            
+    public void score(Scorecard s, NameMatch other) {
+        int score = computeScore(this, other);
+        if (score >= 0) {
+            s.addScore(score);
         }
-        //TODO: Test soundex, metaphone1, metaphone2.
+    }
+
+    public static int computeScore(NameMatch n1, NameMatch n2) {
+        int score = StringMatch.computeScore(n1, n2);
+        if (score >= 0 && score < 100) {
+            if (n1.soundexValue.equals(n2.soundexValue)
+                    || n1.refinedSoundexValue.equals(n2.refinedSoundexValue)
+                    || n1.metaphone1.equals(n2.metaphone1)
+                    || n1.metaphone2.equals(n2.metaphone2)
+                    || n1.metaphone1.equals(n2.metaphone2)
+                    || n1.metaphone2.equals(n2.metaphone1)) {
+                score = 80 + (score / 5);
+            }
+            Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
+                    "NameMatch.computeScore({0},{1}) = {2}", new Object[]{n1.getOriginal(), n2.getOriginal(), score});
+        }
+        return score;
     }
 }

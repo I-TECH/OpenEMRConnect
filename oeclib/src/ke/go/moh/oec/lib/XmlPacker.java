@@ -227,13 +227,13 @@ class XmlPacker {
         Element root = doc.getDocumentElement();
         packHl7Header(root, m);
         Element personNode = (Element) root.getElementsByTagName("patient").item(0);
-        if (!(m.getData() instanceof PersonRequest)) {
+        if (!(m.getMessageData() instanceof PersonRequest)) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packGenericPersonMessage() - Expected data class PersonRequest, got {0}",
-                    m.getData().getClass().getName());
+                    m.getMessageData().getClass().getName());
         }
         if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
-            PersonRequest personRequest = (PersonRequest) m.getData();
+            PersonRequest personRequest = (PersonRequest) m.getMessageData();
             Person p = personRequest.getPerson();
             packPerson(personNode, p);
             if (personRequest.isResponseRequested()) {
@@ -259,7 +259,7 @@ class XmlPacker {
      */
     private Document packWorkMessage(Message m) {
 
-        Work work = (Work) m.getData();
+        Work work = (Work) m.getMessageData();
         // Create instance of DocumentBuilderFactory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         // Get the DocumentBuilder
@@ -294,13 +294,13 @@ class XmlPacker {
         packHl7Header(root, m);
         // The rest of what we want is in the subtree under <queryByParameter>
         Element q = (Element) root.getElementsByTagName("queryByParameter").item(0);
-        if (!(m.getData() instanceof PersonRequest)) {
+        if (!(m.getMessageData() instanceof PersonRequest)) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packFindPersonMessage() - Expected data class PersonRequest, got {0}",
-                    m.getData().getClass().getName());
+                    m.getMessageData().getClass().getName());
         }
         if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
-            PersonRequest personRequest = (PersonRequest) m.getData();
+            PersonRequest personRequest = (PersonRequest) m.getMessageData();
             Person p = personRequest.getPerson();
             packPersonName(q, p, "livingSubjectName");
             packTagValueAttribute(q, "livingSubjectAdministrativeGender", "code", packEnum(p.getSex()));
@@ -348,13 +348,13 @@ class XmlPacker {
         Document doc = packTemplate(m);
         Element root = doc.getDocumentElement();
         packHl7Header(root, m);
-        if (!(m.getData() instanceof PersonResponse)) {
+        if (!(m.getMessageData() instanceof PersonResponse)) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packFindPersonResponseMessage() - Expected data class PersonResponse, got {0}",
-                    m.getData().getClass().getName());
+                    m.getMessageData().getClass().getName());
         }
         if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
-            PersonResponse pr = (PersonResponse) m.getData();
+            PersonResponse pr = (PersonResponse) m.getMessageData();
             List<Person> personList = pr.getPersonList();
             /*
              * Find the <subject> subtree in the template. If there are no person results returned, remove it.
@@ -445,6 +445,7 @@ class XmlPacker {
         packId(e, OID_EXPECTED_DELIVERY_DATE, packDate(p.getExpectedDeliveryDate()));
         packId(e, OID_PREGNANCY_END_DATE, packDate(p.getPregnancyEndDate()));
         packId(e, OID_PREGNANCY_OUTCOME, packEnum(p.getPregnancyOutcome()));
+        packId(e, OID_SITE_NAME, p.getSiteName());
         packId(e, OID_FINGERPRINT_MATCHED, packBoolean(p.isFingerprintMatched()));
         packVisit(e, p.getLastRegularVisit(), OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE);
         packVisit(e, p.getLastOneOffVisit(), OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE);
@@ -1104,12 +1105,12 @@ class XmlPacker {
      * @return DOM Document structure
      */
     private Document packLogEntryMessage(Message m) {
-        if (!(m.getData() instanceof LogEntry)) {
+        if (!(m.getMessageData() instanceof LogEntry)) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packLogEntryMessage() - Expected data class LogEntry, got {0}",
-                    m.getData().getClass().getName());
+                    m.getMessageData().getClass().getName());
         }
-        LogEntry logEntry = (LogEntry) m.getData();
+        LogEntry logEntry = (LogEntry) m.getMessageData();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); // Create instance of DocumentBuilderFactory
         DocumentBuilder db = null; 		// Get the DocumentBuilder
         try {
@@ -1323,8 +1324,7 @@ class XmlPacker {
      */
     private void unpackGenericPersonMessage(Message m, Element e) {
         PersonRequest personRequest = new PersonRequest();
-        personRequest.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
-        m.setData(personRequest);
+        m.setMessageData(personRequest);
         Person p = new Person();
         personRequest.setPerson(p);
         unpackHl7Header(m, e);
@@ -1344,8 +1344,7 @@ class XmlPacker {
      */
     private void unpackFindPersonMessage(Message m, Element e) {
         PersonRequest personRequest = new PersonRequest();
-        personRequest.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
-        m.setData(personRequest);
+        m.setMessageData(personRequest);
         Person p = new Person();
         personRequest.setPerson(p);
         unpackHl7Header(m, e);
@@ -1392,8 +1391,7 @@ class XmlPacker {
      */
     private void unpackFindPersonResponseMessage(Message m, Element e) {
         PersonResponse personResponse = new PersonResponse();
-        m.setData(personResponse);
-        personResponse.setSuccessful(true);
+        m.setMessageData(personResponse);
         unpackHl7Header(m, e);
         NodeList nodeList = e.getElementsByTagName("subject");
         if (nodeList.getLength() != 0) {
@@ -1498,6 +1496,7 @@ class XmlPacker {
         p.setExpectedDeliveryDate(unpackDate(unpackId(e, OID_EXPECTED_DELIVERY_DATE)));
         p.setPregnancyEndDate(unpackDate(unpackId(e, OID_PREGNANCY_END_DATE)));
         p.setPregnancyOutcome((Person.PregnancyOutcome) unpackEnum(Person.PregnancyOutcome.values(), unpackId(e, OID_PREGNANCY_OUTCOME)));
+        p.setSiteName(unpackId(e, OID_SITE_NAME));
         p.setFingerprintMatched(unpackBoolean(unpackId(e, OID_FINGERPRINT_MATCHED)));
         p.setLastRegularVisit(unpackVisit(e, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE));
         p.setLastOneOffVisit(unpackVisit(e, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE));
@@ -1908,12 +1907,12 @@ class XmlPacker {
      */
     private void unpackLogEntryMessage(Message m, Element e) {
         LogEntry logEntry = new LogEntry();
-        m.setData(logEntry);
+        m.setMessageData(logEntry);
         logEntry.setSeverity(e.getElementsByTagName("severity").item(0).getTextContent());
         logEntry.setClassName(e.getElementsByTagName("class").item(0).getTextContent());
         logEntry.setDateTime(unpackDateTime(e.getElementsByTagName("dateTime").item(0).getTextContent()));
         logEntry.setMessage(e.getElementsByTagName("message").item(0).getTextContent());
-        logEntry.setInstance(e.getElementsByTagName("instance").item(0).getTextContent());
+        logEntry.setInstance(e.getElementsByTagName("sourceAddress").item(0).getTextContent());
     }
 
     /**
@@ -1925,7 +1924,7 @@ class XmlPacker {
      */
     private void unpackWorkMessage(Message m, Element e) {
         Work work = new Work();
-        m.setData(work);
+        m.setMessageData(work);
         work.setSourceAddress(e.getElementsByTagName("sourceAddress").item(0).getTextContent());
         work.setSourceAddress(e.getElementsByTagName("notificationId").item(0).getTextContent());
         work.setSourceAddress(e.getElementsByTagName("reassignAddress").item(0).getTextContent());

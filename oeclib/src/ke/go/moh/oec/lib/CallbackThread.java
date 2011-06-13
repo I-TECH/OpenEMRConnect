@@ -64,13 +64,13 @@ class CallbackThread implements Runnable {
     public void run() {
         MessageType messageType = message.getMessageType();
         int requestTypeId = messageType.getRequestTypeId();
-        Object responseData = callbackObject.getData(requestTypeId, message.getData());
+        Object responseData = callbackObject.getData(requestTypeId, message.getMessageData());
         if (responseData != null) {
             MessageType responseMessageType = messageType.getResponseMessageType();
             if (responseMessageType != null) {
                 Message response = new Message();
                 response.setMessageType(responseMessageType);
-                response.setData(responseData);
+                response.setMessageData(responseData);
                 response.setDestinationAddress(message.getSourceAddress());
                 response.setDestinationName(message.getSourceName());
                 response.setMessageId(message.getMessageId());

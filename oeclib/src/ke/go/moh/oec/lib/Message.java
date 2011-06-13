@@ -34,7 +34,7 @@ class Message {
     /** Type of the message - see {@link MessageTypeRegistry} */
     private MessageType messageType;
     /** User data contents of the message */
-    private Object data;
+    private Object messageData;
     /**
      * Identifier of the message.
      * In the case of a new client request, this is a newly-generated message ID.
@@ -80,14 +80,6 @@ class Message {
      */
     private boolean responseExpected;
 
-    public Object getData() {
-        return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
-    }
-
     public String getDestinationAddress() {
         return destinationAddress;
     }
@@ -118,6 +110,14 @@ class Message {
 
     public void setIpAddressPort(String ipAddressPort) {
         this.ipAddressPort = ipAddressPort;
+    }
+
+    public Object getMessageData() {
+        return messageData;
+    }
+
+    public void setMessageData(Object messageData) {
+        this.messageData = messageData;
     }
 
     public String getMessageId() {
