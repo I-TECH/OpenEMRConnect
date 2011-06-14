@@ -65,15 +65,17 @@ public class FingerprintMatch implements Cloneable {
             useFingerprintSdk = true;
             File directory = new File(".");
             String dirName = directory.getAbsolutePath();
-            GrFingerJava.setNativeLibrariesDirectory(directory);
+//            GrFingerJava.setNativeLibrariesDirectory(directory);
             long startTime, elapsedTime;
             try {
-                GrFingerJava.setLicenseDirectory(directory);
-            } catch (GrFingerJavaException ex) {
-                Logger.getLogger(FingerprintMatch.class.getName()).log(Level.WARNING,
-                        "Griaule license not found or not valid -- fingerprinting will not be used.", ex);
-                useFingerprintSdk = false;
-            } catch (IllegalArgumentException ex) {
+//                GrFingerJava.setLicenseDirectory(directory);
+            } 
+//            catch (GrFingerJavaException ex) {
+//                Logger.getLogger(FingerprintMatch.class.getName()).log(Level.WARNING,
+//                        "Griaule license not found or not valid -- fingerprinting will not be used.", ex);
+//                useFingerprintSdk = false;
+//            } 
+            catch (IllegalArgumentException ex) {
                 Logger.getLogger(FingerprintMatch.class.getName()).log(Level.WARNING,
                         "Griaule license not found or not valid -- fingerprinting will not be used.", ex);
                 useFingerprintSdk = false;

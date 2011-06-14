@@ -20,9 +20,12 @@ import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import javax.swing.ButtonGroup;
 import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
@@ -30,6 +33,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.text.JTextComponent;
 import ke.go.moh.oec.Fingerprint;
@@ -288,7 +292,7 @@ public class MainView extends FrameView {
         mothersMiddleNameTextField = new javax.swing.JTextField();
         altMothersMiddleNameTextField = new javax.swing.JTextField();
         mothersMiddleNameAcceptRadioButton = new javax.swing.JRadioButton();
-        mothersMiddleNameNameRejectRadioButton = new javax.swing.JRadioButton();
+        mothersMiddleNameRejectRadioButton = new javax.swing.JRadioButton();
         mothersLastNameLabel = new javax.swing.JLabel();
         mothersLastNameTextField = new javax.swing.JTextField();
         altMothersLastNameTextField = new javax.swing.JTextField();
@@ -1565,10 +1569,10 @@ public class MainView extends FrameView {
         mothersMiddleNameAcceptRadioButton.setName("mothersMiddleNameAcceptRadioButton"); // NOI18N
         mothersMiddleNameAcceptRadioButton.setSelectedIcon(resourceMap.getIcon("mothersMiddleNameAcceptRadioButton.selectedIcon")); // NOI18N
 
-        mothersMiddleNameButtonGroup.add(mothersMiddleNameNameRejectRadioButton);
-        mothersMiddleNameNameRejectRadioButton.setIcon(resourceMap.getIcon("mothersMiddleNameNameRejectRadioButton.icon")); // NOI18N
-        mothersMiddleNameNameRejectRadioButton.setName("mothersMiddleNameNameRejectRadioButton"); // NOI18N
-        mothersMiddleNameNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("mothersMiddleNameNameRejectRadioButton.selectedIcon")); // NOI18N
+        mothersMiddleNameButtonGroup.add(mothersMiddleNameRejectRadioButton);
+        mothersMiddleNameRejectRadioButton.setIcon(resourceMap.getIcon("mothersMiddleNameRejectRadioButton.icon")); // NOI18N
+        mothersMiddleNameRejectRadioButton.setName("mothersMiddleNameRejectRadioButton"); // NOI18N
+        mothersMiddleNameRejectRadioButton.setSelectedIcon(resourceMap.getIcon("mothersMiddleNameRejectRadioButton.selectedIcon")); // NOI18N
 
         mothersLastNameLabel.setText(resourceMap.getString("mothersLastNameLabel.text")); // NOI18N
         mothersLastNameLabel.setName("mothersLastNameLabel"); // NOI18N
@@ -1707,7 +1711,7 @@ public class MainView extends FrameView {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(mothersMiddleNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(mothersMiddleNameNameRejectRadioButton))
+                                .addComponent(mothersMiddleNameRejectRadioButton))
                             .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE))
                         .addContainerGap())))
         );
@@ -1750,10 +1754,9 @@ public class MainView extends FrameView {
                     .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(mothersFirstNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
-                        .addComponent(mothersFirstNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addComponent(altMothersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(mothersFirstNameAcceptRadioButton)
+                    .addComponent(altMothersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(mothersFirstNameRejectRadioButton, 0, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1761,7 +1764,7 @@ public class MainView extends FrameView {
                 .addGap(7, 7, 7)
                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(mothersMiddleNameNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                        .addComponent(mothersMiddleNameRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
                         .addComponent(mothersMiddleNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING))
                     .addComponent(altMothersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2599,6 +2602,7 @@ public class MainView extends FrameView {
                 if (!showConfirmMessage("Your extended search returned no candidates. Would you like"
                         + " to repeat it? Choose Yes to repeat an extended search or No to proceed to"
                         + " register a new client.", extendedSearchButton)) {
+                    populateReviewCards(mpiPersonMatch, lpiPersonMatch);
                     showCard("reviewCard1");
                 }
             }
@@ -2730,6 +2734,9 @@ public class MainView extends FrameView {
                         populateReviewCards(mpiPersonMatch, lpiPersonMatch);
                         showCard("reviewCard1");
                     }
+                } else {
+                    populateReviewCards(mpiPersonMatch, lpiPersonMatch);
+                    showCard("reviewCard1");
                 }
             }
         } else {
@@ -2738,42 +2745,258 @@ public class MainView extends FrameView {
     }
 
     private void populateReviewCards(Person mpiPerson, Person lpiPerson) {
-//        Person sourcePerson = null;
-//        Person altPerson = null;
-//        if (mpiPerson != null && lpiPerson != null) {
-//            sourcePerson = lpiPerson;
-//            altPerson = mpiPerson;
-//        } else {
-//            if (mpiPerson != null && lpiPerson == null) {
-//                sourcePerson = mpiPerson;
-//            } else if (mpiPerson == null && lpiPerson != null) {
-//                sourcePerson = lpiPerson;
-//            } else {
-//                return;
-//            }
-//        }
-//        if (sourcePerson != null && altPerson != null) {
-//            firstNameTextField.setText(sourcePerson.getFirstName());
-//            altFirstNameTextField.setText(altPerson.getFirstName());
-//            if (firstNameTextField.getText().equalsIgnoreCase(altFirstNameTextField.getText())) {
-//                altFirstNameTextField.setVisible(false);
-//                //firstNameToggleButton.setVisible(false);
-//            }
-//        }
-//        if (lpiPerson.getPersonIdentifierList() != null
-//                && !lpiPerson.getPersonIdentifierList().isEmpty()) {
-//            for (PersonIdentifier personIdentifier : lpiPerson.getPersonIdentifierList()) {
-//                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccLocalId
-//                        || personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccUniqueId) {
-//                    clinicIdTextField.setText(personIdentifier.getIdentifier());
-//                    break;
-//                }
-//            }
-//        }
-//        firstNameTextField.setText(lpiPerson.getFirstName());
-//        middleNameTextField.setText(lpiPerson.getMiddleName());
-//        altFirstNameTextField.setText(lpiPerson.getFirstName());
-        //altMiddleNameTextField.setText(lpiPerson.getMiddleName() + " XYZ");
+        Person sourcePerson = null;
+        Person altPerson = null;
+        if (mpiPerson != null && lpiPerson != null) {
+            sourcePerson = lpiPerson;
+            altPerson = mpiPerson;
+        } else {
+            if (mpiPerson != null && lpiPerson == null) {
+                sourcePerson = mpiPerson;
+            } else if (mpiPerson == null && lpiPerson != null) {
+                sourcePerson = lpiPerson;
+            } else {
+                hideAllAlternativeFields();
+            }
+        }
+        if (sourcePerson != null && altPerson != null) {
+            populateReviewCardsWithSourcePerson(sourcePerson);
+            populateReviewCardsWithAltPerson(altPerson);
+        } else if (sourcePerson != null && altPerson == null) {
+            populateReviewCardsWithSourcePerson(sourcePerson);
+        }
+        hideUnnecessaryFields();
+    }
+
+    private void populateReviewCardsWithSourcePerson(Person sourcePerson) {
+        if (sourcePerson.getPersonIdentifierList() != null
+                && !sourcePerson.getPersonIdentifierList().isEmpty()) {
+            for (PersonIdentifier personIdentifier : sourcePerson.getPersonIdentifierList()) {
+                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccLocalId
+                        || personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccUniqueId) {
+                    clinicIdTextField.setText(personIdentifier.getIdentifier());
+                    break;
+                }
+            }
+        }
+        firstNameTextField.setText(sourcePerson.getFirstName());
+        middleNameTextField.setText(sourcePerson.getMiddleName());
+        lastNameTextField.setText(sourcePerson.getLastName());
+
+        maleRadioButton.setSelected(sourcePerson.getSex() == Person.Sex.M);
+        femaleRadioButton.setSelected(sourcePerson.getSex() == Person.Sex.F);
+        
+        maritalStatusComboBox.setSelectedItem(sourcePerson.getMaritalStatus());
+
+        birthDateChooser.setDate(sourcePerson.getBirthdate());
+        villageTextField.setText(sourcePerson.getVillageName());
+        fathersFirstNameTextField.setText(sourcePerson.getFathersFirstName());
+        fathersMiddleNameTextField.setText(sourcePerson.getFathersMiddleName());
+        fathersLastNameTextField.setText(sourcePerson.getFathersLastName());
+        mothersFirstNameTextField.setText(sourcePerson.getMothersFirstName());
+        mothersMiddleNameTextField.setText(sourcePerson.getMothersMiddleName());
+        mothersLastNameTextField.setText(sourcePerson.getMothersLastName());
+        compoundHeadsFirstNameTextField.setText(sourcePerson.getCompoundHeadFirstName());
+        compoundHeadsMiddleNameTextField.setText(sourcePerson.getCompoundHeadMiddleName());
+        compoundHeadsLastNameTextField.setText(sourcePerson.getCompoundHeadLastName());
+
+        hdssDataConsentYesRadioButton.setSelected(sourcePerson.getConsentSigned() == Person.ConsentSigned.yes);
+        hdssDataConsentNoRadioButton.setSelected(sourcePerson.getConsentSigned() == Person.ConsentSigned.no);
+        hdssDataConsentNoAnswerRadioButton.setSelected(sourcePerson.getConsentSigned() == Person.ConsentSigned.notAnswered);
+    }
+
+    private void populateReviewCardsWithAltPerson(Person altPerson) {
+        if (altPerson.getPersonIdentifierList() != null
+                && !altPerson.getPersonIdentifierList().isEmpty()) {
+            for (PersonIdentifier personIdentifier : altPerson.getPersonIdentifierList()) {
+                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccLocalId
+                        || personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccUniqueId) {
+                    clinicIdTextField.setText(personIdentifier.getIdentifier());
+                    break;
+                }
+            }
+        }
+        altFirstNameTextField.setText(altPerson.getFirstName());
+        altMiddleNameTextField.setText(altPerson.getMiddleName());
+        altLastNameTextField.setText(altPerson.getLastName());
+
+        altSexTextField.setText(Session.getSexString(altPerson.getSex()));
+
+        if (altPerson.getBirthdate() != null) {
+            altBirthDateTextField.setText(new SimpleDateFormat("dd/MM/yyyy").format(altPerson.getBirthdate()));
+        }
+
+        altVillageTextField.setText(altPerson.getVillageName());
+        altFathersFirstNameTextField.setText(altPerson.getFathersFirstName());
+        altFathersMiddleNameTextField.setText(altPerson.getFathersMiddleName());
+        altFathersLastNameTextField.setText(altPerson.getFathersLastName());
+        altMothersFirstNameTextField.setText(altPerson.getMothersFirstName());
+        altMothersMiddleNameTextField.setText(altPerson.getMothersMiddleName());
+        altMothersLastNameTextField.setText(altPerson.getMothersLastName());
+        altCompoundHeadsFirstNameTextField.setText(altPerson.getCompoundHeadFirstName());
+        altCompoundHeadsMiddleNameTextField.setText(altPerson.getCompoundHeadMiddleName());
+        altCompoundHeadsLastNameTextField.setText(altPerson.getCompoundHeadLastName());
+
+
+        hdssDataConsentYesRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.yes);
+        hdssDataConsentNoRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.no);
+        hdssDataConsentNoAnswerRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.notAnswered);
+
+        altHdssDataConsentTextField.setText(Session.getConsentSignedString(altPerson.getConsentSigned()));
+    }
+
+    private void hideUnnecessaryFields() {
+        boolean clinicIdVisible = clinicIdTextField.getText().equalsIgnoreCase(altClinicIdTextField.getText());
+        altClinicIdTextField.setVisible(!clinicIdVisible);
+        clinicIdAcceptRadioButton.setVisible(!clinicIdVisible);
+        clinicIdRejectRadioButton.setVisible(!clinicIdVisible);
+        boolean firstNameVisible = firstNameTextField.getText().equalsIgnoreCase(altFirstNameTextField.getText());
+        altFirstNameTextField.setVisible(!firstNameVisible);
+        firstNameAcceptRadioButton.setVisible(!firstNameVisible);
+        firstNameRejectRadioButton.setVisible(!firstNameVisible);
+        boolean middleNameVisible = middleNameTextField.getText().equalsIgnoreCase(altMiddleNameTextField.getText());
+        altMiddleNameTextField.setVisible(!middleNameVisible);
+        middleNameAcceptRadioButton.setVisible(!middleNameVisible);
+        middleNameRejectRadioButton.setVisible(!middleNameVisible);
+        boolean lastNameVisible = lastNameTextField.getText().equalsIgnoreCase(altLastNameTextField.getText());
+        altLastNameTextField.setVisible(!lastNameVisible);
+        lastNameAcceptRadioButton.setVisible(!lastNameVisible);
+        lastNameRejectRadioButton.setVisible(!lastNameVisible);
+
+        boolean sexVisible = false;
+        JRadioButton selectedSexRadioButton = getSelectedButton(reviewSexButtonGroup);
+        if (selectedSexRadioButton != null) {
+            if (selectedSexRadioButton.getText().equalsIgnoreCase(altSexTextField.getText())) {
+                sexVisible = true;
+            }
+        }
+        altSexTextField.setVisible(!sexVisible);
+        sexAcceptRadioButton.setVisible(!sexVisible);
+        sexRejectRadioButton.setVisible(!sexVisible);
+
+        boolean villlageVisible = villageTextField.getText().equalsIgnoreCase(altVillageTextField.getText());
+        altVillageTextField.setVisible(!villlageVisible);
+        villageAcceptRadioButton.setVisible(!villlageVisible);
+        villageRejectRadioButton.setVisible(!villlageVisible);
+        boolean fathersFirstNameVisible = fathersFirstNameTextField.getText().equalsIgnoreCase(altFathersFirstNameTextField.getText());
+        altFathersFirstNameTextField.setVisible(!fathersFirstNameVisible);
+        fathersFirstNameAcceptRadioButton.setVisible(!fathersFirstNameVisible);
+        fathersFirstNameRejectRadioButton.setVisible(!fathersFirstNameVisible);
+        boolean fathersMiddleNameVisible = fathersMiddleNameTextField.getText().equalsIgnoreCase(altFathersMiddleNameTextField.getText());
+        altFathersMiddleNameTextField.setVisible(!fathersMiddleNameVisible);
+        fathersMiddleNameAcceptRadioButton.setVisible(!fathersMiddleNameVisible);
+        fathersMiddleNameRejectRadioButton.setVisible(!fathersMiddleNameVisible);
+        boolean fathersLastNameVisible = fathersLastNameTextField.getText().equalsIgnoreCase(altFathersLastNameTextField.getText());
+        altFathersLastNameTextField.setVisible(!fathersLastNameVisible);
+        fathersLastNameAcceptRadioButton.setVisible(!fathersLastNameVisible);
+        fathersLastNameRejectRadioButton.setVisible(!fathersLastNameVisible);
+        boolean mothersFirstNameVisible = mothersFirstNameTextField.getText().equalsIgnoreCase(altMothersFirstNameTextField.getText());
+        altMothersFirstNameTextField.setVisible(!mothersFirstNameVisible);
+        mothersFirstNameAcceptRadioButton.setVisible(!mothersFirstNameVisible);
+        mothersFirstNameRejectRadioButton.setVisible(!mothersFirstNameVisible);
+        boolean mothersMiddleNameVisible = mothersMiddleNameTextField.getText().equalsIgnoreCase(altMothersMiddleNameTextField.getText());
+        altMothersMiddleNameTextField.setVisible(!mothersMiddleNameVisible);
+        mothersMiddleNameAcceptRadioButton.setVisible(!mothersMiddleNameVisible);
+        mothersMiddleNameRejectRadioButton.setVisible(!mothersMiddleNameVisible);
+        boolean mothersLastNameVisible = mothersLastNameTextField.getText().equalsIgnoreCase(altMothersLastNameTextField.getText());
+        altMothersLastNameTextField.setVisible(!mothersLastNameVisible);
+        mothersLastNameAcceptRadioButton.setVisible(!mothersLastNameVisible);
+        mothersLastNameRejectRadioButton.setVisible(!mothersLastNameVisible);
+        boolean compoundHeadsFirstNameVisible = compoundHeadsFirstNameTextField.getText().equalsIgnoreCase(altCompoundHeadsFirstNameTextField.getText());
+        altCompoundHeadsFirstNameTextField.setVisible(!compoundHeadsFirstNameVisible);
+        compoundHeadsFirstNameAcceptRadioButton.setVisible(!compoundHeadsFirstNameVisible);
+        compoundHeadsFirstNameRejectRadioButton.setVisible(!compoundHeadsFirstNameVisible);
+        boolean compoundHeadsMiddleNameVisible = compoundHeadsMiddleNameTextField.getText().equalsIgnoreCase(altCompoundHeadsMiddleNameTextField.getText());
+        altCompoundHeadsMiddleNameTextField.setVisible(!compoundHeadsMiddleNameVisible);
+        compoundHeadsMiddleNameAcceptRadioButton.setVisible(!compoundHeadsMiddleNameVisible);
+        compoundHeadsMiddleNameRejectRadioButton.setVisible(!compoundHeadsMiddleNameVisible);
+        boolean compoundHeadsLastNameVisible = compoundHeadsLastNameTextField.getText().equalsIgnoreCase(altCompoundHeadsLastNameTextField.getText());
+        altCompoundHeadsLastNameTextField.setVisible(!compoundHeadsLastNameVisible);
+        compoundHeadsLastNameAcceptRadioButton.setVisible(!compoundHeadsLastNameVisible);
+        compoundHeadsLastNameRejectRadioButton.setVisible(!compoundHeadsLastNameVisible);
+
+        boolean hdssDataConsentVisible = false;
+        JRadioButton selectedHdssDataRadioButton = getSelectedButton(hdssDataConsentButtonGroup);
+        if (selectedHdssDataRadioButton != null) {
+            if (selectedHdssDataRadioButton.getText().equalsIgnoreCase(altHdssDataConsentTextField.getText())) {
+                hdssDataConsentVisible = true;
+            }
+        }
+        altHdssDataConsentTextField.setVisible(!hdssDataConsentVisible);
+        hdssDataConsentAcceptRadioButton.setVisible(!hdssDataConsentVisible);
+        hdssDataConsentRejectRadioButton.setVisible(!hdssDataConsentVisible);
+    }
+
+    private void hideAllAlternativeFields() {
+        altClinicIdTextField.setVisible(false);
+        clinicIdAcceptRadioButton.setVisible(false);
+        clinicIdRejectRadioButton.setVisible(false);
+        altFirstNameTextField.setVisible(false);
+        firstNameAcceptRadioButton.setVisible(false);
+        firstNameRejectRadioButton.setVisible(false);
+        altMiddleNameTextField.setVisible(false);
+        middleNameAcceptRadioButton.setVisible(false);
+        middleNameRejectRadioButton.setVisible(false);
+        altLastNameTextField.setVisible(false);
+        lastNameAcceptRadioButton.setVisible(false);
+        lastNameRejectRadioButton.setVisible(false);
+
+        altSexTextField.setVisible(false);
+        sexAcceptRadioButton.setVisible(false);
+        sexRejectRadioButton.setVisible(false);
+
+        altBirthDateTextField.setVisible(false);
+        birthDateAcceptRadioButton.setVisible(false);
+        birthDateRejectRadioButton.setVisible(false);
+
+        altMaritalStatusTextField.setVisible(false);
+        maritalStatusAcceptRadioButton.setVisible(false);
+        maritalStatusRejectRadioButton.setVisible(false);
+
+        altVillageTextField.setVisible(false);
+        villageAcceptRadioButton.setVisible(false);
+        villageRejectRadioButton.setVisible(false);
+        altFathersFirstNameTextField.setVisible(false);
+        fathersFirstNameAcceptRadioButton.setVisible(false);
+        fathersFirstNameRejectRadioButton.setVisible(false);
+        altFathersMiddleNameTextField.setVisible(false);
+        fathersMiddleNameAcceptRadioButton.setVisible(false);
+        fathersMiddleNameRejectRadioButton.setVisible(false);
+        altFathersLastNameTextField.setVisible(false);
+        fathersLastNameAcceptRadioButton.setVisible(false);
+        fathersLastNameRejectRadioButton.setVisible(false);
+        altMothersFirstNameTextField.setVisible(false);
+        mothersFirstNameAcceptRadioButton.setVisible(false);
+        mothersFirstNameRejectRadioButton.setVisible(false);
+        altMothersMiddleNameTextField.setVisible(false);
+        mothersMiddleNameAcceptRadioButton.setVisible(false);
+        mothersMiddleNameRejectRadioButton.setVisible(false);
+        altMothersLastNameTextField.setVisible(false);
+        mothersLastNameAcceptRadioButton.setVisible(false);
+        mothersLastNameRejectRadioButton.setVisible(false);
+        altCompoundHeadsFirstNameTextField.setVisible(false);
+        compoundHeadsFirstNameAcceptRadioButton.setVisible(false);
+        compoundHeadsFirstNameRejectRadioButton.setVisible(false);
+        altCompoundHeadsMiddleNameTextField.setVisible(false);
+        compoundHeadsMiddleNameAcceptRadioButton.setVisible(false);
+        compoundHeadsMiddleNameRejectRadioButton.setVisible(false);
+        altCompoundHeadsLastNameTextField.setVisible(false);
+        compoundHeadsLastNameAcceptRadioButton.setVisible(false);
+        compoundHeadsLastNameRejectRadioButton.setVisible(false);
+
+        altHdssDataConsentTextField.setVisible(false);
+        hdssDataConsentAcceptRadioButton.setVisible(false);
+        hdssDataConsentRejectRadioButton.setVisible(false);
+    }
+
+    private JRadioButton getSelectedButton(ButtonGroup buttonGroup) {
+        for (Enumeration enumeration = buttonGroup.getElements(); enumeration.hasMoreElements();) {
+            JRadioButton radioButton = (JRadioButton) enumeration.nextElement();
+            if (radioButton.getModel() == buttonGroup.getSelection()) {
+                return radioButton;
+            }
+        }
+        return null;
     }
 
     private void clearFields(Container container) {
@@ -2934,7 +3157,7 @@ public class MainView extends FrameView {
                 crp.getPerson().setConsentSigned(Person.ConsentSigned.notAnswered);
             }
             Visit visit = new Visit();
-            visit.setAddress(Session.getApplicationName());
+            visit.setAddress(Session.getApplicationAddress());
             visit.setVisitDate(new Date());
             if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED
                     || Session.getClientType() == Session.CLIENT_TYPE.NEW) {
@@ -3138,7 +3361,7 @@ public class MainView extends FrameView {
     private javax.swing.JRadioButton mothersMiddleNameAcceptRadioButton;
     private javax.swing.ButtonGroup mothersMiddleNameButtonGroup;
     private javax.swing.JLabel mothersMiddleNameLabel;
-    private javax.swing.JRadioButton mothersMiddleNameNameRejectRadioButton;
+    private javax.swing.JRadioButton mothersMiddleNameRejectRadioButton;
     private javax.swing.JTextField mothersMiddleNameTextField;
     private javax.swing.JButton mpiAcceptButton;
     private javax.swing.JButton mpiNotFoundButton;
