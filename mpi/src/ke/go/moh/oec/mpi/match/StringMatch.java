@@ -35,12 +35,15 @@ import ke.go.moh.oec.mpi.Scorecard;
  */
 public class StringMatch {
 
-    /** Original string (all lower case) */
+    /** Original string (all lower case and trimmed) */
     private String original = null;
 
     public StringMatch(String original) {
         if (original != null) {
-            this.original = original.toLowerCase().trim();
+            original = original.toLowerCase().trim();
+            if (original.length() > 0) {
+                this.original = original; // (For matching, always store empty string as null.)
+            }
         }
     }
 

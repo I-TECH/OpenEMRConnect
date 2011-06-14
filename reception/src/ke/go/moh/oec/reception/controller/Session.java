@@ -267,4 +267,18 @@ public class Session {
         }
         return sexString;
     }
+
+    public static String getConsentSignedString(Person.ConsentSigned consentSigned) {
+        String sexString = "";
+        if (consentSigned != null) {
+            if (consentSigned == Person.ConsentSigned.yes) {
+                sexString = "Yes";
+            } else if (consentSigned == Person.ConsentSigned.no) {
+                sexString = "No";
+            } else if (consentSigned == Person.ConsentSigned.notAnswered) {
+                sexString = "No answer";
+            }
+        }
+        return sexString;
+    }
 }

@@ -20,6 +20,7 @@ import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -2816,7 +2817,9 @@ public class MainView extends FrameView {
 
         altSexTextField.setText(Session.getSexString(altPerson.getSex()));
 
-//        altBirthDateTextField.setText(altPerson.getBirthdate());
+        if (altPerson.getBirthdate() != null) {
+            altBirthDateTextField.setText(new SimpleDateFormat("dd/MM/yyyy").format(altPerson.getBirthdate()));
+        }
 
         altVillageTextField.setText(altPerson.getVillageName());
         altFathersFirstNameTextField.setText(altPerson.getFathersFirstName());
@@ -2829,9 +2832,12 @@ public class MainView extends FrameView {
         altCompoundHeadsMiddleNameTextField.setText(altPerson.getCompoundHeadMiddleName());
         altCompoundHeadsLastNameTextField.setText(altPerson.getCompoundHeadLastName());
 
-//        hdssDataConsentYesRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.yes);
-//        hdssDataConsentNoRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.no);
-//        hdssDataConsentNoAnswerRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.notAnswered);
+
+        hdssDataConsentYesRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.yes);
+        hdssDataConsentNoRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.no);
+        hdssDataConsentNoAnswerRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.notAnswered);
+
+        altHdssDataConsentTextField.setText(Session.getConsentSignedString(altPerson.getConsentSigned()));
     }
 
     private void hideUnnecessaryFields() {
