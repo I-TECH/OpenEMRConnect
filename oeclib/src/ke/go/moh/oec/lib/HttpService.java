@@ -82,8 +82,11 @@ class HttpService {
         String url = "http://" + m.getIpAddressPort() + "/oecmessage?destination="
                 + m.getDestinationAddress() + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount();
         String xml = m.getXml();
+        String messageLabel = (m.getMessageType() != null)
+                ? m.getMessageType().getTemplateType().name() // If message originated here.
+                : m.getXmlExcerpt(); // If message was received and is being relayed through here.
         Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Sending {0} to {1}",
-                new Object[]{m.getMessageType().getTemplateType().name(), url});
+                new Object[]{messageLabel, url});
         Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message:\n{0}", xml);
 
         try {

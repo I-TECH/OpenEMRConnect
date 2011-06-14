@@ -52,6 +52,7 @@ public class LoggingServer implements IService {
         renameOldLogFile();
         try {
             fileHandler = new FileHandler("oec.log");
+            fileHandler.setLevel(Level.INFO); // Only log INFO and higher to disk.
         } catch (Exception ex) {
         }
         LoggingServer ls = new LoggingServer();

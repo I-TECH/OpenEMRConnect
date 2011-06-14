@@ -594,7 +594,8 @@ public class Mediator implements IService {
                      * to its destination.
                      */
                     Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                            "Relaying message {0} to {1}", new Object[]{m.getXmlExcerpt(), ipAddressPort});
+                            "Relaying message {0} to {1} - {2}",
+                            new Object[]{m.getXmlExcerpt(), destinationAddress, ipAddressPort});
                     m.setIpAddressPort(ipAddressPort);
                     int hopCount = m.getHopCount();
                     hopCount++;
