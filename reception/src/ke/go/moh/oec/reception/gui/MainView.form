@@ -2002,7 +2002,7 @@
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="mothersMiddleNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="mothersMiddleNameNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="mothersMiddleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Component id="mothersMiddleNameTextField" alignment="0" pref="297" max="32767" attributes="0"/>
                                               </Group>
@@ -2061,11 +2061,9 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" attributes="0">
-                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                              <Component id="mothersFirstNameRejectRadioButton" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
-                                              <Component id="mothersFirstNameAcceptRadioButton" alignment="0" min="-2" max="-2" attributes="1"/>
-                                          </Group>
+                                          <Component id="mothersFirstNameAcceptRadioButton" alignment="1" min="-2" max="-2" attributes="1"/>
                                           <Component id="altMothersFirstNameTextField" min="-2" max="-2" attributes="0"/>
+                                          <Component id="mothersFirstNameRejectRadioButton" min="0" pref="0" max="32767" attributes="1"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
@@ -2075,7 +2073,7 @@
                                       <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                              <Component id="mothersMiddleNameNameRejectRadioButton" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
+                                              <Component id="mothersMiddleNameRejectRadioButton" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
                                               <Component id="mothersMiddleNameAcceptRadioButton" alignment="0" min="-2" max="-2" attributes="1"/>
                                           </Group>
                                           <Component id="altMothersMiddleNameTextField" min="-2" max="-2" attributes="0"/>
@@ -2279,9 +2277,6 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="mothersFirstNameRejectRadioButton">
                               <Properties>
-                                <Property name="model" type="javax.swing.ButtonModel" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                                  <ComponentRef name="null"/>
-                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="mothersFirstNameButtonGroup"/>
                                 </Property>
@@ -2320,14 +2315,14 @@
                                 <Property name="selectedIcon" type="javax.swing.Icon" resourceKey="mothersMiddleNameAcceptRadioButton.selectedIcon"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JRadioButton" name="mothersMiddleNameNameRejectRadioButton">
+                            <Component class="javax.swing.JRadioButton" name="mothersMiddleNameRejectRadioButton">
                               <Properties>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="mothersMiddleNameButtonGroup"/>
                                 </Property>
-                                <Property name="icon" type="javax.swing.Icon" resourceKey="mothersMiddleNameNameRejectRadioButton.icon"/>
-                                <Property name="name" type="java.lang.String" value="mothersMiddleNameNameRejectRadioButton" noResource="true"/>
-                                <Property name="selectedIcon" type="javax.swing.Icon" resourceKey="mothersMiddleNameNameRejectRadioButton.selectedIcon"/>
+                                <Property name="icon" type="javax.swing.Icon" resourceKey="mothersMiddleNameRejectRadioButton.icon"/>
+                                <Property name="name" type="java.lang.String" value="mothersMiddleNameRejectRadioButton" noResource="true"/>
+                                <Property name="selectedIcon" type="javax.swing.Icon" resourceKey="mothersMiddleNameRejectRadioButton.selectedIcon"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JLabel" name="mothersLastNameLabel">
