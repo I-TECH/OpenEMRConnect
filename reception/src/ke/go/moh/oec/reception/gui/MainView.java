@@ -2734,6 +2734,9 @@ public class MainView extends FrameView {
                         populateReviewCards(mpiPersonMatch, lpiPersonMatch);
                         showCard("reviewCard1");
                     }
+                } else {
+                    populateReviewCards(mpiPersonMatch, lpiPersonMatch);
+                    showCard("reviewCard1");
                 }
             }
         } else {
@@ -2782,6 +2785,8 @@ public class MainView extends FrameView {
 
         maleRadioButton.setSelected(sourcePerson.getSex() == Person.Sex.M);
         femaleRadioButton.setSelected(sourcePerson.getSex() == Person.Sex.F);
+        
+        maritalStatusComboBox.setSelectedItem(sourcePerson.getMaritalStatus());
 
         birthDateChooser.setDate(sourcePerson.getBirthdate());
         villageTextField.setText(sourcePerson.getVillageName());
