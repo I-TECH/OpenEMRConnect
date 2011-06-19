@@ -94,15 +94,15 @@ public class DateMatch {
 
     /**
      * Compare two dates and compute the score of their relative match.
-     * An exact match scores 100. A match within the same month scores 90.
-     * A match within the same year scores 80.
+     * An exact match scores 1.0. A match within the same month scores 0.9.
+     * A match within the same year scores 0.8.
      * <p>
      * Dates that are not within the same year are scored as follows:
      * The "age" of a date is defined as the amount of time from the date
      * to today (just as the current age of a person is the amount of time
      * from their birthdate to today.) The relative difference in age is computed
      * as a fraction of the absolute difference in age divided by the
-     * large of the two ages. Then a score is computed in the scale of 0-70
+     * large of the two ages. Then a score is computed in the scale of 0-0.7
      * according to this fraction.
      *
      * @param s Scorecard in which to add the result.
@@ -111,11 +111,11 @@ public class DateMatch {
     public void score(Scorecard s, DateMatch dm) {
         if (date != null && dm.date != null) {
             if (yearMonthDay == dm.yearMonthDay) {
-                s.addScore(100);
+                s.addScore(1.0, 1.0);
             } else if (yearMonth == dm.yearMonth) {
-                s.addScore(90);
+                s.addScore(0.9, 1.0);
             } else if (year == dm.year) {
-                s.addScore(80);
+                s.addScore(0.8, 1.0);
             } else {
                 int maxDate = dm.yearMonthDay;
                 int minDate = yearMonthDay;
@@ -126,10 +126,10 @@ public class DateMatch {
                 int diff = maxDate - minDate;
                 int age = today - minDate;
                 if (age >= 0 && diff < age) {
-                    int score = 70 * (age - diff) / age;
-                    s.addScore(score);
+                    double score = ( 0.7 * (age - diff) ) / age;
+                    s.addScore(score, 1.0);
                 } else {
-                    s.addScore(0);
+                    s.addScore(0.0, 1.0);
                 }
             }
         }

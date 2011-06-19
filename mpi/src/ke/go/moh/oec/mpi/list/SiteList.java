@@ -56,6 +56,9 @@ public class SiteList {
     private List<SiteMatch> siteList = new ArrayList<SiteMatch>();
     private Map<Integer, SiteMatch> siteMap = new HashMap<Integer, SiteMatch>();
 
+    /**
+     * Loads the site list from the database.
+     */
     public void load() {
         long startTime = System.currentTimeMillis();
         Connection conn = Sql.connect();
@@ -90,16 +93,23 @@ public class SiteList {
         siteMap.put(siteMatch.getSiteCode(), siteMatch);
     }
 
+    /**
+     * Find a set of site candidates that match (approximately) a site name search string.
+     * 
+     * @param siteName the site name search term to search for.
+     * @param identifier the identifier that might be associated with the site.
+     * @return the set of candidates whose site name match (approximately) the site name search string.
+     */
     public Set<SiteCandidate> find(String siteName, String identifier) {
         List<SiteMatch> siteMatchList = null;
         TreeSet<SiteCandidate> siteCandidateSet = new TreeSet<SiteCandidate>();
         NameMatch testNameMatch = new NameMatch(siteName);
-        int minScore = 100;
+        double minScore = 100;
 
         for (SiteMatch s : siteList) {
-            int score = s.computeScore(testNameMatch);
+            Double score = s.computeScore(testNameMatch);
             // System.out.println("Site " + s.getSiteCode() + " " + s.getSiteName() + " score " + score);
-            if (score > 0) {
+            if (score != null) {
                 if (siteCandidateSet.size() < MAX_SITE_SET_SIZE) {
                     siteCandidateSet.add(new SiteCandidate(s, score, identifier));
                     // System.out.println("---> " + s.getSiteCode() + " " + s.getSiteName() + " score " + score);
@@ -117,6 +127,13 @@ public class SiteList {
         return siteCandidateSet;
     }
 
+    /**
+     * Finds a set of site names that might match a site name search term,
+     * if there is a person identifier that needs such a match.
+     * 
+     * @param searchTerms complete set of search terms for the person
+     * @return the set of site names, or null if not applicable.
+     */
     public Set<SiteCandidate> findIfNeeded(PersonMatch searchTerms) {
         Set<SiteCandidate> siteCandidateSet = null;
         Person person = searchTerms.getPerson();

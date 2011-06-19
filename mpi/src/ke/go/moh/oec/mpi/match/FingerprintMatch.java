@@ -193,22 +193,24 @@ public class FingerprintMatch implements Cloneable {
     /**
      * Returns the score from the most recent match operation.
      * 
-     * @return the score from the most recent match operation.
+     * @return the score from the most recent match operation,
+     * as a double floating point value between 0 and 1, where 0 means
+     * no match and 1 means a "perfect" match.
      */
-    public int score() {
-        int score = 0;
+    public double score() {
+        int grScore = 0;
         if (useFingerprintSdk) {
             try {
-                score = grMatchingContext.getScore();
+                grScore = grMatchingContext.getScore();
             } catch (GrFingerJavaException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (score > 100) {
-                score = 100;
+            if (grScore > 100) {
+                grScore = 100;
             }
         } else if (nonSdkMatch) {
-            score = 100;
+            grScore = 100;
         }
-        return score;
+        return grScore / 100.0;
     }
 }

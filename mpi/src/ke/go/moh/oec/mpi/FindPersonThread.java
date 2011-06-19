@@ -94,20 +94,20 @@ public class FindPersonThread implements Runnable {
             Scorecard s = searchTerms.scorePersonMatch(pm);
             List<FingerprintMatch> fMatchList = pm.getFingerprintMatchList();
             if (fSearchList != null && fMatchList != null) {
-                int maxScore = 0;
+                double maxScore = 0.0;
                 for (FingerprintMatch fSearch : fSearchList) {
                     for (FingerprintMatch fMatch : fMatchList) {
                         boolean match = fSearch.match(fMatch);
                         if (match) {
                             s.setFingerprintMatched(true);
-                            int score = fSearch.score();
+                            double score = fSearch.score();
                             if (score > maxScore) {
                                 maxScore = score;
                             }
                         }
                     }
                 }
-                s.addScore(maxScore);
+                s.addScore(maxScore, 5.0); // Give fingerprint matches a weight of 5.
             }
             if (s.getScore() > CandidateSet.MIN_SCORE || s.isFingerprintMatched()) {
                 candidateSet.add(pm, s);

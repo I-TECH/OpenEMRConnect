@@ -25,15 +25,22 @@
 package ke.go.moh.oec.mpi.match;
 
 /**
- *
+ * Represents a site name for matching.
+ * 
  * @author Jim Grace
  */
 public class SiteMatch {
-    
+
     int siteCode;
     String siteName;
     NameMatch siteNameMatch;
-    
+
+    /**
+     * Constructs an entry from a site code and name.
+     * 
+     * @param siteCode 5-letter site code.
+     * @param siteName Name of the site.
+     */
     public SiteMatch(int siteCode, String siteName) {
         this.siteCode = siteCode;
         this.siteName = siteName.trim(); // Just in case.
@@ -47,12 +54,15 @@ public class SiteMatch {
     public String getSiteName() {
         return siteName;
     }
-    
-    public int computeScore(NameMatch testNameMatch) {
-        int score = NameMatch.computeScore(siteNameMatch, testNameMatch);
+
+    /**
+     * Calculates the score for a site name search term matching the name of this site.
+     * 
+     * @param siteNameSearchTerm Search term for a site name.
+     * @return score resulting from the comparison.
+     */
+    public Double computeScore(NameMatch siteNameSearchTerm) {
+        Double score = NameMatch.computeScore(siteNameMatch, siteNameSearchTerm);
         return (score);
     }
-    
-    
-    
 }

@@ -232,7 +232,7 @@ public class PersonList {
             PersonMatch match = this.get(p.getPersonGuid());
             if (match != null) {
                 Scorecard scorecard = new Scorecard();
-                scorecard.addScore(100);
+                scorecard.addScore(1.0, 1.0);
                 candidateSet.add(match, scorecard);
             }
         } else {

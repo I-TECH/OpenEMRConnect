@@ -51,30 +51,53 @@ public class StringMatch {
         return original;
     }
 
+    /**
+     * Scores this StringMatch for possible matching against another, using a scorecard.
+     * 
+     * @param s scorecard
+     * @param other other string to compare with
+     */
     public void score(Scorecard s, StringMatch other) {
-        int score = computeScore(this, other);
-        if (score >= 0) {
-            s.addScore(score);
+        Double score = computeScore(this, other);
+        if (score != null) {
+            s.addScore(score, 1.0);
         }
     }
 
-    public static int computeScore(StringMatch sm1, StringMatch sm2) {
-        int score = -1;
+    /**
+     * Computes the score as a result of matching two StringMatch objects,
+     * using approximate matching.
+     * The score is returned as a double precision floating point number on a
+     * scale of 0 to 1, where 0 means no match at all, and 1 means a perfect match.
+     * <p>
+     * Returns a score of 1 if the two strings are identical.
+     * Returns between 0 and 1 if the strings are not identical, but
+     * are close according to the edit distance between the two strings.
+     * <p>
+     * Returns null if one or both of the strings is null.
+     * 
+     * @param sm1 the first string to match
+     * @param sm2 the second string to match
+     * @return the score from matching the two strings.
+     * Returns null if one or the other string is null.
+     */
+    public static Double computeScore(StringMatch sm1, StringMatch sm2) {
+        Double score = null;
         String s1 = sm1.original;
         String s2 = sm2.original;
         if (s1 != null && s2 != null) {
-            score = 0;
+            score = 0.0;
             if (s1.equals(s2)) {
-                score = 100;
+                score = 1.0;
             } else {
                 int distance = Levenshtein.damerauLevenshteinDistance(s1, s2);
                 int lengthDiff = Math.abs(s1.length() - s2.length());
                 if (lengthDiff > 2) {
                     distance -= (lengthDiff - 2);
                 }
-                score = 100 - (20 * distance);
-                if (score < 0) {
-                    score = 0;
+                score = 1.0 - (0.2 * distance);
+                if (score < 0.0) {
+                    score = 0.0;
                 }
             }
             Mediator.getLogger(StringMatch.class.getName()).log(Level.FINEST,

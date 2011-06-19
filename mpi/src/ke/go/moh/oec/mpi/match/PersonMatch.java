@@ -331,9 +331,9 @@ public class PersonMatch {
     private void scoreSex(Scorecard s, Person.Sex sex1, Person.Sex sex2) {
         if (sex1 != null && sex2 != null) {
             if (sex1.ordinal() == sex2.ordinal()) {
-                s.addScore(100);
+                s.addScore(1.0, 0.5);
             } else {
-                s.addScore(0);
+                s.addScore(0, 1.0);
             }
         }
     }
@@ -362,19 +362,27 @@ public class PersonMatch {
                             for (SiteCandidate sc : this.getSiteCandidateSet()) {
                                 String identifier = sc.getSitePersonIdentifier();
                                 if (identifier.equals(pi2.getIdentifier())) {
-                                    s.addScore(100);
+                                    s.addScore(1.0, 1.0);
                                     s.setSiteName(sc.getSiteMatch().getSiteName());
                                 }
                             }
                         }
                         if (pi1.getIdentifier().equals(pi2.getIdentifier())) {
-                            s.addScore(100);
+                            s.addScore(1.0, 1.0);
                         }
                     }
                 }
             }
         }
     }
+    
+    /**
+     * Tests to see if a person identifier needs a site name.
+     * 
+     * @param pi PersonIdentifier to test
+     * @return true if the PersonIdentifier needs a site name to be complete,
+     * or false if the PersonIdentifier already includes a site name.
+     */
     public static boolean identifierNeedsSite(PersonIdentifier pi) {
         boolean returnValue = false;
         if (pi.getIdentifierType() == PersonIdentifier.Type.cccLocalId) {

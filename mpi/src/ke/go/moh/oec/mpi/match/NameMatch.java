@@ -45,8 +45,11 @@ import org.apache.commons.codec.language.Soundex;
  */
 public class NameMatch extends StringMatch {
 
+    /** Object for Soundex calculations. */
     private static Soundex soundex = new Soundex();
+    /** Object for RefinedSoundex calculations. */
     private static RefinedSoundex refinedSoundex = new RefinedSoundex();
+    /** Object for DoubleMetaphone calculations. */
     private static DoubleMetaphone doubleMetaphone = new DoubleMetaphone();
     /** (modified) Soundex */
     private String soundexValue = null;
@@ -88,22 +91,39 @@ public class NameMatch extends StringMatch {
      * @param other The other name to match against.
      */
     public void score(Scorecard s, NameMatch other) {
-        int score = computeScore(this, other);
-        if (score >= 0) {
-            s.addScore(score);
+        Double score = computeScore(this, other);
+        if (score != null) {
+            s.addScore(score, 1.0);
         }
     }
 
-    public static int computeScore(NameMatch n1, NameMatch n2) {
-        int score = StringMatch.computeScore(n1, n2);
-        if (score >= 0 && score < 100) {
+    /**
+     * Computes the score as a result of matching two NameMatch objects,
+     * using approximate matching.
+     * The score is returned as a double precision floating point number on a
+     * scale of 0 to 1, where 0 means no match at all, and 1 means a perfect match.
+     * <p>
+     * Returns 1 if the names are an exact match.
+     * Returns between 0 and 1 if the names are not an exact match but the
+     * edit distance between the two is not large (string match) and/or the
+     * two strings sound alike using one or more sound-alike functions (e.g., Soundex).
+     * <p>
+     * Returns null if one or both of the strings is null.
+     * 
+     * @param n1 the first name to match
+     * @param n2 the second name to match
+     * @return the score from matching the two names.
+     */
+    public static Double computeScore(NameMatch n1, NameMatch n2) {
+        Double score = StringMatch.computeScore(n1, n2);
+        if (score != null && score < 1.0) {
             if (n1.soundexValue.equals(n2.soundexValue)
                     || n1.refinedSoundexValue.equals(n2.refinedSoundexValue)
                     || n1.metaphone1.equals(n2.metaphone1)
                     || n1.metaphone2.equals(n2.metaphone2)
                     || n1.metaphone1.equals(n2.metaphone2)
                     || n1.metaphone2.equals(n2.metaphone1)) {
-                score = 80 + (score / 5);
+                score = 0.8 + (score / 5.0);
             }
             Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
                     "NameMatch.computeScore({0},{1}) = {2}", new Object[]{n1.getOriginal(), n2.getOriginal(), score});
