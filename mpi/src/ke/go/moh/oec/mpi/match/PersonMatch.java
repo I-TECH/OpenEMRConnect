@@ -331,7 +331,7 @@ public class PersonMatch {
     private void scoreSex(Scorecard s, Person.Sex sex1, Person.Sex sex2) {
         if (sex1 != null && sex2 != null) {
             if (sex1.ordinal() == sex2.ordinal()) {
-                s.addScore(1.0, 0.5);
+                s.addScore(1.0, 0.25);
             } else {
                 s.addScore(0, 1.0);
             }
