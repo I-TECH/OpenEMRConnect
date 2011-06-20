@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
  */
 public class MpiTest {
 
-    static Mpi mpi = new Mpi(); // Make it static so it won't reinitialize between tests.
+    static Mpi mpi; // Make it static so it won't reinitialize between tests.
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public MpiTest() {
@@ -38,6 +38,14 @@ public class MpiTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        Connection conn = Sql.connect();
+        String s1 = "DELETE FROM person WHERE first_name = 'Cain' AND middle_name = 'Human' AND last_name = 'One';";
+        String s2 = "DELETE FROM village WHERE village_name IN ('Eden', 'OutOfEden');";
+        Sql.startTransaction(conn);
+        Sql.execute(conn, s1);
+        Sql.execute(conn, s2);
+        Sql.commit(conn);
+        mpi = new Mpi(); 
     }
 
     @AfterClass
@@ -228,14 +236,6 @@ public class MpiTest {
     @Test
     public void testCreatePerson() {
         System.out.println("testCreatePerson");
-
-        Connection conn = Sql.connect();
-        String s1 = "DELETE FROM person WHERE first_name = 'Cain' AND middle_name = 'Human' AND last_name = 'One';";
-        String s2 = "DELETE FROM village WHERE village_name IN ('Eden', 'OutOfEden');";
-        Sql.startTransaction(conn);
-        Sql.execute(conn, s1);
-        Sql.execute(conn, s2);
-        Sql.commit(conn);
 
         int requestTypeId = RequestTypeId.CREATE_PERSON_MPI;
         PersonRequest requestData = new PersonRequest();
