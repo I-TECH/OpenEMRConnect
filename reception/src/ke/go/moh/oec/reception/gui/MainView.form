@@ -1027,6 +1027,9 @@
                                   <BindingProperties>
                                     <BindingProperty name="elements" source="mpiSearchResultList" target="mpiResultsTable" targetPath="elements" updateStrategy="0" immediately="true">
                                       <Property name="name" type="java.lang.String" value="mpiBinding"/>
+                                      <Subbinding sourcePath="${fingerprintMatched}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Boolean.class"/>
+                                      </Subbinding>
                                       <Subbinding sourcePath="${firstName}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                       </Subbinding>
@@ -1185,6 +1188,9 @@
                                   <BindingProperties>
                                     <BindingProperty name="elements" source="lpiSearchResultList" target="lpiResultsTable" targetPath="elements" updateStrategy="0" immediately="true">
                                       <Property name="name" type="java.lang.String" value="lpiBinding"/>
+                                      <Subbinding sourcePath="${fingerprintMatched}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Boolean.class"/>
+                                      </Subbinding>
                                       <Subbinding sourcePath="${firstName}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                       </Subbinding>
@@ -1902,7 +1908,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="reviewPanel2" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="27" max="32767" attributes="0"/>
+                                  <EmptySpace pref="17" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -2119,7 +2125,7 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="review2NextButton" min="-2" pref="42" max="-2" attributes="0"/>
-                                      <EmptySpace max="32767" attributes="0"/>
+                                      <EmptySpace pref="23" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>

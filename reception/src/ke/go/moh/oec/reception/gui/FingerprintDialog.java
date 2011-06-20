@@ -40,8 +40,9 @@ import javax.swing.JOptionPane;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Fingerprint.TechnologyType;
 import ke.go.moh.oec.Fingerprint.Type;
-import ke.go.moh.oec.reception.data.ImagedFingerprint;
-import ke.go.moh.oec.reception.controller.Session;
+import ke.go.moh.oec.reception.controller.OECReception;
+import ke.go.moh.oec.client.data.ImagedFingerprint;
+import ke.go.moh.oec.client.data.Session;
 import ke.go.moh.oec.reception.reader.ReaderManager;
 import org.jdesktop.application.Action;
 
@@ -56,7 +57,7 @@ public class FingerprintDialog extends javax.swing.JDialog {
 
     public void setSession(Session session) {
         this.session = session;
-        switch (Session.getImagedFingerprintList().size() - 1) {
+        switch (session.getImagedFingerprintList().size() - 1) {
             case -1:
                 rightIndexRadioButton.setSelected(true);
                 break;
@@ -78,6 +79,7 @@ public class FingerprintDialog extends javax.swing.JDialog {
             default:
                 rightIndexRadioButton.setSelected(true);
         }
+        showTakenFingerprint();
     }
 
     /** Creates new form FingerprintDialog */
@@ -371,35 +373,35 @@ public class FingerprintDialog extends javax.swing.JDialog {
             return;
         }
         ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, fingerprintImagePanel.getImage(), false);
-        List<ImagedFingerprint> imagedFingerprintList = Session.getImagedFingerprintList();
+        List<ImagedFingerprint> imagedFingerprintList = session.getImagedFingerprintList();
         if (imagedFingerprintList.contains(imagedFingerprint)) {
             if (showConfirmMessage("A print has already been taken from the finger you want to"
                     + " add. Would you like to overwite it?", this)) {
                 imagedFingerprintList.remove(imagedFingerprintList.indexOf(imagedFingerprint));
-                session.addImagedFingerprint(imagedFingerprint);
-                session.setCurrentImagedFingerprint(imagedFingerprint);
+                session.getImagedFingerprintList().add(imagedFingerprint);
             } else {
                 return;
             }
         } else {
-            session.addImagedFingerprint(imagedFingerprint);
+            session.getImagedFingerprintList().add(imagedFingerprint);
+            session.setActiveFingerprint(imagedFingerprint);
         }
         dispose();
     }
 
     private void showWarningMessage(String message, Component parent, JComponent toFocus) {
-        JOptionPane.showMessageDialog(parent, message, Session.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(parent, message, OECReception.getApplicationName(), JOptionPane.WARNING_MESSAGE);
         toFocus.requestFocus();
     }
 
     public boolean showConfirmMessage(String message, Component parent) {
-        return JOptionPane.showConfirmDialog(this, message, Session.getApplicationName(),
+        return JOptionPane.showConfirmDialog(this, message, OECReception.getApplicationName(),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
     @Action
     public void addUnavailableFingerprint() {
-        showImage(Session.getRefusedFingerprint().getImage());
+        showImage(OECReception.getRefusedFingerprint().getImage());
         Fingerprint fingerPrint = new Fingerprint();
         if (rightIndexRadioButton.isSelected()) {
             fingerPrint.setFingerprintType(Type.rightIndexFinger);
@@ -416,24 +418,23 @@ public class FingerprintDialog extends javax.swing.JDialog {
         }
         fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
         ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, fingerprintImagePanel.getImage(), false);
-        List<ImagedFingerprint> imagedFingerprintList = Session.getImagedFingerprintList();
+        List<ImagedFingerprint> imagedFingerprintList = session.getImagedFingerprintList();
         if (imagedFingerprintList.contains(imagedFingerprint) || !imagedFingerprint.isPlaceholder()) {
             if (showConfirmMessage("A print has already been taken from the finger you want to"
                     + " add. Would you like to overwite it?", this)) {
                 imagedFingerprintList.remove(imagedFingerprintList.indexOf(imagedFingerprint));
-                session.addImagedFingerprint(imagedFingerprint);
-                session.setCurrentImagedFingerprint(imagedFingerprint);
+                session.getImagedFingerprintList().add(imagedFingerprint);
             } else {
                 return;
             }
         } else {
-            session.addImagedFingerprint(imagedFingerprint);
+            session.getImagedFingerprintList().add(imagedFingerprint);
         }
     }
 
     @Action
     public void showTakenFingerprint() {
-        List<ImagedFingerprint> imagedFingerprintList = Session.getImagedFingerprintList();
+        List<ImagedFingerprint> imagedFingerprintList = session.getImagedFingerprintList();
         Fingerprint fingerprint = new Fingerprint();
         if (rightIndexRadioButton.isSelected()) {
             fingerprint.setFingerprintType(Type.rightIndexFinger);
