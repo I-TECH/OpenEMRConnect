@@ -40,13 +40,13 @@ import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.Visit;
-import ke.go.moh.oec.reception.controller.RequestDispatcher;
-import ke.go.moh.oec.reception.data.RequestResult;
-import ke.go.moh.oec.reception.controller.Session;
-import ke.go.moh.oec.reception.data.ComprehensiveRequestParameters;
-import ke.go.moh.oec.reception.data.DisplayableMaritalStatus;
-import ke.go.moh.oec.reception.data.ImagedFingerprint;
-import ke.go.moh.oec.reception.data.TargetIndex;
+import ke.go.moh.oec.reception.controller.OECReception;
+import ke.go.moh.oec.client.controller.RequestDispatcher;
+import ke.go.moh.oec.client.data.RequestResult;
+import ke.go.moh.oec.client.data.Session;
+import ke.go.moh.oec.client.controller.PersonWrapper;
+import ke.go.moh.oec.client.data.DisplayableMaritalStatus;
+import ke.go.moh.oec.client.data.ImagedFingerprint;
 import ke.go.moh.oec.reception.gui.custom.ImagePanel;
 import ke.go.moh.oec.reception.gui.helper.PIListData;
 import org.jdesktop.beansbinding.Binding;
@@ -75,7 +75,7 @@ public class MainView extends FrameView {
         initComponents();
         cardLayout = (CardLayout) wizardPanel.getLayout();
         showCard("homeCard");
-        this.getFrame().setTitle(Session.getApplicationName());
+        this.getFrame().setTitle(OECReception.getApplicationName());
         // status bar initialization - message timeout, idle icon and busy animation, etc
         ResourceMap resourceMap = getResourceMap();
         int messageTimeout = resourceMap.getInteger("StatusBar.messageTimeout");
@@ -896,7 +896,10 @@ public class MainView extends FrameView {
         mpiResultsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         org.jdesktop.swingbinding.JTableBinding jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, mpiSearchResultList, mpiResultsTable, "mpiBinding");
-        org.jdesktop.swingbinding.JTableBinding.ColumnBinding columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${firstName}"));
+        org.jdesktop.swingbinding.JTableBinding.ColumnBinding columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${fingerprintMatched}"));
+        columnBinding.setColumnName("Fingerprint Matched");
+        columnBinding.setColumnClass(Boolean.class);
+        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${firstName}"));
         columnBinding.setColumnName("First Name");
         columnBinding.setColumnClass(String.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${middleName}"));
@@ -1004,6 +1007,9 @@ public class MainView extends FrameView {
         lpiResultsTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
         jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, lpiSearchResultList, lpiResultsTable, "lpiBinding");
+        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${fingerprintMatched}"));
+        columnBinding.setColumnName("Fingerprint Matched");
+        columnBinding.setColumnClass(Boolean.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${firstName}"));
         columnBinding.setColumnName("First Name");
         columnBinding.setColumnClass(String.class);
@@ -1799,7 +1805,7 @@ public class MainView extends FrameView {
                     .addComponent(altCompoundHeadsMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(review2NextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout reviewCard2Layout = new javax.swing.GroupLayout(reviewCard2);
@@ -1816,7 +1822,7 @@ public class MainView extends FrameView {
             .addGroup(reviewCard2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(reviewPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         wizardPanel.add(reviewCard2, "reviewCard2");
@@ -2174,48 +2180,48 @@ public class MainView extends FrameView {
 
     private void prepareCard(String cardName) {
         if (cardName.equalsIgnoreCase("basicSearchCard")) {
-            if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
-                basicSearchButton.setEnabled((!Session.getImagedFingerprintList().isEmpty()
-                        || session.isNonFingerprint()) && !basicSearchClinicIdTextField.getText().isEmpty());
-            } else if (Session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
-                basicSearchButton.setEnabled((!Session.getImagedFingerprintList().isEmpty()
-                        || session.isNonFingerprint())
+            if (session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
+                basicSearchButton.setEnabled((!session.getImagedFingerprintList().isEmpty()
+                        || !session.isFingerprint()) && !basicSearchClinicIdTextField.getText().isEmpty());
+            } else if (session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
+                basicSearchButton.setEnabled((!session.getImagedFingerprintList().isEmpty()
+                        || !session.isFingerprint())
                         && !basicSearchClinicIdTextField.getText().isEmpty()
                         && !basicSearchClinicNameTextField.getText().isEmpty());
             }
-            basicSearchClinicNameLabel.setVisible((Session.getClientType() == Session.CLIENT_TYPE.VISITOR)
-                    || (Session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN));
-            basicSearchClinicNameTextField.setVisible(Session.getClientType() == Session.CLIENT_TYPE.VISITOR);
+            basicSearchClinicNameLabel.setVisible((session.getClientType() == Session.CLIENT_TYPE.VISITOR)
+                    || (session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN));
+            basicSearchClinicNameTextField.setVisible(session.getClientType() == Session.CLIENT_TYPE.VISITOR);
         } else if (cardName.equalsIgnoreCase("extendedSearchCard")) {
-            if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
+            if (session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
                 basicSearchButton.setEnabled(!basicSearchClinicIdTextField.getText().isEmpty()
-                        && (!Session.getImagedFingerprintList().isEmpty()
-                        || session.isNonFingerprint()));
-                extendedSearchClinicIdLabel.setVisible(session.hasKnownClinicId());
-                extendedSearchClinicIdTextField.setVisible(session.hasKnownClinicId());
+                        && (!session.getImagedFingerprintList().isEmpty()
+                        || !session.isFingerprint()));
+                extendedSearchClinicIdLabel.setVisible(session.isClinicId());
+                extendedSearchClinicIdTextField.setVisible(session.isClinicId());
                 extendedSearchClinicNameLabel.setVisible(false);
                 extendedSearchClinicNameTextField.setVisible(false);
-            } else if (Session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
+            } else if (session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
                 basicSearchButton.setEnabled(!basicSearchClinicIdTextField.getText().isEmpty()
-                        && (!Session.getImagedFingerprintList().isEmpty()
-                        || session.isNonFingerprint()
+                        && (!session.getImagedFingerprintList().isEmpty()
+                        || !session.isFingerprint()
                         && !basicSearchClinicNameTextField.getText().isEmpty()));
-                extendedSearchClinicIdLabel.setVisible(session.hasKnownClinicId());
-                extendedSearchClinicIdTextField.setVisible(session.hasKnownClinicId());
+                extendedSearchClinicIdLabel.setVisible(session.isClinicId());
+                extendedSearchClinicIdTextField.setVisible(session.isClinicId());
                 extendedSearchClinicNameLabel.setVisible(true);
                 extendedSearchClinicNameTextField.setVisible(true);
-            } else if (Session.getClientType() == Session.CLIENT_TYPE.NEW) {
+            } else if (session.getClientType() == Session.CLIENT_TYPE.NEW) {
                 extendedSearchClinicIdLabel.setVisible(false);
                 extendedSearchClinicIdTextField.setVisible(false);
                 extendedSearchClinicNameLabel.setVisible(false);
                 extendedSearchClinicNameTextField.setVisible(false);
-            } else if (Session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN) {
+            } else if (session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN) {
                 basicSearchButton.setEnabled(!basicSearchClinicIdTextField.getText().isEmpty()
-                        && (!Session.getImagedFingerprintList().isEmpty()
-                        || session.isNonFingerprint()
+                        && (!session.getImagedFingerprintList().isEmpty()
+                        || !session.isFingerprint()
                         && !basicSearchClinicNameTextField.getText().isEmpty()));
-                extendedSearchClinicIdLabel.setVisible(session.hasKnownClinicId());
-                extendedSearchClinicIdTextField.setVisible(session.hasKnownClinicId());
+                extendedSearchClinicIdLabel.setVisible(session.isClinicId());
+                extendedSearchClinicIdTextField.setVisible(session.isClinicId());
                 extendedSearchClinicNameLabel.setVisible(true);
                 extendedSearchClinicNameTextField.setVisible(true);
             }
@@ -2229,8 +2235,8 @@ public class MainView extends FrameView {
             fingerprintDialog.setLocationRelativeTo(this.getFrame());
             fingerprintDialog.setSession(session);
             fingerprintDialog.setVisible(true);
-            if (session.getCurrentImagedFingerprint() != null) {
-                showFingerprintImageBasic(session.getCurrentImagedFingerprint().getImage());
+            if (session.getActiveImagedFingerprint() != null) {
+                showFingerprintImageBasic(session.getActiveImagedFingerprint().getImage());
             }
             prepareCard("basicSearchCard");
         } catch (GrFingerJavaException ex) {
@@ -2248,8 +2254,8 @@ public class MainView extends FrameView {
             fingerprintDialog.setLocationRelativeTo(this.getFrame());
             fingerprintDialog.setSession(session);
             fingerprintDialog.setVisible(true);
-            if (session.getCurrentImagedFingerprint() != null) {
-                showFingerprintImageExtended(session.getCurrentImagedFingerprint().getImage());
+            if (session.getActiveImagedFingerprint() != null) {
+                showFingerprintImageExtended(session.getActiveImagedFingerprint().getImage());
             }
             prepareCard("extendedSearchCard");
         } catch (GrFingerJavaException ex) {
@@ -2267,8 +2273,8 @@ public class MainView extends FrameView {
             fingerprintDialog.setLocationRelativeTo(this.getFrame());
             fingerprintDialog.setSession(session);
             fingerprintDialog.setVisible(true);
-            if (session.getCurrentImagedFingerprint() != null) {
-                showFingerprintImageReview(session.getCurrentImagedFingerprint().getImage());
+            if (session.getActiveImagedFingerprint() != null) {
+                showFingerprintImageReview(session.getActiveImagedFingerprint().getImage());
             }
             prepareCard("reviewCard3");
         } catch (GrFingerJavaException ex) {
@@ -2301,51 +2307,51 @@ public class MainView extends FrameView {
     }
 
     private void showWarningMessage(String message, Component parent, JComponent toFocus) {
-        JOptionPane.showMessageDialog(parent, message, Session.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(parent, message, OECReception.getApplicationName(), JOptionPane.WARNING_MESSAGE);
         toFocus.requestFocus();
     }
 
     public boolean showConfirmMessage(String message, Component parent) {
-        return JOptionPane.showConfirmDialog(this.getFrame(), message, Session.getApplicationName(),
+        return JOptionPane.showConfirmDialog(this.getFrame(), message, OECReception.getApplicationName(),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
     private ProcessResult doBasicSearch(int targetIndex) {
-        if (targetIndex == TargetIndex.BOTH || targetIndex == TargetIndex.MPI) {
+        if (targetIndex == RequestDispatcher.TargetIndex.BOTH || targetIndex == RequestDispatcher.TargetIndex.MPI) {
             mpiRequestResult = new RequestResult();
         }
-        if (targetIndex == TargetIndex.BOTH || targetIndex == TargetIndex.LPI) {
+        if (targetIndex == RequestDispatcher.TargetIndex.BOTH || targetIndex == RequestDispatcher.TargetIndex.LPI) {
             lpiRequestResult = new RequestResult();
         }
-        RequestDispatcher.dispatch(session.getBasicRequestParameters(),
-                mpiRequestResult, lpiRequestResult, RequestDispatcher.FIND, targetIndex);
+        RequestDispatcher.dispatch(session.getPersonWrapper(),
+                mpiRequestResult, lpiRequestResult, RequestDispatcher.DispatchType.FIND, targetIndex);
         mpiPersonList = (List<Person>) mpiRequestResult.getData();
         lpiPersonList = (List<Person>) lpiRequestResult.getData();
         if (mpiRequestResult.isSuccessful()
                 && lpiRequestResult.isSuccessful()) {
-            if (Session.checkForLinkedCandidates(lpiPersonList)) {
-                return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.LPI, lpiPersonList));
+            if (OECReception.checkForLinkedCandidates(lpiPersonList)) {
+                return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
             } else {
-                if (Session.checkForFingerprintCandidates(mpiPersonList)) {
-                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.MPI, mpiPersonList));
+                if (OECReception.checkForFingerprintCandidates(mpiPersonList)) {
+                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
                 } else {
                     if (!session.hasAllFingerprintsTaken()) {
                         return new ProcessResult(ProcessResult.Type.TAKE_NEXT_FINGERPRINT, null);
                     } else {
                         if (!session.getAnyUnsentFingerprints().isEmpty()) {
                             for (ImagedFingerprint imagedFingerprint : session.getAnyUnsentFingerprints()) {
-                                session.setCurrentImagedFingerprint(imagedFingerprint);
-                                session.getBasicRequestParameters().setFingerprint(imagedFingerprint.getFingerprint());
+                                session.setActiveFingerprint(imagedFingerprint);
+                                session.getPersonWrapper().setFingerprint(imagedFingerprint.getFingerprint());
                                 imagedFingerprint.setSent(true);
                                 break;
                             }
-                            return doBasicSearch(TargetIndex.BOTH);
+                            return doBasicSearch(RequestDispatcher.TargetIndex.BOTH);
                         } else {
                             if (!lpiPersonList.isEmpty()) {
-                                return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.LPI, lpiPersonList));
+                                return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
                             } else {
                                 if (!mpiPersonList.isEmpty()) {
-                                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.MPI, mpiPersonList));
+                                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
                                 } else {
                                     return new ProcessResult(ProcessResult.Type.JUST_EXIT, null);
                                 }
@@ -2360,21 +2366,21 @@ public class MainView extends FrameView {
                     && !lpiRequestResult.isSuccessful()) {
                 if (showConfirmMessage("Both the Master and the Local Person Indices could not be contacted. "
                         + "Would you like to try contacting them again?", this.getFrame())) {
-                    return doBasicSearch(TargetIndex.BOTH);
+                    return doBasicSearch(RequestDispatcher.TargetIndex.BOTH);
                 }
             } else {
                 if (!mpiRequestResult.isSuccessful()) {
                     if (showConfirmMessage("The Master Person Index could not be contacted. "
                             + "Would you like to try contacting it again?", this.getFrame())) {
-                        return doBasicSearch(TargetIndex.MPI);
+                        return doBasicSearch(RequestDispatcher.TargetIndex.MPI);
                     }
-                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.LPI, lpiPersonList));
+                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
                 } else if (!lpiRequestResult.isSuccessful()) {
                     if (showConfirmMessage("The Local Person Index could not be contacted. "
                             + "Would you like to try contacting it again?", this.getFrame())) {
-                        return doBasicSearch(TargetIndex.LPI);
+                        return doBasicSearch(RequestDispatcher.TargetIndex.LPI);
                     }
-                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.MPI, mpiPersonList));
+                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
                 }
             }
             return new ProcessResult(ProcessResult.Type.UNREACHABLE_INDICES, null);
@@ -2382,41 +2388,41 @@ public class MainView extends FrameView {
     }
 
     private ProcessResult doExtendedSearch(int targetIndex) {
-        if (targetIndex == TargetIndex.BOTH || targetIndex == TargetIndex.MPI) {
+        if (targetIndex == RequestDispatcher.TargetIndex.BOTH || targetIndex == RequestDispatcher.TargetIndex.MPI) {
             mpiRequestResult = new RequestResult();
         }
-        if (targetIndex == TargetIndex.BOTH || targetIndex == TargetIndex.LPI) {
+        if (targetIndex == RequestDispatcher.TargetIndex.BOTH || targetIndex == RequestDispatcher.TargetIndex.LPI) {
             lpiRequestResult = new RequestResult();
         }
-        RequestDispatcher.dispatch(session.getExtendedRequestParameters(),
-                mpiRequestResult, lpiRequestResult, RequestDispatcher.FIND, targetIndex);
+        RequestDispatcher.dispatch(session.getPersonWrapper(),
+                mpiRequestResult, lpiRequestResult, RequestDispatcher.DispatchType.FIND, targetIndex);
         mpiPersonList = (List<Person>) mpiRequestResult.getData();
         lpiPersonList = (List<Person>) lpiRequestResult.getData();
         if (mpiRequestResult.isSuccessful()
                 && lpiRequestResult.isSuccessful()) {
-            if (Session.checkForLinkedCandidates(lpiPersonList)) {
-                return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.LPI, lpiPersonList));
+            if (OECReception.checkForLinkedCandidates(lpiPersonList)) {
+                return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
             } else {
-                if (Session.checkForFingerprintCandidates(mpiPersonList)) {
-                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.MPI, mpiPersonList));
+                if (OECReception.checkForFingerprintCandidates(mpiPersonList)) {
+                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
                 } else {
                     if (!session.hasAllFingerprintsTaken()) {
                         return new ProcessResult(ProcessResult.Type.TAKE_NEXT_FINGERPRINT, null);
                     } else {
                         if (!session.getAnyUnsentFingerprints().isEmpty()) {
                             for (ImagedFingerprint imagedFingerprint : session.getAnyUnsentFingerprints()) {
-                                session.setCurrentImagedFingerprint(imagedFingerprint);
-                                session.getExtendedRequestParameters().getBasicRequestParameters().setFingerprint(imagedFingerprint.getFingerprint());
+                                session.setActiveFingerprint(imagedFingerprint);
+                                //session.getExtendedPersonWrapper().getBasicPersonWrapper().setFingerprint(imagedFingerprint.getFingerprint());
                                 imagedFingerprint.setSent(true);
                                 break;
                             }
-                            return doExtendedSearch(TargetIndex.BOTH);
+                            return doExtendedSearch(RequestDispatcher.TargetIndex.BOTH);
                         } else {
                             if (!lpiPersonList.isEmpty()) {
-                                return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.LPI, lpiPersonList));
+                                return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
                             } else {
                                 if (!mpiPersonList.isEmpty()) {
-                                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.MPI, mpiPersonList));
+                                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
                                 } else {
                                     return new ProcessResult(ProcessResult.Type.JUST_EXIT, null);
                                 }
@@ -2431,21 +2437,21 @@ public class MainView extends FrameView {
                     && !lpiRequestResult.isSuccessful()) {
                 if (showConfirmMessage("Both the Master and the Local Person Indices could not be contacted. "
                         + "Would you like to try contacting them again?", this.getFrame())) {
-                    return doBasicSearch(TargetIndex.BOTH);
+                    return doBasicSearch(RequestDispatcher.TargetIndex.BOTH);
                 }
             } else {
                 if (!mpiRequestResult.isSuccessful()) {
                     if (showConfirmMessage("The Master Person Index could not be contacted. "
                             + "Would you like to try contacting it again?", this.getFrame())) {
-                        return doBasicSearch(TargetIndex.MPI);
+                        return doBasicSearch(RequestDispatcher.TargetIndex.MPI);
                     }
-                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.LPI, lpiPersonList));
+                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
                 } else if (!lpiRequestResult.isSuccessful()) {
                     if (showConfirmMessage("The Local Person Index could not be contacted. "
                             + "Would you like to try contacting it again?", this.getFrame())) {
-                        return doBasicSearch(TargetIndex.LPI);
+                        return doBasicSearch(RequestDispatcher.TargetIndex.LPI);
                     }
-                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(TargetIndex.MPI, mpiPersonList));
+                    return new ProcessResult(ProcessResult.Type.SHOW_LIST, new PIListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
                 }
             }
             return new ProcessResult(ProcessResult.Type.UNREACHABLE_INDICES, null);
@@ -2455,11 +2461,11 @@ public class MainView extends FrameView {
     @Action
     public void refuseFingerprintingBasic() {
         if (basicSearchClientRefusesCheckBox.isSelected()) {
-            showFingerprintImageBasic(Session.getRefusedFingerprint().getImage());
-            session.setNonFingerprint(true);
+            showFingerprintImageBasic(OECReception.getRefusedFingerprint().getImage());
+            session.setFingerprint(false);
         } else {
-            showFingerprintImageBasic(Session.getMissingFingerprint().getImage());
-            session.setNonFingerprint(false);
+            showFingerprintImageBasic(OECReception.getMissingFingerprint().getImage());
+            session.setFingerprint(true);
         }
         prepareCard("basicSearchCard");
     }
@@ -2467,11 +2473,11 @@ public class MainView extends FrameView {
     @Action
     public void refuseFingerprintingExtended() {
         if (extendedSearchClientRefusesCheckBox.isSelected()) {
-            showFingerprintImageExtended(Session.getRefusedFingerprint().getImage());
-            session.setNonFingerprint(true);
+            showFingerprintImageExtended(OECReception.getRefusedFingerprint().getImage());
+            session.setFingerprint(false);
         } else {
-            showFingerprintImageExtended(Session.getMissingFingerprint().getImage());
-            session.setNonFingerprint(false);
+            showFingerprintImageExtended(OECReception.getMissingFingerprint().getImage());
+            session.setFingerprint(true);
         }
         prepareCard("extendedSearchCard");
     }
@@ -2479,11 +2485,11 @@ public class MainView extends FrameView {
     @Action
     public void refuseFingerprintingReview() {
         if (clientRefusesCheckBox.isSelected()) {
-            showFingerprintImageReview(Session.getRefusedFingerprint().getImage());
-            session.setNonFingerprint(true);
+            showFingerprintImageReview(OECReception.getRefusedFingerprint().getImage());
+            session.setFingerprint(false);
         } else {
-            showFingerprintImageReview(Session.getMissingFingerprint().getImage());
-            session.setNonFingerprint(false);
+            showFingerprintImageReview(OECReception.getMissingFingerprint().getImage());
+            session.setFingerprint(true);
         }
         prepareCard("reviewCard3");
     }
@@ -2501,29 +2507,25 @@ public class MainView extends FrameView {
 
         @Override
         protected Object doInBackground() {
-            String clinicId = basicSearchClinicIdTextField.getText();
-            if (session.hasKnownClinicId() && !Session.validateClinicId(clinicId)) {
-                showWarningMessage("The Clinic ID: '" + clinicId + "' you entered is in the wrong format. "
-                        + "Please use the format '12345-00001' for Universal Clinic IDs and '00001/2005' "
-                        + "for Local Clinic IDs", basicSearchButton, basicSearchClinicIdTextField);
+            if (session.getPersonWrapper() == null) {
+                session.setPersonWrapper(new PersonWrapper(new Person()));
+            }
+            PersonWrapper personWrapper = session.getPersonWrapper();
+            try {
+                personWrapper.setClinicId(basicSearchClinicIdTextField.getText());
+                personWrapper.setFingerprint(session.getActiveImagedFingerprint().getFingerprint());
+            } catch (IllegalArgumentException ex) {
+                showWarningMessage(ex.getMessage(), basicSearchButton, basicSearchClinicIdTextField);
+                return new ProcessResult(ProcessResult.Type.ABORT, null);
+            }
+            if (session.isClinicName() && basicSearchClinicNameTextField.getText().isEmpty()) {
+                showWarningMessage("Please enter Clinic name before proceeding.", basicSearchButton, basicSearchClinicNameTextField);
                 return new ProcessResult(ProcessResult.Type.ABORT, null);
             } else {
-                session.getBasicRequestParameters().setIdentifier(clinicId);
-                if (session.getCurrentImagedFingerprint() != null) {
-                    session.getBasicRequestParameters().setFingerprint(session.getCurrentImagedFingerprint().getFingerprint());
-                    session.getCurrentImagedFingerprint().setSent(true);
-                }
-                if (Session.getClientType() == Session.CLIENT_TYPE.VISITOR
-                        || Session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN) {
-                    if (basicSearchClinicNameTextField.getText().isEmpty()) {
-                        showWarningMessage("Please enter Clinic name before proceeding.", basicSearchButton, basicSearchClinicNameTextField);
-                        return new ProcessResult(ProcessResult.Type.ABORT, null);
-                    } else {
-                        session.getBasicRequestParameters().setClinicName(basicSearchClinicNameTextField.getText());
-                    }
-                }
-                return doBasicSearch(TargetIndex.BOTH);
+                personWrapper.setClinicName(basicSearchClinicNameTextField.getText());
             }
+            session.getActiveImagedFingerprint().setSent(true);
+            return doBasicSearch(RequestDispatcher.TargetIndex.BOTH);
         }
 
         @Override
@@ -2537,6 +2539,7 @@ public class MainView extends FrameView {
                 if (!showConfirmMessage("Your basic search returned no candidates. Would you like"
                         + " to repeat it? Choose Yes to repeat a basic search or No to proceed to"
                         + " an extended search.", extendedSearchButton)) {
+                    session.setPersonWrapper(new PersonWrapper(session.getPersonWrapper().unwrap()));
                     showCard("extendedSearchCard");
                 }
             }
@@ -2556,39 +2559,37 @@ public class MainView extends FrameView {
 
         @Override
         protected Object doInBackground() {
-            String clinicId = extendedSearchClinicIdTextField.getText();
-            if (session.hasKnownClinicId() && !Session.validateClinicId(clinicId)) {
-                showWarningMessage("The Clinic ID: '" + clinicId + "' you entered is in the wrong format. "
-                        + "Please use the format '12345-00001' for Universal Clinic IDs and '00001/2005' "
-                        + "for Local Clinic IDs", basicSearchButton, basicSearchClinicIdTextField);
+            if (session.getPersonWrapper() == null) {
+                session.setPersonWrapper(new PersonWrapper(new Person()));
+            }
+            PersonWrapper personWrapper = session.getPersonWrapper();
+            try {
+                if (session.isClinicId()) {
+                    personWrapper.setClinicId(extendedSearchClinicIdTextField.getText());
+                }
+                personWrapper.setFingerprint(session.getActiveImagedFingerprint().getFingerprint());
+                personWrapper.setFirstName(extendedSearchFirstNameTextField.getText());
+                personWrapper.setMiddleName(extendedSearchMiddleNameTextField.getText());
+                personWrapper.setLastName(extendedSearchLastNameTextField.getText());
+                if (extendedSearchMaleRadioButton.isSelected()) {
+                    personWrapper.setSex(Person.Sex.M);
+                } else if (extendedSearchFemaleRadioButton.isSelected()) {
+                    personWrapper.setSex(Person.Sex.F);
+                }
+                personWrapper.setBirthdate(extendedSearchBirthdateChooser.getDate());
+                personWrapper.setVillageName(extendedSearchClinicIdTextField.getText());
+            } catch (IllegalArgumentException ex) {
+                showWarningMessage(ex.getMessage(), extendedSearchButton, extendedSearchClinicIdTextField);
+                return new ProcessResult(ProcessResult.Type.ABORT, null);
+            }
+            if (session.isClinicName() && extendedSearchClinicNameTextField.getText().isEmpty()) {
+                showWarningMessage("Please enter Clinic name before proceeding.", extendedSearchButton, extendedSearchClinicNameTextField);
                 return new ProcessResult(ProcessResult.Type.ABORT, null);
             } else {
-                session.getExtendedRequestParameters().getBasicRequestParameters().setIdentifier(clinicId);
-                if (session.getCurrentImagedFingerprint() != null) {
-                    session.getExtendedRequestParameters().getBasicRequestParameters().setFingerprint(session.getCurrentImagedFingerprint().getFingerprint());
-                    session.getCurrentImagedFingerprint().setSent(true);
-                }
-                if (Session.getClientType() == Session.CLIENT_TYPE.VISITOR
-                        || Session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN) {
-                    if (extendedSearchClinicNameTextField.getText().isEmpty()) {
-                        showWarningMessage("Please enter Clinic name before proceeding.", extendedSearchButton, extendedSearchClinicNameTextField);
-                        return new ProcessResult(ProcessResult.Type.ABORT, null);
-                    } else {
-                        session.getExtendedRequestParameters().getBasicRequestParameters().setClinicName(extendedSearchClinicNameTextField.getText());
-                    }
-                }
-                session.getExtendedRequestParameters().setFirstName(extendedSearchFirstNameTextField.getText());
-                session.getExtendedRequestParameters().setMiddleName(extendedSearchMiddleNameTextField.getText());
-                session.getExtendedRequestParameters().setLastName(extendedSearchLastNameTextField.getText());
-                if (extendedSearchMaleRadioButton.isSelected()) {
-                    session.getExtendedRequestParameters().setSex(Person.Sex.M);
-                } else if (extendedSearchFemaleRadioButton.isSelected()) {
-                    session.getExtendedRequestParameters().setSex(Person.Sex.F);
-                }
-                session.getExtendedRequestParameters().setBirthdate(extendedSearchBirthdateChooser.getDate());
-                session.getExtendedRequestParameters().setVillageName(basicSearchClinicIdTextField.getText());
-                return doExtendedSearch(TargetIndex.BOTH);
+                personWrapper.setClinicName(extendedSearchClinicNameTextField.getText());
             }
+            session.getActiveImagedFingerprint().setSent(true);
+            return doExtendedSearch(RequestDispatcher.TargetIndex.BOTH);
         }
 
         @Override
@@ -2612,46 +2613,42 @@ public class MainView extends FrameView {
     @Action
     public void startEnrolledClientSession() {
         session = new Session(Session.CLIENT_TYPE.ENROLLED);
-        clearFields(wizardPanel);
         showCard("clinicIdCard");
     }
 
     @Action
     public void startVisitorClientSession() {
         session = new Session(Session.CLIENT_TYPE.VISITOR);
-        clearFields(wizardPanel);
         showCard("clinicIdCard");
     }
 
     @Action
     public void startNewClientSession() {
         session = new Session(Session.CLIENT_TYPE.NEW);
-        clearFields(wizardPanel);
         showCard("extendedSearchCard");
     }
 
     @Action
     public void startTransferInClientSession() {
         session = new Session(Session.CLIENT_TYPE.TRANSFER_IN);
-        clearFields(wizardPanel);
         showCard("clinicIdCard");
     }
 
     @Action
     public void setKnownClinicIdToYes() {
-        session.setKnownClinicId(true);
+        session.setClinicId(true);
         showCard("basicSearchCard");
     }
 
     @Action
     public void setKnownClinicIdToNo() {
-        session.setKnownClinicId(false);
+        session.setClinicId(false);
         showCard("extendedSearchCard");
     }
 
     private void showSearchResults(PIListData piListData) {
         Binding binding = null;
-        if (piListData.getTargetIndex() == TargetIndex.MPI) {
+        if (piListData.getTargetIndex() == RequestDispatcher.TargetIndex.MPI) {
             binding = bindingGroup.getBinding("mpiBinding");
             binding.unbind();
             mpiSearchResultList.clear();
@@ -2660,7 +2657,7 @@ public class MainView extends FrameView {
             mpiResultsTable.repaint();
             mpiShown = true;
             showCard("mpiResultsCard");
-        } else if (piListData.getTargetIndex() == TargetIndex.LPI) {
+        } else if (piListData.getTargetIndex() == RequestDispatcher.TargetIndex.LPI) {
             binding = bindingGroup.getBinding("lpiBinding");
             binding.unbind();
             lpiSearchResultList.clear();
@@ -2680,7 +2677,7 @@ public class MainView extends FrameView {
             mpiPersonMatch = mpiPersonList.get(selectedRow);
             if (!lpiShown && lpiPersonList != null
                     && !lpiPersonList.isEmpty()) {
-                showSearchResults(new PIListData(TargetIndex.LPI, lpiPersonList));
+                showSearchResults(new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
             } else {
                 populateReviewCards(mpiPersonMatch, lpiPersonMatch);
                 showCard("reviewCard1");
@@ -2697,7 +2694,7 @@ public class MainView extends FrameView {
         selectedRow = lpiResultsTable.getSelectedRow();
         if (selectedRow > -1) {
             lpiPersonMatch = lpiPersonList.get(selectedRow);
-            String mpiIdentifier = Session.getMPIIdentifier(lpiPersonMatch);
+            String mpiIdentifier = OECReception.getMPIIdentifier(lpiPersonMatch);
             if (mpiIdentifier != null) {
                 mpiPersonMatch = null;
                 if (mpiPersonList != null && !mpiPersonList.isEmpty()) {
@@ -2717,8 +2714,9 @@ public class MainView extends FrameView {
                     //the person is linked but their mpi data is unavailable
                     //TODO: query mpi again
                     if (!mpiIdentifierSearchDone) {
-                        session.getBasicRequestParameters().setIdentifier(mpiIdentifier);
-                        doBasicSearch(TargetIndex.MPI);
+                        //TODO:Fix silent mpi identifier search
+                        //session.getBasicPersonWrapper().setIdentifier(mpiIdentifier);
+                        doBasicSearch(RequestDispatcher.TargetIndex.MPI);
                         mpiIdentifierSearchDone = true;
                     } else {
                         //reset mpiIdentifierSearchDone
@@ -2729,7 +2727,7 @@ public class MainView extends FrameView {
                 if (!mpiShown) {
                     if (mpiPersonList != null
                             && !mpiPersonList.isEmpty()) {
-                        showSearchResults(new PIListData(TargetIndex.MPI, mpiPersonList));
+                        showSearchResults(new PIListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
                     } else {
                         populateReviewCards(mpiPersonMatch, lpiPersonMatch);
                         showCard("reviewCard1");
@@ -2785,7 +2783,7 @@ public class MainView extends FrameView {
 
         maleRadioButton.setSelected(sourcePerson.getSex() == Person.Sex.M);
         femaleRadioButton.setSelected(sourcePerson.getSex() == Person.Sex.F);
-        
+
         maritalStatusComboBox.setSelectedItem(sourcePerson.getMaritalStatus());
 
         birthDateChooser.setDate(sourcePerson.getBirthdate());
@@ -2820,7 +2818,7 @@ public class MainView extends FrameView {
         altMiddleNameTextField.setText(altPerson.getMiddleName());
         altLastNameTextField.setText(altPerson.getLastName());
 
-        altSexTextField.setText(Session.getSexString(altPerson.getSex()));
+        altSexTextField.setText(OECReception.getSexString(altPerson.getSex()));
 
         if (altPerson.getBirthdate() != null) {
             altBirthDateTextField.setText(new SimpleDateFormat("dd/MM/yyyy").format(altPerson.getBirthdate()));
@@ -2842,7 +2840,7 @@ public class MainView extends FrameView {
         hdssDataConsentNoRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.no);
         hdssDataConsentNoAnswerRadioButton.setSelected(altPerson.getConsentSigned() == Person.ConsentSigned.notAnswered);
 
-        altHdssDataConsentTextField.setText(Session.getConsentSignedString(altPerson.getConsentSigned()));
+        altHdssDataConsentTextField.setText(OECReception.getConsentSignedString(altPerson.getConsentSigned()));
     }
 
     private void hideUnnecessaryFields() {
@@ -3003,7 +3001,7 @@ public class MainView extends FrameView {
         for (Component component : container.getComponents()) {
             if (component instanceof Container) {
                 if (component instanceof ImagePanel) {
-                    ((ImagePanel) component).setImage(Session.getMissingFingerprint().getImage());
+                    ((ImagePanel) component).setImage(OECReception.getMissingFingerprint().getImage());
                 } else {
                     clearFields((Container) component);
                 }
@@ -3048,7 +3046,7 @@ public class MainView extends FrameView {
     @Action
     public void finish() {
         String clinicId = clinicIdTextField.getText();
-        if (!Session.validateClinicId(clinicId)) {
+        if (!OECReception.validateClinicId(clinicId)) {
             showWarningMessage("The Clinic ID: '" + clinicId + "' you entered is in the wrong format. "
                     + "Please use the format '12345-00001' for Universal Clinic IDs and '00001/2005' "
                     + "for Local Clinic IDs", finishButton, clinicIdTextField);
@@ -3060,41 +3058,41 @@ public class MainView extends FrameView {
                 //create in MPI
                 //create in LPI
                 RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
-                        RequestDispatcher.CREATE, TargetIndex.BOTH);
+                        RequestDispatcher.DispatchType.CREATE, RequestDispatcher.TargetIndex.BOTH);
             } else {
                 if (mpiPersonMatch == null
                         && lpiPersonMatch != null) {
                     //create in MPI
                     //modify in LPI
                     RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
-                            RequestDispatcher.CREATE, TargetIndex.MPI);
+                            RequestDispatcher.DispatchType.CREATE, RequestDispatcher.TargetIndex.MPI);
                     RequestDispatcher.dispatch(wrapPerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                            RequestDispatcher.MODIFY, TargetIndex.LPI);
+                            RequestDispatcher.DispatchType.MODIFY, RequestDispatcher.TargetIndex.LPI);
                 } else if (mpiPersonMatch != null
                         && lpiPersonMatch == null) {
                     //modify in MPI
                     //create in LPI
                     RequestDispatcher.dispatch(wrapPerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                            RequestDispatcher.MODIFY, TargetIndex.MPI);
+                            RequestDispatcher.DispatchType.MODIFY, RequestDispatcher.TargetIndex.MPI);
                     RequestDispatcher.dispatch(wrapPerson(new Person()), mpiRequestResult, lpiRequestResult,
-                            RequestDispatcher.CREATE, TargetIndex.LPI);
+                            RequestDispatcher.DispatchType.CREATE, RequestDispatcher.TargetIndex.LPI);
                 } else {
                     //modify in MPI
                     //modify in LPI
                     //TODO: Revise this logic
                     RequestDispatcher.dispatch(wrapPerson(mpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                            RequestDispatcher.MODIFY, TargetIndex.MPI);
+                            RequestDispatcher.DispatchType.MODIFY, RequestDispatcher.TargetIndex.MPI);
                     RequestDispatcher.dispatch(wrapPerson(lpiPersonMatch), mpiRequestResult, lpiRequestResult,
-                            RequestDispatcher.MODIFY, TargetIndex.LPI);
+                            RequestDispatcher.DispatchType.MODIFY, RequestDispatcher.TargetIndex.LPI);
                 }
             }
             showCard("homeCard");
         }
     }
 
-    public ComprehensiveRequestParameters wrapPerson(Person person) {
+    public PersonWrapper wrapPerson(Person person) {
         if (person != null) {
-            ComprehensiveRequestParameters crp = new ComprehensiveRequestParameters(person);
+            PersonWrapper crp = new PersonWrapper(person);
 
             String clinicId = clinicIdTextField.getText();
             if (clinicId != null && !clinicId.isEmpty()) {
@@ -3103,70 +3101,73 @@ public class MainView extends FrameView {
                     personIdentifierList = new ArrayList<PersonIdentifier>();
                 }
                 PersonIdentifier clinicIdentifier = new PersonIdentifier();
-                PersonIdentifier.Type clinicIdType = Session.deduceIdentifierType(clinicId);
+                PersonIdentifier.Type clinicIdType = OECReception.deducePersonIdentifierType(clinicId);
                 if (clinicIdType == PersonIdentifier.Type.cccLocalId
-                        && Session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
-                    clinicId = Session.prependClinicCode(clinicId);
+                        && session.getClientType() == Session.CLIENT_TYPE.ENROLLED) {
+                    clinicId = OECReception.prependClinicCode(clinicId);
                 }
                 clinicIdentifier.setIdentifierType(clinicIdType);
                 clinicIdentifier.setIdentifier(clinicId);
                 personIdentifierList.add(clinicIdentifier);
-                crp.getPerson().setPersonIdentifierList(personIdentifierList);
+                crp.unwrap().setPersonIdentifierList(personIdentifierList);
             }
 
-            crp.getPerson().setFirstName(firstNameTextField.getText());
-            crp.getPerson().setMiddleName(middleNameTextField.getText());
-            crp.getPerson().setLastName(lastNameTextField.getText());
+            crp.unwrap().setFirstName(firstNameTextField.getText());
+            crp.unwrap().setMiddleName(middleNameTextField.getText());
+            crp.unwrap().setLastName(lastNameTextField.getText());
             if (maleRadioButton.isSelected()) {
-                crp.getPerson().setSex(Person.Sex.M);
+                crp.unwrap().setSex(Person.Sex.M);
             } else if (femaleRadioButton.isSelected()) {
-                crp.getPerson().setSex(Person.Sex.F);
+                crp.unwrap().setSex(Person.Sex.F);
             }
-            crp.getPerson().setBirthdate(birthDateChooser.getDate());
-            crp.getPerson().setVillageName(villageTextField.getText());
-            crp.getPerson().setMaritalStatus(((DisplayableMaritalStatus) maritalStatusComboBox.getSelectedItem()).getMaritalStatus());
-            crp.getPerson().setFathersFirstName(fathersFirstNameTextField.getText());
-            crp.getPerson().setFathersMiddleName(fathersMiddleNameTextField.getText());
-            crp.getPerson().setFathersLastName(fathersLastNameTextField.getText());
-            crp.getPerson().setMothersFirstName(mothersFirstNameTextField.getText());
-            crp.getPerson().setMothersMiddleName(mothersMiddleNameTextField.getText());
-            crp.getPerson().setMothersLastName(mothersLastNameTextField.getText());
-            crp.getPerson().setCompoundHeadFirstName(compoundHeadsFirstNameTextField.getText());
-            crp.getPerson().setCompoundHeadMiddleName(compoundHeadsMiddleNameTextField.getText());
-            crp.getPerson().setCompoundHeadLastName(compoundHeadsLastNameTextField.getText());
-            if (crp.getPerson().getFingerprintList() == null) {
-                if (Session.getImagedFingerprintList() != null
-                        && !Session.getImagedFingerprintList().isEmpty()) {
+            crp.unwrap().setBirthdate(birthDateChooser.getDate());
+            crp.unwrap().setVillageName(villageTextField.getText());
+            Object selectedItem = maritalStatusComboBox.getSelectedItem();
+            if (selectedItem != null) {
+                crp.unwrap().setMaritalStatus(((DisplayableMaritalStatus) selectedItem).getMaritalStatus());
+            }
+            crp.unwrap().setFathersFirstName(fathersFirstNameTextField.getText());
+            crp.unwrap().setFathersMiddleName(fathersMiddleNameTextField.getText());
+            crp.unwrap().setFathersLastName(fathersLastNameTextField.getText());
+            crp.unwrap().setMothersFirstName(mothersFirstNameTextField.getText());
+            crp.unwrap().setMothersMiddleName(mothersMiddleNameTextField.getText());
+            crp.unwrap().setMothersLastName(mothersLastNameTextField.getText());
+            crp.unwrap().setCompoundHeadFirstName(compoundHeadsFirstNameTextField.getText());
+            crp.unwrap().setCompoundHeadMiddleName(compoundHeadsMiddleNameTextField.getText());
+            crp.unwrap().setCompoundHeadLastName(compoundHeadsLastNameTextField.getText());
+            if (crp.unwrap().getFingerprintList() == null) {
+                if (session.getImagedFingerprintList() != null
+                        && !session.getImagedFingerprintList().isEmpty()) {
                     List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
-                    for (ImagedFingerprint imagedFingerprint : Session.getImagedFingerprintList()) {
+                    for (ImagedFingerprint imagedFingerprint : session.getImagedFingerprintList()) {
                         Fingerprint fingerprint = imagedFingerprint.getFingerprint();
                         if (fingerprint != null) {
                             fingerprintList.add(fingerprint);
                         }
                     }
-                    crp.getPerson().setFingerprintList(fingerprintList);
+                    crp.unwrap().setFingerprintList(fingerprintList);
                 } else {
                     //return and ask for fingerprints maybe
                 }
             }
             if (hdssDataConsentYesRadioButton.isSelected()) {
-                crp.getPerson().setConsentSigned(Person.ConsentSigned.yes);
+                crp.unwrap().setConsentSigned(Person.ConsentSigned.yes);
             } else if (hdssDataConsentNoRadioButton.isSelected()) {
-                crp.getPerson().setConsentSigned(Person.ConsentSigned.no);
+                crp.unwrap().setConsentSigned(Person.ConsentSigned.no);
             } else if (hdssDataConsentNoAnswerRadioButton.isSelected()) {
-                crp.getPerson().setConsentSigned(Person.ConsentSigned.notAnswered);
+                crp.unwrap().setConsentSigned(Person.ConsentSigned.notAnswered);
             }
             Visit visit = new Visit();
-            visit.setAddress(Session.getApplicationAddress());
+            visit.setAddress(OECReception.getApplicationAddress());
             visit.setVisitDate(new Date());
-            if (Session.getClientType() == Session.CLIENT_TYPE.ENROLLED
-                    || Session.getClientType() == Session.CLIENT_TYPE.NEW) {
-                crp.getPerson().setLastRegularVisit(visit);
-            } else if (Session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
-                crp.getPerson().setLastOneOffVisit(visit);
-            } else if (Session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN) {
-                crp.getPerson().setLastRegularVisit(visit);
-                crp.getPerson().setLastMoveDate(new Date());
+            if (session.getClientType() == Session.CLIENT_TYPE.ENROLLED
+                    || session.getClientType() == Session.CLIENT_TYPE.NEW) {
+                crp.unwrap().setLastRegularVisit(visit);
+            } else if (session.getClientType() == Session.CLIENT_TYPE.VISITOR) {
+                crp.unwrap().setLastOneOffVisit(visit);
+            } else if (session.getClientType() == Session.CLIENT_TYPE.TRANSFER_IN) {
+                crp.unwrap().setLastRegularVisit(visit);
+                crp.unwrap().setLastMoveDate(new Date());
             }
             return crp;
         } else {
@@ -3178,7 +3179,7 @@ public class MainView extends FrameView {
     @Action
     public void noLPIMatchFound() {
         if (!mpiShown && mpiPersonList != null && !mpiPersonList.isEmpty()) {
-            showSearchResults(new PIListData(TargetIndex.MPI, mpiPersonList));
+            showSearchResults(new PIListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
         } else {
             populateReviewCards(mpiPersonMatch, lpiPersonMatch);
             showCard("reviewCard1");
@@ -3188,7 +3189,7 @@ public class MainView extends FrameView {
     @Action
     public void noMPIMatchFound() {
         if (!lpiShown && lpiPersonList != null && !lpiPersonList.isEmpty()) {
-            showSearchResults(new PIListData(TargetIndex.LPI, lpiPersonList));
+            showSearchResults(new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
         } else {
             populateReviewCards(mpiPersonMatch, lpiPersonMatch);
             showCard("reviewCard1");

@@ -50,7 +50,7 @@ public class Visit {
     private String address;
 
     /**
-     * Get a Visit instance, but only if the visit data is not null.
+     * Get a Visit instance, but only if the visit date is not null.
      * 
      * @param visitDate Date of the visit.
      * @param address address of the visit.
