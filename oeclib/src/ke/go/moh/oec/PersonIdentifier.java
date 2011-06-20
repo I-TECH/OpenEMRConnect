@@ -37,39 +37,36 @@ package ke.go.moh.oec;
  */
 public class PersonIdentifier {
 
-	public enum Type {
+    public enum Type {
 
-		patientRegistryId,
-		masterPatientRegistryId,
-		cccUniqueId,
-		cccLocalId,
-		kisumuHdssId,
-                indeterminate
-	}
-	
-	/**
-	 * The type of person identifier.
-	 */
-	private Type identifierType;
-	/**
-	 * The value of the person identifier, for example "12345-67890".
-	 */
-	private String identifier;
+        patientRegistryId,
+        masterPatientRegistryId,
+        cccUniqueId,
+        cccLocalId,
+        kisumuHdssId
+    }
+    /**
+     * The type of person identifier.
+     */
+    private Type identifierType;
+    /**
+     * The value of the person identifier, for example "12345-67890".
+     */
+    private String identifier;
 
-	public String getIdentifier() {
-		return identifier;
-	}
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
-	public Type getIdentifierType() {
-		return identifierType;
-	}
+    public Type getIdentifierType() {
+        return identifierType;
+    }
 
-	public void setIdentifierType(Type identifierType) {
-		this.identifierType = identifierType;
-	}
-
+    public void setIdentifierType(Type identifierType) {
+        this.identifierType = identifierType;
+    }
 }
