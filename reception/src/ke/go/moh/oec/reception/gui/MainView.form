@@ -10,12 +10,12 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="mainSplitPane" alignment="0" pref="789" max="32767" attributes="0"/>
+              <Component id="mainSplitPane" alignment="0" pref="798" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="mainSplitPane" alignment="0" pref="599" max="32767" attributes="0"/>
+              <Component id="mainSplitPane" alignment="0" pref="600" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
       </Layout>
@@ -87,7 +87,7 @@
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="alertsScrollPane" pref="493" max="32767" attributes="0"/>
+                              <Component id="alertsScrollPane" pref="494" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="processButton" min="-2" pref="38" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -152,7 +152,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="1" pref="1" max="1" attributes="0"/>
-                                  <Component id="wizardPanel" pref="510" max="32767" attributes="0"/>
+                                  <Component id="wizardPanel" pref="519" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
@@ -174,7 +174,7 @@
                               <Component id="homeButton" linkSize="2" alignment="0" min="-2" pref="42" max="-2" attributes="1"/>
                           </Group>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Component id="wizardPanel" pref="525" max="32767" attributes="0"/>
+                          <Component id="wizardPanel" pref="529" max="32767" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -226,9 +226,12 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
+                              <Group type="102" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="homePanel" max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="fingerprintSearchPanel" max="32767" attributes="0"/>
+                                      <Component id="homePanel" alignment="1" max="32767" attributes="0"/>
+                                  </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -237,13 +240,109 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="fingerprintSearchPanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="homePanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="277" max="32767" attributes="0"/>
+                                  <EmptySpace pref="135" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
                       </Layout>
                       <SubComponents>
+                        <Container class="javax.swing.JPanel" name="fingerprintSearchPanel">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="Quick search">
+                                  <Property name="titleX" resourceKey="fingerprintSearchPanel.border.title"/>
+                                </TitledBorder>
+                              </Border>
+                            </Property>
+                            <Property name="name" type="java.lang.String" value="fingerprintSearchPanel" noResource="true"/>
+                          </Properties>
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                          <Component id="fingerprintSearchQualityTextField" max="32767" attributes="1"/>
+                                          <Component id="fingerprintSearchImagePanel" alignment="1" max="32767" attributes="1"/>
+                                      </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="fingerprintSearchScrollPane" pref="382" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Component id="fingerprintSearchScrollPane" alignment="0" pref="102" max="32767" attributes="1"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="fingerprintSearchImagePanel" min="-2" max="-2" attributes="1"/>
+                                              <EmptySpace max="32767" attributes="0"/>
+                                              <Component id="fingerprintSearchQualityTextField" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Container class="ke.go.moh.oec.reception.gui.custom.ImagePanel" name="fingerprintSearchImagePanel">
+                              <Properties>
+                                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                                  <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+                                    <LineBorder/>
+                                  </Border>
+                                </Property>
+                                <Property name="name" type="java.lang.String" value="fingerprintSearchImagePanel" noResource="true"/>
+                              </Properties>
+
+                              <Layout>
+                                <DimensionLayout dim="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="75" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                                <DimensionLayout dim="1">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <EmptySpace min="0" pref="74" max="32767" attributes="0"/>
+                                  </Group>
+                                </DimensionLayout>
+                              </Layout>
+                            </Container>
+                            <Component class="javax.swing.JTextField" name="fingerprintSearchQualityTextField">
+                              <Properties>
+                                <Property name="editable" type="boolean" value="false"/>
+                                <Property name="text" type="java.lang.String" resourceKey="fingerprintSearchQualityTextField.text"/>
+                                <Property name="name" type="java.lang.String" value="fingerprintSearchQualityTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Container class="javax.swing.JScrollPane" name="fingerprintSearchScrollPane">
+                              <Properties>
+                                <Property name="name" type="java.lang.String" value="fingerprintSearchScrollPane" noResource="true"/>
+                              </Properties>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                              <SubComponents>
+                                <Component class="javax.swing.JTextArea" name="fingerprintSearchTextArea">
+                                  <Properties>
+                                    <Property name="background" type="java.awt.Color" resourceKey="fingerprintSearchTextArea.background"/>
+                                    <Property name="columns" type="int" value="20"/>
+                                    <Property name="editable" type="boolean" value="false"/>
+                                    <Property name="rows" type="int" value="5"/>
+                                    <Property name="name" type="java.lang.String" value="fingerprintSearchTextArea" noResource="true"/>
+                                  </Properties>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                          </SubComponents>
+                        </Container>
                         <Container class="javax.swing.JPanel" name="homePanel">
                           <Properties>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
@@ -262,10 +361,10 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="newButton" alignment="0" pref="456" max="32767" attributes="0"/>
-                                          <Component id="visitorButton" alignment="0" pref="456" max="32767" attributes="0"/>
-                                          <Component id="enrolledButton" alignment="0" pref="456" max="32767" attributes="0"/>
-                                          <Component id="transferInButton" alignment="0" pref="456" max="32767" attributes="0"/>
+                                          <Component id="newButton" alignment="0" pref="465" max="32767" attributes="0"/>
+                                          <Component id="visitorButton" alignment="0" pref="465" max="32767" attributes="0"/>
+                                          <Component id="enrolledButton" alignment="0" pref="465" max="32767" attributes="0"/>
+                                          <Component id="transferInButton" alignment="0" pref="465" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -353,7 +452,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="clientIdPanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="372" max="32767" attributes="0"/>
+                                  <EmptySpace pref="376" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -377,8 +476,8 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="clinicIdNoButton" alignment="0" pref="456" max="32767" attributes="0"/>
-                                          <Component id="clinicIdYesButton" alignment="0" pref="456" max="32767" attributes="0"/>
+                                          <Component id="clinicIdNoButton" alignment="0" pref="465" max="32767" attributes="0"/>
+                                          <Component id="clinicIdYesButton" alignment="0" pref="465" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -444,7 +543,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="basicSearchPanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="265" max="32767" attributes="0"/>
+                                  <EmptySpace pref="269" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -476,8 +575,8 @@
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="398" max="32767" attributes="0"/>
-                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="398" max="32767" attributes="0"/>
+                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="407" max="32767" attributes="0"/>
+                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="407" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="0" attributes="0">
                                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                                           <Component id="basicSearchTakeButton" alignment="0" max="32767" attributes="1"/>
@@ -488,7 +587,7 @@
                                                   </Group>
                                               </Group>
                                           </Group>
-                                          <Component id="basicSearchButton" alignment="0" pref="456" max="32767" attributes="0"/>
+                                          <Component id="basicSearchButton" alignment="0" pref="465" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -642,7 +741,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="extendedSearchPanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="114" max="32767" attributes="0"/>
+                                  <EmptySpace pref="118" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -666,7 +765,7 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="extendedSearchButton" alignment="1" pref="456" max="32767" attributes="0"/>
+                                          <Component id="extendedSearchButton" alignment="1" pref="465" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -695,13 +794,13 @@
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="extendedSearchFemaleRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="extendedSearchLastNameTextField" alignment="1" pref="391" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="391" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchFirstNameTextField" alignment="1" pref="391" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchClinicNameTextField" alignment="1" pref="391" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchVillageTextField" alignment="0" pref="391" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchClinicIdTextField" alignment="0" pref="391" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchBirthdateChooser" alignment="0" pref="391" max="32767" attributes="0"/>
+                                                  <Component id="extendedSearchLastNameTextField" alignment="1" pref="400" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="400" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchFirstNameTextField" alignment="1" pref="400" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicNameTextField" alignment="1" pref="400" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchVillageTextField" alignment="0" pref="400" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicIdTextField" alignment="0" pref="400" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchBirthdateChooser" alignment="0" pref="400" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
                                       </Group>
@@ -780,6 +879,9 @@
                               <Properties>
                                 <Property name="name" type="java.lang.String" value="extendedSearchClinicIdTextField" noResource="true"/>
                               </Properties>
+                              <Events>
+                                <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="extendedSearchClinicIdTextFieldKeyTyped"/>
+                              </Events>
                             </Component>
                             <Component class="javax.swing.JLabel" name="extendedSearchClinicNameLabel">
                               <Properties>
@@ -791,6 +893,9 @@
                               <Properties>
                                 <Property name="name" type="java.lang.String" value="extendedSearchClinicNameTextField" noResource="true"/>
                               </Properties>
+                              <Events>
+                                <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="extendedSearchClinicNameTextFieldKeyTyped"/>
+                              </Events>
                             </Component>
                             <Component class="javax.swing.JLabel" name="extendedSearchFirstNameLabel">
                               <Properties>
@@ -987,9 +1092,9 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="mpiResultsScrollPane" alignment="0" pref="456" max="32767" attributes="0"/>
-                                          <Component id="mpiNotFoundButton" alignment="0" pref="456" max="32767" attributes="0"/>
-                                          <Component id="mpiAcceptButton" alignment="0" pref="456" max="32767" attributes="0"/>
+                                          <Component id="mpiResultsScrollPane" alignment="0" pref="465" max="32767" attributes="0"/>
+                                          <Component id="mpiNotFoundButton" alignment="0" pref="465" max="32767" attributes="0"/>
+                                          <Component id="mpiConfirmButton" alignment="0" pref="465" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -998,9 +1103,9 @@
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="mpiResultsScrollPane" pref="375" max="32767" attributes="0"/>
+                                      <Component id="mpiResultsScrollPane" pref="379" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="mpiAcceptButton" min="-2" pref="38" max="-2" attributes="0"/>
+                                      <Component id="mpiConfirmButton" min="-2" pref="38" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="mpiNotFoundButton" min="-2" pref="38" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1018,7 +1123,6 @@
                               <SubComponents>
                                 <Component class="javax.swing.JTable" name="mpiResultsTable">
                                   <Properties>
-                                    <Property name="autoResizeMode" type="int" value="0"/>
                                     <Property name="name" type="java.lang.String" value="mpiResultsTable" noResource="true"/>
                                     <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
                                       <JTableSelectionModel selectionMode="0"/>
@@ -1027,6 +1131,9 @@
                                   <BindingProperties>
                                     <BindingProperty name="elements" source="mpiSearchResultList" target="mpiResultsTable" targetPath="elements" updateStrategy="0" immediately="true">
                                       <Property name="name" type="java.lang.String" value="mpiBinding"/>
+                                      <Subbinding sourcePath="${matchScore}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Integer.class"/>
+                                      </Subbinding>
                                       <Subbinding sourcePath="${fingerprintMatched}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Boolean.class"/>
                                       </Subbinding>
@@ -1045,45 +1152,18 @@
                                       <Subbinding sourcePath="${villageName}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                       </Subbinding>
-                                      <Subbinding sourcePath="${fathersFirstName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${fathersMiddleName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${fathersLastName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${mothersFirstName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${mothersMiddleName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${mothersLastName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${compoundHeadFirstName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${compoundHeadMiddleName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${compoundHeadLastName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
                                     </BindingProperty>
                                   </BindingProperties>
                                 </Component>
                               </SubComponents>
                             </Container>
-                            <Component class="javax.swing.JButton" name="mpiAcceptButton">
+                            <Component class="javax.swing.JButton" name="mpiConfirmButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="acceptMPIMatch" methodName="acceptMPIMatch"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMPIMatch" methodName="confirmMPIMatch"/>
                                 </Property>
-                                <Property name="text" type="java.lang.String" resourceKey="mpiAcceptButton.text"/>
-                                <Property name="name" type="java.lang.String" value="mpiAcceptButton" noResource="true"/>
+                                <Property name="text" type="java.lang.String" resourceKey="mpiConfirmButton.text"/>
+                                <Property name="name" type="java.lang.String" value="mpiConfirmButton" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JButton" name="mpiNotFoundButton">
@@ -1148,9 +1228,9 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="lpiResultsScrollPane" alignment="0" pref="456" max="32767" attributes="0"/>
-                                          <Component id="lpiNotFoundButton" alignment="0" pref="456" max="32767" attributes="0"/>
-                                          <Component id="lpiAcceptButton" alignment="0" pref="456" max="32767" attributes="0"/>
+                                          <Component id="lpiResultsScrollPane" alignment="0" pref="465" max="32767" attributes="0"/>
+                                          <Component id="lpiNotFoundButton" alignment="0" pref="465" max="32767" attributes="0"/>
+                                          <Component id="lpiConfirmButton" alignment="0" pref="465" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -1159,9 +1239,9 @@
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="lpiResultsScrollPane" pref="375" max="32767" attributes="0"/>
+                                      <Component id="lpiResultsScrollPane" pref="379" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="lpiAcceptButton" min="-2" pref="38" max="-2" attributes="0"/>
+                                      <Component id="lpiConfirmButton" min="-2" pref="38" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="lpiNotFoundButton" min="-2" pref="38" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1179,7 +1259,6 @@
                               <SubComponents>
                                 <Component class="javax.swing.JTable" name="lpiResultsTable">
                                   <Properties>
-                                    <Property name="autoResizeMode" type="int" value="0"/>
                                     <Property name="name" type="java.lang.String" value="lpiResultsTable" noResource="true"/>
                                     <Property name="selectionModel" type="javax.swing.ListSelectionModel" editor="org.netbeans.modules.form.editors2.JTableSelectionModelEditor">
                                       <JTableSelectionModel selectionMode="0"/>
@@ -1188,6 +1267,9 @@
                                   <BindingProperties>
                                     <BindingProperty name="elements" source="lpiSearchResultList" target="lpiResultsTable" targetPath="elements" updateStrategy="0" immediately="true">
                                       <Property name="name" type="java.lang.String" value="lpiBinding"/>
+                                      <Subbinding sourcePath="${matchScore}">
+                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Integer.class"/>
+                                      </Subbinding>
                                       <Subbinding sourcePath="${fingerprintMatched}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="Boolean.class"/>
                                       </Subbinding>
@@ -1206,45 +1288,18 @@
                                       <Subbinding sourcePath="${villageName}">
                                         <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                                       </Subbinding>
-                                      <Subbinding sourcePath="${fathersFirstName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${fathersMiddleName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${fathersLastName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${mothersFirstName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${mothersMiddleName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${mothersLastName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${compoundHeadFirstName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${compoundHeadMiddleName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
-                                      <Subbinding sourcePath="${compoundHeadLastName}">
-                                        <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
-                                      </Subbinding>
                                     </BindingProperty>
                                   </BindingProperties>
                                 </Component>
                               </SubComponents>
                             </Container>
-                            <Component class="javax.swing.JButton" name="lpiAcceptButton">
+                            <Component class="javax.swing.JButton" name="lpiConfirmButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="acceptLPIMatch" methodName="acceptLPIMatch"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmLPIMatch" methodName="confirmLPIMatch"/>
                                 </Property>
-                                <Property name="text" type="java.lang.String" resourceKey="lpiAcceptButton.text"/>
-                                <Property name="name" type="java.lang.String" value="lpiAcceptButton" noResource="true"/>
+                                <Property name="text" type="java.lang.String" resourceKey="lpiConfirmButton.text"/>
+                                <Property name="name" type="java.lang.String" value="lpiConfirmButton" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JButton" name="lpiNotFoundButton">
@@ -1273,7 +1328,7 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
+                              <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="reviewPanel1" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1285,7 +1340,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="reviewPanel1" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="26" max="32767" attributes="0"/>
+                                  <EmptySpace pref="30" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1316,7 +1371,7 @@
                                               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altFirstNameTextField" pref="355" max="32767" attributes="0"/>
+                                                      <Component id="altFirstNameTextField" pref="364" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="firstNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -1327,24 +1382,24 @@
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="lastNameTextField" alignment="1" pref="395" max="32767" attributes="0"/>
+                                                  <Component id="lastNameTextField" alignment="1" pref="404" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altMiddleNameTextField" pref="355" max="32767" attributes="0"/>
+                                                      <Component id="altMiddleNameTextField" pref="364" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="middleNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="middleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="middleNameTextField" pref="395" max="32767" attributes="0"/>
+                                                  <Component id="middleNameTextField" pref="404" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altSexTextField" pref="355" max="32767" attributes="0"/>
+                                                      <Component id="altSexTextField" pref="364" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="sexAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="sexRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" attributes="0">
-                                                      <Component id="altLastNameTextField" pref="355" max="32767" attributes="0"/>
+                                                      <Component id="altLastNameTextField" pref="364" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="lastNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -1359,18 +1414,17 @@
                                               </Group>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="clinicIdTextField" alignment="0" pref="396" max="32767" attributes="0"/>
+                                                  <Component id="clinicIdTextField" alignment="0" pref="405" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altClinicIdTextField" pref="356" max="32767" attributes="0"/>
+                                                      <Component id="altClinicIdTextField" pref="365" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="clinicIdAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="clinicIdRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="firstNameTextField" alignment="0" pref="396" max="32767" attributes="0"/>
+                                                  <Component id="firstNameTextField" alignment="0" pref="405" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
-                                          <Component id="reviewCard1NextButton" alignment="1" pref="464" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Component id="birthDateLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -1379,32 +1433,33 @@
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="birthDateChooser" alignment="1" pref="395" max="32767" attributes="0"/>
+                                                  <Component id="birthDateChooser" alignment="1" pref="404" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altVillageTextField" pref="355" max="32767" attributes="0"/>
+                                                      <Component id="altVillageTextField" pref="364" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="villageAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="villageRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="villageTextField" alignment="1" pref="395" max="32767" attributes="0"/>
+                                                  <Component id="villageTextField" alignment="1" pref="404" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altBirthDateTextField" pref="355" max="32767" attributes="0"/>
+                                                      <Component id="altBirthDateTextField" pref="364" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="birthDateAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="birthDateRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altMaritalStatusTextField" pref="355" max="32767" attributes="0"/>
+                                                      <Component id="altMaritalStatusTextField" pref="364" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="maritalStatusAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="maritalStatusRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="maritalStatusComboBox" alignment="1" pref="395" max="32767" attributes="1"/>
+                                                  <Component id="maritalStatusComboBox" alignment="1" pref="404" max="32767" attributes="1"/>
                                               </Group>
                                           </Group>
+                                          <Component id="reviewCard1NextButton" alignment="0" pref="473" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -1515,11 +1570,11 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                                               <Component id="villageRejectRadioButton" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
                                               <Component id="villageAcceptRadioButton" alignment="0" min="-2" max="-2" attributes="1"/>
                                           </Group>
-                                          <Component id="altVillageTextField" min="-2" max="-2" attributes="0"/>
+                                          <Component id="altVillageTextField" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="reviewCard1NextButton" min="-2" pref="42" max="-2" attributes="0"/>
@@ -1544,6 +1599,7 @@
                             <Component class="javax.swing.JTextField" name="altClinicIdTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altClinicIdTextField.foreground"/>
                                 <Property name="text" type="java.lang.String" resourceKey="altClinicIdTextField.text"/>
                                 <Property name="name" type="java.lang.String" value="altClinicIdTextField" noResource="true"/>
                               </Properties>
@@ -1551,7 +1607,7 @@
                             <Component class="javax.swing.JRadioButton" name="clinicIdAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmClinicId" methodName="confirmClinicId"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="clinicIdButtonGroup"/>
@@ -1563,6 +1619,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="clinicIdRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmClinicId" methodName="confirmClinicId"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="clinicIdButtonGroup"/>
                                 </Property>
@@ -1585,13 +1644,14 @@
                             <Component class="javax.swing.JTextField" name="altFirstNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altClinicIdTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altFirstNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="firstNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmFirstName" methodName="confirmFirstName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="firstNameButtonGroup"/>
@@ -1603,6 +1663,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="firstNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmFirstName" methodName="confirmFirstName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="firstNameButtonGroup"/>
                                 </Property>
@@ -1625,13 +1688,14 @@
                             <Component class="javax.swing.JTextField" name="altMiddleNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altClinicIdTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altMiddleNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="middleNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMiddleName" methodName="confirmMiddleName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="middleNameButtonGroup"/>
@@ -1643,6 +1707,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="middleNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMiddleName" methodName="confirmMiddleName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="middleNameButtonGroup"/>
                                 </Property>
@@ -1665,13 +1732,14 @@
                             <Component class="javax.swing.JTextField" name="altLastNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altClinicIdTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altLastNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="lastNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmLastName" methodName="confirmLastName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="lastNameButtonGroup"/>
@@ -1683,6 +1751,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="lastNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmLastName" methodName="confirmLastName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="lastNameButtonGroup"/>
                                 </Property>
@@ -1718,6 +1789,7 @@
                             <Component class="javax.swing.JTextField" name="altSexTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altClinicIdTextField.foreground"/>
                                 <Property name="text" type="java.lang.String" resourceKey="altSexTextField.text"/>
                                 <Property name="name" type="java.lang.String" value="altSexTextField" noResource="true"/>
                               </Properties>
@@ -1725,7 +1797,7 @@
                             <Component class="javax.swing.JRadioButton" name="sexAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmSex" methodName="confirmSex"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="altReviewSexButtonGroup"/>
@@ -1737,6 +1809,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="sexRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmSex" methodName="confirmSex"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="altReviewSexButtonGroup"/>
                                 </Property>
@@ -1759,6 +1834,7 @@
                             <Component class="javax.swing.JTextField" name="altBirthDateTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altClinicIdTextField.foreground"/>
                                 <Property name="text" type="java.lang.String" resourceKey="altBirthDateTextField.text"/>
                                 <Property name="name" type="java.lang.String" value="altBirthDateTextField" noResource="true"/>
                               </Properties>
@@ -1766,7 +1842,7 @@
                             <Component class="javax.swing.JRadioButton" name="birthDateAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmBirthdate" methodName="confirmBirthdate"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="birthDateButtonGroup"/>
@@ -1778,6 +1854,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="birthDateRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmBirthdate" methodName="confirmBirthdate"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="birthDateButtonGroup"/>
                                 </Property>
@@ -1803,6 +1882,7 @@
                             <Component class="javax.swing.JTextField" name="altMaritalStatusTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altClinicIdTextField.foreground"/>
                                 <Property name="text" type="java.lang.String" resourceKey="altMaritalStatusTextField.text"/>
                                 <Property name="name" type="java.lang.String" value="altMaritalStatusTextField" noResource="true"/>
                               </Properties>
@@ -1810,7 +1890,7 @@
                             <Component class="javax.swing.JRadioButton" name="maritalStatusAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMaritalStatus" methodName="confirmMaritalStatus"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="maritalStatusButtonGroup"/>
@@ -1822,6 +1902,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="maritalStatusRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMaritalStatus" methodName="confirmMaritalStatus"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="maritalStatusButtonGroup"/>
                                 </Property>
@@ -1844,13 +1927,14 @@
                             <Component class="javax.swing.JTextField" name="altVillageTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altClinicIdTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altVillageTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="villageAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmVillageName" methodName="confirmVillageName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="villageButtonGroup"/>
@@ -1862,6 +1946,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="villageRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmVillageName" methodName="confirmVillageName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="villageButtonGroup"/>
                                 </Property>
@@ -1908,7 +1995,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="reviewPanel2" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="17" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1931,7 +2018,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" alignment="1" attributes="0">
-                                              <Component id="review2NextButton" pref="464" max="32767" attributes="0"/>
+                                              <Component id="review2NextButton" pref="473" max="32767" attributes="0"/>
                                               <EmptySpace min="10" pref="10" max="10" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
@@ -1947,70 +2034,70 @@
                                               </Group>
                                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="fathersFirstNameTextField" alignment="1" pref="297" max="32767" attributes="1"/>
+                                                  <Component id="fathersFirstNameTextField" alignment="1" pref="306" max="32767" attributes="1"/>
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altFathersFirstNameTextField" pref="257" max="32767" attributes="0"/>
+                                                      <Component id="altFathersFirstNameTextField" pref="266" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="fathersFirstNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="fathersFirstNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="fathersMiddleNameTextField" alignment="1" pref="297" max="32767" attributes="1"/>
+                                                  <Component id="fathersMiddleNameTextField" alignment="1" pref="306" max="32767" attributes="1"/>
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altMothersFirstNameTextField" pref="257" max="32767" attributes="0"/>
+                                                      <Component id="altMothersFirstNameTextField" pref="266" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="mothersFirstNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="mothersFirstNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altFathersMiddleNameTextField" pref="257" max="32767" attributes="0"/>
+                                                      <Component id="altFathersMiddleNameTextField" pref="266" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="fathersMiddleNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="fathersMiddleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="fathersLastNameTextField" alignment="1" pref="297" max="32767" attributes="1"/>
+                                                  <Component id="fathersLastNameTextField" alignment="1" pref="306" max="32767" attributes="1"/>
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altFathersLastNameTextField" pref="257" max="32767" attributes="0"/>
+                                                      <Component id="altFathersLastNameTextField" pref="266" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="fathersLastNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="fathersLastNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="mothersFirstNameTextField" alignment="1" pref="297" max="32767" attributes="1"/>
-                                                  <Component id="mothersLastNameTextField" alignment="0" pref="297" max="32767" attributes="0"/>
+                                                  <Component id="mothersFirstNameTextField" alignment="1" pref="306" max="32767" attributes="1"/>
+                                                  <Component id="mothersLastNameTextField" alignment="0" pref="306" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altMothersLastNameTextField" pref="257" max="32767" attributes="0"/>
+                                                      <Component id="altMothersLastNameTextField" pref="266" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="mothersLastNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="mothersLastNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="compoundHeadsFirstNameTextField" alignment="0" pref="297" max="32767" attributes="0"/>
+                                                  <Component id="compoundHeadsFirstNameTextField" alignment="0" pref="306" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altCompoundHeadsFirstNameTextField" pref="257" max="32767" attributes="0"/>
+                                                      <Component id="altCompoundHeadsFirstNameTextField" pref="266" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsFirstNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsFirstNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altCompoundHeadsMiddleNameTextField" pref="257" max="32767" attributes="0"/>
+                                                      <Component id="altCompoundHeadsMiddleNameTextField" pref="266" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsMiddleNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsMiddleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="compoundHeadsMiddleNameTextField" alignment="1" pref="297" max="32767" attributes="0"/>
+                                                  <Component id="compoundHeadsMiddleNameTextField" alignment="1" pref="306" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altMothersMiddleNameTextField" pref="257" max="32767" attributes="0"/>
+                                                      <Component id="altMothersMiddleNameTextField" pref="266" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="mothersMiddleNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="mothersMiddleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="mothersMiddleNameTextField" alignment="0" pref="297" max="32767" attributes="0"/>
+                                                  <Component id="mothersMiddleNameTextField" alignment="0" pref="306" max="32767" attributes="0"/>
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                           </Group>
@@ -2125,7 +2212,7 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="review2NextButton" min="-2" pref="42" max="-2" attributes="0"/>
-                                      <EmptySpace pref="23" max="32767" attributes="0"/>
+                                      <EmptySpace pref="43" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -2145,13 +2232,14 @@
                             <Component class="javax.swing.JTextField" name="altFathersFirstNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altFathersFirstNameTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altFathersFirstNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="fathersFirstNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmFathersFirstName" methodName="confirmFathersFirstName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="fathersFirstNameButtonGroup"/>
@@ -2163,6 +2251,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="fathersFirstNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmFathersFirstName" methodName="confirmFathersFirstName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="fathersFirstNameButtonGroup"/>
                                 </Property>
@@ -2185,13 +2276,14 @@
                             <Component class="javax.swing.JTextField" name="altFathersMiddleNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altFathersMiddleNameTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altFathersMiddleNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="fathersMiddleNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmFathersMiddleName" methodName="confirmFathersMiddleName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="fathersMiddleNameButtonGroup"/>
@@ -2203,6 +2295,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="fathersMiddleNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmFathersMiddleName" methodName="confirmFathersMiddleName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="fathersMiddleNameButtonGroup"/>
                                 </Property>
@@ -2225,13 +2320,14 @@
                             <Component class="javax.swing.JTextField" name="altFathersLastNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altFathersLastNameTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altFathersLastNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="fathersLastNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmFathersLastName" methodName="confirmFathersLastName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="fathersLastNameButtonGroup"/>
@@ -2243,6 +2339,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="fathersLastNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmFathersLastName" methodName="confirmFathersLastName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="fathersLastNameButtonGroup"/>
                                 </Property>
@@ -2265,13 +2364,14 @@
                             <Component class="javax.swing.JTextField" name="altMothersFirstNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altMothersFirstNameTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altMothersFirstNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="mothersFirstNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMothersFirstName" methodName="confirmMothersFirstName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="mothersFirstNameButtonGroup"/>
@@ -2283,6 +2383,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="mothersFirstNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMothersFirstName" methodName="confirmMothersFirstName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="mothersFirstNameButtonGroup"/>
                                 </Property>
@@ -2305,13 +2408,14 @@
                             <Component class="javax.swing.JTextField" name="altMothersMiddleNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altMothersMiddleNameTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altMothersMiddleNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="mothersMiddleNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMothersMiddleName" methodName="confirmMothersMiddleName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="mothersMiddleNameButtonGroup"/>
@@ -2323,6 +2427,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="mothersMiddleNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMothersMiddleName" methodName="confirmMothersMiddleName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="mothersMiddleNameButtonGroup"/>
                                 </Property>
@@ -2345,13 +2452,14 @@
                             <Component class="javax.swing.JTextField" name="altMothersLastNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altMothersLastNameTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altMothersLastNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="mothersLastNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMothersLastName" methodName="confirmMothersLastName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="mothersLastNameButtonGroup"/>
@@ -2363,6 +2471,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="mothersLastNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmMothersLastName" methodName="confirmMothersLastName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="mothersLastNameButtonGroup"/>
                                 </Property>
@@ -2385,13 +2496,14 @@
                             <Component class="javax.swing.JTextField" name="altCompoundHeadsFirstNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altCompoundHeadsFirstNameTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altCompoundHeadsFirstNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="compoundHeadsFirstNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmCompoundHeadFirstName" methodName="confirmCompoundHeadFirstName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="compoundHeadsFirstNameButtonGroup"/>
@@ -2403,6 +2515,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="compoundHeadsFirstNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmCompoundHeadFirstName" methodName="confirmCompoundHeadFirstName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="compoundHeadsFirstNameButtonGroup"/>
                                 </Property>
@@ -2425,13 +2540,14 @@
                             <Component class="javax.swing.JTextField" name="altCompoundHeadsMiddleNameTextField">
                               <Properties>
                                 <Property name="editable" type="boolean" value="false"/>
+                                <Property name="foreground" type="java.awt.Color" resourceKey="altCompoundHeadsMiddleNameTextField.foreground"/>
                                 <Property name="name" type="java.lang.String" value="altCompoundHeadsMiddleNameTextField" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="compoundHeadsMiddleNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmCompoundHeadMiddleName" methodName="confirmCompoundHeadMiddleName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="compoundHeadsMiddleNameButtonGroup"/>
@@ -2443,6 +2559,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="compoundHeadsMiddleNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmCompoundHeadMiddleName" methodName="confirmCompoundHeadMiddleName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="compoundHeadsMiddleNameButtonGroup"/>
                                 </Property>
@@ -2489,7 +2608,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="reviewPanel3" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="217" max="32767" attributes="0"/>
+                                  <EmptySpace pref="225" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -2511,7 +2630,7 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="finishButton" alignment="1" pref="464" max="32767" attributes="0"/>
+                                          <Component id="finishButton" alignment="1" pref="473" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Component id="fingerprintLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -2520,9 +2639,9 @@
                                               </Group>
                                               <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="compoundHeadsLastNameTextField" alignment="1" pref="294" max="32767" attributes="1"/>
+                                                  <Component id="compoundHeadsLastNameTextField" alignment="1" pref="303" max="32767" attributes="1"/>
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altCompoundHeadsLastNameTextField" pref="254" max="32767" attributes="0"/>
+                                                      <Component id="altCompoundHeadsLastNameTextField" pref="263" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsLastNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -2543,7 +2662,7 @@
                                                               <Component id="clientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
                                                           </Group>
                                                           <Component id="takeButton" alignment="0" min="-2" max="-2" attributes="1"/>
-                                                          <Component id="altHdssDataConsentTextField" alignment="0" pref="254" max="32767" attributes="0"/>
+                                                          <Component id="altHdssDataConsentTextField" alignment="0" pref="263" max="32767" attributes="0"/>
                                                       </Group>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="hdssDataConsentAcceptRadioButton" min="-2" max="-2" attributes="0"/>
@@ -2570,13 +2689,11 @@
                                           <Group type="102" attributes="0">
                                               <Component id="altCompoundHeadsLastNameTextField" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="1" attributes="0">
-                                                  <Component id="hdssDataConsentLabel" min="-2" max="-2" attributes="0"/>
-                                                  <Group type="103" groupAlignment="3" attributes="0">
-                                                      <Component id="hdssDataConsentNoRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                                      <Component id="hdssDataConsentNoAnswerRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                                      <Component id="hdssDataConsentYesRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                                  </Group>
+                                              <Group type="103" groupAlignment="3" attributes="0">
+                                                  <Component id="hdssDataConsentNoRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="hdssDataConsentNoAnswerRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="hdssDataConsentYesRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="hdssDataConsentLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
                                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -2634,7 +2751,7 @@
                             <Component class="javax.swing.JRadioButton" name="compoundHeadsLastNameAcceptRadioButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="dummy" methodName="dummy"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmCompoundHeadLastName" methodName="confirmCompoundHeadLastName"/>
                                 </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="compoundHeadsLastNameButtonGroup"/>
@@ -2646,6 +2763,9 @@
                             </Component>
                             <Component class="javax.swing.JRadioButton" name="compoundHeadsLastNameRejectRadioButton">
                               <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="confirmCompoundHeadLastName" methodName="confirmCompoundHeadLastName"/>
+                                </Property>
                                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                                   <ComponentRef name="compoundHeadsLastNameButtonGroup"/>
                                 </Property>
@@ -2855,11 +2975,11 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="statusPanelSeparator" alignment="0" pref="789" max="32767" attributes="0"/>
+              <Component id="statusPanelSeparator" alignment="0" pref="798" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusMessageLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="619" max="32767" attributes="0"/>
+                  <EmptySpace pref="628" max="32767" attributes="0"/>
                   <Component id="progressBar" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="statusAnimationLabel" min="-2" max="-2" attributes="0"/>
@@ -3004,6 +3124,6 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-123,0,0,3,21"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-122,0,0,3,30"/>
   </AuxValues>
 </Form>

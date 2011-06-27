@@ -43,6 +43,7 @@ import ke.go.moh.oec.Fingerprint.Type;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.client.data.ImagedFingerprint;
 import ke.go.moh.oec.client.data.Session;
+import ke.go.moh.oec.reception.reader.FingerprintingComponent;
 import ke.go.moh.oec.reception.reader.ReaderManager;
 import org.jdesktop.application.Action;
 
@@ -50,7 +51,7 @@ import org.jdesktop.application.Action;
  *
  * @author Gitahi Ng'ang'a
  */
-public class FingerprintDialog extends javax.swing.JDialog {
+public class FingerprintDialog extends javax.swing.JDialog implements FingerprintingComponent {
 
     private ReaderManager readerManager;
     private Session session;
@@ -325,7 +326,6 @@ public class FingerprintDialog extends javax.swing.JDialog {
     public void showImage(BufferedImage fingerprintImage) {
         if (fingerprintImage != null) {
             fingerprintImagePanel.setImage(fingerprintImage);
-            repaint();
         }
     }
 

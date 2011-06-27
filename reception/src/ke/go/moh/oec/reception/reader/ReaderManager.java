@@ -45,7 +45,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.imageio.stream.ImageOutputStream;
-import ke.go.moh.oec.reception.gui.FingerprintDialog;
 
 /**
  *
@@ -54,19 +53,19 @@ import ke.go.moh.oec.reception.gui.FingerprintDialog;
 public class ReaderManager implements IStatusEventListener, IFingerEventListener, IImageEventListener {
 
     private MatchingContext matchingContext;
-    private FingerprintDialog fingerprintDialog;
+    private FingerprintingComponent fingerprintingComponent;
     private boolean autoExtract = true;
     private boolean autoIdentify = false;
     private FingerprintImage fingerprintImage;
     private Template template;
 
-    public ReaderManager(FingerprintDialog fingerprintDialog) throws ClassNotFoundException, GrFingerJavaException {
-        this.fingerprintDialog = fingerprintDialog;
+    public ReaderManager(FingerprintingComponent fingerprintingComponent) throws ClassNotFoundException, GrFingerJavaException {
+        this.fingerprintingComponent = fingerprintingComponent;
         initialize();
     }
 
-    public ReaderManager(FingerprintDialog fingerprintDialog, boolean autoExtract, boolean autoIdentify) throws ClassNotFoundException, GrFingerJavaException {
-        this.fingerprintDialog = fingerprintDialog;
+    public ReaderManager(FingerprintingComponent fingerprintingComponent, boolean autoExtract, boolean autoIdentify) throws ClassNotFoundException, GrFingerJavaException {
+        this.fingerprintingComponent = fingerprintingComponent;
         initialize();
         this.autoExtract = autoExtract;
         this.autoIdentify = autoIdentify;
@@ -108,9 +107,9 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
         try {
             matchingContext = new MatchingContext();
             GrFingerJava.initializeCapture(this);
-            fingerprintDialog.log("Reader initialized!");
+            fingerprintingComponent.log("Reader initialized!");
         } catch (GrFingerJavaException ex) {
-            fingerprintDialog.log(ex.getMessage());
+            fingerprintingComponent.log(ex.getMessage());
             throw ex;
         }
     }
@@ -121,34 +120,34 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
 
     public void onSensorPlug(String sensorId) {
         try {
-            fingerprintDialog.log(sensorId + " plugged.");
+            fingerprintingComponent.log(sensorId + " plugged.");
             GrFingerJava.startCapture(sensorId, this, this);
         } catch (GrFingerJavaException ex) {
-            fingerprintDialog.log(ex.getMessage());
+            fingerprintingComponent.log(ex.getMessage());
         }
     }
 
     public void onSensorUnplug(String sensorId) {
         try {
-            fingerprintDialog.log(sensorId + " unplugged.");
+            fingerprintingComponent.log(sensorId + " unplugged.");
             GrFingerJava.stopCapture(sensorId);
         } catch (GrFingerJavaException ex) {
-            fingerprintDialog.log(ex.getMessage());
+            fingerprintingComponent.log(ex.getMessage());
         }
     }
 
     public void onFingerDown(String string) {
-        fingerprintDialog.log("Finger placed.");
+        fingerprintingComponent.log("Finger placed.");
     }
 
     public void onFingerUp(String string) {
-        fingerprintDialog.log("Finger removed.");
+        fingerprintingComponent.log("Finger removed.");
     }
 
     public void onImageAcquired(String sensorId, FingerprintImage fingerprintImage) {
-        fingerprintDialog.log("Image Captured!");
+        fingerprintingComponent.log("Image Captured!");
         this.fingerprintImage = fingerprintImage;
-        fingerprintDialog.showImage(fingerprintImage);
+        fingerprintingComponent.showImage(fingerprintImage);
         if (autoExtract) {
             extract();
         }
@@ -168,7 +167,7 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
             output.close();
             writer.dispose();
         } catch (IOException e) {
-            fingerprintDialog.log(e.toString());
+            fingerprintingComponent.log(e.toString());
         }
     }
 
@@ -188,10 +187,10 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
                     message = "Low quality.";
                     break;
             }
-            fingerprintDialog.showQuality(message);
-            fingerprintDialog.showImage(GrFingerJava.getBiometricImage(template, fingerprintImage));
+            fingerprintingComponent.showQuality(message);
+            fingerprintingComponent.showImage(GrFingerJava.getBiometricImage(template, fingerprintImage));
         } catch (GrFingerJavaException e) {
-            fingerprintDialog.log(e.getMessage());
+            fingerprintingComponent.log(e.getMessage());
         }
     }
 

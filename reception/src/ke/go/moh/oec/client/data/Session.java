@@ -26,6 +26,7 @@ package ke.go.moh.oec.client.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import ke.go.moh.oec.Person;
 import ke.go.moh.oec.client.controller.PersonWrapper;
 
 /**
@@ -46,19 +47,13 @@ public class Session {
     private boolean fingerprint = true;
     private boolean clinicName = false;
     private PersonWrapper personWrapper;
-    private PersonWrapper comprehensivePersonWrapper;
     private List<ImagedFingerprint> imagedFingerprintList = new ArrayList<ImagedFingerprint>();
     private ImagedFingerprint activeFingerprint;
-    private int maxFingerprints = 6;
+    private int maxFingerprints = 2;
 
     public Session(CLIENT_TYPE clientType) {
         this.clientType = clientType;
         clinicName = (clientType == CLIENT_TYPE.VISITOR || clientType == CLIENT_TYPE.TRANSFER_IN);
-    }
-
-    public Session(CLIENT_TYPE clientType, int maxFingerprints) {
-        this(clientType);
-        this.maxFingerprints = maxFingerprints;
     }
 
     public ImagedFingerprint getActiveImagedFingerprint() {
@@ -70,6 +65,9 @@ public class Session {
     }
 
     public PersonWrapper getPersonWrapper() {
+        if (personWrapper == null) {
+            personWrapper = new PersonWrapper(new Person());
+        }
         return personWrapper;
     }
 
@@ -93,14 +91,6 @@ public class Session {
         return clinicName;
     }
 
-    public PersonWrapper getComprehensivePersonWrapper() {
-        return comprehensivePersonWrapper;
-    }
-
-    public void setComprehensivePersonWrapper(PersonWrapper comprehensivePersonWrapper) {
-        this.comprehensivePersonWrapper = comprehensivePersonWrapper;
-    }
-
     public boolean isFingerprint() {
         return fingerprint;
     }
@@ -117,21 +107,13 @@ public class Session {
         this.imagedFingerprintList = imagedFingerprintList;
     }
 
-    public int getMaxFingerprints() {
-        return maxFingerprints;
-    }
-
-    public void setMaxFingerprints(int maxFingerprints) {
-        this.maxFingerprints = maxFingerprints;
-    }
-
-    public boolean hasAllFingerprintsTaken() {
+    public boolean hasAllRequiredFingerprints() {
         boolean allFingerprintsTaken = false;
         if (!fingerprint) {
             allFingerprintsTaken = true;
         } else {
             if (imagedFingerprintList != null
-                    && imagedFingerprintList.size() > maxFingerprints) {
+                    && imagedFingerprintList.size() >= maxFingerprints) {
                 allFingerprintsTaken = true;
             }
         }

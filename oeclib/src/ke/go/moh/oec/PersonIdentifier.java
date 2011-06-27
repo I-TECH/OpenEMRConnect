@@ -68,5 +68,32 @@ public class PersonIdentifier {
 
     public void setIdentifierType(Type identifierType) {
         this.identifierType = identifierType;
+
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PersonIdentifier other = (PersonIdentifier) obj;
+        if (this.identifierType != other.identifierType) {
+            return false;
+        }
+        if ((this.identifier == null) ? (other.identifier != null) : !this.identifier.equalsIgnoreCase(other.identifier)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + (this.identifierType != null ? this.identifierType.hashCode() : 0);
+        hash = 79 * hash + (this.identifier != null ? this.identifier.hashCode() : 0);
+        return hash;
     }
 }

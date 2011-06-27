@@ -37,13 +37,13 @@ public class Cds implements IService {
     @Override
     public Object getData(int requestTypeId, Object requestData) {
 
-         Mediator mediator = Main.getMediator();
+        Mediator mediator = Main.getMediator();
 
         switch (requestTypeId) {
 
             case RequestTypeId.NOTIFY_PERSON_CHANGED:
-                
-                
+
+
                 // Receive the Notify Message from the MPI and insert the values into the Cds database
                 PersonRequest personRequest = (PersonRequest) requestData;
                 Person person = personRequest.getPerson();
@@ -52,14 +52,14 @@ public class Cds implements IService {
                 String xml = personRequest.getXml();
 
                 Mediator.getLogger(Cds.class.getName()).log(Level.FINER, "Notify");
-                
+
                 Connection notifyConn = Sql.connect();
 
                 String notifySql = "INSERT INTO cds_store(destination,message,voided,received_datetime) "
                         + " VALUES(" + Sql.quote(visitAddress) + "," + Sql.quote(xml) + ",0,NOW())";
                 Sql.execute(notifyConn, notifySql);
                 break;
-                
+
             case RequestTypeId.GET_WORK:
 
                 //Enable any Reception user to get any Message from the database given the reception Address
@@ -74,9 +74,9 @@ public class Cds implements IService {
 
                 String getWorkSql = " SELECT message FROM cds_store WHERE destination = "
                         + " " + Sql.quote(getWorkAddress) + ""
-                       + "AND voided = 0";
-                 ResultSet rs = Sql.query(getWorkConn, getWorkSql);
-                 
+                        + "AND voided = 0";
+                ResultSet rs = Sql.query(getWorkConn, getWorkSql);
+
                 try {
                     // retrieve the values for the current row
                     while (rs.next()) {
@@ -96,7 +96,7 @@ public class Cds implements IService {
                 } catch (SQLException ex) {
                     Logger.getLogger(Cds.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                    
+
                 break;
 
             case RequestTypeId.REASSIGN_WORK:
@@ -109,7 +109,7 @@ public class Cds implements IService {
                 Connection reassignConn = Sql.connect();
 
                 String reassignSql = "UPDATE cds_store SET destination = " + Sql.quote(reassignAddress) + ""
-                                    + " WHERE destination = " + Sql.quote(reassignAddress) + " AND voided = 0";
+                        + " WHERE destination = " + Sql.quote(reassignAddress) + " AND voided = 0";
 
                 Sql.execute(reassignConn, reassignSql);
                 break;
@@ -122,7 +122,7 @@ public class Cds implements IService {
                 //Mark the message as voided
                 Connection workDoneConn = Sql.connect();
                 String workDoneSql = "UPDATE cds_store SET voided = 1 where "
-                                    + " destination ='" + Sql.quote(workDoneAdress )+ "' ";
+                        + " destination ='" + Sql.quote(workDoneAdress) + "' ";
 
                 Sql.execute(workDoneConn, workDoneSql);
                 break;

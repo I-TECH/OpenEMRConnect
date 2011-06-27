@@ -92,6 +92,7 @@ public class OECReception extends OECClient {
     }
 
     public static boolean validateClinicId(String clinicId) {
+        //TODO: Make sure to recognize and accept local clinic ids with clinic codes already prepended
         return deducePersonIdentifierType(clinicId) != null;
     }
 
@@ -137,17 +138,83 @@ public class OECReception extends OECClient {
         return sexString;
     }
 
-    public static String getConsentSignedString(Person.ConsentSigned consentSigned) {
-        String sexString = "";
-        if (consentSigned != null) {
-            if (consentSigned == Person.ConsentSigned.yes) {
-                sexString = "Yes";
-            } else if (consentSigned == Person.ConsentSigned.no) {
-                sexString = "No";
-            } else if (consentSigned == Person.ConsentSigned.notAnswered) {
-                sexString = "No answer";
+    public static Person.Sex getSex(String sexString) {
+        Person.Sex sex = null;
+        if (sexString != null) {
+            if (sexString.equalsIgnoreCase("Male")) {
+                sex = Person.Sex.M;
+            } else if (sexString.equalsIgnoreCase("Female")) {
+                sex = Person.Sex.F;
             }
         }
-        return sexString;
+        return sex;
+    }
+
+    public static String getConsentSignedString(Person.ConsentSigned consentSigned) {
+        String consentSignedString = "";
+        if (consentSigned != null) {
+            if (consentSigned == Person.ConsentSigned.yes) {
+                consentSignedString = "Yes";
+            } else if (consentSigned == Person.ConsentSigned.no) {
+                consentSignedString = "No";
+            } else if (consentSigned == Person.ConsentSigned.notAnswered) {
+                consentSignedString = "No answer";
+            }
+        }
+        return consentSignedString;
+    }
+
+    public static Person.ConsentSigned getConsentSigned(String consentSignedString) {
+        Person.ConsentSigned consentSigned = null;
+        if (consentSigned != null) {
+            if (consentSignedString.equalsIgnoreCase("Yes")) {
+                consentSigned = Person.ConsentSigned.yes;
+            } else if (consentSignedString.equalsIgnoreCase("No")) {
+                consentSigned = Person.ConsentSigned.no;
+            } else if (consentSignedString.equalsIgnoreCase("Not answered")) {
+                consentSigned = Person.ConsentSigned.notAnswered;
+            }
+        }
+        return consentSigned;
+    }
+
+    public static String getMaritalStatusString(Person.MaritalStatus maritalStatus) {
+        String maritalStatusString = "";
+        if (maritalStatus != null) {
+            if (maritalStatus == Person.MaritalStatus.cohabitating) {
+                maritalStatusString = "Cohabiting";
+            } else if (maritalStatus == Person.MaritalStatus.divorced) {
+                maritalStatusString = "Divorced";
+            } else if (maritalStatus == Person.MaritalStatus.marriedMonogamous) {
+                maritalStatusString = "Married monogamous";
+            } else if (maritalStatus == Person.MaritalStatus.marriedPolygamous) {
+                maritalStatusString = "Married polygamous";
+            } else if (maritalStatus == Person.MaritalStatus.single) {
+                maritalStatusString = "Single";
+            } else if (maritalStatus == Person.MaritalStatus.widowed) {
+                maritalStatusString = "Widowed";
+            }
+        }
+        return maritalStatusString;
+    }
+
+    public static Person.MaritalStatus getMaritalStatus(String maritalStatusString) {
+        Person.MaritalStatus maritalStatus = null;
+        if (maritalStatus != null) {
+            if (maritalStatusString.equalsIgnoreCase("Cohabiting")) {
+                maritalStatus = Person.MaritalStatus.cohabitating;
+            } else if (maritalStatusString.equalsIgnoreCase("Divorced")) {
+                maritalStatus = Person.MaritalStatus.divorced;
+            } else if (maritalStatusString.equalsIgnoreCase("Married monogamous")) {
+                maritalStatus = Person.MaritalStatus.marriedMonogamous;
+            } else if (maritalStatusString.equalsIgnoreCase("Married polygamous")) {
+                maritalStatus = Person.MaritalStatus.marriedPolygamous;
+            } else if (maritalStatusString.equalsIgnoreCase("Single")) {
+                maritalStatus = Person.MaritalStatus.single;
+            } else if (maritalStatusString.equalsIgnoreCase("Widowed")) {
+                maritalStatus = Person.MaritalStatus.widowed;
+            }
+        }
+        return maritalStatus;
     }
 }

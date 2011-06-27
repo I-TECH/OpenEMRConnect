@@ -21,7 +21,7 @@ public class Main {
     public static void main(String[] args) {
         Thread.currentThread().setName("Cds");
         Cds cds = new Cds();
-           mediator = new Mediator();
+        mediator = new Mediator();
         Mediator.registerCallback(cds);
         while (true) {
             try {
