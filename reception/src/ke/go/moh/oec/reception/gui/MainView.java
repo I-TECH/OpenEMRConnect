@@ -2732,40 +2732,44 @@ public class MainView extends FrameView implements FingerprintingComponent {
 
     private void showSearchResults(PIListData piListData) {
         Binding binding = null;
+        List<Person> personList = piListData.getPersonList();
         if (piListData.getTargetIndex() == RequestDispatcher.TargetIndex.MPI) {
-            binding = bindingGroup.getBinding("mpiBinding");
-            binding.unbind();
-            mpiSearchResultList.clear();
-            mpiSearchResultList.addAll(piListData.getPersonList());
-            binding.bind();
-            mpiResultsTable.repaint();
             mpiShown = true;
-            showCard("mpiResultsCard");
+            if (personList.size() == 1) {
+                confirmMatch(new PersonWrapper(personList.get(0)), RequestDispatcher.TargetIndex.MPI, true);
+            } else {
+                binding = bindingGroup.getBinding("mpiBinding");
+                binding.unbind();
+                mpiSearchResultList.clear();
+                mpiSearchResultList.addAll(personList);
+                binding.bind();
+                mpiResultsTable.repaint();
+                showCard("mpiResultsCard");
+            }
         } else if (piListData.getTargetIndex() == RequestDispatcher.TargetIndex.LPI) {
-            binding = bindingGroup.getBinding("lpiBinding");
-            binding.unbind();
-            lpiSearchResultList.clear();
-            lpiSearchResultList.addAll(piListData.getPersonList());
-            binding.bind();
-            lpiResultsTable.repaint();
             lpiShown = true;
-            showCard("lpiResultsCard");
+            if (personList.size() == 1) {
+                confirmMatch(new PersonWrapper(personList.get(0)), RequestDispatcher.TargetIndex.LPI, true);
+            } else {
+                binding = bindingGroup.getBinding("lpiBinding");
+                binding.unbind();
+                lpiSearchResultList.clear();
+                lpiSearchResultList.addAll(personList);
+                binding.bind();
+                lpiResultsTable.repaint();
+                showCard("lpiResultsCard");
+            }
         }
     }
 
-    public void acceptMPIMatch() {
-        int selectedRow = mpiResultsTable.getSelectedRow();
-        if (selectedRow > -1) {
-            mpiMatchPersonWrapper = new PersonWrapper(mpiPersonList.get(selectedRow));
-            if (!lpiShown && lpiPersonList != null
-                    && !lpiPersonList.isEmpty()) {
-                showSearchResults(new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
-            } else {
-                populateReviewCards(mpiMatchPersonWrapper, lpiMatchPersonWrapper);
-                showCard("reviewCard1");
-            }
+    public void acceptMPIMatch(PersonWrapper personWrapper) {
+        mpiMatchPersonWrapper = personWrapper;
+        if (!lpiShown && lpiPersonList != null
+                && !lpiPersonList.isEmpty()) {
+            showSearchResults(new PIListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
         } else {
-            showWarningMessage("Please select a candidate to accept.", mpiConfirmButton, mpiResultsTable);
+            populateReviewCards(mpiMatchPersonWrapper, lpiMatchPersonWrapper);
+            showCard("reviewCard1");
         }
     }
 
@@ -2774,12 +2778,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         int selectedRow = mpiResultsTable.getSelectedRow();
         if (selectedRow > -1) {
             PersonWrapper personWrapper = new PersonWrapper(mpiPersonList.get(selectedRow));
-            ConfirmationDialog confirmationDialog = new ConfirmationDialog(this.getFrame(), true, personWrapper);
-            confirmationDialog.setLocationRelativeTo(this.getFrame());
-            confirmationDialog.setVisible(true);
-            if (personWrapper.isConfirmed()) {
-                acceptMPIMatch();
-            }
+            confirmMatch(personWrapper, RequestDispatcher.TargetIndex.MPI);
         } else {
             showWarningMessage("Please select a candidate to confirm.", mpiConfirmButton, mpiResultsTable);
         }
@@ -2837,14 +2836,39 @@ public class MainView extends FrameView implements FingerprintingComponent {
         int selectedRow = lpiResultsTable.getSelectedRow();
         if (selectedRow > -1) {
             PersonWrapper personWrapper = new PersonWrapper(lpiPersonList.get(selectedRow));
-            ConfirmationDialog confirmationDialog = new ConfirmationDialog(this.getFrame(), true, personWrapper);
-            confirmationDialog.setLocationRelativeTo(this.getFrame());
-            confirmationDialog.setVisible(true);
-            if (personWrapper.isConfirmed()) {
+            confirmMatch(personWrapper, RequestDispatcher.TargetIndex.LPI);
+        } else {
+            showWarningMessage("Please select a candidate to confirm.", lpiConfirmButton, lpiResultsTable);
+        }
+    }
+
+    public void confirmMatch(PersonWrapper personWrapper, int targetIndex) {
+        confirmMatch(personWrapper, targetIndex, false);
+    }
+
+    public void confirmMatch(PersonWrapper personWrapper, int targetIndex, boolean singleCandidate) {
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog(this.getFrame(), true, personWrapper);
+        if (targetIndex == RequestDispatcher.TargetIndex.MPI) {
+            confirmationDialog.setTitle("Confirm MPI Match");
+        } else if (targetIndex == RequestDispatcher.TargetIndex.LPI) {
+            confirmationDialog.setTitle("Confirm LPI Match");
+        }
+        confirmationDialog.setLocationRelativeTo(this.getFrame());
+        confirmationDialog.setVisible(true);
+        if (personWrapper.isConfirmed()) {
+            if (targetIndex == RequestDispatcher.TargetIndex.MPI) {
+                acceptMPIMatch(personWrapper);
+            } else if (targetIndex == RequestDispatcher.TargetIndex.LPI) {
                 acceptLPIMatch(personWrapper);
             }
         } else {
-            showWarningMessage("Please select a candidate to confirm.", lpiConfirmButton, lpiResultsTable);
+            if (singleCandidate) {
+                if (targetIndex == RequestDispatcher.TargetIndex.MPI) {
+                    noMPIMatchFound();
+                } else if (targetIndex == RequestDispatcher.TargetIndex.LPI) {
+                    noLPIMatchFound();
+                }
+            }
         }
     }
 
@@ -2892,6 +2916,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
         hdssDataConsentYesRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.yes);
         hdssDataConsentNoRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.no);
         hdssDataConsentNoAnswerRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.notAnswered);
+        if (session != null) {
+            List<ImagedFingerprint> imagedFingerprintList = session.getImagedFingerprintList();
+            if (imagedFingerprintList != null && !imagedFingerprintList.isEmpty()) {
+                fingerprintImagePanel.setImage(imagedFingerprintList.get(imagedFingerprintList.size() - 1).getImage());
+            }
+        }
     }
 
     private void populateReviewCardsWithAlternativenData(PersonWrapper personWrapper) {
@@ -3353,6 +3383,25 @@ public class MainView extends FrameView implements FingerprintingComponent {
         List<Fingerprint> fingerprintListForUpdate = null;
         if (!mpiMatched
                 && !lpiMatched) {
+            //this person is known neither by the MPI nor by theLPI
+            //update fingerprints with brand new ones
+            List<Fingerprint> tempFingerprintList = getBrandNewFingerprintList();
+            if (tempFingerprintList.isEmpty()) {
+                if (showConfirmMessage("This person has no good fingerprints registered. Would"
+                        + "you like to take some now?", this.getFrame())) {
+                    showFingerprintDialogReview();
+                    return;
+                }
+            } else {
+                if (tempFingerprintList.size() < 2) {
+                    if (showConfirmMessage("This person has only one fingerprint taken for"
+                            + "registration. Would you like to take one more now?", this.getFrame())) {
+                        showFingerprintDialogReview();
+                        return;
+                    }
+                }
+                fingerprintListForUpdate = tempFingerprintList;
+            }
         } else {
             if (mpiMatched
                     && lpiMatched) {
@@ -3519,13 +3568,6 @@ public class MainView extends FrameView implements FingerprintingComponent {
             }
         }
         personWrapper.setFingerprintList(fingerprintListForUpdate);
-        if (hdssDataConsentYesRadioButton.isSelected()) {
-            personWrapper.setConsentSigned(Person.ConsentSigned.yes);
-        } else if (hdssDataConsentNoRadioButton.isSelected()) {
-            personWrapper.setConsentSigned(Person.ConsentSigned.no);
-        } else if (hdssDataConsentNoAnswerRadioButton.isSelected()) {
-            personWrapper.setConsentSigned(Person.ConsentSigned.notAnswered);
-        }
         Visit visit = new Visit();
         visit.setAddress(OECReception.getApplicationAddress());
         visit.setVisitDate(new Date());

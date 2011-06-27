@@ -136,8 +136,8 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         hdssDataConsentYesRadioButton = new javax.swing.JRadioButton();
         hdssDataConsentNoRadioButton = new javax.swing.JRadioButton();
         hdssDataConsentNoAnswerRadioButton = new javax.swing.JRadioButton();
-        okButton = new javax.swing.JButton();
-        cancelButton = new javax.swing.JButton();
+        acceptButton = new javax.swing.JButton();
+        rejectButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
@@ -395,13 +395,13 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         );
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(ConfirmationDialog.class, this);
-        okButton.setAction(actionMap.get("confirm")); // NOI18N
-        okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
-        okButton.setName("okButton"); // NOI18N
+        acceptButton.setAction(actionMap.get("accept")); // NOI18N
+        acceptButton.setText(resourceMap.getString("acceptButton.text")); // NOI18N
+        acceptButton.setName("acceptButton"); // NOI18N
 
-        cancelButton.setAction(actionMap.get("reject")); // NOI18N
-        cancelButton.setText(resourceMap.getString("cancelButton.text")); // NOI18N
-        cancelButton.setName("cancelButton"); // NOI18N
+        rejectButton.setAction(actionMap.get("reject")); // NOI18N
+        rejectButton.setText(resourceMap.getString("rejectButton.text")); // NOI18N
+        rejectButton.setName("rejectButton"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -410,8 +410,8 @@ public class ConfirmationDialog extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(cancelButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 926, Short.MAX_VALUE)
-                    .addComponent(okButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 926, Short.MAX_VALUE)
+                    .addComponent(rejectButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 926, Short.MAX_VALUE)
+                    .addComponent(acceptButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 926, Short.MAX_VALUE)
                     .addComponent(confirmationPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -421,9 +421,9 @@ public class ConfirmationDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addComponent(confirmationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(okButton, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+                .addComponent(acceptButton, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(rejectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -433,7 +433,7 @@ public class ConfirmationDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     @Action
-    public void confirm() {
+    public void accept() {
         personWrapper.setConfirmed(true);
         dispose();
     }
@@ -444,9 +444,9 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         dispose();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton acceptButton;
     private com.toedter.calendar.JDateChooser birthDateChooser;
     private javax.swing.JLabel birthDateLabel;
-    private javax.swing.JButton cancelButton;
     private javax.swing.JLabel clinicIdLabel;
     private javax.swing.JTextField clinicIdTextField;
     private javax.swing.JLabel compoundHeadsFirstNameLabel;
@@ -484,7 +484,7 @@ public class ConfirmationDialog extends javax.swing.JDialog {
     private javax.swing.JTextField mothersLastNameTextField;
     private javax.swing.JLabel mothersMiddleNameLabel;
     private javax.swing.JTextField mothersMiddleNameTextField;
-    private javax.swing.JButton okButton;
+    private javax.swing.JButton rejectButton;
     private javax.swing.ButtonGroup sexButtonGroup;
     private javax.swing.JLabel sexLabel;
     private javax.swing.JLabel villageLabel;

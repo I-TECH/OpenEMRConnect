@@ -115,7 +115,7 @@ public class Sql {
         boolean returnValue = false;
         ResultSet rs = query(conn, sql);
         try {
-            returnValue = !rs.isAfterLast();
+            returnValue = rs.next();
             rs.close();
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);

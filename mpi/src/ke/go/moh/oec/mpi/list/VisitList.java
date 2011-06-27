@@ -40,7 +40,7 @@ public class VisitList {
         if (visit != null && visit.getVisitDate() != null) {
             String addressId = Sql.getAddressId(conn, visit.getAddress());
             Date visitDate = visit.getVisitDate();
-            String sql = "SELECT 1 FROM visit WHERE visit_type_id = " + visitTypeId
+            String sql = "SELECT * FROM visit WHERE visit_type_id = " + visitTypeId
                     + " AND person_id = " + personId + " AND visit_date = " + Sql.quote(visitDate);
             if (!Sql.resultExists(conn, sql)) {
                 sql = "INSERT INTO visit (visit_type_id, person_id, address_id, visit_date, date_created) values (\n"

@@ -40,8 +40,8 @@
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="cancelButton" alignment="0" pref="926" max="32767" attributes="2"/>
-                  <Component id="okButton" alignment="0" pref="926" max="32767" attributes="2"/>
+                  <Component id="rejectButton" alignment="0" pref="926" max="32767" attributes="2"/>
+                  <Component id="acceptButton" alignment="0" pref="926" max="32767" attributes="2"/>
                   <Component id="confirmationPanel" alignment="1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -54,9 +54,9 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="confirmationPanel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="okButton" pref="34" max="32767" attributes="0"/>
+              <Component id="acceptButton" pref="34" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="cancelButton" min="-2" pref="34" max="-2" attributes="0"/>
+              <Component id="rejectButton" min="-2" pref="34" max="-2" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -477,22 +477,22 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="okButton">
+    <Component class="javax.swing.JButton" name="acceptButton">
       <Properties>
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-          <action class="ke.go.moh.oec.reception.gui.ConfirmationDialog" id="confirm" methodName="confirm"/>
+          <action class="ke.go.moh.oec.reception.gui.ConfirmationDialog" id="accept" methodName="accept"/>
         </Property>
-        <Property name="text" type="java.lang.String" resourceKey="okButton.text"/>
-        <Property name="name" type="java.lang.String" value="okButton" noResource="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="acceptButton.text"/>
+        <Property name="name" type="java.lang.String" value="acceptButton" noResource="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="cancelButton">
+    <Component class="javax.swing.JButton" name="rejectButton">
       <Properties>
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
           <action class="ke.go.moh.oec.reception.gui.ConfirmationDialog" id="reject" methodName="reject"/>
         </Property>
-        <Property name="text" type="java.lang.String" resourceKey="cancelButton.text"/>
-        <Property name="name" type="java.lang.String" value="cancelButton" noResource="true"/>
+        <Property name="text" type="java.lang.String" resourceKey="rejectButton.text"/>
+        <Property name="name" type="java.lang.String" value="rejectButton" noResource="true"/>
       </Properties>
     </Component>
   </SubComponents>

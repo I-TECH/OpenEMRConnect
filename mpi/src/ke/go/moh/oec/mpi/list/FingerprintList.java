@@ -117,8 +117,7 @@ public class FingerprintList {
                     Sql.execute(conn, sql);
                 }
             }
-        }
-        else if (oldEntries) {
+        } else if (oldEntries) {
             returnList = oldList;
         }
         if (returnList.isEmpty()) {
