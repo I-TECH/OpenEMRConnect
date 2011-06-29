@@ -22,7 +22,7 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.client.data;
+package ke.go.moh.oec.reception.data;
 
 import java.awt.image.BufferedImage;
 import ke.go.moh.oec.Fingerprint;

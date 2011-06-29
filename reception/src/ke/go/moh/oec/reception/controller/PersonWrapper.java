@@ -22,7 +22,7 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.client.controller;
+package ke.go.moh.oec.reception.controller;
 
 import ke.go.moh.oec.reception.controller.OECReception;
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.Visit;
-import ke.go.moh.oec.client.controller.exceptions.MalformedCliniIdException;
-import ke.go.moh.oec.client.data.ImagedFingerprint;
+import ke.go.moh.oec.reception.controller.exceptions.MalformedCliniIdException;
+import ke.go.moh.oec.reception.data.ImagedFingerprint;
 
 /**
  *
@@ -43,6 +43,8 @@ public class PersonWrapper {
 
     private final Person person;
     private boolean confirmed = false;
+    //TODO: set value from Mediator standard algorithm
+    private final String requestReference = "";
 
     public PersonWrapper(Person person) {
         this.person = person;
@@ -73,8 +75,12 @@ public class PersonWrapper {
             throw new MalformedCliniIdException();
         }
         PersonIdentifier personIdentifier = new PersonIdentifier();
+        PersonIdentifier.Type type = OECReception.deducePersonIdentifierType(clinicId);
+        if (type == PersonIdentifier.Type.cccLocalId) {
+            clinicId = OECReception.prependClinicCode(clinicId);
+        }
         personIdentifier.setIdentifier(clinicId);
-        personIdentifier.setIdentifierType(OECReception.deducePersonIdentifierType(clinicId));
+        personIdentifier.setIdentifierType(type);
         List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
         if (personIdentifierList == null) {
             personIdentifierList = new ArrayList<PersonIdentifier>();
@@ -363,11 +369,15 @@ public class PersonWrapper {
         }
     }
 
-    public Object getFingerprintList() {
+    public List<Fingerprint> getFingerprintList() {
         return person.getFingerprintList();
     }
 
     public void setFingerprintList(List<Fingerprint> fingerprintList) {
         person.setFingerprintList(fingerprintList);
+    }
+
+    public String getRequestReference() {
+        return requestReference;
     }
 }

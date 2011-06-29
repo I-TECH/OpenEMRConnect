@@ -41,8 +41,8 @@ import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Fingerprint.TechnologyType;
 import ke.go.moh.oec.Fingerprint.Type;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.client.data.ImagedFingerprint;
-import ke.go.moh.oec.client.data.Session;
+import ke.go.moh.oec.reception.data.ImagedFingerprint;
+import ke.go.moh.oec.reception.data.Session;
 import ke.go.moh.oec.reception.reader.FingerprintingComponent;
 import ke.go.moh.oec.reception.reader.ReaderManager;
 import org.jdesktop.application.Action;
@@ -384,7 +384,7 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
             }
         } else {
             session.getImagedFingerprintList().add(imagedFingerprint);
-            session.setActiveFingerprint(imagedFingerprint);
+            session.setActiveImagedFingerprint(imagedFingerprint);
         }
         dispose();
     }

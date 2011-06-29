@@ -22,9 +22,9 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.client.controller;
+package ke.go.moh.oec.reception.controller;
 
-import ke.go.moh.oec.client.data.RequestResult;
+import ke.go.moh.oec.reception.data.RequestResult;
 import java.util.ArrayList;
 import java.util.List;
 import ke.go.moh.oec.Person;
@@ -63,10 +63,10 @@ class RequestDispatchingThread extends Thread {
     @Override
     public void run() {
         PersonRequest personRequest = new PersonRequest();
-        PersonResponse personResponse = null;
         Person person = ((PersonWrapper) personWrapper).unwrap();
         personRequest.setPerson(person);
-        personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
+        personRequest.setRequestReference(personWrapper.getRequestReference());
+        PersonResponse personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
         if (personResponse != null) {
             if (personResponse.isSuccessful()) {
                 List<Person> personList = personResponse.getPersonList();

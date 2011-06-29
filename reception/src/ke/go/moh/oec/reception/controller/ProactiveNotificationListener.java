@@ -33,21 +33,21 @@ import ke.go.moh.oec.lib.Mediator;
  *
  * @author Gitahi Ng'ang'a
  */
-public class ReceptionService implements IService {
+public class ProactiveNotificationListener implements IService {
     
     public static void main(String[] args) {
-        ReceptionService.start();
+        ProactiveNotificationListener.start();
     }
 
     private final Mediator mediator = new Mediator();
 
     public static void start() {
-        Mediator.registerCallback(new ReceptionService());
+        Mediator.registerCallback(new ProactiveNotificationListener());
         while (true) {
             try {
                 Thread.sleep(Long.MAX_VALUE);
             } catch (InterruptedException ex) {
-                Logger.getLogger(ReceptionService.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ProactiveNotificationListener.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

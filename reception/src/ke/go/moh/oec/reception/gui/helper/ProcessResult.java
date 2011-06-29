@@ -38,9 +38,9 @@ public class ProcessResult {
 
     public enum Type {
 
-        SHOW_LIST,
-        TAKE_NEXT_FINGERPRINT,
-        JUST_EXIT,
+        LIST,
+        NEXT_FINGERPRINT,
+        EXIT,
         UNREACHABLE_INDICES,
         ABORT
     }

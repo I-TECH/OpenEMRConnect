@@ -22,11 +22,11 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.client.controller;
+package ke.go.moh.oec.reception.controller;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ke.go.moh.oec.client.data.RequestResult;
+import ke.go.moh.oec.reception.data.RequestResult;
 import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
 

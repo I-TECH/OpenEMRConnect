@@ -22,7 +22,7 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.client.controller.exceptions;
+package ke.go.moh.oec.reception.controller.exceptions;
 
 /**
  *

@@ -26,9 +26,9 @@ package ke.go.moh.oec.reception.gui.helper;
 
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
-import ke.go.moh.oec.client.controller.PersonWrapper;
-import ke.go.moh.oec.client.controller.RequestDispatcher;
-import ke.go.moh.oec.client.data.RequestResult;
+import ke.go.moh.oec.reception.controller.PersonWrapper;
+import ke.go.moh.oec.reception.controller.RequestDispatcher;
+import ke.go.moh.oec.reception.data.RequestResult;
 import ke.go.moh.oec.reception.reader.ReaderManager;
 
 /**

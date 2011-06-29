@@ -372,7 +372,7 @@ public class Mediator implements IService {
      *
      * @return the new request ID.
      */
-    private synchronized String generateMessageId() {
+    public static synchronized String generateMessageId() {
         long milliseconds = new Date().getTime();
         return Long.toString(milliseconds) + Long.toString(messageSequenceNumber++);
     }
