@@ -89,12 +89,14 @@ public class PersonRequest {
      * If not specified, the default is Normal.
      */
     private String matchAlgorithm;
+    //TODO: Say who uses responseRequested. And what is the default value.
     /**
      * Does the caller want a response to this message?
      * This applies to createPerson and modifyPerson requests,
-     * where the response is optional. Default is false.
+     * where the response is optional.
      */
     private boolean responseRequested = false;
+    //TODO: Say CDS uses this.
     /**
      * The message in XML form.
      * <p>

@@ -36,6 +36,15 @@ import ke.go.moh.oec.mpi.Sql;
  */
 public class VisitList {
 
+    /**
+     * Checks to see if the visit reported is already in the database.
+     * If not, inserts it.
+     * 
+     * @param conn database connection to use.
+     * @param visitTypeId type of visit that happened.
+     * @param personId database person_id to identify the person who had a visit.
+     * @param visit additional visit information.
+     */
     public static void update(Connection conn, int visitTypeId, int personId, Visit visit) {
         if (visit != null && visit.getVisitDate() != null) {
             String addressId = Sql.getAddressId(conn, visit.getAddress());

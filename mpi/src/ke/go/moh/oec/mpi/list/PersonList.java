@@ -227,15 +227,31 @@ public class PersonList {
         Set<SiteCandidate> siteCandidateSet = siteList.findIfNeeded(searchTerms);
         searchTerms.setSiteCandidateSet(siteCandidateSet);
         DateMatch.setToday();
+        //
+        // Make a special case if we are searching by GUID and not trying to match fingerprints.
+        // In this case, just look to see if we have person matching the GUID search term.
+        // If we do, then we are done. If not, then we test for matching the usual way...
+        //
+        PersonMatch guidMatch = null;
         if (p.getPersonGuid() != null
                 && (p.getFingerprintList() == null || p.getFingerprintList().isEmpty())) {
-            PersonMatch match = this.get(p.getPersonGuid());
-            if (match != null) {
-                Scorecard scorecard = new Scorecard();
-                scorecard.addScore(1.0, 1.0);
-                candidateSet.add(match, scorecard);
+            guidMatch = this.get(p.getPersonGuid());
+            //TODO: Fix logic.
+            if (guidMatch != null) {
+                final double GUID_MATCH_SCORE = 1.0;
+                final double GUID_MATCH_WEIGHT = 1.0;
+                Scorecard s = new Scorecard();
+                s.addScore(GUID_MATCH_SCORE, GUID_MATCH_WEIGHT);
+                candidateSet.add(guidMatch, s);
+                if (Mediator.testLoggerLevel(Level.FINEST)) {
+                    Mediator.getLogger(PersonList.class.getName()).log(Level.FINEST,
+                            "Score {0},{1} total {2},{3} comparing GUID {4} with {5}",
+                            new Object[]{GUID_MATCH_SCORE, GUID_MATCH_WEIGHT, s.getTotalScore(), s.getTotalWeight(),
+                                p.getPersonGuid(), guidMatch.getPerson().getPersonGuid()});
+                }
             }
-        } else {
+        }
+        if (guidMatch == null) {
             int personMatchCount = personList.size();
             int threadCount = Mpi.getMaxThreadCount();
             if (threadCount > personMatchCount) {

@@ -52,7 +52,7 @@ public class MediatorTest {
      */
     @Test
     public void testGetProperty() {
-        System.out.println("getProperty");
+        System.out.println("JUnit Test getProperty");
         String propertyName = "Instance.Name";
         String expResult = "Siaya TB Reception";
         String result = Mediator.getProperty(propertyName);
@@ -166,7 +166,7 @@ public class MediatorTest {
      */
     @Test
     public void testFindPerson() {
-        System.out.println("getData - findPerson");
+        System.out.println("JUnit Test getData - findPerson");
         String instanceName = Mediator.getProperty("Instance.Name");
         System.out.println("Instance.Name = '" + instanceName + "'");
         PersonRequest requestData = new PersonRequest();
@@ -250,7 +250,7 @@ public class MediatorTest {
      */
     @Test
     public void testFindPersonLPI() {
-        System.out.println("getData - findPerson in the LPI");
+        System.out.println("JUnit Test getData - findPerson in the LPI");
         PersonRequest requestData = new PersonRequest();
         Person p = new Person();
         requestData.setPerson(p);
@@ -267,6 +267,7 @@ public class MediatorTest {
         p.setSiteName("Siaya");
         requestData.setPerson(p);
         pr = callFindPerson(requestData);
+        assertNotNull(pr);
         if (pr != null) {
             pList = pr.getPersonList();
             if (pList != null && !pList.isEmpty()) {

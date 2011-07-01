@@ -202,6 +202,13 @@ public class MpiTest {
             String ds = dq.toString();
             ds = "DOB: " + dq.toString();
         }
+        
+        // Search by a fake GUID should match nobody.
+        p = new Person(); // Start fresh
+        p.setPersonGuid("fake GUID");
+        requestData.setPerson(p);
+        pr = callFindPerson(requestData);
+        assertNull(pr.getPersonList());
     }
 
     /**

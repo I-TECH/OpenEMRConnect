@@ -43,3 +43,13 @@ Thumbs.db
 ############################
 loggingserver/oec*.log
 loggingserver/oec.log.lck
+
+# Lock files #
+##############
+*/lockfile.lck
+*/*/lockfile.lck
+
+# QueueManager embedded databases #
+###################################
+*/QUEUEMANAGER_DATABASE/*
+*/*/QUEUEMANAGER_DATABASE/*

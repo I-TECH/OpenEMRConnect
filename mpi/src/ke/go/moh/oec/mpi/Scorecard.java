@@ -63,6 +63,14 @@ public class Scorecard {
         this.siteName = clinicName;
     }
 
+    public double getTotalScore() {
+        return totalScore;
+    }
+
+    public double getTotalWeight() {
+        return totalWeight;
+    }
+
     /**
      * Adds a weighted score to the scorecard.
      * <p>

@@ -60,7 +60,13 @@ public class StringMatch {
     public void score(Scorecard s, StringMatch other) {
         Double score = computeScore(this, other);
         if (score != null) {
-            s.addScore(score, 1.0);
+            final double STRING_WEIGHT = 1.0;
+            s.addScore(score, STRING_WEIGHT);
+            if (Mediator.testLoggerLevel(Level.FINEST)) {
+                Mediator.getLogger(StringMatch.class.getName()).log(Level.FINEST,
+                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
+                        new Object[]{score, STRING_WEIGHT, s.getTotalScore(), s.getTotalWeight(), original, other.original});
+            }
         }
     }
 

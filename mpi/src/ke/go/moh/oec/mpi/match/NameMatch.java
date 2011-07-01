@@ -70,6 +70,7 @@ public class NameMatch extends StringMatch {
      * this information is extracted before comparing the search terms with all
      * the database values. Then a search term can be compared more quickly with
      * multiple database values.
+     * //TODO: Add comments about Luo names
      *
      * @param original the name string to use in matching.
      */
@@ -93,7 +94,13 @@ public class NameMatch extends StringMatch {
     public void score(Scorecard s, NameMatch other) {
         Double score = computeScore(this, other);
         if (score != null) {
-            s.addScore(score, 1.0);
+            final double NAME_WEIGHT = 1.0;
+            s.addScore(score, NAME_WEIGHT);
+            if (Mediator.testLoggerLevel(Level.FINEST)) {
+                Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
+                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
+                        new Object[]{score, NAME_WEIGHT, s.getTotalScore(), s.getTotalWeight(), getOriginal(), other.getOriginal()});
+            }
         }
     }
 
