@@ -89,20 +89,40 @@ public class PersonRequest {
      * If not specified, the default is Normal.
      */
     private String matchAlgorithm;
-    //TODO: Say who uses responseRequested. And what is the default value.
     /**
      * Does the caller want a response to this message?
      * This applies to createPerson and modifyPerson requests,
      * where the response is optional.
+     * <p>
+     * For example, the CREATE_PERSON_... and MODIFY_PERSON_... requests
+     * by default do not generate a response. When used by the reception
+     * program, these methods are stored and forwarded until they reach
+     * the MPI or LPI, at which time they are acted upon. The reception
+     * program does not need any response to these messages, because it
+     * would not affect the reception program workflow to receive
+     * confirmation of success or failure of the message. Since they are
+     * stored and forwarded, the reception program may have already
+     * moved on to other work (or exited) by the time the MPI or LPI
+     * operation is complete.
+     * <p>
+     * By contrast, the HDSS companion may want to CREATE or MODIFY
+     * an entry in the MPI, and wait for a response as to whether the
+     * operation has completed. Once it has completed, the HDSS companion
+     * will know that the entry has been processed, and can note this
+     * in its own data store as appropriate.
      */
     private boolean responseRequested = false;
-    //TODO: Say CDS uses this.
     /**
      * The message in XML form.
      * <p>
      * This can be used to deliver the message to a destination in raw, XML form.
      * It may also be used to send a pre-formatted XML message to a destination.
      * Otherwise this value is not used.
+     * <p>
+     * For example, the Clinical Document Store (CDS) may wish to access a message
+     * in its original XML form and store it in a database for later use.
+     * Then it may retrieve this XML-formatted message from the database
+     * and send it to a destination.
      */
     private String xml;
 

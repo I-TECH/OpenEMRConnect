@@ -121,11 +121,26 @@ public class Mediator implements IService {
     /** Directory where we find our properties and QueueManager embedded database. */
     static String runtimeDirectory;
 
+    /**
+     * Initialize -- set up the runtime directory.
+     */
     static {
         setRuntimeDirectory(); // Do this first!
     }
 
-    //TODO: Include JavaDoc here
+    /**
+     * Constructs an instance of the Mediator.
+     * (Note: there should be only one instance of the mediator. At some
+     * point in the future, this class, and all who call it, should
+     * properly be refactored to follow the Java singleton pattern.)
+     * <p>
+     * If we are to use our own distributed logging service, set up the
+     * LoggingHandler to handle all calls to the standard logger.
+     * <p>
+     * Allocate other library class objects as needed, and start them
+     * as needed. In particular, the HttpManager and QueueManager need
+     * to be started.
+     */
     public Mediator() {
         setLoggerLevel();
         if (useLoggingService) {
