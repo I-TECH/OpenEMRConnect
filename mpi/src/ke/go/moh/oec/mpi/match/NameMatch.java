@@ -159,10 +159,11 @@ public class NameMatch extends StringMatch {
      * 
      * @param n1 the first name to match
      * @param n2 the second name to match
+     * @param stringMatchType type of string match to use
      * @return the score from matching the two names.
      */
-    public static Double computeScore(NameMatch n1, NameMatch n2) {
-        Double score = StringMatch.computeScore(n1, n2);
+    public static Double computeScore(NameMatch n1, NameMatch n2, StringMatch.MatchType stringMatchType) {
+        Double score = StringMatch.computeScore(n1, n2, stringMatchType);
         if (score != null && score < 1.0) {
             if (n1.soundexValue.equals(n2.soundexValue)
                     || n1.refinedSoundexValue.equals(n2.refinedSoundexValue)
@@ -176,5 +177,18 @@ public class NameMatch extends StringMatch {
                     "NameMatch.computeScore({0},{1}) = {2}", new Object[]{n1.getOriginal(), n2.getOriginal(), score});
         }
         return score;
+    }
+    
+    /**
+     * Computes the score as a result of matching two NameMatch objects,
+     * using approximate matching, and using NORMAL string matching.
+     * See the documentation for the other computeScore() overload.
+     *
+     * @param n1 the first name to match
+     * @param n2 the second name to match
+     * @return the score from matching the two names.
+     */
+    public static Double computeScore(NameMatch n1, NameMatch n2) {
+        return computeScore(n1, n2, StringMatch.MatchType.NORMAL);
     }
 }
