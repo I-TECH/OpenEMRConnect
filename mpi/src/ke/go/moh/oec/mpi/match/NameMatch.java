@@ -70,7 +70,48 @@ public class NameMatch extends StringMatch {
      * this information is extracted before comparing the search terms with all
      * the database values. Then a search term can be compared more quickly with
      * multiple database values.
-     *
+     * <p>
+     * Note that the Soundex and RefinedSoundex values are formed from a
+     * modified version of the original string, by adding "A" to the start
+     * of the string. Normally these two sound-alike codings give special
+     * significance to the first letter of a word, whether it is a vowel or a
+     * consonant. The first letter of the word is always used as the first
+     * letter of the soundex code. For example, consider the soundex coding of
+     * the following names:
+     * <pre> {@code .
+     *    Name       Soundex   RefinedSoundex
+     *    Otieno     O350      O06080
+     *    Atieno     A350      A06080
+     * } </pre>
+     * The soundex representations of "Otieno" and "Atieno" will therefore
+     * not match. However some analysis of mis-typed names from the Luo tribe
+     * in Kenya (where this software is first used) show that names starting
+     * with "A" and "O" such as the names above are sometimes mistaken for
+     * each other (or mis-typed) when entered into a medical records system.
+     * <p>
+     * The purpose of adding an "A" at the front of every name before encoding
+     * is so that the first letter of the original name will not have this
+     * special place at the front of the soundex-encoded string. Vowels that
+     * are not the fist letter of the string will be dropped by the soundex and
+     * refined soundex algorithms. So by adding an "A" at the start of every
+     * name to be encoded, the otherwise leading "A" or "O" will not be
+     * giving special significance. The encodings in this case will match:
+     * <pre> {@code .
+     *    Modified
+     *    Name        Soundex   RefinedSoundex
+     *    AOtieno     A350      A06080
+     *    AAtieno     A350      A06080
+     * } </pre>
+     * Note that the double metaphone encodings use the original string, not
+     * the one modified by adding "A" at the start. This is because the
+     * double metaphone encodings will already encode the "A" and "O" names
+     * to be the same. So adding the "A" is not needed. For example:
+     * <pre> {@code .
+     *    Name       DoubleMetaphone1   DoubleMetaphone2
+     *    Otieno     ATN                ATN
+     *    Atieno     ATN                ATN
+     * } </pre>
+     * 
      * @param original the name string to use in matching.
      */
     public NameMatch(String original) {
@@ -93,7 +134,13 @@ public class NameMatch extends StringMatch {
     public void score(Scorecard s, NameMatch other) {
         Double score = computeScore(this, other);
         if (score != null) {
-            s.addScore(score, 1.0);
+            final double NAME_WEIGHT = 1.0;
+            s.addScore(score, NAME_WEIGHT);
+            if (Mediator.testLoggerLevel(Level.FINEST)) {
+                Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
+                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
+                        new Object[]{score, NAME_WEIGHT, s.getTotalScore(), s.getTotalWeight(), getOriginal(), other.getOriginal()});
+            }
         }
     }
 
@@ -112,10 +159,11 @@ public class NameMatch extends StringMatch {
      * 
      * @param n1 the first name to match
      * @param n2 the second name to match
+     * @param stringMatchType type of string match to use
      * @return the score from matching the two names.
      */
-    public static Double computeScore(NameMatch n1, NameMatch n2) {
-        Double score = StringMatch.computeScore(n1, n2);
+    public static Double computeScore(NameMatch n1, NameMatch n2, StringMatch.MatchType stringMatchType) {
+        Double score = StringMatch.computeScore(n1, n2, stringMatchType);
         if (score != null && score < 1.0) {
             if (n1.soundexValue.equals(n2.soundexValue)
                     || n1.refinedSoundexValue.equals(n2.refinedSoundexValue)
@@ -129,5 +177,18 @@ public class NameMatch extends StringMatch {
                     "NameMatch.computeScore({0},{1}) = {2}", new Object[]{n1.getOriginal(), n2.getOriginal(), score});
         }
         return score;
+    }
+    
+    /**
+     * Computes the score as a result of matching two NameMatch objects,
+     * using approximate matching, and using NORMAL string matching.
+     * See the documentation for the other computeScore() overload.
+     *
+     * @param n1 the first name to match
+     * @param n2 the second name to match
+     * @return the score from matching the two names.
+     */
+    public static Double computeScore(NameMatch n1, NameMatch n2) {
+        return computeScore(n1, n2, StringMatch.MatchType.NORMAL);
     }
 }

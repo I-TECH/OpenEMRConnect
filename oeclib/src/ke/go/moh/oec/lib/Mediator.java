@@ -24,8 +24,6 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.logging.Level;
@@ -67,7 +65,7 @@ public class Mediator implements IService {
      * If the message is received by another program and forwarded on,
      * the hop count is 2, and so on.
      * <p>
-     * In the present design, the hop count should never exceed 3. If it does,
+     * In the present design, the hop count should never exceed 4. If it does,
      * it probably indicates a loop where one system is routing the message
      * to a second system, and the second system is routing it back to the
      * first system.
@@ -75,7 +73,7 @@ public class Mediator implements IService {
      * If the hop count exceeds the maximum, the message is discarded and
      * an error reported.
      */
-    private static final int MAX_HOP_COUNT = 3;
+    private static final int MAX_HOP_COUNT = 4;
     /**
      * The number of protocol message IDs generated since this library
      * was initialized. The sequence number forms part of the message ID.
@@ -115,12 +113,34 @@ public class Mediator implements IService {
      */
     static Properties properties = null;
     /** Lock the properties file we are using, so multiple instances will use multiple properties files. */
-    static FileLock propertiesLock = null;
+    static FileLock pathLock = null;
     /** The logger level to use, configured from the properties file. */
     static Level loggerLevel = null;
     /** Should we use the logging service? */
     static boolean useLoggingService = true;
+    /** Directory where we find our properties and QueueManager embedded database. */
+    static String runtimeDirectory;
 
+    /**
+     * Initialize -- set up the runtime directory.
+     */
+    static {
+        setRuntimeDirectory(); // Do this first!
+    }
+
+    /**
+     * Constructs an instance of the Mediator.
+     * (Note: there should be only one instance of the mediator. At some
+     * point in the future, this class, and all who call it, should
+     * properly be refactored to follow the Java singleton pattern.)
+     * <p>
+     * If we are to use our own distributed logging service, set up the
+     * LoggingHandler to handle all calls to the standard logger.
+     * <p>
+     * Allocate other library class objects as needed, and start them
+     * as needed. In particular, the HttpManager and QueueManager need
+     * to be started.
+     */
     public Mediator() {
         setLoggerLevel();
         if (useLoggingService) {
@@ -142,6 +162,51 @@ public class Mediator implements IService {
         queueManager.start();
         Logger.getLogger(Mediator.class.getName()).log(Level.FINE,
                 "{0} started.", getProperty("Instance.Name"));
+    }
+
+    /**
+     * Sets up the runtimeDirectory string to select a working directory relative
+     * to the default application directory. The purpose is to allow multiple
+     * instances of the code to run from the same directory. This can be
+     * especially useful in debugging and testing environments. The default
+     * directory for each instance is used to contain the openemrconnect.properties
+     * file used by that instance. It may contain other directories or files as
+     * well, such as the embedded JavaDB database used for the QueueManager.
+     * <p>
+     * The runtimeDirectory is determined as follows: The first time an application
+     * is run, it places a lock on a dummy file in the default application directory.
+     * When this lock is successfully in place, it then leaves the runtimeDirectory
+     * set to an empty string -- meaning that the runtime directory is the same
+     * as the default application directory.
+     * <p>
+     * The second time an application is run concurrently from the same
+     * application directory, we will find that the dummy file is already
+     * locked by the first instance of the application. In that event, we
+     * will try a subdirectory of "runtime2/", relative to the default
+     * application directory.
+     */
+    static void setRuntimeDirectory() {
+        try {
+            runtimeDirectory = "";
+            for (int i = 2;; i++) { // Try current directory, then "runtime2/", "runtime3/", etc.
+                RandomAccessFile raf = new RandomAccessFile(runtimeDirectory + "lockfile.lck", "rw");
+                FileChannel fc = raf.getChannel();
+                pathLock = fc.tryLock();
+                if (pathLock != null) {
+                    break;
+                }
+                runtimeDirectory = "runtime" + i + "/"; // Construct a subdirectory name "runtime2/", "runtime3/", etc.
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                    "Can''t lock directory {0}. please either create the directory or run the app fewer times.",
+                    runtimeDirectory);
+            System.exit(1);
+        }
+    }
+    
+    static public String getRuntimeDirectory() {
+        return runtimeDirectory;
     }
 
     /**
@@ -195,6 +260,28 @@ public class Mediator implements IService {
     }
 
     /**
+     * Tests to see if we should log something at a given level.
+     * <p>
+     * This method can be used to save the CPU time of a call to a logger.
+     * It can be useful if the call to the logger itself may use a non-trivial amount of CPU.
+     * For example, a logger call may invoke other methods to get some of the
+     * arguments needed for the call. These tests need only be done if the
+     * logger level is set low enough that the logger call will actually do something.
+     *
+     * @param testLevel Level to check if it would be logged.
+     * @return true if this Level would be logged, otherwise false.
+     */
+    public static boolean testLoggerLevel(Level testLevel) {
+        boolean returnValue;
+        if (loggerLevel == null) {
+            returnValue = Level.INFO.intValue() <= testLevel.intValue();
+        } else {
+            returnValue = loggerLevel.intValue() <= testLevel.intValue();
+        }
+        return returnValue;
+    }
+
+    /**
      * Gets a standard java.util.logging.Logger, set to the logging level property, if any.
      * If the logging level property is not the default Level.INFO, the logging level
      * is also changed in the root logging handler currently defined.
@@ -222,35 +309,15 @@ public class Mediator implements IService {
     public static String getProperty(String propertyName) {
         if (properties == null) {
             properties = new Properties();
-            String fileName = "openemrconnect.properties"; // Try that one first.
-            String propFilePath = null;
+            String propFileName = runtimeDirectory + "openemrconnect.properties";
             try {
-                for (int i = 2;; i++) {
-                    File propFile = new File(fileName);
-                    propFilePath = propFile.getAbsolutePath();
-                    if (!propFile.exists()) {
-                        throw new FileNotFoundException();
-                    }
-                    RandomAccessFile raf = new RandomAccessFile(fileName, "r");
-                    raf.close();
-                    raf = new RandomAccessFile(fileName, "rw");
-                    FileChannel fc = raf.getChannel();
-                    propertiesLock = fc.tryLock();
-                    if (propertiesLock != null) {
-                        propertiesLock.release(); // Unlock the properties file temporarily.
-                        System.out.println("Properties file = " + propFilePath);
-                        FileInputStream fis = new FileInputStream(propFilePath);
-                        properties.load(fis);
-                        fis.close();
-                        propertiesLock = fc.lock(); // Put the lock back on.
-                        break;
-                    }
-                    fileName = "openemrconnect" + i + ".properties"; // Now add "2", "3", etc. to the properties file name.
-                }
+                FileInputStream fis = new FileInputStream(propFileName);
+                properties.load(fis);
+                fis.close();
             } catch (Exception ex) {
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                         "getProperty() Can''t open ''{0}'' -- Please create the properties file if it doesn''t exist and then restart the app",
-                        propFilePath);
+                        propFileName);
                 System.exit(1);
             }
         }
@@ -305,6 +372,7 @@ public class Mediator implements IService {
          * Note that if the message type is createPerson or modifyPerson, this
          * may be overridden by the caller's desire, below.
          */
+        //TODO: Make sure this can be overriden.
         m.setResponseExpected(messageType.getResponseMessageType() != null);
         /*
          * Find the destination address and name. This is usually the default

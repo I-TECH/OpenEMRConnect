@@ -27,6 +27,8 @@ package ke.go.moh.oec.mpi.match;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Scorecard;
 
 /**
@@ -51,7 +53,7 @@ public class DateMatch {
         calendar.set(1800, 1, 1);
         baseDate = calendar.getTimeInMillis();
     }
-    
+
     /**
      * Construct a DateMatch from a Date.
      * <p>
@@ -102,7 +104,7 @@ public class DateMatch {
      * to today (just as the current age of a person is the amount of time
      * from their birthdate to today.) The relative difference in age is computed
      * as a fraction of the absolute difference in age divided by the
-     * large of the two ages. Then a score is computed in the scale of 0-0.7
+     * larger of the two ages. Then a score is computed in the scale of 0-0.7
      * according to this fraction.
      *
      * @param s Scorecard in which to add the result.
@@ -110,27 +112,34 @@ public class DateMatch {
      */
     public void score(Scorecard s, DateMatch dm) {
         if (date != null && dm.date != null) {
-            if (yearMonthDay == dm.yearMonthDay) {
-                s.addScore(1.0, 1.0);
-            } else if (yearMonth == dm.yearMonth) {
-                s.addScore(0.9, 1.0);
-            } else if (year == dm.year) {
-                s.addScore(0.8, 1.0);
-            } else {
-                int maxDate = dm.yearMonthDay;
-                int minDate = yearMonthDay;
-                if (yearMonthDay > maxDate) {
-                    maxDate = yearMonthDay;
-                    minDate = dm.yearMonthDay;
-                }
-                int diff = maxDate - minDate;
-                int age = today - minDate;
-                if (age >= 0 && diff < age) {
-                    double score = ( 0.7 * (age - diff) ) / age;
-                    s.addScore(score, 1.0);
+            double score = 1.0;     // Score if we have a perfect match.
+            if (yearMonthDay != dm.yearMonthDay) { // Buf if we don't have a perfect match...
+                if (yearMonth == dm.yearMonth) {
+                    score = 0.9;
+                } else if (year == dm.year) {
+                    score = 0.8;
                 } else {
-                    s.addScore(0.0, 1.0);
+                    int maxDate = dm.yearMonthDay;
+                    int minDate = yearMonthDay;
+                    if (yearMonthDay > maxDate) {
+                        maxDate = yearMonthDay;
+                        minDate = dm.yearMonthDay;
+                    }
+                    int diff = maxDate - minDate;
+                    int age = today - minDate;
+                    if (age >= 0 && diff < age) {
+                        score = (0.7 * (age - diff)) / age;
+                    } else {
+                        score = 0.0;
+                    }
                 }
+            }
+            final double DATE_WEIGHT = 0.5;
+            s.addScore(score, DATE_WEIGHT);
+            if (Mediator.testLoggerLevel(Level.FINEST)) {
+                Mediator.getLogger(DateMatch.class.getName()).log(Level.FINEST,
+                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
+                        new Object[]{score, DATE_WEIGHT, s.getTotalScore(), s.getTotalWeight(), date, dm.date});
             }
         }
     }

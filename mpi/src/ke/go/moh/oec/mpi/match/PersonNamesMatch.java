@@ -24,6 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi.match;
 
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Scorecard;
 
 /**
@@ -135,6 +137,29 @@ public class PersonNamesMatch {
                 }
             }
             s.addScore(maxScore / minWeight, minWeight);
+            if (Mediator.testLoggerLevel(Level.FINEST)) {
+                Mediator.getLogger(PersonNamesMatch.class.getName()).log(Level.FINEST,
+                        "Score {0},{1} total {2},{3} matching {4} {5} {6} with {7} {8} {9}",
+                        new Object[]{maxScore / minWeight, minWeight, s.getTotalScore(), s.getTotalWeight(),
+                            naName(nameArray[0]), naName(nameArray[1]), naName(nameArray[2]),
+                            naName(other.nameArray[0]), naName(other.nameArray[1]), naName(other.nameArray[2])});
+            }
         }
+    }
+
+    /**
+     * Gets original name from a NameMatch, protecting against nulls.
+     * 
+     * @param str the NameMatch to fetch the name from.
+     * @return "(null)" if the NameMatch or the name is null, otherwise the name.
+     */
+    private String naName(NameMatch nm) {
+        String returnString = "(null)";
+        if (nm != null) {
+            if (nm.getOriginal() != null) {
+                returnString = nm.getOriginal();
+            }
+        }
+        return returnString;
     }
 }

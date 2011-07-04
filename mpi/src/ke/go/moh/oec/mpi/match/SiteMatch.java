@@ -62,7 +62,7 @@ public class SiteMatch {
      * @return score resulting from the comparison.
      */
     public Double computeScore(NameMatch siteNameSearchTerm) {
-        Double score = NameMatch.computeScore(siteNameMatch, siteNameSearchTerm);
+        Double score = NameMatch.computeScore(siteNameMatch, siteNameSearchTerm, StringMatch.MatchType.SUBSTRING);
         return (score);
     }
 }

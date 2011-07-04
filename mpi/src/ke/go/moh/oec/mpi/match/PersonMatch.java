@@ -27,9 +27,11 @@ package ke.go.moh.oec.mpi.match;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Scorecard;
 import ke.go.moh.oec.mpi.SiteCandidate;
 
@@ -234,10 +236,17 @@ public class PersonMatch {
      */
     private void scoreSex(Scorecard s, Person.Sex sex1, Person.Sex sex2) {
         if (sex1 != null && sex2 != null) {
+            double score = 0.0; // Score if sex doesn't match.
+            double weight = 1.0; // Weight if sex doesn't match.
             if (sex1.ordinal() == sex2.ordinal()) {
-                s.addScore(1.0, 0.25);
-            } else {
-                s.addScore(0, 1.0);
+                score = 1.0; // Score if sex matches.
+                weight = 0.25; // Score if sex matches.
+            }
+            s.addScore(score, weight);
+            if (Mediator.testLoggerLevel(Level.FINEST)) {
+                Mediator.getLogger(DateMatch.class.getName()).log(Level.FINEST,
+                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
+                        new Object[]{score, weight, s.getTotalScore(), s.getTotalWeight(), sex1.name(), sex2.name()});
             }
         }
     }
@@ -266,17 +275,36 @@ public class PersonMatch {
                             for (SiteCandidate sc : this.getSiteCandidateSet()) {
                                 String identifier = sc.getSitePersonIdentifier();
                                 if (identifier.equals(pi2.getIdentifier())) {
-                                    s.addScore(1.0, 1.0);
+                                    recordIdentifierMatchScore(s, identifier);
                                     s.setSiteName(sc.getSiteMatch().getSiteName());
+                                    return; // EARLY RETURN, no more looping needed.
                                 }
                             }
                         }
                         if (pi1.getIdentifier().equals(pi2.getIdentifier())) {
-                            s.addScore(1.0, 1.0);
+                            recordIdentifierMatchScore(s, pi1.getIdentifier());
+                            return; // EARLY RETURN, no more looping needed.
                         }
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Records an identifier match in the scorecard.
+     * 
+     * @param s Scorecard in which to record the match.
+     * @param matchingIdentifier matching identifier (for tracing in the log).
+     */
+    private void recordIdentifierMatchScore(Scorecard s, String matchingIdentifier) {
+        final double PERSON_IDENTIFIER_SCORE = 1.0;
+        final double PERSON_IDENTIFIER_WEIGHT = 1.0;
+        s.addScore(PERSON_IDENTIFIER_SCORE, PERSON_IDENTIFIER_WEIGHT);
+        if (Mediator.testLoggerLevel(Level.FINEST)) {
+            Mediator.getLogger(PersonMatch.class.getName()).log(Level.FINEST,
+                    "Score {0},{1} total {2},{3} matching identifier {4}",
+                    new Object[]{PERSON_IDENTIFIER_SCORE, PERSON_IDENTIFIER_WEIGHT, s.getTotalScore(), s.getTotalWeight(), matchingIdentifier});
         }
     }
 

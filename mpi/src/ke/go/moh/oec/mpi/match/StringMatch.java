@@ -35,6 +35,16 @@ import ke.go.moh.oec.mpi.Scorecard;
  */
 public class StringMatch {
 
+    /**
+     * Defines different ways of matching.
+     * Normal matching just considers the edit distance between two strings.
+     * Substring matching considers that one string may be a substring of the other.
+     */
+    public enum MatchType {
+
+        NORMAL,
+        SUBSTRING;
+    }
     /** Original string (all lower case and trimmed) */
     private String original = null;
 
@@ -60,7 +70,13 @@ public class StringMatch {
     public void score(Scorecard s, StringMatch other) {
         Double score = computeScore(this, other);
         if (score != null) {
-            s.addScore(score, 1.0);
+            final double STRING_WEIGHT = 1.0;
+            s.addScore(score, STRING_WEIGHT);
+            if (Mediator.testLoggerLevel(Level.FINEST)) {
+                Mediator.getLogger(StringMatch.class.getName()).log(Level.FINEST,
+                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
+                        new Object[]{score, STRING_WEIGHT, s.getTotalScore(), s.getTotalWeight(), original, other.original});
+            }
         }
     }
 
@@ -75,13 +91,21 @@ public class StringMatch {
      * are close according to the edit distance between the two strings.
      * <p>
      * Returns null if one or both of the strings is null.
+     * <p>
+     * For a string match of type SUBSTRING, it is assumed that one string may
+     * be a substring of the other. This is used, for example, for site matching.
+     * The site name may be "Siaya District Hospital", while the search term
+     * entered for this may be "Siaya". For a SUBSTRING match, we expect that
+     * a substring may have a high score, but there may be many unmatched characters
+     * in one of the strings.
      * 
      * @param sm1 the first string to match
      * @param sm2 the second string to match
+     * @param type type of string match to use
      * @return the score from matching the two strings.
      * Returns null if one or the other string is null.
      */
-    public static Double computeScore(StringMatch sm1, StringMatch sm2) {
+    public static Double computeScore(StringMatch sm1, StringMatch sm2, MatchType type) {
         Double score = null;
         String s1 = sm1.original;
         String s2 = sm2.original;
@@ -91,9 +115,16 @@ public class StringMatch {
                 score = 1.0;
             } else {
                 int distance = Levenshtein.damerauLevenshteinDistance(s1, s2);
-                int lengthDiff = Math.abs(s1.length() - s2.length());
-                if (lengthDiff > 2) {
-                    distance -= (lengthDiff - 2);
+                switch (type) {
+                    case NORMAL:
+                        break;
+
+                    case SUBSTRING:
+                        int lengthDiff = Math.abs(s1.length() - s2.length());
+                        if (lengthDiff > 2) {
+                            distance -= (lengthDiff - 2);
+                            break;
+                        }
                 }
                 score = 1.0 - (0.2 * distance);
                 if (score < 0.0) {
@@ -104,5 +135,18 @@ public class StringMatch {
                     "StringMatch.computeScore({0},{1}) = {2}", new Object[]{s1, s2, score});
         }
         return score;
+    }
+
+    /**
+     * Computes the score as a result of matching two StringMatch objects,
+     * using approximate matching, and using NORMAL string matching.
+     * See the documentation for the other computeScore() overload.
+     *
+     * @param sm1 the first string to match
+     * @param sm2 the second string to match
+     * @return the score from matching the two strings.
+     */
+    public static Double computeScore(StringMatch sm1, StringMatch sm2) {
+        return computeScore(sm1, sm2, StringMatch.MatchType.NORMAL);
     }
 }
