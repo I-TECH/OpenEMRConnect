@@ -2212,7 +2212,7 @@
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="review2NextButton" min="-2" pref="42" max="-2" attributes="0"/>
-                                      <EmptySpace pref="51" max="32767" attributes="0"/>
+                                      <EmptySpace pref="73" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -2939,6 +2939,49 @@
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
               </AuxValues>
             </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="usersMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="usersMenu.text"/>
+            <Property name="name" type="java.lang.String" value="usersMenu" noResource="true"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="changePasswordMenuItem">
+              <Properties>
+                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                  <action class="ke.go.moh.oec.reception.gui.MainView" id="changePassword" methodName="changePassword"/>
+                </Property>
+                <Property name="text" type="java.lang.String" resourceKey="changePasswordMenuItem.text"/>
+                <Property name="name" type="java.lang.String" value="changePasswordMenuItem" noResource="true"/>
+              </Properties>
+            </MenuItem>
+            <Menu class="javax.swing.JMenu" name="manageUsersMenu">
+              <Properties>
+                <Property name="text" type="java.lang.String" resourceKey="manageUsersMenu.text"/>
+                <Property name="name" type="java.lang.String" value="manageUsersMenu" noResource="true"/>
+              </Properties>
+              <SubComponents>
+                <MenuItem class="javax.swing.JMenuItem" name="managePermissionsMenuItem">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                      <action class="ke.go.moh.oec.reception.gui.MainView" id="managePermissions" methodName="managePermissions"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" resourceKey="managePermissionsMenuItem.text"/>
+                    <Property name="name" type="java.lang.String" value="managePermissionsMenuItem" noResource="true"/>
+                  </Properties>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="addUsersMenuItem">
+                  <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                      <action class="ke.go.moh.oec.reception.gui.MainView" id="addUsers" methodName="addUsers"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" resourceKey="addUsersMenuItem.text"/>
+                    <Property name="name" type="java.lang.String" value="addUsersMenuItem" noResource="true"/>
+                  </Properties>
+                </MenuItem>
+              </SubComponents>
+            </Menu>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="helpMenu">

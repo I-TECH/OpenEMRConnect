@@ -22,30 +22,19 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.reception.gui.helper;
+package ke.go.moh.oec.reception.data;
 
-import java.util.List;
 import ke.go.moh.oec.Person;
 
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class PIListData {
+public class ProactiveAlert {
 
-    private final int targetIndex;
-    private final List<Person> personList;
+    private final Person person;
 
-    public PIListData(int targetIndex, List<Person> personList) {
-        this.targetIndex = targetIndex;
-        this.personList = personList;
-    }
-
-    public List<Person> getPersonList() {
-        return personList;
-    }
-
-    public int getTargetIndex() {
-        return targetIndex;
+    public ProactiveAlert(Person person) {
+        this.person = person;
     }
 }

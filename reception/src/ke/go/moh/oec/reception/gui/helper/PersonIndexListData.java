@@ -24,28 +24,28 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.gui.helper;
 
-import ke.go.moh.oec.Fingerprint;
+import java.util.List;
 import ke.go.moh.oec.Person;
-import ke.go.moh.oec.reception.controller.PersonWrapper;
-import ke.go.moh.oec.reception.controller.RequestDispatcher;
-import ke.go.moh.oec.reception.data.RequestResult;
-import ke.go.moh.oec.reception.reader.ReaderManager;
 
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class RequestMarshaller {
+public class PersonIndexListData {
 
-    public static void doSearch(ReaderManager readerManager, RequestResult mpiRequestResult, RequestResult lpiRequestResult) {
-        PersonWrapper personWrapper = new PersonWrapper(new Person());
-        Fingerprint fingerprint = new Fingerprint();
-        fingerprint.setFingerprintType(Fingerprint.Type.rightIndexFinger);
-        fingerprint.setTechnologyType(Fingerprint.TechnologyType.griauleTemplate);
-        fingerprint.setTemplate(readerManager.getTemplate().getData());
-        personWrapper.addFingerprint(fingerprint);
-        RequestDispatcher.dispatch(personWrapper, mpiRequestResult, lpiRequestResult,
-                RequestDispatcher.DispatchType.FIND,
-                RequestDispatcher.TargetIndex.BOTH);
+    private final int targetIndex;
+    private final List<Person> personList;
+
+    public PersonIndexListData(int targetIndex, List<Person> personList) {
+        this.targetIndex = targetIndex;
+        this.personList = personList;
+    }
+
+    public List<Person> getPersonList() {
+        return personList;
+    }
+
+    public int getTargetIndex() {
+        return targetIndex;
     }
 }

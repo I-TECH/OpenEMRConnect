@@ -36,37 +36,41 @@ import ke.go.moh.oec.reception.controller.PersonWrapper;
  */
 public class Session {
 
-    public enum CLIENT_TYPE {
+    public enum ClientType {
 
         ENROLLED,
         VISITOR,
         NEW,
         TRANSFER_IN
     }
-    private final CLIENT_TYPE clientType;
-    private static final String sessionReference = OECReception.generateSessionReference();
-    private boolean clinicId = false;
-    private boolean fingerprint = true;
-    private boolean clinicName = false;
-    private PersonWrapper personWrapper;
-    private List<ImagedFingerprint> imagedFingerprintList = new ArrayList<ImagedFingerprint>();
+    private final ClientType clientType;
+    private final String sessionReference;
+    private PersonWrapper searchPersonWrapper;
+    private RequestResult mpiRequestResult;
+    private RequestResult lpiRequestResult;
+    private PersonWrapper mpiMatchPersonWrapper;
+    private PersonWrapper lpiMatchPersonWrapper;
+    private List<Person> rejectedMPICandidateList;
+    private List<Person> rejectedLPICandidateList;
+    private List<ImagedFingerprint> imagedFingerprintList;
     private ImagedFingerprint activeImagedFingerprint;
-    private static final int MAX_FINGERPRINTS = 2;
-    private RequestResult mpiRequestResult = null;
-    private RequestResult lpiRequestResult = null;
-    private List<Person> mpiPersonList = null;
-    private List<Person> lpiPersonList = null;
-    private boolean mpiShown = false;
-    private boolean lpiShown = false;
-    private PersonWrapper mpiMatchPersonWrapper = null;
-    private PersonWrapper lpiMatchPersonWrapper = null;
-    private boolean mpiIdentifierSearchDone = false;
-    private List<String> rejectedLPIGuidList;
-    private List<String> rejectedMPIGuidList;
+    private boolean clinicId;
+    private boolean fingerprint;
+    private boolean clinicName;
+    private boolean mpiResultDisplayed;
+    private boolean lpiResultDisplayed;
+    private boolean mpiIdentifierSearchDone;
+    private boolean lastResortSearchDone;
 
-    public Session(CLIENT_TYPE clientType) {
+    public Session(ClientType clientType) {
         this.clientType = clientType;
-        clinicName = (clientType == CLIENT_TYPE.VISITOR || clientType == CLIENT_TYPE.TRANSFER_IN);
+        this.sessionReference = OECReception.generateSessionReference();
+        searchPersonWrapper = new PersonWrapper(new Person());
+        mpiRequestResult = new RequestResult();
+        lpiRequestResult = new RequestResult();
+        fingerprint = true;
+        imagedFingerprintList = new ArrayList<ImagedFingerprint>();
+        clinicName = (clientType == ClientType.VISITOR || clientType == ClientType.TRANSFER_IN);
     }
 
     public ImagedFingerprint getActiveImagedFingerprint() {
@@ -75,10 +79,6 @@ public class Session {
 
     public void setActiveImagedFingerprint(ImagedFingerprint activeImagedFingerprint) {
         this.activeImagedFingerprint = activeImagedFingerprint;
-    }
-
-    public CLIENT_TYPE getClientType() {
-        return clientType;
     }
 
     public boolean isClinicId() {
@@ -109,8 +109,12 @@ public class Session {
         return imagedFingerprintList;
     }
 
-    public void setImagedFingerprintList(List<ImagedFingerprint> imagedFingerprintList) {
-        this.imagedFingerprintList = imagedFingerprintList;
+    public boolean isLastResortSearchDone() {
+        return lastResortSearchDone;
+    }
+
+    public void setLastResortSearchDone(boolean lastResortSearchDone) {
+        this.lastResortSearchDone = lastResortSearchDone;
     }
 
     public PersonWrapper getLpiMatchPersonWrapper() {
@@ -121,27 +125,16 @@ public class Session {
         this.lpiMatchPersonWrapper = lpiMatchPersonWrapper;
     }
 
-    public List<Person> getLpiPersonList() {
-        return lpiPersonList;
-    }
-
-    public void setLpiPersonList(List<Person> lpiPersonList) {
-        this.lpiPersonList = lpiPersonList;
-    }
-
     public RequestResult getLpiRequestResult() {
-        if (lpiRequestResult == null) {
-            lpiRequestResult = new RequestResult();
-        }
         return lpiRequestResult;
     }
 
-    public boolean isLpiShown() {
-        return lpiShown;
+    public boolean isLpiResultDisplayed() {
+        return lpiResultDisplayed;
     }
 
-    public void setLpiShown(boolean lpiShown) {
-        this.lpiShown = lpiShown;
+    public void setLpiResultDisplayed(boolean lpiShown) {
+        this.lpiResultDisplayed = lpiShown;
     }
 
     public boolean isMpiIdentifierSearchDone() {
@@ -160,72 +153,68 @@ public class Session {
         this.mpiMatchPersonWrapper = mpiMatchPersonWrapper;
     }
 
-    public List<Person> getMpiPersonList() {
-        return mpiPersonList;
-    }
-
-    public void setMpiPersonList(List<Person> mpiPersonList) {
-        this.mpiPersonList = mpiPersonList;
-    }
-
     public RequestResult getMpiRequestResult() {
-        if (mpiRequestResult == null) {
-            mpiRequestResult = new RequestResult();
-        }
         return mpiRequestResult;
     }
 
-    public boolean isMpiShown() {
-        return mpiShown;
+    public boolean isMpiResultDisplayed() {
+        return mpiResultDisplayed;
     }
 
-    public void setMpiShown(boolean mpiShown) {
-        this.mpiShown = mpiShown;
+    public void setMpiResultDisplayed(boolean mpiShown) {
+        this.mpiResultDisplayed = mpiShown;
     }
 
-    public PersonWrapper getPersonWrapper() {
+    public PersonWrapper getSearchPersonWrapper() {
+        return searchPersonWrapper;
+    }
+
+    public void setSearchPersonWrapper(PersonWrapper personWrapper) {
         if (personWrapper == null) {
-            personWrapper = new PersonWrapper(new Person());
+            this.searchPersonWrapper = new PersonWrapper(new Person());
+        } else {
+            this.searchPersonWrapper = personWrapper;
         }
-        return personWrapper;
     }
 
-    public void setPersonWrapper(PersonWrapper personWrapper) {
-        this.personWrapper = personWrapper;
+    public List<Person> getRejectedLPICandidateList() {
+        return rejectedLPICandidateList;
     }
 
-    public List<String> getRejectedLPIGuidList() {
-        return rejectedLPIGuidList;
+    public void setRejectedLPICandidateList(List<Person> rejectedLPICandidateList) {
+        this.rejectedLPICandidateList = rejectedLPICandidateList;
     }
 
-    public void setRejectedLPIGuidList(List<String> rejectedLPIGuidList) {
-        this.rejectedLPIGuidList = rejectedLPIGuidList;
+    public List<Person> getRejectedMPICandidateList() {
+        return rejectedMPICandidateList;
     }
 
-    public List<String> getRejectedMPIGuidList() {
-        return rejectedMPIGuidList;
+    public void setRejectedMPICandidateList(List<Person> rejectedMPICandidateList) {
+        this.rejectedMPICandidateList = rejectedMPICandidateList;
     }
 
-    public void setRejectedMPIGuidList(List<String> rejectedMPIGuidList) {
-        this.rejectedMPIGuidList = rejectedMPIGuidList;
+    public ClientType getClientType() {
+        return clientType;
     }
 
-    public static String getRequestReference() {
+    public String getSessionReference() {
         return sessionReference;
     }
 
-    public boolean hasAllRequiredFingerprints() {
-        boolean allFingerprintsTaken = false;
+    public boolean hasMinimumRequiredFingerprintsTaken() {
+        boolean minimumRequiredFingerprintsTaken = false;
         if (!fingerprint) {
-            allFingerprintsTaken = true;
+            minimumRequiredFingerprintsTaken = true;
         } else {
             if (imagedFingerprintList != null
-                    && imagedFingerprintList.size() >= MAX_FINGERPRINTS) {
-                allFingerprintsTaken = true;
+                    && imagedFingerprintList.size() >= OECReception.MINIMUM_FINGERPRINTS_FOR_SEARCH) {
+                minimumRequiredFingerprintsTaken = true;
             }
         }
-        return allFingerprintsTaken;
+        return minimumRequiredFingerprintsTaken;
     }
+    //TODO: Disallow getAnyUnsentFingerprints() from ever being necessary by ensuing that each
+    //fingerprint takes is sent to the indices
 
     public List<ImagedFingerprint> getAnyUnsentFingerprints() {
         List<ImagedFingerprint> unsentFingerprintList = new ArrayList<ImagedFingerprint>();

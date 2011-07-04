@@ -36,6 +36,7 @@ import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
+import ke.go.moh.oec.reception.security.User;
 
 /**
  *
@@ -45,6 +46,16 @@ public class OECReception {
 
     private static BufferedImage missingFingerprintImage;
     private static BufferedImage refusedFingerprintImage;
+    public static final int MINIMUM_FINGERPRINTS_FOR_SEARCH = 2;
+    private static User loggeInUser;
+
+    public static User getLoggeInUser() {
+        return loggeInUser;
+    }
+
+    public static void setLoggeInUser(User loggeInUser) {
+        OECReception.loggeInUser = loggeInUser;
+    }
 
     public static String getApplicationAddress() {
         String instanceName = Mediator.getProperty("Instance.Address");
