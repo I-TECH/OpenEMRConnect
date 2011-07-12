@@ -42,16 +42,16 @@ import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.reception.controller.RequestDispatcher;
 import ke.go.moh.oec.reception.data.Session;
 import ke.go.moh.oec.reception.controller.PersonWrapper;
+import ke.go.moh.oec.reception.data.TargetServer;
 import ke.go.moh.oec.reception.controller.exceptions.MalformedCliniIdException;
 import ke.go.moh.oec.reception.data.DisplayableMaritalStatus;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
+import ke.go.moh.oec.reception.data.Notification;
 import ke.go.moh.oec.reception.reader.FingerprintingComponent;
 import ke.go.moh.oec.reception.gui.custom.ImagePanel;
-import ke.go.moh.oec.reception.gui.helper.GuiHelper;
-import ke.go.moh.oec.reception.gui.helper.HelpableGui;
+import ke.go.moh.oec.reception.gui.helper.MainViewHelper;
 import ke.go.moh.oec.reception.gui.helper.PersonIndexListData;
 import ke.go.moh.oec.reception.reader.ReaderManager;
 import org.jdesktop.beansbinding.Binding;
@@ -59,10 +59,10 @@ import org.jdesktop.beansbinding.Binding;
 /**
  * The application's main frame.
  */
-public class MainView extends FrameView implements FingerprintingComponent, HelpableGui {
+public class MainView extends FrameView implements FingerprintingComponent {
 
     private CardLayout cardLayout;
-    private GuiHelper guiHelper;
+    private MainViewHelper mainViewHelper;
     private String currentCardName = "homeCard";
     private List<String> visitedCardList = new ArrayList<String>();
     private ReaderManager readerManager;
@@ -72,8 +72,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         initComponents();
         this.getFrame().setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         cardLayout = (CardLayout) wizardPanel.getLayout();
-        this.getFrame().setTitle(OECReception.getApplicationName());
-        guiHelper = new GuiHelper(this);
+        this.getFrame().setTitle(OECReception.applicationName());
+        mainViewHelper = new MainViewHelper(this);
         showCard("homeCard");
         // status bar initialization - message timeout, idle icon and busy animation, etc
         ResourceMap resourceMap = getResourceMap();
@@ -156,10 +156,10 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         mainPanel = new javax.swing.JPanel();
         mainSplitPane = new javax.swing.JSplitPane();
         leftPanel = new javax.swing.JPanel();
-        alertsListPanel = new javax.swing.JPanel();
-        alertsScrollPane = new javax.swing.JScrollPane();
-        alertsList = new javax.swing.JList();
-        processButton = new javax.swing.JButton();
+        notificationListPanel = new javax.swing.JPanel();
+        notificationScrollPane = new javax.swing.JScrollPane();
+        notificationListBox = new javax.swing.JList();
+        processNotificationButton = new javax.swing.JButton();
         rightPanel = new javax.swing.JPanel();
         homeButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
@@ -371,6 +371,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         compoundHeadsMiddleNameButtonGroup = new javax.swing.ButtonGroup();
         maritalStatusList = DisplayableMaritalStatus.getList();
         hdssDataConsentButtonGroup = new javax.swing.ButtonGroup();
+        notificationList = new ArrayList<Notification>();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -380,39 +381,45 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         leftPanel.setName("leftPanel"); // NOI18N
 
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getResourceMap(MainView.class);
-        alertsListPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("alertsListPanel.border.title"))); // NOI18N
-        alertsListPanel.setName("alertsListPanel"); // NOI18N
+        notificationListPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("notificationListPanel.border.title"))); // NOI18N
+        notificationListPanel.setName("notificationListPanel"); // NOI18N
 
-        alertsScrollPane.setName("alertsScrollPane"); // NOI18N
+        notificationScrollPane.setName("notificationScrollPane"); // NOI18N
 
-        alertsList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
+        notificationListBox.setName("notificationListBox"); // NOI18N
+
+        org.jdesktop.swingbinding.JListBinding jListBinding = org.jdesktop.swingbinding.SwingBindings.createJListBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, notificationList, notificationListBox, "notificationListBinding");
+        bindingGroup.addBinding(jListBinding);
+
+        notificationListBox.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                notificationListBoxMouseClicked(evt);
+            }
         });
-        alertsList.setName("alertsList"); // NOI18N
-        alertsScrollPane.setViewportView(alertsList);
+        notificationScrollPane.setViewportView(notificationListBox);
 
-        processButton.setText(resourceMap.getString("processButton.text")); // NOI18N
-        processButton.setName("processButton"); // NOI18N
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(MainView.class, this);
+        processNotificationButton.setAction(actionMap.get("processNotification")); // NOI18N
+        processNotificationButton.setText(resourceMap.getString("processNotificationButton.text")); // NOI18N
+        processNotificationButton.setName("processNotificationButton"); // NOI18N
 
-        javax.swing.GroupLayout alertsListPanelLayout = new javax.swing.GroupLayout(alertsListPanel);
-        alertsListPanel.setLayout(alertsListPanelLayout);
-        alertsListPanelLayout.setHorizontalGroup(
-            alertsListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(alertsListPanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout notificationListPanelLayout = new javax.swing.GroupLayout(notificationListPanel);
+        notificationListPanel.setLayout(notificationListPanelLayout);
+        notificationListPanelLayout.setHorizontalGroup(
+            notificationListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(notificationListPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(alertsListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(alertsScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-                    .addComponent(processButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))
+                .addGroup(notificationListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(notificationScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+                    .addComponent(processNotificationButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        alertsListPanelLayout.setVerticalGroup(
-            alertsListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, alertsListPanelLayout.createSequentialGroup()
-                .addComponent(alertsScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
+        notificationListPanelLayout.setVerticalGroup(
+            notificationListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, notificationListPanelLayout.createSequentialGroup()
+                .addComponent(notificationScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(processButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(processNotificationButton, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -422,14 +429,14 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
             leftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(leftPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(alertsListPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(notificationListPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         leftPanelLayout.setVerticalGroup(
             leftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(leftPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(alertsListPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(notificationListPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -438,7 +445,6 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         rightPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         rightPanel.setName("rightPanel"); // NOI18N
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(MainView.class, this);
         homeButton.setAction(actionMap.get("goHome")); // NOI18N
         homeButton.setBackground(resourceMap.getColor("backButton.background")); // NOI18N
         homeButton.setText(resourceMap.getString("homeButton.text")); // NOI18N
@@ -1865,7 +1871,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
                     .addComponent(altCompoundHeadsMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(review2NextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(69, Short.MAX_VALUE))
+                .addContainerGap(85, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout reviewCard2Layout = new javax.swing.GroupLayout(reviewCard2);
@@ -2227,6 +2233,12 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         setExtendedSearchButtonEnabledStatus();
     }//GEN-LAST:event_extendedSearchClinicNameTextFieldKeyTyped
 
+    private void notificationListBoxMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_notificationListBoxMouseClicked
+        if (evt.getClickCount() == 2) {
+            processNotification();
+        }
+    }//GEN-LAST:event_notificationListBoxMouseClicked
+
     @Action
     public void goHome() {
         showCard("homeCard", true);
@@ -2237,10 +2249,10 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         int i = visitedCardList.indexOf(currentCardName);
         if (i > 0) {
             if (currentCardName.equalsIgnoreCase("mpiResultsCard")) {
-                guiHelper.undoMpiResultDisplayed();
+                mainViewHelper.undoMpiResultDisplay();
             }
             if (currentCardName.equalsIgnoreCase("lpiResultsCard")) {
-                guiHelper.undoLpiResultDisplayed();
+                mainViewHelper.undoLpiResultDisplay();
             }
             visitedCardList.remove(i);
             if (i == 1) {
@@ -2256,7 +2268,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     }
 
     public void showCard(String cardName, boolean home) {
-        if (home && !currentCardName.equalsIgnoreCase("homeCard")) {
+        if ((home && !currentCardName.equalsIgnoreCase("homeCard"))
+                && !currentCardName.equalsIgnoreCase("clinicIdCard")) {
             if (!showConfirmMessage("Are you sure you want to go back to the home page and"
                     + " start a new session?", this.getFrame())) {
                 return;
@@ -2274,34 +2287,34 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     }
 
     public void setBasicSearchButtonEnabledStatus() {
-        if (guiHelper.getSession().getClientType() == Session.ClientType.ENROLLED) {
-            basicSearchButton.setEnabled((!guiHelper.getSession().getImagedFingerprintList().isEmpty()
-                    || !guiHelper.getSession().isFingerprint()) && !basicSearchClinicIdTextField.getText().isEmpty());
-        } else if (guiHelper.getSession().getClientType() == Session.ClientType.VISITOR
-                || guiHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
-            basicSearchButton.setEnabled((!guiHelper.getSession().getImagedFingerprintList().isEmpty()
-                    || !guiHelper.getSession().isFingerprint())
+        if (mainViewHelper.getSession().getClientType() == Session.ClientType.ENROLLED) {
+            basicSearchButton.setEnabled((!mainViewHelper.getSession().getImagedFingerprintList().isEmpty()
+                    || !mainViewHelper.getSession().isFingerprint()) && !basicSearchClinicIdTextField.getText().isEmpty());
+        } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR
+                || mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
+            basicSearchButton.setEnabled((!mainViewHelper.getSession().getImagedFingerprintList().isEmpty()
+                    || !mainViewHelper.getSession().isFingerprint())
                     && !basicSearchClinicIdTextField.getText().isEmpty()
                     && !basicSearchClinicNameTextField.getText().isEmpty());
         }
     }
 
     public void setExtendedSearchButtonEnabledStatus() {
-        if (guiHelper.getSession().getClientType() == Session.ClientType.ENROLLED
-                && guiHelper.getSession().isClinicId()) {
+        if (mainViewHelper.getSession().getClientType() == Session.ClientType.ENROLLED
+                && mainViewHelper.getSession().isClinicId()) {
             extendedSearchButton.setEnabled(!extendedSearchClinicIdTextField.getText().isEmpty()
-                    && (!guiHelper.getSession().getImagedFingerprintList().isEmpty()
-                    || !guiHelper.getSession().isFingerprint()));
-        } else if (guiHelper.getSession().getClientType() == Session.ClientType.VISITOR
-                || guiHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
-            if (guiHelper.getSession().isClinicId()) {
+                    && (!mainViewHelper.getSession().getImagedFingerprintList().isEmpty()
+                    || !mainViewHelper.getSession().isFingerprint()));
+        } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR
+                || mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
+            if (mainViewHelper.getSession().isClinicId()) {
                 extendedSearchButton.setEnabled(!extendedSearchClinicIdTextField.getText().isEmpty()
-                        && (!guiHelper.getSession().getImagedFingerprintList().isEmpty()
-                        || !guiHelper.getSession().isFingerprint())
+                        && (!mainViewHelper.getSession().getImagedFingerprintList().isEmpty()
+                        || !mainViewHelper.getSession().isFingerprint())
                         && !extendedSearchClinicNameTextField.getText().isEmpty());
             } else {
-                extendedSearchButton.setEnabled((!guiHelper.getSession().getImagedFingerprintList().isEmpty()
-                        || !guiHelper.getSession().isFingerprint())
+                extendedSearchButton.setEnabled((!mainViewHelper.getSession().getImagedFingerprintList().isEmpty()
+                        || !mainViewHelper.getSession().isFingerprint())
                         && !extendedSearchClinicNameTextField.getText().isEmpty());
             }
         }
@@ -2309,46 +2322,46 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     private void prepareCard(String cardName) {
         PersonWrapper personWrapper = null;
-        if (guiHelper.getSession() != null) {
-            personWrapper = guiHelper.getSession().getSearchPersonWrapper();
+        if (mainViewHelper.getSession() != null) {
+            personWrapper = mainViewHelper.getSession().getSearchPersonWrapper();
         }
         if (cardName.equalsIgnoreCase("homeCard")) {
             initializeReaderManager();
             clearFields(wizardPanel);
         } else if (cardName.equalsIgnoreCase("basicSearchCard")) {
-            basicSearchClinicNameLabel.setVisible((guiHelper.getSession().getClientType() == Session.ClientType.VISITOR)
-                    || (guiHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN));
-            basicSearchClinicNameTextField.setVisible((guiHelper.getSession().getClientType() == Session.ClientType.VISITOR)
-                    || (guiHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN));
+            basicSearchClinicNameLabel.setVisible((mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR)
+                    || (mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN));
+            basicSearchClinicNameTextField.setVisible((mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR)
+                    || (mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN));
             basicSearchClinicIdTextField.setText(personWrapper.getClinicId());
             basicSearchClinicNameTextField.setText(personWrapper.getClinicName());
-            if (guiHelper.getSession() != null) {
-                List<ImagedFingerprint> imagedFingerprintList = guiHelper.getSession().getImagedFingerprintList();
+            if (mainViewHelper.getSession() != null) {
+                List<ImagedFingerprint> imagedFingerprintList = mainViewHelper.getSession().getImagedFingerprintList();
                 if (imagedFingerprintList != null && !imagedFingerprintList.isEmpty()) {
                     basicSearchFingerprintImagePanel.setImage(imagedFingerprintList.get(imagedFingerprintList.size() - 1).getImage());
                 }
             }
-            basicSearchClientRefusesCheckBox.setSelected(!guiHelper.getSession().isFingerprint());
+            basicSearchClientRefusesCheckBox.setSelected(!mainViewHelper.getSession().isFingerprint());
             setBasicSearchButtonEnabledStatus();
         } else if (cardName.equalsIgnoreCase("extendedSearchCard")) {
-            if (guiHelper.getSession().getClientType() == Session.ClientType.ENROLLED) {
-                extendedSearchClinicIdLabel.setVisible(guiHelper.getSession().isClinicId());
-                extendedSearchClinicIdTextField.setVisible(guiHelper.getSession().isClinicId());
+            if (mainViewHelper.getSession().getClientType() == Session.ClientType.ENROLLED) {
+                extendedSearchClinicIdLabel.setVisible(mainViewHelper.getSession().isClinicId());
+                extendedSearchClinicIdTextField.setVisible(mainViewHelper.getSession().isClinicId());
                 extendedSearchClinicNameLabel.setVisible(false);
                 extendedSearchClinicNameTextField.setVisible(false);
-            } else if (guiHelper.getSession().getClientType() == Session.ClientType.VISITOR) {
-                extendedSearchClinicIdLabel.setVisible(guiHelper.getSession().isClinicId());
-                extendedSearchClinicIdTextField.setVisible(guiHelper.getSession().isClinicId());
+            } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR) {
+                extendedSearchClinicIdLabel.setVisible(mainViewHelper.getSession().isClinicId());
+                extendedSearchClinicIdTextField.setVisible(mainViewHelper.getSession().isClinicId());
                 extendedSearchClinicNameLabel.setVisible(true);
                 extendedSearchClinicNameTextField.setVisible(true);
-            } else if (guiHelper.getSession().getClientType() == Session.ClientType.NEW) {
+            } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.NEW) {
                 extendedSearchClinicIdLabel.setVisible(false);
                 extendedSearchClinicIdTextField.setVisible(false);
                 extendedSearchClinicNameLabel.setVisible(false);
                 extendedSearchClinicNameTextField.setVisible(false);
-            } else if (guiHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
-                extendedSearchClinicIdLabel.setVisible(guiHelper.getSession().isClinicId());
-                extendedSearchClinicIdTextField.setVisible(guiHelper.getSession().isClinicId());
+            } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
+                extendedSearchClinicIdLabel.setVisible(mainViewHelper.getSession().isClinicId());
+                extendedSearchClinicIdTextField.setVisible(mainViewHelper.getSession().isClinicId());
                 extendedSearchClinicNameLabel.setVisible(true);
                 extendedSearchClinicNameTextField.setVisible(true);
             }
@@ -2366,13 +2379,13 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
                 extendedSearchMaleRadioButton.setSelected(false);
                 extendedSearchFemaleRadioButton.setSelected(false);
             }
-            if (guiHelper.getSession() != null) {
-                List<ImagedFingerprint> imagedFingerprintList = guiHelper.getSession().getImagedFingerprintList();
+            if (mainViewHelper.getSession() != null) {
+                List<ImagedFingerprint> imagedFingerprintList = mainViewHelper.getSession().getImagedFingerprintList();
                 if (imagedFingerprintList != null && !imagedFingerprintList.isEmpty()) {
                     extendedSearchFingerprintImagePanel.setImage(imagedFingerprintList.get(imagedFingerprintList.size() - 1).getImage());
                 }
             }
-            extendedSearchClientRefusesCheckBox.setSelected(!guiHelper.getSession().isFingerprint());
+            extendedSearchClientRefusesCheckBox.setSelected(!mainViewHelper.getSession().isFingerprint());
             setExtendedSearchButtonEnabledStatus();
         }
     }
@@ -2382,10 +2395,10 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         try {
             FingerprintDialog fingerprintDialog = new FingerprintDialog(this.getFrame(), true);
             fingerprintDialog.setLocationRelativeTo(this.getFrame());
-            fingerprintDialog.setSession(guiHelper.getSession());
+            fingerprintDialog.setSession(mainViewHelper.getSession());
             fingerprintDialog.setVisible(true);
-            if (guiHelper.getSession().getActiveImagedFingerprint() != null) {
-                showFingerprintImageBasic(guiHelper.getSession().getActiveImagedFingerprint().getImage());
+            if (mainViewHelper.getSession().getActiveImagedFingerprint() != null) {
+                showFingerprintImageBasic(mainViewHelper.getSession().getActiveImagedFingerprint().getImage());
             }
             setBasicSearchButtonEnabledStatus();
         } catch (Exception ex) {
@@ -2401,10 +2414,10 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         try {
             FingerprintDialog fingerprintDialog = new FingerprintDialog(this.getFrame(), true);
             fingerprintDialog.setLocationRelativeTo(this.getFrame());
-            fingerprintDialog.setSession(guiHelper.getSession());
+            fingerprintDialog.setSession(mainViewHelper.getSession());
             fingerprintDialog.setVisible(true);
-            if (guiHelper.getSession().getActiveImagedFingerprint() != null) {
-                showFingerprintImageExtended(guiHelper.getSession().getActiveImagedFingerprint().getImage());
+            if (mainViewHelper.getSession().getActiveImagedFingerprint() != null) {
+                showFingerprintImageExtended(mainViewHelper.getSession().getActiveImagedFingerprint().getImage());
             }
             setExtendedSearchButtonEnabledStatus();
         } catch (Exception ex) {
@@ -2420,10 +2433,10 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         try {
             FingerprintDialog fingerprintDialog = new FingerprintDialog(this.getFrame(), true);
             fingerprintDialog.setLocationRelativeTo(this.getFrame());
-            fingerprintDialog.setSession(guiHelper.getSession());
+            fingerprintDialog.setSession(mainViewHelper.getSession());
             fingerprintDialog.setVisible(true);
-            if (guiHelper.getSession().getActiveImagedFingerprint() != null) {
-                showFingerprintImageReview(guiHelper.getSession().getActiveImagedFingerprint().getImage());
+            if (mainViewHelper.getSession().getActiveImagedFingerprint() != null) {
+                showFingerprintImageReview(mainViewHelper.getSession().getActiveImagedFingerprint().getImage());
             }
             prepareCard("reviewCard3");
         } catch (Exception ex) {
@@ -2453,32 +2466,32 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     }
 
     public void showWarningMessage(String message, Component parent, JComponent toFocus) {
-        JOptionPane.showMessageDialog(parent, message, OECReception.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(parent, message, OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
         toFocus.requestFocus();
     }
 
     public void showErrorMessage(String message, Component parent, JComponent toFocus) {
-        JOptionPane.showMessageDialog(parent, message, OECReception.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(parent, message, OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
         toFocus.requestFocus();
     }
 
     public boolean showConfirmMessage(String message, Component parent) {
-        return JOptionPane.showConfirmDialog(this.getFrame(), message, OECReception.getApplicationName(),
+        return JOptionPane.showConfirmDialog(this.getFrame(), message, OECReception.applicationName(),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
     public void showWarningMessage(String message, JComponent toFocus) {
-        JOptionPane.showMessageDialog(this.getFrame(), message, OECReception.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this.getFrame(), message, OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
         toFocus.requestFocus();
     }
 
     public void showErrorMessage(String message, JComponent toFocus) {
-        JOptionPane.showMessageDialog(this.getFrame(), message, OECReception.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this.getFrame(), message, OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
         toFocus.requestFocus();
     }
 
     public boolean showConfirmMessage(String message) {
-        return JOptionPane.showConfirmDialog(this.getFrame(), message, OECReception.getApplicationName(),
+        return JOptionPane.showConfirmDialog(this.getFrame(), message, OECReception.applicationName(),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
@@ -2486,10 +2499,10 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     public void refuseFingerprintingBasic() {
         if (basicSearchClientRefusesCheckBox.isSelected()) {
             showFingerprintImageBasic(OECReception.getRefusedFingerprint().getImage());
-            guiHelper.getSession().setFingerprint(false);
+            mainViewHelper.getSession().setFingerprint(false);
         } else {
             showFingerprintImageBasic(OECReception.getMissingFingerprint().getImage());
-            guiHelper.getSession().setFingerprint(true);
+            mainViewHelper.getSession().setFingerprint(true);
         }
         setBasicSearchButtonEnabledStatus();
     }
@@ -2498,10 +2511,10 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     public void refuseFingerprintingExtended() {
         if (extendedSearchClientRefusesCheckBox.isSelected()) {
             showFingerprintImageExtended(OECReception.getRefusedFingerprint().getImage());
-            guiHelper.getSession().setFingerprint(false);
+            mainViewHelper.getSession().setFingerprint(false);
         } else {
             showFingerprintImageExtended(OECReception.getMissingFingerprint().getImage());
-            guiHelper.getSession().setFingerprint(true);
+            mainViewHelper.getSession().setFingerprint(true);
         }
         setExtendedSearchButtonEnabledStatus();
     }
@@ -2510,10 +2523,10 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     public void refuseFingerprintingReview() {
         if (clientRefusesCheckBox.isSelected()) {
             showFingerprintImageReview(OECReception.getRefusedFingerprint().getImage());
-            guiHelper.getSession().setFingerprint(false);
+            mainViewHelper.getSession().setFingerprint(false);
         } else {
             showFingerprintImageReview(OECReception.getMissingFingerprint().getImage());
-            guiHelper.getSession().setFingerprint(true);
+            mainViewHelper.getSession().setFingerprint(true);
         }
         prepareCard("reviewCard3");
     }
@@ -2524,6 +2537,26 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         return new SearchBasicTask(getApplication());
     }
 
+    public void addNotifications(List<Notification> notificationList) {
+        refreshNotificationList(notificationList, false);
+    }
+
+    private void refreshNotificationList(List<Notification> newNotificationList) {
+        refreshNotificationList(newNotificationList, true);
+    }
+
+    private void refreshNotificationList(List<Notification> newNotificationList, boolean clearFirst) {
+        Binding binding = null;
+        binding = bindingGroup.getBinding("notificationListBinding");
+        binding.unbind();
+        if (clearFirst) {
+            this.notificationList.clear();
+        }
+        this.notificationList.addAll(newNotificationList);
+        binding.bind();
+        notificationListBox.repaint();
+    }
+
     private class SearchBasicTask extends org.jdesktop.application.Task<Object, Void> {
 
         SearchBasicTask(org.jdesktop.application.Application app) {
@@ -2532,7 +2565,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
         @Override
         protected Object doInBackground() {
-            PersonWrapper personWrapper = guiHelper.getSearchPersonWrapper();
+            PersonWrapper personWrapper = mainViewHelper.getSearchPersonWrapper();
             try {
                 personWrapper.setClinicId(basicSearchClinicIdTextField.getText());
             } catch (MalformedCliniIdException ex) {
@@ -2540,13 +2573,13 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
                 return new ProcessResult(ProcessResult.Type.ABORT, null);
             }
             personWrapper.setClinicName(basicSearchClinicNameTextField.getText());
-            ImagedFingerprint imagedFingerprint = guiHelper.getActiveImagedFingerprint();
+            ImagedFingerprint imagedFingerprint = mainViewHelper.getActiveImagedFingerprint();
             if (imagedFingerprint != null
                     && !imagedFingerprint.isSent()) {
                 personWrapper.addFingerprint(imagedFingerprint.getFingerprint());
                 imagedFingerprint.setSent(true);
             }
-            return guiHelper.doSearch(RequestDispatcher.TargetIndex.BOTH);
+            return mainViewHelper.findPerson(TargetServer.MPI_LPI);
         }
 
         @Override
@@ -2594,7 +2627,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     public void showQuality(String message) {
         fingerprintSearchQualityTextField.setText(message);
         log("Searching...");
-        //RequestMarshaller.doSearch(readerManager, mpiRequestResult, lpiRequestResult);
+        //RequestMarshaller.findPerson(readerManager, mpiRequestResult, lpiRequestResult);
         log("Done searching!");
     }
 
@@ -2618,9 +2651,9 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
         @Override
         protected Object doInBackground() {
-            PersonWrapper personWrapper = guiHelper.getSearchPersonWrapper();
+            PersonWrapper personWrapper = mainViewHelper.getSearchPersonWrapper();
             try {
-                if (guiHelper.requiresClinicId()) {
+                if (mainViewHelper.requiresClinicId()) {
                     personWrapper.setClinicId(extendedSearchClinicIdTextField.getText());
                 }
                 personWrapper.setFirstName(extendedSearchFirstNameTextField.getText());
@@ -2633,13 +2666,13 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
                 }
                 personWrapper.setBirthdate(extendedSearchBirthdateChooser.getDate());
                 personWrapper.setVillageName(extendedSearchVillageTextField.getText());
-                ImagedFingerprint imagedFingerprint = guiHelper.getSession().getActiveImagedFingerprint();
+                ImagedFingerprint imagedFingerprint = mainViewHelper.getSession().getActiveImagedFingerprint();
                 if (imagedFingerprint != null
                         && !imagedFingerprint.isSent()) {
                     personWrapper.addFingerprint(imagedFingerprint.getFingerprint());
                     imagedFingerprint.setSent(true);
                 }
-                return guiHelper.doSearch(RequestDispatcher.TargetIndex.BOTH);
+                return mainViewHelper.findPerson(TargetServer.MPI_LPI);
             } catch (MalformedCliniIdException ex) {
                 showWarningMessage(ex.getMessage(), extendedSearchButton, extendedSearchClinicIdTextField);
                 return new ProcessResult(ProcessResult.Type.ABORT, null);
@@ -2657,7 +2690,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
                 if (!showConfirmMessage("Your extended search returned no candidates. Would you like"
                         + " to repeat it? Choose Yes to repeat an extended search or No to proceed to"
                         + " register a new client.", extendedSearchButton)) {
-                    populateReviewCards(guiHelper.getSession().getSearchPersonWrapper());
+                    populateReviewCards(mainViewHelper.getSession().getSearchPersonWrapper());
                     showCard("reviewCard1");
                 }
             }
@@ -2675,47 +2708,47 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void startEnrolledClientSession() {
-        guiHelper.startSession(Session.ClientType.ENROLLED);
+        mainViewHelper.startSession(Session.ClientType.ENROLLED);
         showCard("clinicIdCard");
     }
 
     @Action
     public void startVisitorClientSession() {
-        guiHelper.startSession(Session.ClientType.VISITOR);
+        mainViewHelper.startSession(Session.ClientType.VISITOR);
         showCard("clinicIdCard");
     }
 
     @Action
     public void startNewClientSession() {
-        guiHelper.startSession(Session.ClientType.NEW);
+        mainViewHelper.startSession(Session.ClientType.NEW);
         showCard("extendedSearchCard");
     }
 
     @Action
     public void startTransferInClientSession() {
-        guiHelper.startSession(Session.ClientType.TRANSFER_IN);
+        mainViewHelper.startSession(Session.ClientType.TRANSFER_IN);
         showCard("clinicIdCard");
     }
 
     @Action
     public void setKnownClinicIdToYes() {
-        guiHelper.requireClinicId();
+        mainViewHelper.requireClinicId();
         showCard("basicSearchCard");
     }
 
     @Action
     public void setKnownClinicIdToNo() {
-        guiHelper.doNotRequireClinicId();
+        mainViewHelper.doNotRequireClinicId();
         showCard("extendedSearchCard");
     }
 
     private void showSearchResults(PersonIndexListData piListData) {
         Binding binding = null;
         List<Person> personList = piListData.getPersonList();
-        if (piListData.getTargetIndex() == RequestDispatcher.TargetIndex.MPI) {
-            guiHelper.getSession().setMpiResultDisplayed(true);
+        if (piListData.getTargetIndex() == TargetServer.MPI) {
+            mainViewHelper.getSession().setMpiResultDisplayed(true);
             if (personList.size() == 1) {
-                confirmMatch(new PersonWrapper(personList.get(0)), RequestDispatcher.TargetIndex.MPI, true);
+                confirmMatch(new PersonWrapper(personList.get(0)), TargetServer.MPI, true);
             } else {
                 binding = bindingGroup.getBinding("mpiBinding");
                 binding.unbind();
@@ -2725,10 +2758,10 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
                 mpiResultsTable.repaint();
                 showCard("mpiResultsCard");
             }
-        } else if (piListData.getTargetIndex() == RequestDispatcher.TargetIndex.LPI) {
-            guiHelper.getSession().setLpiResultDisplayed(true);
+        } else if (piListData.getTargetIndex() == TargetServer.LPI) {
+            mainViewHelper.getSession().setLpiResultDisplayed(true);
             if (personList.size() == 1) {
-                confirmMatch(new PersonWrapper(personList.get(0)), RequestDispatcher.TargetIndex.LPI, true);
+                confirmMatch(new PersonWrapper(personList.get(0)), TargetServer.LPI, true);
             } else {
                 binding = bindingGroup.getBinding("lpiBinding");
                 binding.unbind();
@@ -2742,13 +2775,13 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     }
 
     public void acceptMPIMatch(PersonWrapper personWrapper) {
-        guiHelper.acceptMatch(RequestDispatcher.TargetIndex.MPI, personWrapper);
-        List<Person> lpiPersonList = (List<Person>) guiHelper.getLpiResultList();
-        if (!guiHelper.isLpiResultDisplayed() && lpiPersonList != null
+        mainViewHelper.acceptMatch(TargetServer.MPI, personWrapper);
+        List<Person> lpiPersonList = (List<Person>) mainViewHelper.getLpiResultList();
+        if (!mainViewHelper.isLpiResultDisplayed() && lpiPersonList != null
                 && !lpiPersonList.isEmpty()) {
-            showSearchResults(new PersonIndexListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
+            showSearchResults(new PersonIndexListData(TargetServer.LPI, lpiPersonList));
         } else {
-            populateReviewCards(guiHelper.getSession().getMpiMatchPersonWrapper(), guiHelper.getSession().getLpiMatchPersonWrapper());
+            populateReviewCards(mainViewHelper.getSession().getMpiMatchPersonWrapper(), mainViewHelper.getSession().getLpiMatchPersonWrapper());
             showCard("reviewCard1");
         }
     }
@@ -2757,30 +2790,30 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     public void confirmMPIMatch() {
         int selectedRow = mpiResultsTable.getSelectedRow();
         if (selectedRow > -1) {
-            PersonWrapper personWrapper = new PersonWrapper(guiHelper.getMpiResultList().get(selectedRow));
-            confirmMatch(personWrapper, RequestDispatcher.TargetIndex.MPI);
+            PersonWrapper personWrapper = new PersonWrapper(mainViewHelper.getMpiResultList().get(selectedRow));
+            confirmMatch(personWrapper, TargetServer.MPI);
         } else {
             showWarningMessage("Please select a candidate to confirm.", mpiConfirmButton, mpiResultsTable);
         }
     }
 
     public void acceptLPIMatch(PersonWrapper personWrapper) {
-        guiHelper.acceptMatch(RequestDispatcher.TargetIndex.LPI, personWrapper);
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
-        List<Person> mpiPersonList = (List<Person>) guiHelper.getSession().getMpiRequestResult().getData();
-        List<Person> lpiPersonList = (List<Person>) guiHelper.getSession().getLpiRequestResult().getData();
-        boolean mpiIdentifierSearchDone = guiHelper.getSession().isMpiIdentifierSearchDone();
+        mainViewHelper.acceptMatch(TargetServer.LPI, personWrapper);
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
+        List<Person> mpiPersonList = (List<Person>) mainViewHelper.getSession().getMpiRequestResult().getData();
+        List<Person> lpiPersonList = (List<Person>) mainViewHelper.getSession().getLpiRequestResult().getData();
+        boolean mpiIdentifierSearchDone = mainViewHelper.getSession().isMpiIdentifierSearchDone();
         String mpiIdentifier = lpiMatchPersonWrapper.getMPIIdentifier();
         if (!mpiIdentifier.equals("")) {
             if (mpiPersonList != null && !mpiPersonList.isEmpty()) {
                 for (Person person : mpiPersonList) {
                     if (person.getPersonGuid().equalsIgnoreCase(mpiIdentifier)) {
-                        guiHelper.getSession().setMpiMatchPersonWrapper(new PersonWrapper(person));
+                        mainViewHelper.getSession().setMpiMatchPersonWrapper(new PersonWrapper(person));
                         break;
                     }
                 }
             }
-            PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
+            PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
             if (mpiMatchPersonWrapper != null) {
                 //reset mpiIdentifierSearchDone
                 //go directly to review screen because you now know who this is in the mpi
@@ -2793,7 +2826,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
                 if (!mpiIdentifierSearchDone) {
                     //TODO:Fix silent mpi identifier search
                     //session.getBasicPersonWrapper().setIdentifier(mpiIdentifier);
-                    guiHelper.doSearch(RequestDispatcher.TargetIndex.MPI);
+                    mainViewHelper.findPerson(TargetServer.MPI);
                     mpiIdentifierSearchDone = true;
                 } else {
                     //reset mpiIdentifierSearchDone
@@ -2801,16 +2834,16 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
                 }
             }
         } else {
-            if (!guiHelper.getSession().isMpiResultDisplayed()) {
+            if (!mainViewHelper.getSession().isMpiResultDisplayed()) {
                 if (mpiPersonList != null
                         && !mpiPersonList.isEmpty()) {
-                    showSearchResults(new PersonIndexListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
+                    showSearchResults(new PersonIndexListData(TargetServer.MPI, mpiPersonList));
                 } else {
-                    populateReviewCards(guiHelper.getSession().getMpiMatchPersonWrapper(), lpiMatchPersonWrapper);
+                    populateReviewCards(mainViewHelper.getSession().getMpiMatchPersonWrapper(), lpiMatchPersonWrapper);
                     showCard("reviewCard1");
                 }
             } else {
-                populateReviewCards(guiHelper.getSession().getMpiMatchPersonWrapper(), lpiMatchPersonWrapper);
+                populateReviewCards(mainViewHelper.getSession().getMpiMatchPersonWrapper(), lpiMatchPersonWrapper);
                 showCard("reviewCard1");
             }
         }
@@ -2820,8 +2853,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     public void confirmLPIMatch() {
         int selectedRow = lpiResultsTable.getSelectedRow();
         if (selectedRow > -1) {
-            PersonWrapper personWrapper = new PersonWrapper(guiHelper.getLpiResultList().get(selectedRow));
-            confirmMatch(personWrapper, RequestDispatcher.TargetIndex.LPI);
+            PersonWrapper personWrapper = new PersonWrapper(mainViewHelper.getLpiResultList().get(selectedRow));
+            confirmMatch(personWrapper, TargetServer.LPI);
         } else {
             showWarningMessage("Please select a candidate to confirm.", lpiConfirmButton, lpiResultsTable);
         }
@@ -2833,24 +2866,24 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     public void confirmMatch(PersonWrapper personWrapper, int targetIndex, boolean singleCandidate) {
         ConfirmationDialog confirmationDialog = new ConfirmationDialog(this.getFrame(), true, personWrapper);
-        if (targetIndex == RequestDispatcher.TargetIndex.MPI) {
+        if (targetIndex == TargetServer.MPI) {
             confirmationDialog.setTitle("Confirm MPI Match");
-        } else if (targetIndex == RequestDispatcher.TargetIndex.LPI) {
+        } else if (targetIndex == TargetServer.LPI) {
             confirmationDialog.setTitle("Confirm LPI Match");
         }
         confirmationDialog.setLocationRelativeTo(this.getFrame());
         confirmationDialog.setVisible(true);
         if (personWrapper.isConfirmed()) {
-            if (targetIndex == RequestDispatcher.TargetIndex.MPI) {
+            if (targetIndex == TargetServer.MPI) {
                 acceptMPIMatch(personWrapper);
-            } else if (targetIndex == RequestDispatcher.TargetIndex.LPI) {
+            } else if (targetIndex == TargetServer.LPI) {
                 acceptLPIMatch(personWrapper);
             }
         } else {
             if (singleCandidate) {
-                if (targetIndex == RequestDispatcher.TargetIndex.MPI) {
+                if (targetIndex == TargetServer.MPI) {
                     noMPIMatchFound();
-                } else if (targetIndex == RequestDispatcher.TargetIndex.LPI) {
+                } else if (targetIndex == TargetServer.LPI) {
                     noLPIMatchFound();
                 }
             }
@@ -2902,13 +2935,13 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
         hdssDataConsentYesRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.yes);
         hdssDataConsentNoRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.no);
         hdssDataConsentNoAnswerRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.notAnswered);
-        if (guiHelper.getSession() != null) {
-            List<ImagedFingerprint> imagedFingerprintList = guiHelper.getSession().getImagedFingerprintList();
+        if (mainViewHelper.getSession() != null) {
+            List<ImagedFingerprint> imagedFingerprintList = mainViewHelper.getSession().getImagedFingerprintList();
             if (imagedFingerprintList != null && !imagedFingerprintList.isEmpty()) {
                 fingerprintImagePanel.setImage(imagedFingerprintList.get(imagedFingerprintList.size() - 1).getImage());
             }
         }
-        clientRefusesCheckBox.setSelected(!guiHelper.getSession().isFingerprint());
+        clientRefusesCheckBox.setSelected(!mainViewHelper.getSession().isFingerprint());
     }
 
     private void autofilLPIData(PersonWrapper lpiPersonWrapper, PersonWrapper mpiPersonWrapper) {
@@ -3000,8 +3033,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     }
 
     private void unhideNecessaryAlternativeFields() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null
                 && lpiMatchPersonWrapper != null) {
             boolean clinicIdVisible = lpiMatchPersonWrapper.getClinicId().equals(mpiMatchPersonWrapper.getClinicId());
@@ -3198,8 +3231,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void finish() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (!ensurePreUpdateConfirmation()) {
             return;
         }
@@ -3243,30 +3276,30 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
             showCard("reviewCard1");
             return;
         }
-        if (guiHelper.noMatchWasFound()
-                && !guiHelper.hasLastResortSearchDone()) {
-            ProcessResult processResult = guiHelper.doSearch(RequestDispatcher.TargetIndex.BOTH, mpiUpdatePersonWrapper);
-            guiHelper.setLastResortSearchDone(true);
+        if (mainViewHelper.noMatchWasFound()
+                && !mainViewHelper.hasLastResortSearchDone()) {
+            ProcessResult processResult = mainViewHelper.findPerson(TargetServer.MPI_LPI, mpiUpdatePersonWrapper);
+            mainViewHelper.setLastResortSearchDone(true);
             if (processResult.getType() == ProcessResult.Type.LIST) {
                 showSearchResults((PersonIndexListData) processResult.getData());
                 return;
             }
         }
         if (!mpiMatched && !lpiMatched) {
-            guiHelper.createPerson(RequestDispatcher.TargetIndex.MPI, mpiUpdatePersonWrapper);
-            guiHelper.createPerson(RequestDispatcher.TargetIndex.LPI, lpiUpdatePersonWrapper);
+            mainViewHelper.createPerson(TargetServer.MPI, mpiUpdatePersonWrapper);
+            mainViewHelper.createPerson(TargetServer.LPI, lpiUpdatePersonWrapper);
         } else {
             if (!mpiMatched && lpiMatched) {
-                guiHelper.createPerson(RequestDispatcher.TargetIndex.MPI, mpiUpdatePersonWrapper);
-                guiHelper.modifyPerson(RequestDispatcher.TargetIndex.LPI, lpiUpdatePersonWrapper);
+                mainViewHelper.createPerson(TargetServer.MPI, mpiUpdatePersonWrapper);
+                mainViewHelper.modifyPerson(TargetServer.LPI, lpiUpdatePersonWrapper);
             } else if (mpiMatched && !lpiMatched) {
                 lpiUpdatePersonWrapper.setMPIIdentifier(mpiUpdatePersonWrapper.getPersonGuid());
-                guiHelper.modifyPerson(RequestDispatcher.TargetIndex.MPI, mpiUpdatePersonWrapper);
-                guiHelper.createPerson(RequestDispatcher.TargetIndex.LPI, lpiUpdatePersonWrapper);
+                mainViewHelper.modifyPerson(TargetServer.MPI, mpiUpdatePersonWrapper);
+                mainViewHelper.createPerson(TargetServer.LPI, lpiUpdatePersonWrapper);
             } else {
                 lpiUpdatePersonWrapper.setMPIIdentifier(mpiUpdatePersonWrapper.getPersonGuid());
-                guiHelper.modifyPerson(RequestDispatcher.TargetIndex.MPI, mpiUpdatePersonWrapper);
-                guiHelper.modifyPerson(RequestDispatcher.TargetIndex.LPI, lpiUpdatePersonWrapper);
+                mainViewHelper.modifyPerson(TargetServer.MPI, mpiUpdatePersonWrapper);
+                mainViewHelper.modifyPerson(TargetServer.LPI, lpiUpdatePersonWrapper);
             }
         }
         showCard("homeCard");
@@ -3435,14 +3468,14 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
             personWrapper.setConsentSigned(Person.ConsentSigned.notAnswered);
         }
         Visit visit = new Visit();
-        visit.setAddress(OECReception.getApplicationAddress());
+        visit.setAddress(OECReception.applicationAddress());
         visit.setVisitDate(new Date());
-        if (guiHelper.getSession().getClientType() == Session.ClientType.ENROLLED
-                || guiHelper.getSession().getClientType() == Session.ClientType.NEW) {
+        if (mainViewHelper.getSession().getClientType() == Session.ClientType.ENROLLED
+                || mainViewHelper.getSession().getClientType() == Session.ClientType.NEW) {
             personWrapper.setLastRegularVisit(visit);
-        } else if (guiHelper.getSession().getClientType() == Session.ClientType.VISITOR) {
+        } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR) {
             personWrapper.setLastOneOffVisit(visit);
-        } else if (guiHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
+        } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
             personWrapper.setLastRegularVisit(visit);
             personWrapper.setLastMoveDate(new Date());
         }
@@ -3450,14 +3483,14 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     private List<Fingerprint> getBrandNewFingerprintList() {
         List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
-        for (ImagedFingerprint imagedFingerprint : guiHelper.getSession().getImagedFingerprintList()) {
+        for (ImagedFingerprint imagedFingerprint : mainViewHelper.getSession().getImagedFingerprintList()) {
             Fingerprint fingerprint = imagedFingerprint.getFingerprint();
             if (fingerprint != null) {
                 fingerprint.setDateEntered(new Date());
                 fingerprintList.add(fingerprint);
             }
         }
-        if (guiHelper.getSession().isFingerprint()) {
+        if (mainViewHelper.getSession().isFingerprint()) {
             return fingerprintList;
         } else {
             return null;
@@ -3465,7 +3498,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     }
 
     private List<Fingerprint> getMPIFingerprintList() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
         List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
         if (mpiMatchPersonWrapper != null
                 && mpiMatchPersonWrapper.unwrap().getFingerprintList() != null
@@ -3479,7 +3512,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     }
 
     private List<Fingerprint> getLPIFingerprintList() {
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
         if (lpiMatchPersonWrapper != null
                 && lpiMatchPersonWrapper.unwrap().getFingerprintList() != null
@@ -3493,8 +3526,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     }
 
     private List<Fingerprint> getUpdatedFingerprintList() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         boolean mpiMatched = (mpiMatchPersonWrapper != null);
         boolean lpiMatched = (lpiMatchPersonWrapper != null);
         if (!mpiMatched && !lpiMatched) {
@@ -3535,32 +3568,32 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void noMPIMatchFound() {
-        guiHelper.noMatchFound(RequestDispatcher.TargetIndex.MPI);
-        List<Person> lpiPersonList = guiHelper.getLpiResultList();
-        if (!guiHelper.isLpiResultDisplayed() && lpiPersonList != null && !lpiPersonList.isEmpty()) {
-            showSearchResults(new PersonIndexListData(RequestDispatcher.TargetIndex.LPI, lpiPersonList));
+        mainViewHelper.noMatchFound(TargetServer.MPI);
+        List<Person> lpiPersonList = mainViewHelper.getLpiResultList();
+        if (!mainViewHelper.isLpiResultDisplayed() && lpiPersonList != null && !lpiPersonList.isEmpty()) {
+            showSearchResults(new PersonIndexListData(TargetServer.LPI, lpiPersonList));
         } else {
-            populateReviewCards(guiHelper.getSearchPersonWrapper());
+            populateReviewCards(mainViewHelper.getSearchPersonWrapper());
             showCard("reviewCard1");
         }
     }
 
     @Action
     public void noLPIMatchFound() {
-        guiHelper.noMatchFound(RequestDispatcher.TargetIndex.LPI);
-        List<Person> mpiPersonList = (List<Person>) guiHelper.getMpiResultList();
-        if (!guiHelper.isMpiResultDisplayed() && mpiPersonList != null && !mpiPersonList.isEmpty()) {
-            showSearchResults(new PersonIndexListData(RequestDispatcher.TargetIndex.MPI, mpiPersonList));
+        mainViewHelper.noMatchFound(TargetServer.LPI);
+        List<Person> mpiPersonList = (List<Person>) mainViewHelper.getMpiResultList();
+        if (!mainViewHelper.isMpiResultDisplayed() && mpiPersonList != null && !mpiPersonList.isEmpty()) {
+            showSearchResults(new PersonIndexListData(TargetServer.MPI, mpiPersonList));
         } else {
-            populateReviewCards(guiHelper.getSearchPersonWrapper());
+            populateReviewCards(mainViewHelper.getSearchPersonWrapper());
             showCard("reviewCard1");
         }
     }
 
     @Action
     public void confirmClinicId() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (clinicIdAcceptRadioButton.isSelected()) {
                 clinicIdTextField.setText(mpiMatchPersonWrapper.getClinicId());
@@ -3572,8 +3605,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmFirstName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (firstNameAcceptRadioButton.isSelected()) {
                 firstNameTextField.setText(mpiMatchPersonWrapper.getFirstName());
@@ -3585,8 +3618,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmMiddleName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (middleNameAcceptRadioButton.isSelected()) {
                 middleNameTextField.setText(mpiMatchPersonWrapper.getMiddleName());
@@ -3598,8 +3631,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmLastName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (lastNameAcceptRadioButton.isSelected()) {
                 lastNameTextField.setText(mpiMatchPersonWrapper.getLastName());
@@ -3611,8 +3644,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmSex() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (sexAcceptRadioButton.isSelected()) {
                 maleRadioButton.setSelected(mpiMatchPersonWrapper.getSex() == Person.Sex.M);
@@ -3626,8 +3659,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmBirthdate() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (birthDateAcceptRadioButton.isSelected()) {
                 birthDateChooser.setDate(mpiMatchPersonWrapper.getBirthdate());
@@ -3639,8 +3672,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmMaritalStatus() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (maritalStatusAcceptRadioButton.isSelected()) {
                 maritalStatusComboBox.setSelectedItem(DisplayableMaritalStatus.getDisplayableMaritalStatus(mpiMatchPersonWrapper.getMaritalStatus()));
@@ -3652,8 +3685,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmVillageName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (villageAcceptRadioButton.isSelected()) {
                 villageTextField.setText(mpiMatchPersonWrapper.getVillageName());
@@ -3665,8 +3698,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmFathersFirstName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (fathersFirstNameAcceptRadioButton.isSelected()) {
                 fathersFirstNameTextField.setText(mpiMatchPersonWrapper.getFathersFirstName());
@@ -3678,8 +3711,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmFathersMiddleName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (fathersMiddleNameAcceptRadioButton.isSelected()) {
                 fathersMiddleNameTextField.setText(mpiMatchPersonWrapper.getFathersMiddleName());
@@ -3691,8 +3724,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmFathersLastName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (fathersLastNameAcceptRadioButton.isSelected()) {
                 fathersLastNameTextField.setText(mpiMatchPersonWrapper.getFathersLastName());
@@ -3704,8 +3737,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmMothersFirstName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (mothersFirstNameAcceptRadioButton.isSelected()) {
                 mothersFirstNameTextField.setText(mpiMatchPersonWrapper.getMothersFirstName());
@@ -3717,8 +3750,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmMothersMiddleName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (mothersMiddleNameAcceptRadioButton.isSelected()) {
                 mothersMiddleNameTextField.setText(mpiMatchPersonWrapper.getMothersMiddleName());
@@ -3730,8 +3763,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmMothersLastName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (mothersLastNameAcceptRadioButton.isSelected()) {
                 mothersLastNameTextField.setText(mpiMatchPersonWrapper.getMothersLastName());
@@ -3743,8 +3776,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmCompoundHeadFirstName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (compoundHeadsFirstNameAcceptRadioButton.isSelected()) {
                 compoundHeadsFirstNameTextField.setText(mpiMatchPersonWrapper.getCompoundHeadFirstName());
@@ -3756,8 +3789,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmCompoundHeadMiddleName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (compoundHeadsMiddleNameAcceptRadioButton.isSelected()) {
                 compoundHeadsMiddleNameTextField.setText(mpiMatchPersonWrapper.getCompoundHeadMiddleName());
@@ -3769,8 +3802,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmCompoundHeadLastName() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (compoundHeadsLastNameAcceptRadioButton.isSelected()) {
                 compoundHeadsLastNameTextField.setText(mpiMatchPersonWrapper.getCompoundHeadLastName());
@@ -3782,8 +3815,8 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void confirmConsentSigned() {
-        PersonWrapper mpiMatchPersonWrapper = guiHelper.getSession().getMpiMatchPersonWrapper();
-        PersonWrapper lpiMatchPersonWrapper = guiHelper.getSession().getLpiMatchPersonWrapper();
+        PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
+        PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         if (mpiMatchPersonWrapper != null) {
             if (sexAcceptRadioButton.isSelected()) {
                 hdssDataConsentYesRadioButton.setSelected(mpiMatchPersonWrapper.getConsentSigned() == Person.ConsentSigned.yes);
@@ -3802,7 +3835,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     public void changePassword() {
         try {
             ChangePasswordDialog cpd = new ChangePasswordDialog(this.getFrame(), true,
-                    OECReception.getLoggeInUser());
+                    OECReception.getUser());
             cpd.setLocationRelativeTo(this.getFrame());
             cpd.setVisible(true);
         } catch (UserManagerCreationException ex) {
@@ -3812,7 +3845,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void managePermissions() {
-        if (!OECReception.getLoggeInUser().isAdmin()) {
+        if (!OECReception.getUser().isAdmin()) {
             showWarningMessage("You do not have the requisite privilleges "
                     + "to grant or revoke permissions.", this.getFrame(), usersMenu);
             return;
@@ -3829,7 +3862,7 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
 
     @Action
     public void addUsers() {
-        if (!OECReception.getLoggeInUser().isAdmin()) {
+        if (!OECReception.getUser().isAdmin()) {
             showWarningMessage("You do not have the requisite privilleges "
                     + "to add users.", this.getFrame(), usersMenu);
             return;
@@ -3843,11 +3876,25 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
             showErrorMessage(ex.getMessage(), addUsersMenuItem);
         }
     }
+
+    @Action
+    public void processNotification() {
+        int selectedIndex = notificationListBox.getSelectedIndex();
+        if (selectedIndex > -1) {
+            Notification selectedNotification = notificationList.get(selectedIndex);
+            NotificationDialog nd = new NotificationDialog(this.getFrame(), true, selectedNotification);
+            nd.setLocationRelativeTo(this.getFrame());
+            nd.setVisible(true);
+            if (selectedNotification.isFlaggedOff()) {
+                notificationList.remove(selectedNotification);
+                refreshNotificationList(new ArrayList<Notification>(notificationList));
+            }
+        } else {
+            showWarningMessage("Please select the notification to process.", processNotificationButton);
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem addUsersMenuItem;
-    private javax.swing.JList alertsList;
-    private javax.swing.JPanel alertsListPanel;
-    private javax.swing.JScrollPane alertsScrollPane;
     private javax.swing.JTextField altBirthDateTextField;
     private javax.swing.JTextField altClinicIdTextField;
     private javax.swing.JTextField altCompoundHeadsFirstNameTextField;
@@ -4029,7 +4076,11 @@ public class MainView extends FrameView implements FingerprintingComponent, Help
     private javax.swing.JTable mpiResultsTable;
     private java.util.List<ke.go.moh.oec.Person> mpiSearchResultList;
     private javax.swing.JButton newButton;
-    private javax.swing.JButton processButton;
+    private java.util.List<Notification> notificationList;
+    private javax.swing.JList notificationListBox;
+    private javax.swing.JPanel notificationListPanel;
+    private javax.swing.JScrollPane notificationScrollPane;
+    private javax.swing.JButton processNotificationButton;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JButton review2NextButton;
     private javax.swing.JPanel reviewCard1;

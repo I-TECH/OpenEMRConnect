@@ -28,58 +28,103 @@ import ke.go.moh.oec.reception.data.RequestResult;
 import java.util.ArrayList;
 import java.util.List;
 import ke.go.moh.oec.Person;
-import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
 import ke.go.moh.oec.lib.Mediator;
 
 /**
  * The RequestDispatchingThread is responsible for asynchronously forwarding 
- * client requests.
+ * client requests to servers.
  * <p>
- * One instance of this class is initialized and started by the {@link RequestDispatcher}
- * for each {@link RequestDispatcher.TargetIndex} specified.
+ * One instance of this class should be started for each unique client request.
  * 
  * @author Gitahi Ng'ang'a
  */
-class RequestDispatchingThread extends Thread {
+final class RequestDispatchingThread extends Thread {
 
+    /**
+     * The Mediator instance used to satisfy a client request
+     */
     private final Mediator mediator;
-    private final PersonWrapper personWrapper;
+    /**
+     * The {@link RequestTypeId} for the request to be dispatched.
+     */
     private final int requestTypeId;
+    /**
+     * The {@link PersonWrapper} object containing data for the request to be
+     * dispatched.
+     */
+    private final Object requestData;
+    /**
+     * The {@link RequestResult} object to contain the response data for the 
+     * request to be dispatched.
+     */
     private RequestResult requestResult;
+    /**
+     * A variable signaling whether a server response should be awaited. It is
+     * always true if {@link  RequestDispatchingThread#requestResult} is not null
+     * and false otherwise.
+     */
+    private final boolean waitForResponse;
 
-    public RequestDispatchingThread(Mediator mediator, PersonWrapper personWrapper,
-            int requestTypeId, RequestResult requestResult) {
+    /**
+     * This constructor is used when a synchronous server response is expected for 
+     * the request to be dispatched. 
+     * 
+     * A server response will only be awaited if the value of 
+     * {@link  RequestDispatchingThread#requestResult} is not null.
+     * 
+     * @param mediator Mediator to be used to satisfy this request
+     * @param requestTypeId {@link RequestTypeId} of the request to be dispatched
+     * @param requestData Object containing request data
+     * @param requestResult Object to contain response data
+     */
+    RequestDispatchingThread(Mediator mediator, int requestTypeId,
+            Object requestData, RequestResult requestResult) {
         this.mediator = mediator;
-        this.personWrapper = personWrapper;
         this.requestTypeId = requestTypeId;
+        this.requestData = requestData;
         this.requestResult = requestResult;
+        waitForResponse = (requestResult != null);
     }
 
     /**
-     * Forwards the specified request to the specified Person Index and then 
-     * waits for the response.
+     * This constructor is used when no server response is expected for the 
+     * request to be dispatched.  It always sets the value of 
+     * {@link RequestDispatchingThread#waitForResponse} to false.
+     * 
+     * @param mediator Mediator to be used to satisfy this request
+     * @param requestTypeId {@link RequestTypeId} of the request to be dispatched
+     * @param requestData Object containing request data
+     */
+    RequestDispatchingThread(Mediator mediator, int requestTypeId,
+            Object requestData) {
+        this.mediator = mediator;
+        this.requestTypeId = requestTypeId;
+        this.requestData = requestData;
+        waitForResponse = (requestResult != null);
+    }
+
+    /**
+     * Asynchronously forwards a request to a server. If {@link RequestDispatchingThread#requestResult}
+     * is not null, a response will be awaited. Otherwise the method will return immediately.
      */
     @Override
     public void run() {
-        PersonRequest personRequest = new PersonRequest();
-        Person person = ((PersonWrapper) personWrapper).unwrap();
-        personRequest.setPerson(person);
-        personRequest.setRequestReference(personWrapper.getRequestReference());
-        PersonResponse personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
-        if (personResponse != null) {
-            if (personResponse.isSuccessful()) {
-                List<Person> personList = personResponse.getPersonList();
-                if (personList != null) {
-                    requestResult.setData(personList);
-                } else {
-                    requestResult.setData(new ArrayList<Person>());
+        if (waitForResponse) {
+            PersonResponse personResponse = (PersonResponse) mediator.getData(requestTypeId, requestData);
+            if (personResponse != null) {
+                if (personResponse.isSuccessful()) {
+                    List<Person> personList = personResponse.getPersonList();
+                    if (personList != null) {
+                        requestResult.setData(personList);
+                    } else {
+                        requestResult.setData(new ArrayList<Person>());
+                    }
+                    requestResult.setSuccessful(true);
                 }
-            } else {
-                requestResult.setSuccessful(false);
             }
         } else {
-            requestResult.setSuccessful(false);
+            mediator.getData(requestTypeId, requestData);
         }
     }
 }

@@ -44,10 +44,10 @@ public final class UserManager {
 
     private static UserManager instance;
     private Connection connection;
-    private final String database = "reception_security";
+    private final String database = "reception_database";
     private final String userTable = "reception_user";
     private final String username = "reception";
-    private final String password = "maun2806";
+    private final String password = "r2e8c0e6p9t4i3o9n";
     private final String driver = "org.apache.derby.jdbc.EmbeddedDriver";
     private final String protocol = "jdbc:derby";
 
@@ -102,7 +102,6 @@ public final class UserManager {
                     + "VALUES ('" + user.getUsername() + "', '" + new String(user.getPassword()) + "', "
                     + (user.isAdmin() ? 1 : 0) + ")");
         } catch (SQLException ex) {
-            int i = ex.getErrorCode();
             if (ex.getErrorCode() == 30000) {
                 throw new ExistingUserException();
             } else {
@@ -212,7 +211,7 @@ public final class UserManager {
             statement = this.getStatement();
             statement.executeQuery("SELECT username FROM " + userTable);
         } catch (SQLException ex) {
-            if (ex.getErrorCode() == 30000) {
+            if (ex.getSQLState().equals("X0Y32")) {
                 exists = false;
             } else {
                 Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);

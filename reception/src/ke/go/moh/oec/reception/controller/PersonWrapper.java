@@ -24,7 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.controller;
 
-import ke.go.moh.oec.reception.controller.OECReception;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +34,7 @@ import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.reception.controller.exceptions.MalformedCliniIdException;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
+import ke.go.moh.oec.reception.data.Notification;
 
 /**
  *
@@ -43,8 +44,7 @@ public class PersonWrapper {
 
     private final Person person;
     private boolean confirmed = false;
-    //TODO: set value from Mediator standard algorithm
-    private final String requestReference = "";
+    private String requestReference;
 
     public PersonWrapper(Person person) {
         this.person = person;
@@ -379,5 +379,82 @@ public class PersonWrapper {
 
     public String getRequestReference() {
         return requestReference;
+    }
+
+    public void setRequestReference(String requestReference) {
+        this.requestReference = requestReference;
+    }
+
+    public List<Notification> getNotificationList() {
+        List<Notification> notificationList = new ArrayList<Notification>();
+        if (person.getPreviousVillageName() != null) {
+            Date occurenceDate = person.getLastMoveDate();
+            String additionalInformation = "";
+            if (occurenceDate != null) {
+                additionalInformation = this.getLongName() + " migrated from '" + person.getPreviousVillageName() + "' village to '"
+                        + this.getVillageName() + "' village on "
+                        + new SimpleDateFormat("dd/MM/yyyy").format(occurenceDate) + ".";
+            } else {
+                additionalInformation = this.getLongName() + " migrated from '" + person.getPreviousVillageName() + "' village to '"
+                        + this.getVillageName() + "' village on an unspecified date.";
+            }
+            notificationList.add(new Notification(this, Notification.Type.MIGRATION, occurenceDate, additionalInformation));
+        }
+        if (person.getExpectedDeliveryDate() != null) {
+            Date occurenceDate = person.getExpectedDeliveryDate();
+            String additionalInformation = "";
+            if (occurenceDate != null) {
+                additionalInformation = this.getLongName() + " is pregnant. Her expected delivery date is "
+                        + new SimpleDateFormat("dd/MM/yyyy").format(occurenceDate) + ".";
+            } else {
+                additionalInformation = this.getLongName() + " is pregnant. Her expected delivery date is unknown.";
+            }
+            notificationList.add(new Notification(this, Notification.Type.PREGNANCY, occurenceDate, additionalInformation));
+        }
+        if (person.getPregnancyEndDate() != null) {
+            Date occurenceDate = person.getPregnancyEndDate();
+            String additionalInformation = "";
+            if (occurenceDate == null) {
+                additionalInformation = this.getLongName() + "'s pregnancy came to an end on "
+                        + new SimpleDateFormat("dd/MM/yyyy").format(occurenceDate) + ".";
+            } else {
+                additionalInformation = this.getLongName() + "'s pregnancy came to an end on an unspecified date.";
+            }
+            notificationList.add(new Notification(this, Notification.Type.PREGNANCY_OUTCOME, occurenceDate, additionalInformation));
+        }
+        if (person.getAliveStatus() == Person.AliveStatus.no) {
+            Date occurenceDate = person.getDeathdate();
+            String additionalInformation = "";
+            if (occurenceDate != null) {
+                additionalInformation = this.getLongName() + " died on "
+                        + new SimpleDateFormat("dd/MM/yyyy").format(occurenceDate) + ".";
+            } else {
+                additionalInformation = this.getLongName() + " died on an unspecified date.";
+            }
+            notificationList.add(new Notification(this, Notification.Type.DEATH, person.getDeathdate(), additionalInformation));
+        }
+        return notificationList;
+    }
+
+    public String getShortName() {
+        String firstName = this.getFirstName();
+        String middleName = this.getMiddleName();
+        String lastName = this.getLastName();
+        if (!firstName.isEmpty()
+                || !middleName.isEmpty()) {
+            return (firstName + " " + middleName).trim().replace("  ", " ");
+        } else if (!firstName.isEmpty()
+                || !lastName.isEmpty()) {
+            return (firstName + " " + lastName).trim().replace("  ", " ");
+        } else if (!middleName.isEmpty()
+                || !lastName.isEmpty()) {
+            return (middleName + " " + middleName).trim().replace("  ", " ");
+        } else {
+            return this.getLongName();
+        }
+    }
+
+    public String getLongName() {
+        return (this.getFirstName() + " " + this.getMiddleName() + " " + this.getLastName()).trim().replace("  ", " ");
     }
 }

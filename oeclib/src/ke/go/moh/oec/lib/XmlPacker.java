@@ -1926,8 +1926,8 @@ class XmlPacker {
         Work work = new Work();
         m.setMessageData(work);
         work.setSourceAddress(e.getElementsByTagName("sourceAddress").item(0).getTextContent());
-        work.setSourceAddress(e.getElementsByTagName("notificationId").item(0).getTextContent());
-        work.setSourceAddress(e.getElementsByTagName("reassignAddress").item(0).getTextContent());
+        work.setNotificationId(e.getElementsByTagName("notificationId").item(0).getTextContent());
+        work.setReassignAddress(e.getElementsByTagName("reassignAddress").item(0).getTextContent());
     }
 
     /**

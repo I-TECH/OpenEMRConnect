@@ -25,7 +25,7 @@ public class App extends SingleFrameApplication {
             show(new LoginDialog(null, true, this));
         } catch (UserManagerCreationException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, ex.getMessage(), OECReception.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
             System.exit(1);
         }
     }

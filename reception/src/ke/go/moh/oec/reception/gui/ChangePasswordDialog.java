@@ -237,7 +237,7 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
     }
 
     private void showMessage(String message, JComponent toFocus, int messageType) {
-        JOptionPane.showMessageDialog(this, message, OECReception.getApplicationName(), messageType);
+        JOptionPane.showMessageDialog(this, message, OECReception.applicationName(), messageType);
         toFocus.requestFocus();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

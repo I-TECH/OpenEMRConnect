@@ -364,12 +364,12 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     }
 
     private void showWarningMessage(String message, Component parent, JComponent toFocus) {
-        JOptionPane.showMessageDialog(parent, message, OECReception.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(parent, message, OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
         toFocus.requestFocus();
     }
 
     public boolean showConfirmMessage(String message, Component parent) {
-        return JOptionPane.showConfirmDialog(this, message, OECReception.getApplicationName(),
+        return JOptionPane.showConfirmDialog(this, message, OECReception.applicationName(),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 

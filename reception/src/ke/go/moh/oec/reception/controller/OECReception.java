@@ -47,28 +47,28 @@ public class OECReception {
     private static BufferedImage missingFingerprintImage;
     private static BufferedImage refusedFingerprintImage;
     public static final int MINIMUM_FINGERPRINTS_FOR_SEARCH = 2;
-    private static User loggeInUser;
+    private static User user;
 
-    public static User getLoggeInUser() {
-        return loggeInUser;
+    public static User getUser() {
+        return user;
     }
 
-    public static void setLoggeInUser(User loggeInUser) {
-        OECReception.loggeInUser = loggeInUser;
+    public static void setUser(User user) {
+        OECReception.user = user;
     }
 
-    public static String getApplicationAddress() {
+    public static String applicationAddress() {
         String instanceName = Mediator.getProperty("Instance.Address");
         if (instanceName == null) {
-            instanceName = getApplicationName();
+            instanceName = applicationName();
         }
         return instanceName;
     }
 
-    public static String getApplicationName() {
+    public static String applicationName() {
         String instanceName = Mediator.getProperty("Instance.Name");
         if (instanceName == null) {
-            instanceName = "Clinic Reception";
+            instanceName = "OEC Reception";
         }
         return instanceName;
     }

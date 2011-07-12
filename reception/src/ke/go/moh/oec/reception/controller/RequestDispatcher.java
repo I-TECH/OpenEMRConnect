@@ -24,6 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.controller;
 
+import ke.go.moh.oec.reception.data.TargetServer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.reception.data.RequestResult;
@@ -31,134 +32,194 @@ import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
 
 /**  
- * The RequestDispatcher class provides a unified way of dispatching, 
- * {@link RequestDispatcher.DispatchType#FIND}, 
- * {@link RequestDispatcher.DispatchType#CREATE} and 
- * {@link RequestDispatcher.DispatchType#MODIFY} requests to Person Indices 
- * (MPI/LPI). See {@link RequestTypeId} in oeclib.
+ * The RequestDispatcher class provides a unified way of dispatching OEC client
+ * requests to OEC servers. See {@link RequestTypeId} in oeclib.
  * <p>
  * Depending on the {@link RequestDispatcher.DispatchType} and 
- * {@link RequestDispatcher.TargetIndex} specified, it creates and spawns the 
- * necessary number of {@link RequestDispatchingThread}s to satisfy the operation.
+ * {@link TargetServer} specified, it creates and spawns the 
+ * necessary number of {@link RequestDispatchingThread}s to satisfy the requested
+ * operation.
  * 
  * @author Gitahi Ng'ang'a
  */
 public class RequestDispatcher {
 
-    public class TargetIndex {
-
-        /**
-         * Signals the RequestDispatcher to dispatch a request to both the 
-         * Master Person Index and the Local Person Index. See 
-         * {@link RequestTypeId} in oeclib.
-         */
-        public static final int BOTH = 0;
-        /**
-         * Signals the RequestDispatcher to dispatch a request to the Master 
-         * Person Index only. See {@link RequestTypeId} in oeclib.
-         */
-        public static final int MPI = 1;
-        /**
-         * Signals the RequestDispatcher to dispatch a request to the Local 
-         * Person Index only. See {@link RequestTypeId} in oeclib.
-         */
-        public static final int LPI = 2;
-    }
-
     public class DispatchType {
 
         /**
-         * Signals the RequestDispatcher to dispatch a find person request to a 
-         * Person Index or Indices. See {@link RequestTypeId} in oeclib.
+         * Signals the RequestDispatcher to dispatch a FIND_PERSON request to a 
+         * Person Index or Indices. See {@link MessageTypeRegistry} in oeclib.
          * <p>
          * This value makes no assumptions about the index or indices to contact.
-         * That must be specified separately by setting the value {@link TargetIndex}
+         * That must be specified separately by setting the value {@link TargetServer}
          */
         public static final int FIND = 1;
         /**
-         * Signals the RequestDispatcher to dispatch a create person request to a 
-         * Person Index or Indices. See {@link RequestTypeId} in oeclib.
+         * Signals the RequestDispatcher to dispatch a CREATE_PERSON request to a 
+         * Person Index or Indices. See {@link MessageTypeRegistry} in oeclib.
          * <p>
          * This value makes no assumptions about the index or indices to contact.
-         * That must be specified separately by setting the value {@link TargetIndex}
+         * That must be specified separately by setting the value {@link TargetServer}
          */
         public static final int CREATE = 2;
         /**
-         * Signals the RequestDispatcher to dispatch a modify person request to a 
-         * Person Index or Indices. See {@link RequestTypeId} in oeclib.
+         * Signals the RequestDispatcher to dispatch a MODIFY_PERSON request to a 
+         * Person Index or Indices. See {@link MessageTypeRegistry} in oeclib.
          * <p>
          * This value makes no assumptions about the index or indices to contact.
-         * That must be specified separately by setting the value {@link TargetIndex}
+         * That must be specified separately by setting the value {@link TargetServer}
          */
         public static final int MODIFY = 3;
+        /**
+         * Signals the RequestDispatcher to dispatch a GET_WORK request to the 
+         * CDS. See {@link MessageTypeRegistry} in oeclib.
+         * <p>
+         * This value makes no assumptions about the index or indices to contact.
+         * That must be specified separately by setting the value {@link TargetServer}
+         */
+        public static final int GET_WORK = 4;
+        /**
+         * Signals the RequestDispatcher to dispatch a WORK_DONE request to the 
+         * CDS. See {@link MessageTypeRegistry} in oeclib.
+         * <p>
+         * This value makes no assumptions about the index or indices to contact.
+         * That must be specified separately by setting the value {@link TargetServer}
+         */
+        public static final int WORK_DONE = 5;
+        /**
+         * Signals the RequestDispatcher to dispatch a REASSIGN request to the 
+         * CDS. See {@link MessageTypeRegistry} in oeclib.
+         * <p>
+         * This value makes no assumptions about the index or indices to contact.
+         * That must be specified separately by setting the value {@link TargetServer}
+         */
+        public static final int REASSIGN = 6;
     }
-    private static Mediator mediator = new Mediator();
+    /**
+     * The Mediator instance used to satisfy a client request
+     */
+    private static final Mediator mediator = new Mediator();
 
     /**
-     * Dispatches a request of a specific type to the specified indices.
+     * Dispatches a request of a specific type to a either the MPI, the LPI or both.
      * <p>
      * If the dispatchType specified is {@link RequestDispatcher.DispatchType#FIND}, 
      * any {@link RequestDispatchingThread}s spawned join the current thread and 
-     * cause this method to wait until they return.
+     * cause this method to wait until they return. Otherwise, if the dispatchType 
+     * specified is {@link RequestDispatcher.DispatchType#CREATE} or 
+     * {@link RequestDispatcher.DispatchType#MODIFY} any {@link RequestDispatchingThread}s
+     * spawned do not join the current thread and this method returns immediately. Any other
+     * dispatchType values are ignored and no {@link RequestDispatchingThread}s are started.
      * <p>
-     * If the dispatchType specified is {@link RequestDispatcher.DispatchType#CREATE} 
-     * or {@link RequestDispatcher.DispatchType#MODIFY}, any 
-     * {@link RequestDispatchingThread}s spawned do not join the current thread 
-     * and this method returns immediately.
-     * <p>
-     * The number of {@link RequestDispatchingThread}s spawned depends on the
-     * {@link TargetIndex} specified. Only one is spawned for {@link TargetIndex#LPI}
-     * or {@link TargetIndex#MPI} and two for {@link TargetIndex#BOTH}.
+     * Also, the number of {@link RequestDispatchingThread}s spawned depends on the
+     * {@link TargetServer} specified. Specifically, two {@link RequestDispatchingThread}s
+     * are spawned for {@link TargetServer#MPI_LPI} and only one otherwise.
      *
-     * @param personWrapper object containing data for the request
+     * @param requestData object containing data for the request
      * @param mpiRequestResult object to contain the MPI results of the request
-     * if any
      * @param lpiRequestResult object to contain the LPI results of the request
-     * if any
-     * @param dispatchType the general type of request to be dispatched
-     * @param targetIndex the Person Index (Indices) to be contacted
+     * @param dispatchType the {@link DispatchType} of request to be dispatched
+     * @param {@link TargetServer} or {@link TargetServer}s to be contacted
      */
-    public static void dispatch(PersonWrapper personWrapper,
-            RequestResult mpiRequestResult, RequestResult lpiRequestResult,
-            int dispatchType, int targetIndex) {
-        if (targetIndex == TargetIndex.BOTH) {
+    public static void dispatch(Object requestData, RequestResult mpiRequestResult,
+            RequestResult lpiRequestResult, int dispatchType, int targetServer) {
+        dispatch(requestData, mpiRequestResult, lpiRequestResult, null, dispatchType, targetServer);
+    }
+
+    /**
+     * Dispatches a FIND_PERSON request to the Kisumu HDSS.
+     * <p>
+     * If the dispatchType specified is {@link RequestDispatcher.DispatchType#FIND}, 
+     * the {@link RequestDispatchingThread}s spawned joins the current thread and 
+     * causes this method to wait until it returns. Any other dispatchType values
+     * are ignored and no {@link RequestDispatchingThread}s are started.
+     * 
+     * @param requestData object containing data for the request
+     * @param kisumuHdssRequestResult object to contain the Kisumu HDSS results of the request
+     * @param dispatchType the {@link DispatchType} of request to be dispatched
+     * @param {@link TargetServer} or {@link TargetServer}s to be contacted
+     */
+    public static void dispatch(Object requestData,
+            RequestResult kisumuHdssRequestResult, int dispatchType, int targetServer) {
+        dispatch(requestData, kisumuHdssRequestResult, null, dispatchType, targetServer);
+    }
+
+    /**
+     * This method behaves the same as {@link RequestDispatcher#dispatch(ke.go.moh.oec.reception.controller.Object, 
+     * ke.go.moh.oec.reception.data.RequestResult, ke.go.moh.oec.reception.data.RequestResult, int, int) with the exception
+     * that no response(s) are expected.
+     * 
+     * @param requestData object containing data for the request
+     * @param dispatchType the {@link DispatchType} of request to be dispatched
+     * @param {@link TargetServer} or {@link TargetServer}s to be contacted
+     */
+    public static void dispatch(Object requestData,
+            int dispatchType, int targetServer) {
+        dispatch(requestData, null, null, dispatchType, targetServer);
+    }
+
+    /*
+     * Forward requests to servers by configuring and spawning the necessary number of
+     * {@link RequestDispatchingThread}s.
+     */
+    private static void dispatch(Object requestData, RequestResult mpiRequestResult,
+            RequestResult lpiRequestResult, RequestResult kisumuHdssRequestResult,
+            int dispatchType, int targetServer) {
+        boolean join = (dispatchType == DispatchType.FIND);
+        if (targetServer == TargetServer.MPI_LPI) {
             if (dispatchType == DispatchType.FIND) {
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.FIND_PERSON_MPI, mpiRequestResult), true);
+                        mediator, RequestTypeId.FIND_PERSON_MPI, requestData, mpiRequestResult), join);
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.FIND_PERSON_LPI, lpiRequestResult), true);
+                        mediator, RequestTypeId.FIND_PERSON_LPI, requestData, lpiRequestResult), join);
             } else if (dispatchType == DispatchType.CREATE) {
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.CREATE_PERSON_MPI, mpiRequestResult), false);
+                        mediator, RequestTypeId.CREATE_PERSON_MPI, requestData, mpiRequestResult), join);
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.CREATE_PERSON_LPI, lpiRequestResult), false);
+                        mediator, RequestTypeId.CREATE_PERSON_LPI, requestData, lpiRequestResult), join);
             } else if (dispatchType == DispatchType.MODIFY) {
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.MODIFY_PERSON_MPI, mpiRequestResult), false);
+                        mediator, RequestTypeId.MODIFY_PERSON_MPI, requestData, mpiRequestResult), join);
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.MODIFY_PERSON_LPI, lpiRequestResult), false);
+                        mediator, RequestTypeId.MODIFY_PERSON_LPI, requestData, lpiRequestResult), join);
             }
-        } else if (targetIndex == TargetIndex.MPI) {
+        } else if (targetServer == TargetServer.MPI) {
             if (dispatchType == DispatchType.FIND) {
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.FIND_PERSON_MPI, mpiRequestResult), true);
+                        mediator, RequestTypeId.FIND_PERSON_MPI, requestData, mpiRequestResult), join);
             } else if (dispatchType == DispatchType.CREATE) {
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.CREATE_PERSON_MPI, mpiRequestResult), false);
+                        mediator, RequestTypeId.CREATE_PERSON_MPI, requestData, mpiRequestResult), join);
             } else if (dispatchType == DispatchType.MODIFY) {
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.MODIFY_PERSON_MPI, mpiRequestResult), false);
+                        mediator, RequestTypeId.MODIFY_PERSON_MPI, requestData, mpiRequestResult), join);
             }
-        } else if (targetIndex == TargetIndex.LPI) {
+        } else if (targetServer == TargetServer.LPI) {
             if (dispatchType == DispatchType.FIND) {
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.FIND_PERSON_LPI, lpiRequestResult), true);
+                        mediator, RequestTypeId.FIND_PERSON_LPI, requestData, lpiRequestResult), join);
             } else if (dispatchType == DispatchType.CREATE) {
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.CREATE_PERSON_LPI, lpiRequestResult), false);
+                        mediator, RequestTypeId.CREATE_PERSON_LPI, requestData, lpiRequestResult), join);
             } else if (dispatchType == DispatchType.MODIFY) {
                 spawn(new RequestDispatchingThread(
-                        mediator, personWrapper, RequestTypeId.MODIFY_PERSON_LPI, lpiRequestResult), true);
+                        mediator, RequestTypeId.MODIFY_PERSON_LPI, requestData, lpiRequestResult), join);
+            }
+        } else if (targetServer == TargetServer.KISUMU_HDSS) {
+            if (dispatchType == DispatchType.FIND) {
+                spawn(new RequestDispatchingThread(
+                        mediator, RequestTypeId.FIND_PERSON_HDSS, requestData, kisumuHdssRequestResult), join);
+            }
+        } else if (targetServer == TargetServer.CDS) {
+            if (dispatchType == DispatchType.GET_WORK) {
+                spawn(new RequestDispatchingThread(
+                        mediator, RequestTypeId.GET_WORK, requestData), join);
+            } else if (dispatchType == DispatchType.WORK_DONE) {
+                spawn(new RequestDispatchingThread(
+                        mediator, RequestTypeId.WORK_DONE, requestData), join);
+            } else if (dispatchType == DispatchType.REASSIGN) {
+                spawn(new RequestDispatchingThread(
+                        mediator, RequestTypeId.REASSIGN_WORK, requestData), join);
             }
         }
     }

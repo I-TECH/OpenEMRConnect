@@ -186,7 +186,7 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
         }
         User user = (User) selectedItem;
         user.setAdmin(adminCheckBox.isSelected());
-        if (user.equals(OECReception.getLoggeInUser())
+        if (user.equals(OECReception.getUser())
                 && !user.isAdmin()) {
             showWarningMessage("You are not allowed to revoke admin rights from yourself!", okButton);
             return;
@@ -213,7 +213,7 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
     }
 
     private void showMessage(String message, JComponent toFocus, int messageType) {
-        JOptionPane.showMessageDialog(this, message, OECReception.getApplicationName(), messageType);
+        JOptionPane.showMessageDialog(this, message, OECReception.applicationName(), messageType);
         toFocus.requestFocus();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
