@@ -1,18 +1,33 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is OpenEMRConnect.
+ *
+ * The Initial Developer of the Original Code is International Training &
+ * Education Center for Health (I-TECH) <http://www.go2itech.org/>
+ *
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.cds;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.IService;
 import ke.go.moh.oec.PersonRequest;
-import ke.go.moh.oec.Person;
-import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.Work;
 import ke.go.moh.oec.lib.Mediator;
@@ -20,8 +35,11 @@ import ke.go.moh.oec.lib.Mediator;
 /**
  *
  * @author Brian Wakhutu
+ * @author Gitahi Ng'ang'a
  */
 public class Cds implements IService {
+
+    private final CdsHelper cdsHelper = new CdsHelper(Main.getMediator());
 
     public Cds() {
         final String driverName = Mediator.getProperty("CDS.driver");
@@ -36,104 +54,29 @@ public class Cds implements IService {
 
     @Override
     public Object getData(int requestTypeId, Object requestData) {
-
-        Mediator mediator = Main.getMediator();
-
-        switch (requestTypeId) {
-
-            case RequestTypeId.NOTIFY_PERSON_CHANGED:
-
-
-                // Receive the Notify Message from the MPI and insert the values into the Cds database
-                PersonRequest personRequest = (PersonRequest) requestData;
-                Person person = personRequest.getPerson();
-                Visit lastRegularVisit = person.getLastRegularVisit();
-                String visitAddress = lastRegularVisit.getAddress();
-                String xml = personRequest.getXml();
-
-                Mediator.getLogger(Cds.class.getName()).log(Level.FINER, "Notify");
-
-                Connection notifyConn = Sql.connect();
-
-                String notifySql = "INSERT INTO cds_store(destination,message,voided,received_datetime) "
-                        + " VALUES(" + Sql.quote(visitAddress) + "," + Sql.quote(xml) + ",0,NOW())";
-                Sql.execute(notifyConn, notifySql);
-                break;
-
-            case RequestTypeId.GET_WORK:
-
-                //Enable any Reception user to get any Message from the database given the reception Address
-                //Where voided is false(voided means it has not been processed)
-
-                Work getWork = (Work) requestData;
-                String getWorkAddress = getWork.getSourceAddress();
-
-                Mediator.getLogger(Cds.class.getName()).log(Level.FINER, "GetWork");
-                Connection getWorkConn = Sql.connect();
-
-
-                String getWorkSql = " SELECT message FROM cds_store WHERE destination = "
-                        + " " + Sql.quote(getWorkAddress) + ""
-                        + "AND voided = 0";
-                ResultSet rs = Sql.query(getWorkConn, getWorkSql);
-
-                try {
-                    // retrieve the values for the current row
-                    while (rs.next()) {
-                        String message = rs.getString("message");//get message from cds to be send
-                        String destinationAddress = rs.getString("destination");//get destination
-
-                        /* Send notify to destination
-                        instantiate person request so that you can set the new 
-                        information held in the record set*/
-                        PersonRequest prOut = new PersonRequest();
-                        prOut.setDestinationAddress(destinationAddress);
-                        prOut.setXml(message);
-
-                        //Invoke the mediator to send out new person request changes (prout)
-                        mediator.getData(RequestTypeId.NOTIFY_PERSON_CHANGED, prOut);
-                    }
-                } catch (SQLException ex) {
-                    Logger.getLogger(Cds.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                break;
-
-            case RequestTypeId.REASSIGN_WORK:
-
-                Work reassignWork = (Work) requestData;
-                String reassignAddress = reassignWork.getSourceAddress();
-
-                Mediator.getLogger(Cds.class.getName()).log(Level.FINER, "Reassign");
-                //Update the destination of the Message to a different destination
-                Connection reassignConn = Sql.connect();
-
-                String reassignSql = "UPDATE cds_store SET destination = " + Sql.quote(reassignAddress) + ""
-                        + " WHERE destination = " + Sql.quote(reassignAddress) + " AND voided = 0";
-
-                Sql.execute(reassignConn, reassignSql);
-                break;
-
-            case RequestTypeId.WORK_DONE:
-                Work workDone = (Work) requestData;
-                String workDoneAdress = workDone.getSourceAddress();
-
-                Mediator.getLogger(Cds.class.getName()).log(Level.FINER, "workdone");
-                //Mark the message as voided
-                Connection workDoneConn = Sql.connect();
-                String workDoneSql = "UPDATE cds_store SET voided = 1 where "
-                        + " destination ='" + Sql.quote(workDoneAdress) + "' ";
-
-                Sql.execute(workDoneConn, workDoneSql);
-                break;
-
-
-            default:
-                Logger.getLogger(Cds.class.getName()).log(Level.SEVERE,
-                        "getData() called with unepxected requestTypeId {0}", requestTypeId);
-                break;
+        if (requestData != null) {
+            switch (requestTypeId) {
+                case RequestTypeId.NOTIFY_PERSON_CHANGED:
+                    cdsHelper.processNotifyPersonChanged((PersonRequest) requestData);
+                    break;
+                case RequestTypeId.GET_WORK:
+                    cdsHelper.processGetWork((Work) requestData);
+                    break;
+                case RequestTypeId.REASSIGN_WORK:
+                    cdsHelper.processReassignWork((Work) requestData);
+                    break;
+                case RequestTypeId.WORK_DONE:
+                    cdsHelper.processWorkDone((Work) requestData);
+                    break;
+                default:
+                    Logger.getLogger(Cds.class.getName()).log(Level.SEVERE,
+                            "getData() called with unepxected requestTypeId {0}", requestTypeId);
+                    break;
+            }
+        } else {
+            Mediator.getLogger(Cds.class.getName()).log(Level.SEVERE, "Null requestData received by CDS. "
+                    + "No processing done!");
         }
-
-        throw new UnsupportedOperationException("Not supported yet.");
+        return null;
     }
 }

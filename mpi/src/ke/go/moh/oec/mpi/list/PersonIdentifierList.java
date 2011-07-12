@@ -121,7 +121,7 @@ public class PersonIdentifierList {
                         if (oldP.getIdentifierType() == piType) {
                             String existingId = oldP.getIdentifier();
                             if ((piType != PersonIdentifier.Type.cccLocalId && piType != PersonIdentifier.Type.cccUniqueId)
-                                    || (id != null && id.substring(0, 4).equals(existingId.substring(0, 4)))) {
+                                    || (id != null && id.substring(0, 5).equals(existingId.substring(0, 5)))) {
                                 deleteList.add(oldP);
                                 sql = "DELETE FROM person_identifier "
                                         + " WHERE person_id = " + personId
@@ -133,13 +133,13 @@ public class PersonIdentifierList {
                     }
                 }
                 if (id != null && !id.isEmpty()) { // If have a new identifier, then add it.
-                    if (!(piType == PersonIdentifier.Type.cccLocalId || piType == PersonIdentifier.Type.cccUniqueId)
-                            && id.length() <= 6) {
+//                    if (!(piType == PersonIdentifier.Type.cccLocalId || piType == PersonIdentifier.Type.cccUniqueId)
+//                            && id.length() <= 6) {
                         addList.add(newP);
                         sql = "INSERT INTO person_identifier (person_id, identifier_type_id, identifier) values ("
                                 + personId + ", " + dbType + ", " + Sql.quote(id) + ")";
                         Sql.execute(conn, sql);
-                    }
+//                    }
                 }
             }
             if (!deleteList.isEmpty()) { // Do we have anything to remove from our in-memory list?

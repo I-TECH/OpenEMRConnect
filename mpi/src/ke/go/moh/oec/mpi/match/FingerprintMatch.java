@@ -24,7 +24,6 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi.match;
 
-import com.griaule.grfingerjava.GrFingerJava;
 import com.griaule.grfingerjava.GrFingerJavaException;
 import com.griaule.grfingerjava.MatchingContext;
 import com.griaule.grfingerjava.Template;
