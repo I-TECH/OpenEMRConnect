@@ -59,12 +59,12 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
     private FingerprintImage fingerprintImage;
     private Template template;
 
-    public ReaderManager(FingerprintingComponent fingerprintingComponent) throws ClassNotFoundException, GrFingerJavaException {
+    public ReaderManager(FingerprintingComponent fingerprintingComponent) throws GrFingerJavaException {
         this.fingerprintingComponent = fingerprintingComponent;
         initialize();
     }
 
-    public ReaderManager(FingerprintingComponent fingerprintingComponent, boolean autoExtract, boolean autoIdentify) throws ClassNotFoundException, GrFingerJavaException {
+    public ReaderManager(FingerprintingComponent fingerprintingComponent, boolean autoExtract, boolean autoIdentify) throws GrFingerJavaException {
         this.fingerprintingComponent = fingerprintingComponent;
         initialize();
         this.autoExtract = autoExtract;

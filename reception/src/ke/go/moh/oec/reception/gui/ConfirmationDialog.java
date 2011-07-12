@@ -31,8 +31,8 @@
 package ke.go.moh.oec.reception.gui;
 
 import ke.go.moh.oec.Person;
-import ke.go.moh.oec.client.controller.PersonWrapper;
-import ke.go.moh.oec.client.data.DisplayableMaritalStatus;
+import ke.go.moh.oec.reception.controller.PersonWrapper;
+import ke.go.moh.oec.reception.data.DisplayableMaritalStatus;
 import org.jdesktop.application.Action;
 
 /**
