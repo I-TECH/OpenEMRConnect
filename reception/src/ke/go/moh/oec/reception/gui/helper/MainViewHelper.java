@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonRequest;
+import ke.go.moh.oec.RelatedPerson;
 import ke.go.moh.oec.Work;
 import ke.go.moh.oec.reception.controller.NotificationListener;
 import ke.go.moh.oec.reception.controller.NotificationManager;
@@ -68,18 +69,39 @@ public class MainViewHelper implements NotificationManager {
         return session;
     }
 
-    public ProcessResult findPerson(int targetIndex) {
-        return findPerson(targetIndex, session.getSearchPersonWrapper());
+    public ProcessResult findPerson(int targetServer) {
+        return findPerson(targetServer, session.getSearchPersonWrapper());
     }
 
-    public ProcessResult findPerson(int targetIndex, PersonWrapper searchPersonWrapper) {
+    public ProcessResult findPersonHdss(PersonWrapper searchPersonWrapper) {
+        List<Person> householdMemberList = new ArrayList<Person>();
+        RequestResult kisumuHdssRequestResult = new RequestResult();
+        PersonRequest personRequest = new PersonRequest();
+        personRequest.setPerson(searchPersonWrapper.unwrap());
+        RequestDispatcher.dispatch(personRequest, kisumuHdssRequestResult, 
+                RequestDispatcher.DispatchType.FIND, TargetServer.KISUMU_HDSS);
+        if (kisumuHdssRequestResult.isSuccessful()) {
+            List<Person> searchPersonList = (List<Person>) kisumuHdssRequestResult.getData();            
+            if (!searchPersonList.isEmpty()) {
+                Person searchPerson  = searchPersonList.get(0);
+                for (RelatedPerson relatedPerson : searchPerson.getHouseholdMembers()) {
+                    householdMemberList.add(relatedPerson.getPerson());
+                }
+            }
+            return new ProcessResult(ProcessResult.Type.LIST, householdMemberList);
+        } else {
+            return new ProcessResult(ProcessResult.Type.UNREACHABLE_SERVER, null);
+        }
+    }
+
+    public ProcessResult findPerson(int targetServer, PersonWrapper searchPersonWrapper) {
         List<Person> mpiPersonList = null;
         List<Person> lpiPersonList = null;
         session.setSearchPersonWrapper(searchPersonWrapper);
         RequestResult mpiRequestResult = session.getMpiRequestResult();
         RequestResult lpiRequestResult = session.getLpiRequestResult();
         RequestDispatcher.dispatch(createPersonRequest(searchPersonWrapper),
-                mpiRequestResult, lpiRequestResult, RequestDispatcher.DispatchType.FIND, targetIndex);
+                mpiRequestResult, lpiRequestResult, RequestDispatcher.DispatchType.FIND, targetServer);
         if (mpiRequestResult.isSuccessful()
                 && lpiRequestResult.isSuccessful()) {
             mpiPersonList = (List<Person>) mpiRequestResult.getData();
@@ -149,16 +171,16 @@ public class MainViewHelper implements NotificationManager {
                     }
                 }
             }
-            return new ProcessResult(ProcessResult.Type.UNREACHABLE_INDICES, null);
+            return new ProcessResult(ProcessResult.Type.UNREACHABLE_SERVER, null);
         }
     }
 
-    public void createPerson(int targetIndex, PersonWrapper personWrapper) {
-        RequestDispatcher.dispatch(createPersonRequest(personWrapper), RequestDispatcher.DispatchType.CREATE, targetIndex);
+    public void createPerson(int targetServer, PersonWrapper personWrapper) {
+        RequestDispatcher.dispatch(createPersonRequest(personWrapper), RequestDispatcher.DispatchType.CREATE, targetServer);
     }
 
-    public void modifyPerson(int targetIndex, PersonWrapper personWrapper) {
-        RequestDispatcher.dispatch(createPersonRequest(personWrapper), RequestDispatcher.DispatchType.MODIFY, targetIndex);
+    public void modifyPerson(int targetServer, PersonWrapper personWrapper) {
+        RequestDispatcher.dispatch(createPersonRequest(personWrapper), RequestDispatcher.DispatchType.MODIFY, targetServer);
     }
 
     public void requireClinicId() {
@@ -193,11 +215,11 @@ public class MainViewHelper implements NotificationManager {
         return (List<Person>) session.getLpiRequestResult().getData();
     }
 
-    public void noMatchFound(int targetIndex) {
-        if (targetIndex == TargetServer.MPI) {
+    public void noMatchFound(int targetServer) {
+        if (targetServer == TargetServer.MPI) {
             session.setMpiMatchPersonWrapper(null);
             saveRejectedMPICandidateList();
-        } else if (targetIndex == TargetServer.LPI) {
+        } else if (targetServer == TargetServer.LPI) {
             session.setLpiMatchPersonWrapper(null);
             saveRejectedLPICandidateList();
         }
@@ -241,11 +263,11 @@ public class MainViewHelper implements NotificationManager {
         return session.isLpiResultDisplayed();
     }
 
-    public void acceptMatch(int targetIndex, PersonWrapper personWrapper) {
-        if (targetIndex == TargetServer.MPI) {
+    public void acceptMatch(int targetServer, PersonWrapper personWrapper) {
+        if (targetServer == TargetServer.MPI) {
             session.setMpiMatchPersonWrapper(personWrapper);
             session.setRejectedMPICandidateList(null);
-        } else if (targetIndex == TargetServer.LPI) {
+        } else if (targetServer == TargetServer.LPI) {
             session.setLpiMatchPersonWrapper(personWrapper);
             session.setRejectedLPICandidateList(null);
         }

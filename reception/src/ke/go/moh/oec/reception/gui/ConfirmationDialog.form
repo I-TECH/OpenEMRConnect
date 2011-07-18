@@ -247,6 +247,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="clinicIdTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="clinicIdTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -258,6 +259,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="firstNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="firstNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -269,6 +271,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="middleNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="middleNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -280,6 +283,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="lastNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="lastNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -295,6 +299,7 @@
               <ComponentRef name="sexButtonGroup"/>
             </Property>
             <Property name="text" type="java.lang.String" resourceKey="maleRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="maleRadioButton" noResource="true"/>
           </Properties>
         </Component>
@@ -304,6 +309,7 @@
               <ComponentRef name="sexButtonGroup"/>
             </Property>
             <Property name="text" type="java.lang.String" resourceKey="femaleRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="femaleRadioButton" noResource="true"/>
           </Properties>
         </Component>
@@ -315,6 +321,7 @@
         </Component>
         <Component class="com.toedter.calendar.JDateChooser" name="birthDateChooser">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="birthDateChooser" noResource="true"/>
           </Properties>
         </Component>
@@ -326,6 +333,7 @@
         </Component>
         <Component class="javax.swing.JComboBox" name="maritalStatusComboBox">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="maritalStatusComboBox" noResource="true"/>
           </Properties>
           <BindingProperties>
@@ -340,6 +348,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="villageTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="villageTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -351,6 +360,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="fathersFirstNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="fathersFirstNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -362,6 +372,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="fathersMiddleNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="fathersMiddleNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -373,6 +384,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="fathersLastNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="fathersLastNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -384,6 +396,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="mothersFirstNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="mothersFirstNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -395,6 +408,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="mothersMiddleNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="mothersMiddleNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -406,6 +420,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="mothersLastNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="mothersLastNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -417,6 +432,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="compoundHeadsFirstNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="compoundHeadsFirstNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -428,6 +444,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="compoundHeadsMiddleNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="compoundHeadsMiddleNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -439,6 +456,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="compoundHeadsLastNameTextField">
           <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="compoundHeadsLastNameTextField" noResource="true"/>
           </Properties>
         </Component>
@@ -454,6 +472,7 @@
               <ComponentRef name="hdssDataConsentButtonGroup"/>
             </Property>
             <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentYesRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="hdssDataConsentYesRadioButton" noResource="true"/>
           </Properties>
         </Component>
@@ -463,6 +482,7 @@
               <ComponentRef name="hdssDataConsentButtonGroup"/>
             </Property>
             <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentNoRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="hdssDataConsentNoRadioButton" noResource="true"/>
           </Properties>
         </Component>
@@ -472,6 +492,7 @@
               <ComponentRef name="hdssDataConsentButtonGroup"/>
             </Property>
             <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentNoAnswerRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="hdssDataConsentNoAnswerRadioButton" noResource="true"/>
           </Properties>
         </Component>

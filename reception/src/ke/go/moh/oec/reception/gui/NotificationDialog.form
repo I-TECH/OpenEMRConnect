@@ -88,15 +88,15 @@
                   </Group>
                   <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="clinicIdTextField" alignment="0" pref="403" max="32767" attributes="0"/>
-                      <Component id="firstNameTextField" alignment="0" pref="403" max="32767" attributes="0"/>
-                      <Component id="middleNameTextField" alignment="0" pref="403" max="32767" attributes="0"/>
-                      <Component id="lastNameTextField" pref="403" max="32767" attributes="0"/>
-                      <Component id="notificationTypeTextField" alignment="0" pref="403" max="32767" attributes="0"/>
-                      <Component id="birthdateTextField" alignment="0" pref="403" max="32767" attributes="0"/>
-                      <Component id="occurenceDateTextField" alignment="0" pref="403" max="32767" attributes="0"/>
-                      <Component id="sexTextField" alignment="0" pref="403" max="32767" attributes="0"/>
-                      <Component id="additionalInformationScrollPane" alignment="0" pref="403" max="32767" attributes="0"/>
+                      <Component id="clinicIdTextField" alignment="0" pref="428" max="32767" attributes="0"/>
+                      <Component id="firstNameTextField" alignment="0" pref="428" max="32767" attributes="0"/>
+                      <Component id="middleNameTextField" alignment="0" pref="428" max="32767" attributes="0"/>
+                      <Component id="lastNameTextField" pref="428" max="32767" attributes="0"/>
+                      <Component id="notificationTypeTextField" alignment="0" pref="428" max="32767" attributes="0"/>
+                      <Component id="birthdateTextField" alignment="0" pref="428" max="32767" attributes="0"/>
+                      <Component id="occurenceDateTextField" alignment="0" pref="428" max="32767" attributes="0"/>
+                      <Component id="sexTextField" alignment="0" pref="428" max="32767" attributes="0"/>
+                      <Component id="additionalInformationScrollPane" alignment="0" pref="428" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
