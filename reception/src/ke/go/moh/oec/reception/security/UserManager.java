@@ -211,7 +211,7 @@ public final class UserManager {
             statement = this.getStatement();
             statement.executeQuery("SELECT username FROM " + userTable);
         } catch (SQLException ex) {
-            if (ex.getSQLState().equals("X0Y32")) {
+            if (ex.getSQLState().equals("42Y07")) {
                 exists = false;
             } else {
                 Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);

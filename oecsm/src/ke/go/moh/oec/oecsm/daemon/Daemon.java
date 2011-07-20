@@ -71,14 +71,19 @@ public class Daemon extends Thread {
             while (true) {
                 new SchemaSynchronizer().synchronize();
                 new DataSynchronizer().Synchronize();
-                List<LoggableTransaction> transactionList = new LoggableTransactionMiner().generate();
-                String transactionXmlOutput = getProperty("transaction.xml.output");
-                if (transactionXmlOutput != null && transactionXmlOutput.equalsIgnoreCase("true")) {
-                    new XMLTransactionGenerator().generate(transactionList);
-                }
+
+                // T H I S    I S    L O G I C    F O R     X M L    L O G G I N G//
+
+//                List<LoggableTransaction> transactionList = new LoggableTransactionMiner().generate();
+//                String transactionXmlOutput = getProperty("transaction.xml.output");
+//                if (transactionXmlOutput != null && transactionXmlOutput.equalsIgnoreCase("true")) {
+//                    new XMLTransactionGenerator().generate(transactionList);
+//                }
+
+                // T H I S    I S    L O G I C    F O R     X M L    L O G G I N G//
+
                 // TODO: Implement time of day scheduler method
                 Thread.sleep(snooze);
-                System.gc();
             }
         } catch (Exception ex) {
             Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);

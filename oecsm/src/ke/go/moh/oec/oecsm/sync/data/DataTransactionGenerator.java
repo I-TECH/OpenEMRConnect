@@ -39,7 +39,6 @@ import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
 import ke.go.moh.oec.oecsm.sync.schema.ShadowSchemaMiner;
 import ke.go.moh.oec.oecsm.data.TransactionType;
-import java.sql.ResultSet;
 
 /**
  * @date Aug 19, 2010
@@ -47,6 +46,9 @@ import java.sql.ResultSet;
  * @author JGitahi
  */
 public class DataTransactionGenerator {
+
+    private boolean sourceRsHasRecords = false;
+    private boolean shadowRsHasRecords = false;
 
     public List<Transaction> generate() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
         List<Transaction> transactionList = new ArrayList<Transaction>();
@@ -56,162 +58,106 @@ public class DataTransactionGenerator {
         shadowDataMiner.start();
         Database database = new ShadowSchemaMiner().mine(true);
         for (Table table : database.getTableList()) {
-            SourceResultSet source = sourceDataMiner.mine(table);
-            ShadowResultSet shadow = shadowDataMiner.mine(table);
-            //
-            //  Do a merge comparison between the two ResultSets
-            //  that are already sorted by primary key value.
-            //
-            source.next(); // Advance to the first source row of the table.
-            shadow.next(); // Advance to the first shadow row of the table.
-            while (!source.isAfterLast() || !shadow.isAfterLast()) {
-
-                if (shadow.isAfterLast() || (!source.isAfterLast() && shadow.getString("PK").compareTo(source.getString("PK")) < 0)) {
-                    //
-                    //    I  N  S  E  R  T         (Source PK value is smaller)
-                    //
-                    LoggableTransaction loggableTransaction = new LoggableTransaction(table, TransactionType.INSERT);
-                    List<LoggableTransactionDatum> loggableTransactionDatumList = new ArrayList<LoggableTransactionDatum>();
-                    for (Column column : table.getColumnList()) {
-                        Cell cell = new Cell(source.getString("PK"), source.getString(column));
-                        cell.setColumn(column);
-                        transactionList.add(new DataTransaction(cell, TransactionType.INSERT));
-                        loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
+            SourceResultSet sourceRs = sourceDataMiner.mine(table);
+            ShadowResultSet shadowRs = shadowDataMiner.mine(table);
+            sourceRsHasRecords = sourceRs.next(); // Advance to the first sourceRs row of the table if available.
+            shadowRsHasRecords = shadowRs.next(); // Advance to the first shadowRs row of the table if available.
+            while (sourceRsHasRecords || shadowRsHasRecords) {
+                //We filter by which ResultSet contains any rows just so we are not trying to read
+                //out of an empty ResultSet
+                if (sourceRsHasRecords && !shadowRsHasRecords) {
+                    //This IS an insert
+                    insert(transactionList, table, sourceRs);
+                } else if (!sourceRsHasRecords && shadowRsHasRecords) {
+                    //This IS a delete
+                    delete(transactionList, table, shadowRs);
+                } else if (sourceRsHasRecords && shadowRsHasRecords) {
+                    //  This MAY BE  an insert, a delete or an update so we do a merge comparison between the two ResultSets
+                    String sourcePk = sourceRs.getString("PK");
+                    String shadowPk = shadowRs.getCell("PK").getData();
+                    if (sourcePk.compareTo(shadowPk) < 0) {
+                        insert(transactionList, table, sourceRs);
+                    } else if (sourcePk.compareTo(shadowPk) > 0) {
+                        delete(transactionList, table, shadowRs);
+                    } else if (sourcePk.compareTo(shadowPk) == 0) {
+                        update(transactionList, table, sourceRs, shadowRs);
                     }
-                    loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);
-                    transactionList.add(loggableTransaction);
-                    source.next();
-
-                } else if (source.isAfterLast() || source.getString("PK").compareTo(shadow.getString("PK")) < 0) {
-                    //
-                    //    D  E  L  E  T  E         (Shadow PK value is smaller)
-                    //
-                    LoggableTransaction loggableTransaction = new LoggableTransaction(table, TransactionType.DELETE);
-                    List<LoggableTransactionDatum> loggableTransactionDatumList = new ArrayList<LoggableTransactionDatum>();
-                    for (Column column : table.getColumnList()) {
-                        Cell cell = new Cell(shadow.getString("PK"), shadow.getString(column));
-                        cell.setColumn(column);
-                        transactionList.add(new DataTransaction(cell, TransactionType.DELETE));
-                        loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
-                    }
-                    loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);
-                    transactionList.add(loggableTransaction);
-                    shadow.next();
-
-                } else { // PKs are the same. Test if the rest of the record also matches.
-                    //
-                    //    U  P  D  A  T  E    -  o  r  -    S  A  M  E         (PK values are equal)
-                    //
-                    LoggableTransaction loggableTransaction = new LoggableTransaction(table, TransactionType.UPDATE);
-                    List<LoggableTransactionDatum> loggableTransactionDatumList = new ArrayList<LoggableTransactionDatum>();
-                    for (Column column : table.getColumnList()) {
-                        if (!shadow.getString(column).equals(source.getString(column))) {
-                            Cell cell = new Cell(source.getString("PK"), source.getString(column));
-                            cell.setColumn(column);
-                            transactionList.add(new DataTransaction(cell, TransactionType.UPDATE));
-                            loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
-                        }
-                    }
-                    if (!loggableTransactionDatumList.isEmpty()) { // If not the same:
-                        loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);
-                        transactionList.add(loggableTransaction);
-                    }
-                    source.next();
-                    shadow.next();
                 }
             }
-            source.close();
-            shadow.close();
+            sourceRs.close();
+            shadowRs.close();
         }
         sourceDataMiner.finish();
         shadowDataMiner.finish();
         return transactionList;
     }
-//    public List<Transaction> generate() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
-//        List<DataTransaction> dataTransactionList = new ArrayList<DataTransaction>();
-//        List<Cell> sourceCellList = new SourceDataMiner().mine(new ShadowSchemaMiner().mine(true));
-//        List<Cell> shadowCellList = new ShadowDataMiner().mine();
-//        Collections.sort(sourceCellList);
-//        Collections.sort(shadowCellList);
-//        for (Cell cell : sourceCellList) {
-//            if (!shadowCellList.contains(cell)) {
-//                dataTransactionList.add(new DataTransaction(cell, TransactionType.INSERT));
-//            } else {
-//                Cell equivalentShadowDatum = shadowCellList.get(shadowCellList.indexOf(cell));
-//                if (cell.getData() != null) {
-//                    if (!cell.getData().equals(equivalentShadowDatum.getData())) {
-//                        cell.setId(equivalentShadowDatum.getId());
-//                        dataTransactionList.add(new DataTransaction(cell, TransactionType.UPDATE));
-//                    }
-//                } else {
-//                    if (!(cell.getData() == null & equivalentShadowDatum.getData() == null)) {
-//                        cell.setId(equivalentShadowDatum.getId());
-//                        dataTransactionList.add(new DataTransaction(cell, TransactionType.UPDATE));
-//                    }
-//                }
-//
-//            }
-//        }
-//        for (Cell datum : shadowCellList) {
-//            if (!sourceCellList.contains(datum)) {
-//                dataTransactionList.add(new DataTransaction(datum, TransactionType.DELETE));
-//            }
-//        }
-//        List<Transaction> transactionList = new ArrayList<Transaction>();
-//        transactionList.addAll(dataTransactionList);
-//        transactionList.addAll(generate(dataTransactionList));
-//        return transactionList;
-//    }
-//
-//    private List<LoggableTransaction> generate(List<DataTransaction> dataTransactionList) {
-//        List<LoggableTransaction> loggableTransactionList = new ArrayList<LoggableTransaction>();
-//        Collections.sort(dataTransactionList);
-//        if (!dataTransactionList.isEmpty()) {
-//            int i = 0;
-//            int n = dataTransactionList.size();
-//            TransactionType type = dataTransactionList.get(i).getType();
-//            Table table = dataTransactionList.get(i).getCell().getColumn().getTable();
-//            String primaryKeyValue = dataTransactionList.get(i).getCell().getPrimaryKeyValue();
-//            for (int j = i; j < n; j++) {
-//                if (dataTransactionList.get(j).getType().equals(type)) {
-//                    if (dataTransactionList.get(j).getCell().getColumn().getTable().equals(table)) {
-//                        LoggableTransaction loggableTransaction = new LoggableTransaction(table, type);
-//                        List<LoggableTransactionDatum> = new ArrayList<LoggableTransactionDatum>();
-//                        for (int k = j;; k++) {
-//                            if (dataTransactionList.get(k).getCell().getPrimaryKeyValue().equals(primaryKeyValue)) {
-//                                loggableTransactionDatumList.add(new LoggableTransactionDatum(dataTransactionList.get(k).getCell(), loggableTransaction));
-//                                if (k == n - 1) {
-//                                    loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);
-//                                    loggableTransactionList.add(loggableTransaction);
-//                                    primaryKeyValue = dataTransactionList.get(k).getCell().getPrimaryKeyValue();
-//                                    j = k;
-//                                    break;
-//                                }
-//                            } else {
-//                                loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);
-//                                loggableTransactionList.add(loggableTransaction);
-//                                primaryKeyValue = dataTransactionList.get(k).getCell().getPrimaryKeyValue();
-//                                j = k;
-//                                j--;
-//                                break;
-//                            }
-//                        }
-//                    } else {
-//                        if (j == n - 1) {
-//                            break;
-//                        }
-//                        table = dataTransactionList.get(j).getCell().getColumn().getTable();
-//                        j--;
-//                    }
-//                } else {
-//                    if (j == n - 1) {
-//                        break;
-//                    }
-//                    type = dataTransactionList.get(j).getType();
-//                    j--;
-//                }
-//            }
-//        }
-//        return loggableTransactionList;
-//    }
+
+    private void insert(List<Transaction> transactionList, Table table, SourceResultSet sourceRs) throws SQLException {
+        LoggableTransaction loggableTransaction = new LoggableTransaction(table, TransactionType.INSERT);
+        List<LoggableTransactionDatum> loggableTransactionDatumList = new ArrayList<LoggableTransactionDatum>();
+        for (Column column : table.getColumnList()) {
+            Cell cell = new Cell(sourceRs.getString("PK"), sourceRs.getString(column));
+            cell.setColumn(column);
+            transactionList.add(new DataTransaction(cell, TransactionType.INSERT));
+            loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
+        }
+        loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);
+        transactionList.add(loggableTransaction);
+        sourceRsHasRecords = sourceRs.next();
+    }
+
+    private void delete(List<Transaction> transactionList, Table table, ShadowResultSet shadowRs) throws SQLException {
+        LoggableTransaction loggableTransaction = new LoggableTransaction(table, TransactionType.DELETE);
+        List<LoggableTransactionDatum> loggableTransactionDatumList = new ArrayList<LoggableTransactionDatum>();
+        for (Column column : table.getColumnList()) {
+            Cell cell = shadowRs.getCell(column);
+            cell.setColumn(column);
+            transactionList.add(new DataTransaction(cell, TransactionType.DELETE));
+            loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
+        }
+        loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);
+        transactionList.add(loggableTransaction);
+        shadowRsHasRecords = shadowRs.next();
+    }
+
+    private void update(List<Transaction> transactionList, Table table, SourceResultSet sourceRs, ShadowResultSet shadowRs) throws SQLException {
+        LoggableTransaction loggableTransaction = new LoggableTransaction(table, TransactionType.UPDATE);
+        List<LoggableTransactionDatum> loggableTransactionDatumList = new ArrayList<LoggableTransactionDatum>();
+        for (Column column : table.getColumnList()) {
+            /*
+             * Ensure cells associated with new columns are created
+             */
+            Cell shadowCell = shadowRs.getCell(column);
+            String sourceColumnValue = sourceRs.getString(column);
+            if (shadowCell == null) {
+                Cell cell = new Cell(shadowRs.getCell("PK").getData(), sourceColumnValue);
+                cell.setColumn(column);
+                transactionList.add(new DataTransaction(cell, TransactionType.INSERT));
+                loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
+                continue;
+            }
+            String shadowColumnValue = shadowRs.getCell(column).getData();
+            boolean compare = (shadowColumnValue != null && sourceColumnValue != null);//only compare column values if both are not null
+            boolean ignore = (shadowColumnValue == null && sourceColumnValue == null);//if both values are null, no update has tahen place
+            boolean update = false;//true if an update has happened
+            if (compare) {
+                update = !shadowColumnValue.equals(sourceColumnValue);//if both values are not equal then an update has taken place
+            } else {
+                update = !ignore;//if only one value is null then an update has taken place
+            }
+            if (update) {
+                Cell cell = shadowRs.getCell(column);
+                cell.setData(sourceColumnValue);
+                cell.setColumn(column);
+                transactionList.add(new DataTransaction(cell, TransactionType.UPDATE));
+                loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
+            }
+        }
+        if (!loggableTransactionDatumList.isEmpty()) { // If not the same:
+            loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);
+            transactionList.add(loggableTransaction);
+        }
+        sourceRsHasRecords = sourceRs.next();
+        shadowRsHasRecords = shadowRs.next();
+    }
 }

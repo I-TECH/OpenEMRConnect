@@ -128,7 +128,7 @@ public class Updater {
     private int getLastReceivedTransaction() {
         if (lastReceivedTransaction < 0) {
             lastReceivedTransaction = 0;
-            String sql = "SELECT last_received_transaction_id FROM destination WHERE name = " + HDSS_COMPANION_NAME;
+            String sql = "SELECT last_received_transaction_id FROM destination WHERE name = '" + HDSS_COMPANION_NAME + "'";
             ResultSet rs = query(connMaster, sql);
             try {
                 if (rs.next()) {
@@ -153,13 +153,13 @@ public class Updater {
             sql = "select d.data, c.name as column_name\n"
                     + "from transaction_data d\n"
                     + "join `column` c on c.id = d.column_id\n"
-                    + "where d.transaction_id = " + trans;
+                    + "where d.transaction_id = " + transId;
             ResultSet rsDetail = query(connDetail, sql);
             String hdssId = null;
             while (rsDetail.next()) {
                 String columnName = rsDetail.getString("column_name");
                 String data = rsDetail.getString("data");
-                if (columnName.equals("individid")) {
+                if (columnName.equals("dsspid")) {
                     hdssId = data;
                 } else {
                     Row row = new Row(rsDetail.getString("column_name"), rsDetail.getString("data"));
@@ -193,73 +193,75 @@ public class Updater {
         Fingerprint fp1 = new Fingerprint();
         Fingerprint fp2 = new Fingerprint();
         for (Row r : rowList) {
-            if (r.name.equals("fname")) {
+            if (r.name.equals("first_name")) {
                 p.setFirstName(r.value);
-            } else if (r.name.equals("jname")) {
+            } else if (r.name.equals("middle_name")) {
                 p.setMiddleName(r.value);
-            } else if (r.name.equals("lname")) {
+            } else if (r.name.equals("last_name")) {
                 p.setLastName(r.value);
-            } else if (r.name.equals("famcla")) {
+            } else if (r.name.equals("clan_name")) {
                 p.setClanName(r.value);
-            } else if (r.name.equals("akaname")) {
+            } else if (r.name.equals("other_name")) {
                 p.setOtherName(r.value);
-            } else if (r.name.equals("gender")) {
-                p.setSex(Person.Sex.valueOf(r.value));
-            } else if (r.name.equals("dob")) {
+            } else if (r.name.equals("sex")) {
+                p.setSex(parseSex(r.value));
+            } else if (r.name.equals("birthdate")) {
                 p.setBirthdate(parseDate(r.value));
-            } else if (r.name.equals("deathdate")) {
+            } else if (r.name.equals("death_date")) {
                 p.setDeathdate(parseDate(r.value));
-            } else if (r.name.equals("mfname")) {
+            } else if (r.name.equals("mother_first_name")) {
                 p.setMothersFirstName(r.value);
-            } else if (r.name.equals("mjname")) {
+            } else if (r.name.equals("mother_middle_name")) {
                 p.setMothersMiddleName(r.value);
-            } else if (r.name.equals("mlname")) {
+            } else if (r.name.equals("mother_last_name")) {
                 p.setMothersLastName(r.value);
-            } else if (r.name.equals("ffname")) {
+            } else if (r.name.equals("father_first_name")) {
                 p.setFathersFirstName(r.value);
-            } else if (r.name.equals("fmname")) {
+            } else if (r.name.equals("father_middle_name")) {
                 p.setFathersMiddleName(r.value);
-            } else if (r.name.equals("flname")) {
+            } else if (r.name.equals("father_last_name")) {
                 p.setFathersLastName(r.value);
-            } else if (r.name.equals("mtal")) {
+            } else if (r.name.equals("marriage_status")) {
                 marriageStatus = r.value;
-            } else if (r.name.equals("mtyp")) {
+            } else if (r.name.equals("marriage_type")) {
                 marriageType = r.value;
-            } else if (r.name.equals("cfname")) {
+            } else if (r.name.equals("compound_head_first_name")) {
                 p.setCompoundHeadFirstName(r.value);
-            } else if (r.name.equals("cjname")) {
+            } else if (r.name.equals("compound_head_middle_name")) {
                 p.setCompoundHeadMiddleName(r.value);
-            } else if (r.name.equals("clname")) {
+            } else if (r.name.equals("compound_head_last_name")) {
                 p.setCompoundHeadLastName(r.value);
-            } else if (r.name.equals("village")) {
-                p.setFathersMiddleName(r.value);
-            } else if (r.name.equals("lasemoveddate")) {
+            } else if (r.name.equals("village_name")) {
+                p.setVillageName(r.value);
+            } else if (r.name.equals("last_move_date")) {
                 p.setLastMoveDate(parseDate(r.value));
-            } else if (r.name.equals("expDeliveryDate")) {
-                p.setFathersMiddleName(r.value);
-            } else if (r.name.equals("pEjdDate")) {
+            } else if (r.name.equals("previous_village_name")) {
+                p.setPreviousVillageName(r.value);
+            } else if (r.name.equals("expected_delivery_date")) {
+                p.setExpectedDeliveryDate(parseDate(r.value));
+            } else if (r.name.equals("pregnancy_end_date")) {
                 p.setPregnancyEndDate(parseDate(r.value));
-            } else if (r.name.equals("pOutCome")) {
+            } else if (r.name.equals("pregnancy_outcome")) {
                 p.setPregnancyOutcome(Person.PregnancyOutcome.valueOf(r.value));
-            } else if (r.name.equals("f_Template")) {
+            } else if (r.name.equals("fingerprint1_template")) {
                 fp1.setTemplate(parseHex(r.value));
-            } else if (r.name.equals("f_Type")) {
-                fp1.setFingerprintType(Fingerprint.Type.valueOf(r.value));
-            } else if (r.name.equals("f_Technology")) {
-                fp1.setTechnologyType(Fingerprint.TechnologyType.griauleTemplate);
-            } else if (r.name.equals("f_DateEntered")) {
+            } else if (r.name.equals("fingerprint1_type")) {
+                fp1.setFingerprintType(parseFingerprintType(r.value));
+            } else if (r.name.equals("fingerprint1_technology")) {
+                fp1.setTechnologyType(parseTechnologyType(r.value));
+            } else if (r.name.equals("fingerprint1_date_entered")) {
                 fp1.setDateEntered(parseDate(r.value));
-            } else if (r.name.equals("f_DateModified")) {
+            } else if (r.name.equals("fingerprint1_date_changed")) {
                 fp1.setDateChanged(parseDate(r.value));
-            } else if (r.name.equals("s_Template")) {
+            } else if (r.name.equals("fingerprint2_template")) {
                 fp2.setTemplate(parseHex(r.value));
-            } else if (r.name.equals("s_Type")) {
-                fp2.setFingerprintType(Fingerprint.Type.valueOf(r.value));
-            } else if (r.name.equals("s_Technology")) {
-                fp2.setTechnologyType(Fingerprint.TechnologyType.griauleTemplate);
-            } else if (r.name.equals("s_DateEntered")) {
+            } else if (r.name.equals("fingerprint2_type")) {
+                fp2.setFingerprintType(parseFingerprintType(r.value));
+            } else if (r.name.equals("fingerprint2_technology")) {
+                fp2.setTechnologyType(parseTechnologyType(r.value));
+            } else if (r.name.equals("fingerprint2_date_entered")) {
                 fp2.setDateEntered(parseDate(r.value));
-            } else if (r.name.equals("s_DateModified")) {
+            } else if (r.name.equals("fingerprint2_date_changed")) {
                 fp2.setDateChanged(parseDate(r.value));
             }
         }
@@ -326,6 +328,7 @@ public class Updater {
         pi.setIdentifier(hdssId);
         pi.setIdentifierType(PersonIdentifier.Type.kisumuHdssId);
         personIdentifierList.add(pi);
+        p.setPersonIdentifierList(personIdentifierList);
         PersonResponse pr = requestMpi(p, RequestTypeId.FIND_PERSON_MPI);
         Person returnPerson = null;
         if (pr != null) {
@@ -381,5 +384,45 @@ public class Updater {
             }
         }
         return bytes;
+    }
+
+    private Person.Sex parseSex(String sexString) {
+        Person.Sex sex = null;
+        try {
+            sex = Person.Sex.valueOf(sexString);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sex;
+    }
+
+    private Person.MaritalStatus parseMaritalStatus(String maritalStatusString) {
+        Person.MaritalStatus maritalStatus = null;
+        try {
+            maritalStatus = Person.MaritalStatus.valueOf(maritalStatusString);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return maritalStatus;
+    }
+
+    private Fingerprint.TechnologyType parseTechnologyType(String technologyTypeString) {
+        Fingerprint.TechnologyType technologyType = null;
+        try {
+            technologyType = Fingerprint.TechnologyType.valueOf(technologyTypeString);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return technologyType;
+    }
+
+    private Fingerprint.Type parseFingerprintType(String fingerprintTypeString) {
+        Fingerprint.Type type = null;
+        try {
+            type = Fingerprint.Type.valueOf(fingerprintTypeString);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return type;
     }
 }

@@ -27,11 +27,7 @@ package ke.go.moh.oec.oecsm.sync.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import ke.go.moh.oec.oecsm.data.Cell;
 import ke.go.moh.oec.oecsm.data.Column;
-import ke.go.moh.oec.oecsm.data.Database;
 import ke.go.moh.oec.oecsm.data.Table;
 import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
@@ -80,28 +76,4 @@ public class SourceDataMiner extends DatabaseConnector {
         statement.close();
         disconnect();
     }
-
-//    public List<Cell> mine(Database database) throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
-//        List<Cell> cellList = new ArrayList<Cell>();
-//        try {
-//            connectToSource();
-//            Statement statement = connection.createStatement();
-//            for (Table table : database.getTableList()) {
-//                for (Column column : table.getColumnList()) {
-//                    String compositePK = DatabaseConnector.getQueryCustomizer().buildCompositePrimaryKey(table);
-//                    ResultSet rs = statement.executeQuery("SELECT " + compositePK + " AS PK, " + DatabaseConnector.getQueryCustomizer().getOpenningSafetyPad() + column.getName() + DatabaseConnector.getQueryCustomizer().getClosingSafetyPad() + " FROM " + DatabaseConnector.getQueryCustomizer().getOpenningSafetyPad() + table.getName() + DatabaseConnector.getQueryCustomizer().getClosingSafetyPad());
-//                    while (rs.next()) {
-//                        Cell cell = new Cell(rs.getString("PK"), rs.getString(column.getName()));
-//                        cell.setColumn(column);
-//                        cellList.add(cell);
-//                    }
-//                    rs.close();
-//                }
-//            }
-//            statement.close();
-//        } finally {
-//            disconnect();
-//        }
-//        return cellList;
-//    }
 }

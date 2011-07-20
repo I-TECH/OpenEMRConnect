@@ -70,11 +70,11 @@ public class NotificationDialog extends javax.swing.JDialog {
             Sex sex = subject.getSex();
             sexTextField.setText(sex != null ? sex.toString() : "Unavailable");
             Date birthDate = subject.getBirthdate();
-            birthdateTextField.setText(birthDate != null ? new SimpleDateFormat().format(subject.getBirthdate())
+            birthdateTextField.setText(birthDate != null ? new SimpleDateFormat("dd/MM/yyyy").format(subject.getBirthdate())
                     : "Unavailable");
             notificationTypeTextField.setText(notification.getType().toString());
             Date occurenceDate = notification.getOccurenceDate();
-            occurenceDateTextField.setText(occurenceDate != null ? new SimpleDateFormat().format(notification.getOccurenceDate())
+            occurenceDateTextField.setText(occurenceDate != null ? new SimpleDateFormat("dd/MM/yyyy").format(notification.getOccurenceDate())
                     : "Unavailable");
             occurenceDateLabel.setText(notification.getType().occurenceDateId());
             additionalInformationTextArea.setText(notification.getAdditionalInformation());
@@ -207,15 +207,15 @@ public class NotificationDialog extends javax.swing.JDialog {
                     .addComponent(occurenceDateLabel))
                 .addGap(4, 4, 4)
                 .addGroup(notificationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(clinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                    .addComponent(firstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                    .addComponent(middleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                    .addComponent(lastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                    .addComponent(notificationTypeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                    .addComponent(birthdateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                    .addComponent(occurenceDateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                    .addComponent(sexTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE)
-                    .addComponent(additionalInformationScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 403, Short.MAX_VALUE))
+                    .addComponent(clinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .addComponent(firstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .addComponent(middleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .addComponent(lastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .addComponent(notificationTypeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .addComponent(birthdateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .addComponent(occurenceDateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .addComponent(sexTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
+                    .addComponent(additionalInformationScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE))
                 .addContainerGap())
         );
         notificationPanelLayout.setVerticalGroup(
@@ -322,12 +322,14 @@ public class NotificationDialog extends javax.swing.JDialog {
         ReassignDialog rd = new ReassignDialog(null, true, notificationDialogHelper.getClinicList(), clinic);
         rd.setLocationRelativeTo(this);
         rd.setVisible(true);
-        if (showConfirmMessage("Are you sure you want to reassign '" + notification.toString() + "' to "
-                + clinic.getName() + "?")) {
-            notification.setReassignAggress(clinic.getCode());
-            notificationDialogHelper.reassignWork(notification);
-            notification.setFlaggedOff(true);
-            dispose();
+        if (clinic.isSelected()) {
+            if (showConfirmMessage("Are you sure you want to reassign '" + notification.toString() + "' to "
+                    + clinic.getName() + "?")) {
+                notification.setReassignAggress(clinic.getCode());
+                notificationDialogHelper.reassignWork(notification);
+                notification.setFlaggedOff(true);
+                dispose();
+            }
         }
     }
 
