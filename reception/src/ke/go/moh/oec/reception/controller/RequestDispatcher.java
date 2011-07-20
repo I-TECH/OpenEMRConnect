@@ -141,7 +141,7 @@ public class RequestDispatcher {
      */
     public static void dispatch(Object requestData,
             RequestResult kisumuHdssRequestResult, int dispatchType, int targetServer) {
-        dispatch(requestData, kisumuHdssRequestResult, null, dispatchType, targetServer);
+        dispatch(requestData, null, null, kisumuHdssRequestResult,dispatchType, targetServer);
     }
 
     /**

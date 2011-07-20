@@ -106,6 +106,34 @@ public class PersonWrapper {
         return clinicId;
     }
 
+    public void setKisumuHdssId(String kisumuHdssId) {
+        PersonIdentifier personIdentifier = new PersonIdentifier();
+        personIdentifier.setIdentifier(kisumuHdssId);
+        personIdentifier.setIdentifierType(PersonIdentifier.Type.kisumuHdssId);
+        List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
+        if (personIdentifierList == null) {
+            personIdentifierList = new ArrayList<PersonIdentifier>();
+        }
+        if (!personIdentifierList.contains(personIdentifier)) {
+            personIdentifierList.add(personIdentifier);
+        }
+        person.setPersonIdentifierList(personIdentifierList);
+    }
+
+    public String getKisumuHdssId() {
+        String kisumuHdssId = "";
+        List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
+        if (personIdentifierList != null) {
+            for (PersonIdentifier personIdentifier : personIdentifierList) {
+                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
+                    kisumuHdssId = personIdentifier.getIdentifier();
+                    break;
+                }
+            }
+        }
+        return kisumuHdssId;
+    }
+
     public void setMPIIdentifier(String mpiPersonIdentifier) throws IllegalArgumentException {
         PersonIdentifier personIdentifier = new PersonIdentifier();
         personIdentifier.setIdentifier(mpiPersonIdentifier);
@@ -413,12 +441,24 @@ public class PersonWrapper {
         }
         if (person.getPregnancyEndDate() != null) {
             Date occurenceDate = person.getPregnancyEndDate();
-            String additionalInformation = "";
-            if (occurenceDate == null) {
-                additionalInformation = this.getLongName() + "'s pregnancy came to an end on "
+            Person.PregnancyOutcome pregnancyOutcome = person.getPregnancyOutcome();
+            String additionalInformation = this.getLongName();
+            if (pregnancyOutcome != null) {
+                if (pregnancyOutcome == Person.PregnancyOutcome.multipleBirths) {
+                    additionalInformation = additionalInformation + " had multiple births";
+                } else if (pregnancyOutcome == Person.PregnancyOutcome.singleBirth) {
+                    additionalInformation = additionalInformation + " had a single birth";
+                } else if (pregnancyOutcome == Person.PregnancyOutcome.stillBirth) {
+                    additionalInformation = additionalInformation + " had a still birth";
+                }
+            } else {
+                additionalInformation = additionalInformation + "'s pregnancy came to an end";
+            }
+            if (occurenceDate != null) {
+                additionalInformation = additionalInformation + " on "
                         + new SimpleDateFormat("dd/MM/yyyy").format(occurenceDate) + ".";
             } else {
-                additionalInformation = this.getLongName() + "'s pregnancy came to an end on an unspecified date.";
+                additionalInformation = additionalInformation + " on an unspecified date.";
             }
             notificationList.add(new Notification(this, Notification.Type.PREGNANCY_OUTCOME, occurenceDate, additionalInformation));
         }

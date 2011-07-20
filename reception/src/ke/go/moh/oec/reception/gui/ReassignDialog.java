@@ -165,6 +165,7 @@ public class ReassignDialog extends javax.swing.JDialog {
 
     @Action
     public void cancel() {
+        selectedClinic.setSelected(false);
         dispose();
     }
 
@@ -175,6 +176,7 @@ public class ReassignDialog extends javax.swing.JDialog {
             Clinic reassignClinic = (Clinic) selectedItem;
             selectedClinic.setCode(reassignClinic.getCode());
             selectedClinic.setName(reassignClinic.getName());
+            selectedClinic.setSelected(true);
             dispose();
         } else {
             showWarningMessage("Please select the clinic to which you want to reassign "

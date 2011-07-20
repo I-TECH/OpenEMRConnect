@@ -183,14 +183,15 @@ class XmlPacker {
                 doc = packFindPersonResponseMessage(m);
                 break;
 
-            case createPerson: // Uses packGenericPersonMessage(), below.
-            case modifyPerson: // Uses packGenericPersonMessage(), below.
-            case createPersonAccepted: // Uses packGenericPersonMessage(), below.
-            case modifyPersonAccepted: // Uses packGenericPersonMessage(), below.
+            case createPerson: // Uses packGenericPersonRequestMessage(), below.
+            case modifyPerson: // Uses packGenericPersonRequestMessage(), below.
             case notifyPersonChanged:
-                doc = packGenericPersonMessage(m);
+                doc = packGenericPersonRequestMessage(m);
                 break;
-
+            case createPersonAccepted: // Uses packGenericPersonResponseMessage(), below.
+            case modifyPersonAccepted: // Uses packGenericPersonResponseMessage(), below.
+                doc = packGenericPersonResponseMessage(m);
+                break;
             case logEntry:
                 doc = packLogEntryMessage(m);
                 break;
@@ -206,7 +207,7 @@ class XmlPacker {
     }
 
     /**
-     * Packs a generic HL7 person-related message into a <code>Document</code>.
+     * Packs a generic HL7 PersonRequest message into a <code>Document</code>.
      * <p>
      * Several of the HL7 person-related messages use the same formatting
      * rules, even though the templates differ. (The templates differ only
@@ -215,30 +216,64 @@ class XmlPacker {
      * <p>
      * CREATE PERSON <br>
      * MODIFY PERSON <br>
-     * CREATE PERSON ACCEPTED <br>
-     * MODIFY PERSON ACCEPTED <br>
      * NOTIFY PERSON CHANGED
      *
      * @param m notification message contents to pack
      * @return packed notification messages
      */
-    private Document packGenericPersonMessage(Message m) {
+    private Document packGenericPersonRequestMessage(Message m) {
         Document doc = packTemplate(m);
         Element root = doc.getDocumentElement();
         packHl7Header(root, m);
         Element personNode = (Element) root.getElementsByTagName("patient").item(0);
         if (!(m.getMessageData() instanceof PersonRequest)) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "packGenericPersonMessage() - Expected data class PersonRequest, got {0}",
+                    "packGenericPersonRequestMessage() - Expected data class PersonRequest, got {0}",
                     m.getMessageData().getClass().getName());
+            return doc;
         }
         if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
+            Person p = null;
             PersonRequest personRequest = (PersonRequest) m.getMessageData();
-            Person p = personRequest.getPerson();
+            p = personRequest.getPerson();
             packPerson(personNode, p);
             if (personRequest.isResponseRequested()) {
                 packTagValue(root, "acceptAckCode", "AL"); // Request "ALways" acknowedge.
             }
+        }
+        return doc;
+    }
+
+    /**
+     * Packs a generic HL7 PersonResponse message into a <code>Document</code>.
+     * <p>
+     * Several of the HL7 person-related messages use the same formatting
+     * rules, even though the templates differ. (The templates differ only
+     * in the boilerplate parts that do not concern us directly.)
+     * These messages are:
+     * <p>
+     * CREATE PERSON ACCEPTED <br>
+     * MODIFY PERSON ACCEPTED
+     *
+     * @param m notification message contents to pack
+     * @return packed notification messages
+     */
+    private Document packGenericPersonResponseMessage(Message m) {
+        Document doc = packTemplate(m);
+        Element root = doc.getDocumentElement();
+        packHl7Header(root, m);
+        Element personNode = (Element) root.getElementsByTagName("patient").item(0);
+        if (!(m.getMessageData() instanceof PersonResponse)) {
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
+                    "packGenericPersonResponseMessage() - Expected data class PersonResponse, got {0}",
+                    m.getMessageData().getClass().getName());
+            return doc;
+        }
+        if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
+            Person p = null;
+            PersonResponse persoResponse = (PersonResponse) m.getMessageData();
+            p = persoResponse.getPersonList().get(0);
+            packPerson(personNode, p);
         }
         return doc;
     }

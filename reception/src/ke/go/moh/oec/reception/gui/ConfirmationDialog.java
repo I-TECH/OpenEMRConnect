@@ -151,21 +151,25 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         clinicIdLabel.setText(resourceMap.getString("clinicIdLabel.text")); // NOI18N
         clinicIdLabel.setName("clinicIdLabel"); // NOI18N
 
+        clinicIdTextField.setEnabled(false);
         clinicIdTextField.setName("clinicIdTextField"); // NOI18N
 
         firstNameLabel.setText(resourceMap.getString("firstNameLabel.text")); // NOI18N
         firstNameLabel.setName("firstNameLabel"); // NOI18N
 
+        firstNameTextField.setEnabled(false);
         firstNameTextField.setName("firstNameTextField"); // NOI18N
 
         middleNameLabel.setText(resourceMap.getString("middleNameLabel.text")); // NOI18N
         middleNameLabel.setName("middleNameLabel"); // NOI18N
 
+        middleNameTextField.setEnabled(false);
         middleNameTextField.setName("middleNameTextField"); // NOI18N
 
         lastNameLabel.setText(resourceMap.getString("lastNameLabel.text")); // NOI18N
         lastNameLabel.setName("lastNameLabel"); // NOI18N
 
+        lastNameTextField.setEnabled(false);
         lastNameTextField.setName("lastNameTextField"); // NOI18N
 
         sexLabel.setText(resourceMap.getString("sexLabel.text")); // NOI18N
@@ -173,20 +177,24 @@ public class ConfirmationDialog extends javax.swing.JDialog {
 
         sexButtonGroup.add(maleRadioButton);
         maleRadioButton.setText(resourceMap.getString("maleRadioButton.text")); // NOI18N
+        maleRadioButton.setEnabled(false);
         maleRadioButton.setName("maleRadioButton"); // NOI18N
 
         sexButtonGroup.add(femaleRadioButton);
         femaleRadioButton.setText(resourceMap.getString("femaleRadioButton.text")); // NOI18N
+        femaleRadioButton.setEnabled(false);
         femaleRadioButton.setName("femaleRadioButton"); // NOI18N
 
         birthDateLabel.setText(resourceMap.getString("birthDateLabel.text")); // NOI18N
         birthDateLabel.setName("birthDateLabel"); // NOI18N
 
+        birthDateChooser.setEnabled(false);
         birthDateChooser.setName("birthDateChooser"); // NOI18N
 
         maritalStatusLabel.setText(resourceMap.getString("maritalStatusLabel.text")); // NOI18N
         maritalStatusLabel.setName("maritalStatusLabel"); // NOI18N
 
+        maritalStatusComboBox.setEnabled(false);
         maritalStatusComboBox.setName("maritalStatusComboBox"); // NOI18N
 
         org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, maritalStatusList, maritalStatusComboBox);
@@ -195,51 +203,61 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         villageLabel.setText(resourceMap.getString("villageLabel.text")); // NOI18N
         villageLabel.setName("villageLabel"); // NOI18N
 
+        villageTextField.setEnabled(false);
         villageTextField.setName("villageTextField"); // NOI18N
 
         fathersFirstNameLabel.setText(resourceMap.getString("fathersFirstNameLabel.text")); // NOI18N
         fathersFirstNameLabel.setName("fathersFirstNameLabel"); // NOI18N
 
+        fathersFirstNameTextField.setEnabled(false);
         fathersFirstNameTextField.setName("fathersFirstNameTextField"); // NOI18N
 
         fathersMiddleNameLabel.setText(resourceMap.getString("fathersMiddleNameLabel.text")); // NOI18N
         fathersMiddleNameLabel.setName("fathersMiddleNameLabel"); // NOI18N
 
+        fathersMiddleNameTextField.setEnabled(false);
         fathersMiddleNameTextField.setName("fathersMiddleNameTextField"); // NOI18N
 
         fathersLastNameLabel.setText(resourceMap.getString("fathersLastNameLabel.text")); // NOI18N
         fathersLastNameLabel.setName("fathersLastNameLabel"); // NOI18N
 
+        fathersLastNameTextField.setEnabled(false);
         fathersLastNameTextField.setName("fathersLastNameTextField"); // NOI18N
 
         mothersFirstNameLabel.setText(resourceMap.getString("mothersFirstNameLabel.text")); // NOI18N
         mothersFirstNameLabel.setName("mothersFirstNameLabel"); // NOI18N
 
+        mothersFirstNameTextField.setEnabled(false);
         mothersFirstNameTextField.setName("mothersFirstNameTextField"); // NOI18N
 
         mothersMiddleNameLabel.setText(resourceMap.getString("mothersMiddleNameLabel.text")); // NOI18N
         mothersMiddleNameLabel.setName("mothersMiddleNameLabel"); // NOI18N
 
+        mothersMiddleNameTextField.setEnabled(false);
         mothersMiddleNameTextField.setName("mothersMiddleNameTextField"); // NOI18N
 
         mothersLastNameLabel.setText(resourceMap.getString("mothersLastNameLabel.text")); // NOI18N
         mothersLastNameLabel.setName("mothersLastNameLabel"); // NOI18N
 
+        mothersLastNameTextField.setEnabled(false);
         mothersLastNameTextField.setName("mothersLastNameTextField"); // NOI18N
 
         compoundHeadsFirstNameLabel.setText(resourceMap.getString("compoundHeadsFirstNameLabel.text")); // NOI18N
         compoundHeadsFirstNameLabel.setName("compoundHeadsFirstNameLabel"); // NOI18N
 
+        compoundHeadsFirstNameTextField.setEnabled(false);
         compoundHeadsFirstNameTextField.setName("compoundHeadsFirstNameTextField"); // NOI18N
 
         compoundHeadsMiddleNameLabel.setText(resourceMap.getString("compoundHeadsMiddleNameLabel.text")); // NOI18N
         compoundHeadsMiddleNameLabel.setName("compoundHeadsMiddleNameLabel"); // NOI18N
 
+        compoundHeadsMiddleNameTextField.setEnabled(false);
         compoundHeadsMiddleNameTextField.setName("compoundHeadsMiddleNameTextField"); // NOI18N
 
         compoundHeadsLastNameLabel.setText(resourceMap.getString("compoundHeadsLastNameLabel.text")); // NOI18N
         compoundHeadsLastNameLabel.setName("compoundHeadsLastNameLabel"); // NOI18N
 
+        compoundHeadsLastNameTextField.setEnabled(false);
         compoundHeadsLastNameTextField.setName("compoundHeadsLastNameTextField"); // NOI18N
 
         hdssDataConsentLabel.setText(resourceMap.getString("hdssDataConsentLabel.text")); // NOI18N
@@ -247,14 +265,17 @@ public class ConfirmationDialog extends javax.swing.JDialog {
 
         hdssDataConsentButtonGroup.add(hdssDataConsentYesRadioButton);
         hdssDataConsentYesRadioButton.setText(resourceMap.getString("hdssDataConsentYesRadioButton.text")); // NOI18N
+        hdssDataConsentYesRadioButton.setEnabled(false);
         hdssDataConsentYesRadioButton.setName("hdssDataConsentYesRadioButton"); // NOI18N
 
         hdssDataConsentButtonGroup.add(hdssDataConsentNoRadioButton);
         hdssDataConsentNoRadioButton.setText(resourceMap.getString("hdssDataConsentNoRadioButton.text")); // NOI18N
+        hdssDataConsentNoRadioButton.setEnabled(false);
         hdssDataConsentNoRadioButton.setName("hdssDataConsentNoRadioButton"); // NOI18N
 
         hdssDataConsentButtonGroup.add(hdssDataConsentNoAnswerRadioButton);
         hdssDataConsentNoAnswerRadioButton.setText(resourceMap.getString("hdssDataConsentNoAnswerRadioButton.text")); // NOI18N
+        hdssDataConsentNoAnswerRadioButton.setEnabled(false);
         hdssDataConsentNoAnswerRadioButton.setName("hdssDataConsentNoAnswerRadioButton"); // NOI18N
 
         javax.swing.GroupLayout confirmationPanelLayout = new javax.swing.GroupLayout(confirmationPanel);

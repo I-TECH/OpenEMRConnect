@@ -43,7 +43,7 @@ public class TransactionConverter {
     public static String convertToSQL(Transaction transaction) {
         String sql = "";
         if (transaction.getType() == TransactionType.INITIALIZE) {
-            sql = "TRUNCATE `database`;";
+            sql = "DELETE FROM `database`;";
         } else {
             if (transaction.getClass() == SchemaTransaction.class) {
                 SchemaTransaction schemaTransaction = (SchemaTransaction) transaction;

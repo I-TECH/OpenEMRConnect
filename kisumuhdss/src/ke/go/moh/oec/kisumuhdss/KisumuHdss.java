@@ -56,7 +56,6 @@ public class KisumuHdss {
             System.exit(1);
         }
 
-        mediator = new Mediator();
         Updater updater = new Updater();
         while (true) {
             try {
