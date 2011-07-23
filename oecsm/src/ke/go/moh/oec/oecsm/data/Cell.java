@@ -110,7 +110,11 @@ public class Cell implements Comparable<Cell> {
 
     @Override
     public String toString() {
-        return "(" + this.primaryKeyValue + ")" + " - " + this.data + " - " + this.column.toString();
+        if (column != null) {
+            return "(" + this.primaryKeyValue + ")" + " - " + this.data + " - " + this.column.toString();
+        } else {
+            return "(" + this.primaryKeyValue + ")" + " - " + this.data;
+        }
     }
 
     public int compareTo(Cell that) {

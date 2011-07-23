@@ -62,10 +62,6 @@ public class SourceResultSet {
         return rs.getString(columnLabel);
     }
 
-    public boolean isAfterLast() throws SQLException {
-        return rs.isAfterLast();
-    }
-
     public boolean next() throws SQLException {
         return rs.next();
     }

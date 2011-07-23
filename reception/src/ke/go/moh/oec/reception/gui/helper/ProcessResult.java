@@ -30,18 +30,12 @@ package ke.go.moh.oec.reception.gui.helper;
  */
 public class ProcessResult {
 
-    private static final int SHOW_LIST = 1;
-    private static final int TAKE_NEXT_FINGERPRINT = 2;
-    private static final int JUST_EXIT = 3;
-    private static final int UNREACHABLE_INDICES = 4;
-    private static final int ABORT = 5;
-
     public enum Type {
 
-        SHOW_LIST,
-        TAKE_NEXT_FINGERPRINT,
-        JUST_EXIT,
-        UNREACHABLE_INDICES,
+        LIST,
+        NEXT_FINGERPRINT,
+        EXIT,
+        UNREACHABLE_SERVER,
         ABORT
     }
     private Type type;

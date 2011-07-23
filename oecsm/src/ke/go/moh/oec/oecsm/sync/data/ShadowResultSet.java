@@ -28,6 +28,7 @@ import ke.go.moh.oec.oecsm.data.Column;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import ke.go.moh.oec.oecsm.data.Cell;
 
 /**
  * @date Jun 1, 2011
@@ -36,44 +37,39 @@ import java.util.HashMap;
  */
 public class ShadowResultSet {
 
-    ResultSet rs; // The "real" ResultSet from the query to shadow cells table.
-    HashMap<String, String> valueMap = new HashMap<String, String>();
-    boolean afterLast = true;
+    private ResultSet rs; // The "real" ResultSet from the query to shadow cells table.
+    private HashMap<String, Cell> valueMap = new HashMap<String, Cell>();
+    private boolean hasNext = false;
 
     public ShadowResultSet(ResultSet rs) throws SQLException {
         this.rs = rs;
-        if (!rs.isAfterLast()) {
-            afterLast = !rs.next(); // rs now contains the first query result row, yet to be processed by us.
-        }
+        hasNext = rs.next();// rs now contains the first query result row, yet to be processed by us, if available.
     }
 
-    public String getString(Column column) throws SQLException {
+    public Cell getCell(Column column) throws SQLException {
         return valueMap.get("C" + column.getId());
     }
-    
-    public String getString(String columnLabel) throws SQLException {
+
+    public Cell getCell(String columnLabel) throws SQLException {
         return valueMap.get(columnLabel);
     }
 
-    public boolean isAfterLast() throws SQLException {
-        return afterLast;
-    }
-
     public boolean next() throws SQLException {
-        if (afterLast || rs.isAfterLast()) {
-            afterLast = true;
-            return false; // Return opposize of afterLast.
+        if (!hasNext) {
+            return false;
         } else {
             valueMap.clear();
             String pkValue = rs.getString("PRIMARY_KEY_VALUE");
-            valueMap.put("PK", pkValue);
+            valueMap.put("PK", new Cell(rs.getInt("ID"), pkValue, pkValue));
             do {
-                valueMap.put("C" + rs.getInt("COLUMN_ID"), rs.getString("DATA"));
-            } while (rs.next() && rs.getString("PRIMARY_KEY_VALUE").equals(pkValue));
+                valueMap.put("C" + rs.getInt("COLUMN_ID"), new Cell(rs.getInt("ID"),
+                        pkValue, rs.getString("DATA")));
+                hasNext = rs.next();
+            } while (hasNext && rs.getString("PRIMARY_KEY_VALUE").equals(pkValue));
         }
-        return true; // Return opposize of afterLast.
+        return true;
     }
-    
+
     public void close() throws SQLException {
         rs.close();
     }

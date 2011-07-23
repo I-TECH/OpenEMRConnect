@@ -41,8 +41,8 @@ import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Fingerprint.TechnologyType;
 import ke.go.moh.oec.Fingerprint.Type;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.client.data.ImagedFingerprint;
-import ke.go.moh.oec.client.data.Session;
+import ke.go.moh.oec.reception.data.ImagedFingerprint;
+import ke.go.moh.oec.reception.data.Session;
 import ke.go.moh.oec.reception.reader.FingerprintingComponent;
 import ke.go.moh.oec.reception.reader.ReaderManager;
 import org.jdesktop.application.Action;
@@ -53,7 +53,7 @@ import org.jdesktop.application.Action;
  */
 public class FingerprintDialog extends javax.swing.JDialog implements FingerprintingComponent {
 
-    private ReaderManager readerManager;
+    private final ReaderManager readerManager;
     private Session session;
 
     public void setSession(Session session) {
@@ -86,12 +86,8 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     /** Creates new form FingerprintDialog */
     public FingerprintDialog(java.awt.Frame parent, boolean modal) throws GrFingerJavaException {
         super(parent, modal);
+        this.readerManager = new ReaderManager(this);
         initComponents();
-        try {
-            this.readerManager = new ReaderManager(this);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(FingerprintDialog.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /** This method is called from within the constructor to
@@ -199,7 +195,7 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         qualityTextField.setEditable(false);
 
         notAvailableCheckBox.setAction(actionMap.get("addUnavailableFingerprint")); // NOI18N
-        notAvailableCheckBox.setText("Not available");
+        notAvailableCheckBox.setText("Unavailable");
 
         org.jdesktop.layout.GroupLayout fingerprintPanelLayout = new org.jdesktop.layout.GroupLayout(fingerprintPanel);
         fingerprintPanel.setLayout(fingerprintPanelLayout);
@@ -277,30 +273,6 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                try {
-                    FingerprintDialog dialog = new FingerprintDialog(new javax.swing.JFrame(), true);
-                    dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-
-                        @Override
-                        public void windowClosing(java.awt.event.WindowEvent e) {
-                            System.exit(0);
-                        }
-                    });
-                    dialog.setVisible(true);
-                } catch (GrFingerJavaException ex) {
-                    Logger.getLogger(FingerprintDialog.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.ButtonGroup fingerButtonGroup;
@@ -342,7 +314,9 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     public void dispose() {
         try {
             this.setVisible(false);
-            readerManager.destroy();
+            if (readerManager != null) {
+                readerManager.destroy();
+            }
         } catch (GrFingerJavaException ex) {
             Logger.getLogger(FingerprintDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -384,18 +358,18 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
             }
         } else {
             session.getImagedFingerprintList().add(imagedFingerprint);
-            session.setActiveFingerprint(imagedFingerprint);
+            session.setActiveImagedFingerprint(imagedFingerprint);
         }
         dispose();
     }
 
     private void showWarningMessage(String message, Component parent, JComponent toFocus) {
-        JOptionPane.showMessageDialog(parent, message, OECReception.getApplicationName(), JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(parent, message, OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
         toFocus.requestFocus();
     }
 
     public boolean showConfirmMessage(String message, Component parent) {
-        return JOptionPane.showConfirmDialog(this, message, OECReception.getApplicationName(),
+        return JOptionPane.showConfirmDialog(this, message, OECReception.applicationName(),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
