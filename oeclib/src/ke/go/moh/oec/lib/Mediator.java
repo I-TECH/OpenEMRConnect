@@ -204,7 +204,7 @@ public class Mediator implements IService {
             System.exit(1);
         }
     }
-    
+
     static public String getRuntimeDirectory() {
         return runtimeDirectory;
     }
@@ -475,10 +475,11 @@ public class Mediator implements IService {
             return null;
         }
         /*
-         * Pack the data into the XML message.
+         * Pack the data into the XML message, and compress it.
          */
         String xml = xmlPacker.pack(m);
         m.setXml(xml);
+        Compresser.compress(m);
         /*
          * If we may get a response to this message, add it to the list of responses we are expecting.
          */
@@ -616,6 +617,7 @@ public class Mediator implements IService {
                      * and we do not find a different IP address/port for the
                      * message destination. It is really destined for us. Process it.
                      */
+                    Compresser.decompress(m);
                     xmlPacker.unpack(m);
                     if (m.getMessageData().getClass() == PersonRequest.class) {
                         PersonRequest req = (PersonRequest) m.getMessageData();
@@ -630,9 +632,13 @@ public class Mediator implements IService {
                     }
                     boolean responseDelivered = pendingQueue.findRequest(m);
                     if (responseDelivered) { // Was the message a response to a request that we just delivered?
-                        Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Response matched and delivered to API.");
+                        if (Mediator.testLoggerLevel(Level.FINE)) {
+                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Received message {0} delivered as response to API.", summarizeMessage(m));
+                        }
                     } else {
-                        Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Delivering unsolicited message to API.");
+                        if (Mediator.testLoggerLevel(Level.FINE)) {
+                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Received message {0} delivered unsolicited to API.", summarizeMessage(m));
+                        }
                         processUnsolicitedMessage(m);
                     }
                 } else {
@@ -641,9 +647,11 @@ public class Mediator implements IService {
                      * but the router has returned a IP address/port for the
                      * destination that is not us. Somehing is misconfigured.
                      */
-                    Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "Message destination ''{0}'' matches our own name, but router returns IP Address:port of ''{1}''",
-                            new Object[]{destinationAddress, ipAddressPort});
+                    if (Mediator.testLoggerLevel(Level.FINE)) {
+                        Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                                "Received message {0} destination matches our own name, but router returns IP Address:port of ''{1}''",
+                                new Object[]{summarizeMessage(m), ipAddressPort});
+                    }
                 }
             } else {    // If the message is not addressed to us:
                 if (ipAddressPort == null) {
@@ -652,8 +660,10 @@ public class Mediator implements IService {
                      * and the router is not giving us an IP Port/Address for it.
                      * This is a configuration error.
                      */
-                    Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "IP Address:port not found for destination ''{0}''", destinationAddress);
+                    if (Mediator.testLoggerLevel(Level.FINE)) {
+                        Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                                "IP Address:port not found for received message {0}", summarizeMessage(m));
+                    }
                 } else {
                     /*
                      * The message destination does not match our own,
@@ -661,9 +671,11 @@ public class Mediator implements IService {
                      * It is not destined for us, so we will pass it though
                      * to its destination.
                      */
-                    Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                            "Relaying message {0} to {1} - {2}",
-                            new Object[]{m.getXmlExcerpt(), destinationAddress, ipAddressPort});
+                    if (Mediator.testLoggerLevel(Level.FINE)) {
+                        Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                "Relaying received message {0} to {1} at {2}",
+                                new Object[]{summarizeMessage(m), destinationAddress, ipAddressPort});
+                    }
                     m.setIpAddressPort(ipAddressPort);
                     int hopCount = m.getHopCount();
                     hopCount++;
@@ -687,6 +699,8 @@ public class Mediator implements IService {
                 CallbackThread c = new CallbackThread(this, myCallbackObject, m);
                 Thread t = new Thread(c);
                 t.start();
+
+
             } else {
                 /*
                  * The user has not defined a callback routine. Meanwhile, someone sent us
@@ -696,6 +710,8 @@ public class Mediator implements IService {
                 Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
                         "Unsolicited message with request type {0} received from ''{1}''. No user callback is registered.",
                         new Object[]{messageType.getRequestTypeId(), m.getSourceAddress()});
+
+
             }
         } else {
             /*
@@ -726,7 +742,7 @@ public class Mediator implements IService {
      * <p>
      * We check the hop count to make sure the message is not caught in a
      * routing loop. Then we see whether the message should be sent
-     * with our without the queueing mechanism for storing and forwarding.
+     * with our without the queuing mechanism for storing and forwarding.
      * Then we send it.
      *
      * @param m Message to send
@@ -755,5 +771,53 @@ public class Mediator implements IService {
             }
         }
         return messageSent;
+    }
+
+    /**
+     * Summarizes the message in question. Returns the message type if known,
+     * otherwise returns the root tag of the XML message. Also returns information
+     * such as from and to addresses, if known, and hop count and queuing status.
+     * <p>
+     * Note that this routine uncompresses the message if necessary. It should
+     * only be called if the caller knows that the result will be used.
+     * For example, if the result will be used for logging a message at
+     * level FINE, the caller should test to be sure that we are logging
+     * level FINE messages before calling this method.
+     * 
+     * @param m the message to summarize.
+     * @return brief summary of the message.
+     */
+    private String summarizeMessage(Message m) {
+        String summary = "[can't decode message type]";
+        if (m.getMessageType() != null) { // If message originaed here, we know its type.
+            summary = m.getMessageType().getTemplateType().name(); // Use type as message label.
+        } else {
+            if (m.getXml() == null) {
+                Compresser.decompress(m);
+            }
+            String xml = m.getXml();
+            if (xml != null) {
+                int line2 = xml.indexOf('\n') + 1;
+                if (line2 > 0) {
+                    int endTag = xml.indexOf('>', line2);
+                    int space = xml.indexOf(' ', line2);
+                    if (space > 0 && space < endTag) {
+                        endTag = space; // Strip off any root tag attributes...
+                    }
+                    if (endTag > 0) {
+                        summary = xml.substring(line2, endTag) + " ...";
+                    }
+                }
+            }
+        }
+        if (m.getSendingIpAddress() != null) {
+            summary += " from " + m.getSendingIpAddress();
+        }
+        if (m.getDestinationAddress() != null) {
+            summary += " to " + m.getDestinationAddress();
+        }
+        summary += " toBeQueued " + m.isToBeQueued()
+                + " hopCount " + m.getHopCount();
+        return "[" + summary + "]";
     }
 }

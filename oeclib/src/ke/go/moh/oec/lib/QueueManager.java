@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -169,16 +170,16 @@ class QueueManager implements Runnable {
         boolean messageAdded = false;
         
         //prepare SQL Statement to perform the insertion
-        Statement stmt = null;
         String querySQL = "INSERT INTO " + TABLE_NAME + 
           "( DESTINATION, XML_CODE, HOP_COUNT ) VALUES ( " +
           quote(m.getDestinationAddress()) + ", " +
-          quote(m.getXml()) +", " +    
-                 m.getHopCount() + ")";
+          "?, " +    
+          m.getHopCount() + ")";
         try
         {
-            stmt = dataBaseConnection.createStatement();
-            stmt.executeUpdate(querySQL, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement stmt = dataBaseConnection.prepareStatement(querySQL);
+            stmt.setObject(1, m.getCompressedXml());
+            stmt.executeUpdate();
             stmt.close();
             messageAdded = true;
         }
@@ -226,7 +227,7 @@ System.out.print("Entry: " + resultSet.getInt("MESSAGE_ID") + ". Sending : " );
                     
                     Message m = new Message();
                     m.setDestinationAddress(resultSet.getString("DESTINATION"));
-                    m.setXml(resultSet.getString("XML_CODE"));
+                    m.setCompressedXml(resultSet.getBytes("XML_CODE"));
                     m.setHopCount(resultSet.getInt("HOP_COUNT"));
                     //initialize a boolean to hold the result of the send
                     boolean sent = false;
@@ -320,9 +321,7 @@ System.out.print("QueueManager forName worked. ");
         }
         return con;
     }
-    
-    
-    
+        
     /**
      * Creates the MESSAGE_SENDING_QUEUE JavaDataBase table using SQL.
      * This table keeps track of which Messages still need to be sent out.

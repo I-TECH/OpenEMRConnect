@@ -64,6 +64,10 @@ class Message {
      */
     private String ipAddressPort;
     /**
+     * IP Address which sent this message to us.
+     */
+    private String sendingIpAddress;
+    /**
      * Count of how many systems have sent this message so far.
      */
     private int hopCount;
@@ -76,13 +80,33 @@ class Message {
      */
     private String xml;
     /**
-     * An excerpt of the message to identify its type for logging.
+     * XML string, compressed for network efficiency.
      */
-    private String xmlExcerpt;
+    private byte[] compressedXml;
+    /**
+     * Length of the compressed XML string.
+     */
+    private int compressedXmlLength;
     /**
      * Is a response expected to this message?
      */
     private boolean responseExpected;
+
+    public byte[] getCompressedXml() {
+        return compressedXml;
+    }
+
+    public void setCompressedXml(byte[] compressedXml) {
+        this.compressedXml = compressedXml;
+    }
+
+    public int getCompressedXmlLength() {
+        return compressedXmlLength;
+    }
+
+    public void setCompressedXmlLength(int compressedXmlLength) {
+        this.compressedXmlLength = compressedXmlLength;
+    }
 
     public String getDestinationAddress() {
         return destinationAddress;
@@ -148,6 +172,14 @@ class Message {
         this.responseExpected = responseExpected;
     }
 
+    public String getSendingIpAddress() {
+        return sendingIpAddress;
+    }
+
+    public void setSendingIpAddress(String sendingeIpAddress) {
+        this.sendingIpAddress = sendingeIpAddress;
+    }
+
     public String getSourceAddress() {
         return sourceAddress;
     }
@@ -178,13 +210,5 @@ class Message {
 
     public void setXml(String xml) {
         this.xml = xml;
-    }
-
-    public String getXmlExcerpt() {
-        return xmlExcerpt;
-    }
-
-    public void setXmlExcerpt(String xmlExcerpt) {
-        this.xmlExcerpt = xmlExcerpt;
     }
 }
