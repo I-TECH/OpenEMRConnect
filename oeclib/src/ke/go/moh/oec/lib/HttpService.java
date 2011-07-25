@@ -46,11 +46,16 @@ import java.io.OutputStreamWriter;
 import java.io.BufferedReader;
 import java.io.Writer;
 import com.sun.net.httpserver.HttpServer;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.concurrent.Executors;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 class HttpService {
 
@@ -81,26 +86,15 @@ class HttpService {
         //   throw new UnsupportedOperationException();
         String url = "http://" + m.getIpAddressPort() + "/oecmessage?destination="
                 + m.getDestinationAddress() + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount();
-        String xml = m.getXml();
-        String messageLabel = null; // Message label, used only for logging purposes.
-        if (m.getMessageType() != null) { // If message originaed here, we know its type.
-            messageLabel = m.getMessageType().getTemplateType().name(); // Use type as message label.
-        } else {
-            messageLabel = m.getXmlExcerpt(); // If forwarding (non-queued), use exerpt as message label.
-            if (messageLabel == null) {
-                messageLabel = "(queued message)"; // If forwarding (queued), just say it was a queued message.
-            }
-        }
-        Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Sending {0} to {1}",
-                new Object[]{messageLabel, url});
-        Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message:\n{0}", xml);
-
         try {
             /*Code thats performing a task should be placed in the try catch statement especially in the try part*/
             URLConnection connection = new URL(url).openConnection();
             connection.setDoOutput(true);
-            Writer output = new OutputStreamWriter(connection.getOutputStream());
-            output.write(xml);
+            OutputStream output = connection.getOutputStream();
+            byte[] compressedXml = m.getCompressedXml();
+            int compressedXmlLength = m.getCompressedXmlLength();
+            output.write(compressedXml, 0, compressedXmlLength);
+            //output.write(xml);
             output.close();
 
             Object o = connection.getInputStream();
@@ -112,17 +106,18 @@ class HttpService {
             returnStatus = true;
         } catch (ConnectException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
-                    "Can''t connect to {0}", m.getDestinationAddress());
+                    "Can''t connect to {0} at {1}",
+                    new Object[]{m.getDestinationAddress(), url});
         } catch (MalformedURLException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
-                    "While sending to " + m.getDestinationAddress(), ex);
+                    "While sending to " + m.getDestinationAddress() + " at " + url, ex);
         } catch (IOException ex) {
             if (ex.getMessage().equals("Premature EOF")
                     || ex.getMessage().equals("Unexpected end of file from server")) {
                 returnStatus = true; // We expect End of File at some point
             } else {
                 Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
-                        "While sending to " + m.getDestinationAddress(), ex);
+                        "While sending to " + m.getDestinationAddress() + " at " + url, ex);
 //            There was some transmission error we return false.
             }
         }
@@ -196,24 +191,14 @@ class HttpService {
                 /*
                  * Read the posted content
                  */
-                BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-                String st;
-                m.setXmlExcerpt("");
-                int lineNumber = 0;
-                String request = "";
-                while ((st = br.readLine()) != null) {
-                    if (++lineNumber <= 2) {
-                        String excerpt = st.split(" ")[0] + "...";
-                        m.setXmlExcerpt(excerpt);
-                    }
-                    request = request + st + "\n";
-                }
-                br.close();
-                m.setXml(request);
-                String remoteIp = exchange.getRemoteAddress().getAddress().getHostAddress();
-                Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Received from {0} {1} {2}",
-                        new Object[]{remoteIp, query, m.getXmlExcerpt()});
-                Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message:\n{0}", request);
+                Headers headers = exchange.getRequestHeaders();
+                InputStream input = exchange.getRequestBody();
+                byte[] compressedXml = new byte[30000];
+                int compressedXmlLength = input.read(compressedXml);
+                m.setCompressedXml(compressedXml);
+                m.setCompressedXmlLength(compressedXmlLength);
+                String sendingIpAddress = exchange.getRemoteAddress().getAddress().getHostAddress();
+                m.setSendingIpAddress(sendingIpAddress);
                 /*
                  * Process the message.
                  */
