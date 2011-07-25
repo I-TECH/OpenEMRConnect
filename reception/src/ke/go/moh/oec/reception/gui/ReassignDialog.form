@@ -2,10 +2,10 @@
 
 <Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <NonVisualComponents>
-    <Component class="java.util.List" name="clinicList">
+    <Component class="java.util.List" name="departmentList">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ArrayList&lt;Clinic&gt;()"/>
-        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Clinic&gt;"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ArrayList&lt;ke.go.moh.oec.reception.data.Department&gt;()"/>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;ke.go.moh.oec.reception.data.Department&gt;"/>
       </AuxValues>
     </Component>
   </NonVisualComponents>
@@ -78,9 +78,9 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="clinicNameLabel" min="-2" max="-2" attributes="0"/>
+                  <Component id="departmentNameLabel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="clinicNameComboBox" pref="296" max="32767" attributes="0"/>
+                  <Component id="departmentNameComboBox" pref="296" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -90,8 +90,8 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="clinicNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="clinicNameComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="departmentNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="departmentNameComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -99,19 +99,19 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="clinicNameLabel">
+        <Component class="javax.swing.JLabel" name="departmentNameLabel">
           <Properties>
-            <Property name="text" type="java.lang.String" resourceKey="clinicNameLabel.text"/>
-            <Property name="name" type="java.lang.String" value="clinicNameLabel" noResource="true"/>
+            <Property name="text" type="java.lang.String" resourceKey="departmentNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="departmentNameLabel" noResource="true"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="clinicNameComboBox">
+        <Component class="javax.swing.JComboBox" name="departmentNameComboBox">
           <Properties>
-            <Property name="name" type="java.lang.String" value="clinicNameComboBox" noResource="true"/>
+            <Property name="name" type="java.lang.String" value="departmentNameComboBox" noResource="true"/>
           </Properties>
           <BindingProperties>
-            <BindingProperty name="elements" source="clinicList" target="clinicNameComboBox" targetPath="elements" updateStrategy="0" immediately="false">
-              <Property name="name" type="java.lang.String" value="clinicListBinding"/>
+            <BindingProperty name="elements" source="departmentList" target="departmentNameComboBox" targetPath="elements" updateStrategy="0" immediately="false">
+              <Property name="name" type="java.lang.String" value="departmentListBinding"/>
             </BindingProperty>
           </BindingProperties>
         </Component>

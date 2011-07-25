@@ -37,7 +37,8 @@ import javax.swing.JOptionPane;
 import ke.go.moh.oec.Person.Sex;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.controller.PersonWrapper;
-import ke.go.moh.oec.reception.data.Clinic;
+import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
+import ke.go.moh.oec.reception.data.Department;
 import ke.go.moh.oec.reception.data.Notification;
 import ke.go.moh.oec.reception.gui.helper.NotificationDialogHelper;
 import org.jdesktop.application.Action;
@@ -58,6 +59,7 @@ public class NotificationDialog extends javax.swing.JDialog {
         initComponents();
         notificationDialogHelper = new NotificationDialogHelper(this);
         showNotification();
+        this.setIconImage(OECReception.applicationIcon());
     }
 
     private void showNotification() {
@@ -318,18 +320,23 @@ public class NotificationDialog extends javax.swing.JDialog {
 
     @Action
     public void reassign() {
-        Clinic clinic = new Clinic();
-        ReassignDialog rd = new ReassignDialog(null, true, notificationDialogHelper.getClinicList(), clinic);
-        rd.setLocationRelativeTo(this);
-        rd.setVisible(true);
-        if (clinic.isSelected()) {
-            if (showConfirmMessage("Are you sure you want to reassign '" + notification.toString() + "' to "
-                    + clinic.getName() + "?")) {
-                notification.setReassignAggress(clinic.getCode());
-                notificationDialogHelper.reassignWork(notification);
-                notification.setFlaggedOff(true);
-                dispose();
+        try {
+            Department department = new Department();
+            ReassignDialog rd = new ReassignDialog(null, true, notificationDialogHelper.getClinicList(), department);
+            rd.setLocationRelativeTo(this);
+            rd.setVisible(true);
+            if (department.isSelected()) {
+                if (showConfirmMessage("Are you sure you want to reassign '" + notification.toString() + "' to "
+                        + department.getName() + "?")) {
+                    notification.setReassignAggress(department.getCode());
+                    notificationDialogHelper.reassignWork(notification);
+                    notification.setFlaggedOff(true);
+                    dispose();
+                }
             }
+        } catch (PersistenceManagerException ex) {
+            showErrorMessage("The following error occurred: " + ex.getMessage()
+                    + " Please contact your administrator.", rootPane);
         }
     }
 

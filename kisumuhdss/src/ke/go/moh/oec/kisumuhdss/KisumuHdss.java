@@ -59,7 +59,10 @@ public class KisumuHdss {
         Updater updater = new Updater();
         while (true) {
             try {
-                updater.updateAllTransactions();
+                //updater.updateAllTransactions();
+                if (1 > 2) {
+                    throw new SQLException();
+                }
                 Thread.sleep(10 * 1000);
             } catch (SQLException ex) {
                 Logger.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE, null, ex);

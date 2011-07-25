@@ -33,7 +33,10 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="householdMembersPanel" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="householdMembersPanel" alignment="0" max="32767" attributes="0"/>
+                  <Component id="closeButton" alignment="1" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -44,6 +47,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="householdMembersPanel" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="closeButton" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -52,10 +57,8 @@
     <Container class="javax.swing.JPanel" name="householdMembersPanel">
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder title="Household Members">
-              <Property name="titleX" resourceKey="householdMembersPanel.border.title"/>
-            </TitledBorder>
+          <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+            <EtchetBorder/>
           </Border>
         </Property>
         <Property name="name" type="java.lang.String" value="householdMembersPanel" noResource="true"/>
@@ -66,15 +69,16 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="householdMembersScrollPane" pref="665" max="32767" attributes="0"/>
+                  <Component id="householdMembersScrollPane" pref="673" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
-                  <Component id="householdMembersScrollPane" pref="427" max="32767" attributes="0"/>
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="householdMembersScrollPane" pref="410" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -93,6 +97,15 @@
           <SubComponents>
             <Component class="javax.swing.JTable" name="householdMembersTable">
               <Properties>
+                <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+                  <Table columnCount="5" rowCount="0">
+                    <Column editable="false" title="First Name" type="java.lang.String"/>
+                    <Column editable="false" title="Middle Name" type="java.lang.String"/>
+                    <Column editable="false" title="Last Name" type="java.lang.String"/>
+                    <Column editable="false" title="Other Name" type="java.lang.String"/>
+                    <Column editable="false" title="Birthdate" type="java.lang.Object"/>
+                  </Table>
+                </Property>
                 <Property name="name" type="java.lang.String" value="householdMembersTable" noResource="true"/>
               </Properties>
               <BindingProperties>
@@ -107,6 +120,9 @@
                   <Subbinding sourcePath="${lastName}">
                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
                   </Subbinding>
+                  <Subbinding sourcePath="${otherName}">
+                    <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="String.class"/>
+                  </Subbinding>
                   <Subbinding sourcePath="${birthdate}">
                     <BindingParameter name="javax.swing.binding.ParameterKeys.COLUMN_CLASS" value="java.util.Date.class"/>
                   </Subbinding>
@@ -117,5 +133,14 @@
         </Container>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JButton" name="closeButton">
+      <Properties>
+        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+          <action class="ke.go.moh.oec.reception.gui.HouseholdMembersDialog" id="close" methodName="close"/>
+        </Property>
+        <Property name="text" type="java.lang.String" resourceKey="closeButton.text"/>
+        <Property name="name" type="java.lang.String" value="closeButton" noResource="true"/>
+      </Properties>
+    </Component>
   </SubComponents>
 </Form>

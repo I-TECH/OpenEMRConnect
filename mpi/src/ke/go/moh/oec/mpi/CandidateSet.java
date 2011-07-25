@@ -46,7 +46,6 @@ public class CandidateSet {
 
     public static final int MIN_SCORE = 50;
     private static final int MAX_SET_SIZE = 8;
-
     private TreeSet<Candidate> candidateSet = new TreeSet<Candidate>();
     private TreeSet<Candidate> fingerprintMatchedSet = new TreeSet<Candidate>();
     private int minScore = 100;
@@ -69,8 +68,7 @@ public class CandidateSet {
         int score = scorecard.getScore();
         if (scorecard.isFingerprintMatched()) {
             fingerprintMatchedSet.add(new Candidate(personMatch, scorecard));
-        }
-        else if(candidateSet.size() < MAX_SET_SIZE) {
+        } else if (candidateSet.size() < MAX_SET_SIZE) {
             candidateSet.add(new Candidate(personMatch, scorecard));
             if (score < minScore) {
                 minScore = score;

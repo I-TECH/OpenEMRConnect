@@ -106,6 +106,7 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
     private void initialize() throws GrFingerJavaException {
         try {
             matchingContext = new MatchingContext();
+            GrFingerJava.installLicense("ZMFAG-PKWUK-CABDA-KSDJF");
             GrFingerJava.initializeCapture(this);
             fingerprintingComponent.log("Reader initialized!");
         } catch (GrFingerJavaException ex) {
@@ -172,22 +173,9 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
     }
 
     public void extract() {
-
         try {
             template = matchingContext.extract(fingerprintImage);
-            String message = "";
-            switch (template.getQuality()) {
-                case Template.HIGH_QUALITY:
-                    message = "High quality.";
-                    break;
-                case Template.MEDIUM_QUALITY:
-                    message = "Medium quality.";
-                    break;
-                case Template.LOW_QUALITY:
-                    message = "Low quality.";
-                    break;
-            }
-            fingerprintingComponent.showQuality(message);
+            fingerprintingComponent.showQuality(template.getQuality());
             fingerprintingComponent.showImage(GrFingerJava.getBiometricImage(template, fingerprintImage));
         } catch (GrFingerJavaException e) {
             fingerprintingComponent.log(e.getMessage());

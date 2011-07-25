@@ -117,6 +117,32 @@ public class Notification {
 
     @Override
     public String toString() {
-        return type.toString() + ": " + personWrapper.getShortName();
+        return personWrapper.getLongName();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Notification other = (Notification) obj;
+        if (this.type != other.type) {
+            return false;
+        }
+        if ((this.additionalInformation == null) ? (other.additionalInformation != null) : !this.additionalInformation.equals(other.additionalInformation)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + (this.type != null ? this.type.hashCode() : 0);
+        hash = 97 * hash + (this.additionalInformation != null ? this.additionalInformation.hashCode() : 0);
+        return hash;
     }
 }

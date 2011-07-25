@@ -35,10 +35,10 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.reception.security.User;
-import ke.go.moh.oec.reception.security.UserManager;
-import ke.go.moh.oec.reception.security.exceptions.ExistingUserException;
-import ke.go.moh.oec.reception.security.exceptions.UserManagerCreationException;
+import ke.go.moh.oec.reception.data.User;
+import ke.go.moh.oec.reception.controller.PersistenceManager;
+import ke.go.moh.oec.reception.controller.exceptions.ExistingUserException;
+import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
 import org.jdesktop.application.Action;
 
 /**
@@ -47,13 +47,14 @@ import org.jdesktop.application.Action;
  */
 public class AddUserDialog extends javax.swing.JDialog {
 
-    private final UserManager userManager;
+    private final PersistenceManager userManager;
 
     /** Creates new form LoginDialog */
-    public AddUserDialog(java.awt.Frame parent, boolean modal) throws UserManagerCreationException {
+    public AddUserDialog(java.awt.Frame parent, boolean modal) throws PersistenceManagerException {
         super(parent, modal);
-        userManager = UserManager.getInstance();
+        userManager = PersistenceManager.getInstance();
         initComponents();
+        this.setIconImage(OECReception.applicationIcon());
     }
 
     /** This method is called from within the constructor to
@@ -184,7 +185,7 @@ public class AddUserDialog extends javax.swing.JDialog {
                 Logger.getLogger(AddUserDialog.class.getName()).log(Level.SEVERE, null, ex);
                 showWarningMessage(ex.getMessage(), addButton);
             }
-        } catch (UserManagerCreationException ex) {
+        } catch (PersistenceManagerException ex) {
             Logger.getLogger(AddUserDialog.class.getName()).log(Level.SEVERE, null, ex);
             showErrorMessage(ex.getMessage(), addButton);
         }

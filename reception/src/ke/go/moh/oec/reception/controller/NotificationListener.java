@@ -81,7 +81,8 @@ public class NotificationListener implements IService, Runnable {
                         "getData() called with unepxected requestTypeId {0}", requestTypeId);
             }
         } else {
-            Mediator.getLogger(NotificationListener.class.getName()).log(Level.SEVERE, "null requestData sent CDS");
+            Logger.getLogger(NotificationListener.class.getName()).log(Level.SEVERE,
+                    "getData() called with null requestData");
         }
         return null;
     }

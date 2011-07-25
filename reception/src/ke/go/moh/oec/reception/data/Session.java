@@ -41,7 +41,8 @@ public class Session {
         ENROLLED,
         VISITOR,
         NEW,
-        TRANSFER_IN
+        TRANSFER_IN,
+        UNSPECIFIED
     }
     private final ClientType clientType;
     private final String sessionReference;
@@ -200,19 +201,7 @@ public class Session {
     public String getSessionReference() {
         return sessionReference;
     }
-
-    public boolean hasMinimumRequiredFingerprintsTaken() {
-        boolean minimumRequiredFingerprintsTaken = false;
-        if (!fingerprint) {
-            minimumRequiredFingerprintsTaken = true;
-        } else {
-            if (imagedFingerprintList != null
-                    && imagedFingerprintList.size() >= OECReception.MINIMUM_FINGERPRINTS_FOR_SEARCH) {
-                minimumRequiredFingerprintsTaken = true;
-            }
-        }
-        return minimumRequiredFingerprintsTaken;
-    }
+    
     //TODO: Disallow getAnyUnsentFingerprints() from ever being necessary by ensuing that each
     //fingerprint takes is sent to the indices
 
