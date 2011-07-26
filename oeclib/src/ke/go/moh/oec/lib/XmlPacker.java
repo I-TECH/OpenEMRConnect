@@ -1384,7 +1384,12 @@ class XmlPacker {
         personRequest.setPerson(p);
         unpackHl7Header(m, e);
         Element q = (Element) e.getElementsByTagName("queryByParameter").item(0);
-        unpackPersonName(p, q, "livingSubjectName");
+
+        Element el = (Element) q.getElementsByTagName("livingSubjectName").item(0);
+        if (el != null) {
+            unpackPersonName(p, el, "value");
+        }
+
         p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
         p.setBirthdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectBirthTime", "value")));
         p.setDeathdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectDeceasedTime", "value")));
@@ -1558,22 +1563,31 @@ class XmlPacker {
      * @param tagName name of the enclosing element for the person's name
      */
     private void unpackPersonName(Person p, Element e, String tagName) {
-        Element eName = (Element) e.getElementsByTagName("name").item(0);
+        Element eName = (Element) e.getElementsByTagName(tagName).item(0);
         if (eName != null) {
             NodeList givenList = eName.getElementsByTagName("given");
             if (givenList.getLength() > 0) {
                 p.setFirstName(givenList.item(0).getTextContent());
                 if (givenList.getLength() > 1) {
                     p.setMiddleName(givenList.item(1).getTextContent());
-//                    String firstName = (givenList.item(0).getNodeValue());
-//                    p.setFirstName(firstName);
-//                    if (givenList.getLength() > 1) {
-//                        String middleName = givenList.item(1).getNodeValue();
-//                        p.setMiddleName(middleName);
-//                    }
                 }
-                p.setLastName(unpackTagValue(eName, "family"));
             }
+            p.setLastName(unpackTagValue(eName, "family"));
+        }
+    }
+
+    private void unpackPersonName2(Person p, Element e, String tagName) {
+        Element e1 = (Element) e.getElementsByTagName(tagName).item(0);
+        Element eName = (Element) e1.getElementsByTagName("value").item(0);
+        if (eName != null) {
+            NodeList givenList = eName.getElementsByTagName("given");
+            if (givenList.getLength() > 0) {
+                p.setFirstName(givenList.item(0).getTextContent());
+                if (givenList.getLength() > 1) {
+                    p.setMiddleName(givenList.item(1).getTextContent());
+                }
+            }
+            p.setLastName(unpackTagValue(eName, "family"));
         }
     }
 

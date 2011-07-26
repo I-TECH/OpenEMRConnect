@@ -35,9 +35,10 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.reception.security.User;
-import ke.go.moh.oec.reception.security.UserManager;
-import ke.go.moh.oec.reception.security.exceptions.UserManagerCreationException;
+import ke.go.moh.oec.reception.controller.exceptions.TableCreationException;
+import ke.go.moh.oec.reception.data.User;
+import ke.go.moh.oec.reception.controller.PersistenceManager;
+import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -48,13 +49,18 @@ import org.jdesktop.application.SingleFrameApplication;
 public class LoginDialog extends javax.swing.JDialog {
 
     private final SingleFrameApplication app;
-    private final UserManager userManager;
+    private final PersistenceManager persistenceManager;
 
     /** Creates new form LoginDialog */
-    public LoginDialog(java.awt.Frame parent, boolean modal, SingleFrameApplication app) throws UserManagerCreationException {
+    public LoginDialog(java.awt.Frame parent, boolean modal, SingleFrameApplication app) throws PersistenceManagerException, TableCreationException {
         super(parent, modal);
         initComponents();
-        userManager = UserManager.getInstance();
+        this.setIconImage(OECReception.applicationIcon());
+        persistenceManager = PersistenceManager.getInstance();
+        persistenceManager.createUserTable();
+        if (persistenceManager.noUsersExist()) {
+            persistenceManager.createDefaultUser();
+        }
         this.app = app;
     }
 
@@ -175,8 +181,8 @@ public class LoginDialog extends javax.swing.JDialog {
         boolean authentic = false;
         User user = new User(usernameTextField.getText(), passwordField.getPassword());
         try {
-            authentic = userManager.authenticateUser(user);
-        } catch (UserManagerCreationException ex) {
+            authentic = persistenceManager.authenticateUser(user);
+        } catch (PersistenceManagerException ex) {
             Logger.getLogger(LoginDialog.class.getName()).log(Level.SEVERE, null, ex);
             showErrorMessage(ex.getMessage(), loginButton);
             return;

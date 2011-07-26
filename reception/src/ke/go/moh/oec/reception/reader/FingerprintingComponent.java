@@ -34,7 +34,7 @@ public interface FingerprintingComponent {
 
     void log(String message);
 
-    void showQuality(String message);
+    void showQuality(int quality);
 
     void showImage(BufferedImage fingerprintImage);
 }

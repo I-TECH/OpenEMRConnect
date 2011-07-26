@@ -37,14 +37,14 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="rejectButton" alignment="0" pref="926" max="32767" attributes="2"/>
-                  <Component id="acceptButton" alignment="0" pref="926" max="32767" attributes="2"/>
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="confirmationPanel" alignment="1" max="32767" attributes="0"/>
+                  <Component id="acceptButton" linkSize="2" alignment="0" pref="939" max="32767" attributes="1"/>
+                  <Component id="rejectButton" linkSize="2" alignment="0" pref="939" max="32767" attributes="1"/>
               </Group>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -54,10 +54,10 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="confirmationPanel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="acceptButton" pref="34" max="32767" attributes="0"/>
+              <Component id="acceptButton" linkSize="1" min="-2" pref="32" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="rejectButton" min="-2" pref="34" max="-2" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Component id="rejectButton" linkSize="1" min="-2" pref="34" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -79,6 +79,35 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="firstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="clinicIdLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="maritalStatusLabel" min="-2" max="-2" attributes="0"/>
+                              <Component id="middleNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="lastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="sexLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="birthDateLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="otherNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="clanNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="86" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="maleRadioButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="lastNameTextField" alignment="1" pref="756" max="32767" attributes="0"/>
+                              <Component id="maritalStatusComboBox" alignment="0" pref="756" max="32767" attributes="1"/>
+                              <Component id="birthDateChooser" alignment="1" pref="756" max="32767" attributes="0"/>
+                              <Component id="firstNameTextField" alignment="1" pref="756" max="32767" attributes="0"/>
+                              <Component id="clinicIdTextField" alignment="1" pref="756" max="32767" attributes="0"/>
+                              <Component id="middleNameTextField" alignment="1" pref="756" max="32767" attributes="1"/>
+                              <Component id="clanNameTextField" alignment="0" pref="756" max="32767" attributes="0"/>
+                              <Component id="otherNameTextField" alignment="0" pref="756" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
                       <Component id="compoundHeadsLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -88,34 +117,18 @@
                               <Component id="mothersLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="mothersMiddleNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="mothersFirstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="firstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="clinicIdLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="fathersMiddleNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="fathersLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="maritalStatusLabel" min="-2" max="-2" attributes="0"/>
                               <Component id="villageLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="middleNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="lastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="sexLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="birthDateLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="fathersFirstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="maleRadioButton" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <Component id="lastNameTextField" alignment="1" pref="743" max="32767" attributes="0"/>
-                              <Component id="maritalStatusComboBox" alignment="0" pref="743" max="32767" attributes="1"/>
-                              <Component id="fathersFirstNameTextField" alignment="1" pref="743" max="32767" attributes="1"/>
-                              <Component id="birthDateChooser" alignment="1" pref="743" max="32767" attributes="0"/>
-                              <Component id="firstNameTextField" alignment="1" pref="743" max="32767" attributes="0"/>
-                              <Component id="mothersFirstNameTextField" alignment="0" pref="743" max="32767" attributes="1"/>
-                              <Component id="mothersMiddleNameTextField" alignment="0" pref="743" max="32767" attributes="0"/>
-                              <Component id="mothersLastNameTextField" alignment="0" pref="743" max="32767" attributes="0"/>
-                              <Component id="compoundHeadsFirstNameTextField" alignment="0" pref="743" max="32767" attributes="0"/>
+                              <Component id="fathersFirstNameTextField" alignment="1" pref="756" max="32767" attributes="1"/>
+                              <Component id="mothersFirstNameTextField" alignment="0" pref="756" max="32767" attributes="1"/>
+                              <Component id="mothersMiddleNameTextField" alignment="0" pref="756" max="32767" attributes="0"/>
+                              <Component id="mothersLastNameTextField" alignment="0" pref="756" max="32767" attributes="0"/>
+                              <Component id="compoundHeadsFirstNameTextField" alignment="0" pref="756" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="hdssDataConsentYesRadioButton" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -123,13 +136,11 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="hdssDataConsentNoAnswerRadioButton" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="compoundHeadsLastNameTextField" alignment="0" pref="743" max="32767" attributes="1"/>
-                              <Component id="compoundHeadsMiddleNameTextField" alignment="1" pref="743" max="32767" attributes="0"/>
-                              <Component id="clinicIdTextField" alignment="1" pref="743" max="32767" attributes="0"/>
-                              <Component id="villageTextField" alignment="1" pref="743" max="32767" attributes="0"/>
-                              <Component id="fathersMiddleNameTextField" alignment="1" pref="743" max="32767" attributes="1"/>
-                              <Component id="fathersLastNameTextField" alignment="1" pref="743" max="32767" attributes="1"/>
-                              <Component id="middleNameTextField" alignment="1" pref="743" max="32767" attributes="1"/>
+                              <Component id="compoundHeadsLastNameTextField" alignment="0" pref="756" max="32767" attributes="1"/>
+                              <Component id="compoundHeadsMiddleNameTextField" alignment="1" pref="756" max="32767" attributes="0"/>
+                              <Component id="villageTextField" alignment="1" pref="756" max="32767" attributes="0"/>
+                              <Component id="fathersMiddleNameTextField" alignment="1" pref="756" max="32767" attributes="1"/>
+                              <Component id="fathersLastNameTextField" alignment="1" pref="756" max="32767" attributes="1"/>
                           </Group>
                       </Group>
                   </Group>
@@ -176,6 +187,16 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="maritalStatusLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="maritalStatusComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="otherNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="otherNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="clanNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="clanNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -339,6 +360,32 @@
           <BindingProperties>
             <BindingProperty name="elements" source="maritalStatusList" target="maritalStatusComboBox" targetPath="elements" updateStrategy="0" immediately="false"/>
           </BindingProperties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="otherNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="otherNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="otherNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="otherNameTextField">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="otherNameTextField.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="otherNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="clanNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="clanNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="clanNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="clanNameTextField">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="clanNameTextField.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="clanNameTextField" noResource="true"/>
+          </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="villageLabel">
           <Properties>

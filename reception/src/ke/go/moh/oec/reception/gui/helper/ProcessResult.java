@@ -38,8 +38,8 @@ public class ProcessResult {
         UNREACHABLE_SERVER,
         ABORT
     }
-    private Type type;
-    private Object data;
+    private final Type type;
+    private final Object data;
 
     public ProcessResult(Type type, Object data) {
         this.type = type;
@@ -50,15 +50,7 @@ public class ProcessResult {
         return data;
     }
 
-    public void setData(Object data) {
-        this.data = data;
-    }
-
     public Type getType() {
         return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
     }
 }

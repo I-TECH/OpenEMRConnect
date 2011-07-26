@@ -36,9 +36,9 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.reception.security.User;
-import ke.go.moh.oec.reception.security.UserManager;
-import ke.go.moh.oec.reception.security.exceptions.UserManagerCreationException;
+import ke.go.moh.oec.reception.data.User;
+import ke.go.moh.oec.reception.controller.PersistenceManager;
+import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
 import org.jdesktop.application.Action;
 
 /**
@@ -48,15 +48,16 @@ import org.jdesktop.application.Action;
 public class ChangePasswordDialog extends javax.swing.JDialog {
 
     private final User user;
-    private final UserManager userManager;
+    private final PersistenceManager userManager;
 
     /** Creates new form ChangePasswordDialog */
-    public ChangePasswordDialog(java.awt.Frame parent, boolean modal, User user) throws UserManagerCreationException {
+    public ChangePasswordDialog(java.awt.Frame parent, boolean modal, User user) throws PersistenceManagerException {
         super(parent, modal);
         initComponents();
-        userManager = UserManager.getInstance();
+        userManager = PersistenceManager.getInstance();
         this.user = user;
         usernameTextField.setText(user.getUsername());
+        this.setIconImage(OECReception.applicationIcon());
     }
 
     /** This method is called from within the constructor to
@@ -218,8 +219,8 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
             userManager.modifyUser(user);
             dispose();
             showInformationMessage("Your password has been changed!", okButton);
-        } catch (UserManagerCreationException ex) {
-            Logger.getLogger(UserManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (PersistenceManagerException ex) {
+            Logger.getLogger(PersistenceManager.class.getName()).log(Level.SEVERE, null, ex);
             showErrorMessage(ex.getMessage(), okButton);
         }
     }
