@@ -19,7 +19,7 @@
  * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(fillClinicList):
+ * Contributor(fillDepartmentList):
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.reception.data.Clinic;
+import ke.go.moh.oec.reception.data.Department;
 import org.jdesktop.application.Action;
 import org.jdesktop.beansbinding.Binding;
 
@@ -44,25 +44,26 @@ import org.jdesktop.beansbinding.Binding;
  */
 public class ReassignDialog extends javax.swing.JDialog {
 
-    private final List<Clinic> allClinics;
-    private final Clinic selectedClinic;
+    private final List<Department> allDepartments;
+    private final Department selectedDepartment;
 
     /** Creates new form ReassignDialog */
     public ReassignDialog(java.awt.Frame parent, boolean modal,
-            List<Clinic> allClinics, Clinic selectedClinic) {
+            List<Department> allDepartments, Department selectedDepartment) {
         super(parent, modal);
         initComponents();
-        this.allClinics = allClinics;
-        this.selectedClinic = selectedClinic;
-        fillClinicList();
+        this.allDepartments = allDepartments;
+        this.selectedDepartment = selectedDepartment;
+        fillDepartmentList();
+        this.setIconImage(OECReception.applicationIcon());
     }
 
-    private void fillClinicList() {
-        Binding binding = bindingGroup.getBinding("clinicListBinding");
+    private void fillDepartmentList() {
+        Binding binding = bindingGroup.getBinding("departmentListBinding");
         binding.unbind();
-        clinicList.addAll(allClinics);
+        departmentList.addAll(allDepartments);
         binding.bind();
-        clinicNameComboBox.repaint();
+        departmentNameComboBox.repaint();
     }
 
     /** This method is called from within the constructor to
@@ -75,10 +76,10 @@ public class ReassignDialog extends javax.swing.JDialog {
     private void initComponents() {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        clinicList = new ArrayList<Clinic>();
+        departmentList = new ArrayList<ke.go.moh.oec.reception.data.Department>();
         reassignPanel = new javax.swing.JPanel();
-        clinicNameLabel = new javax.swing.JLabel();
-        clinicNameComboBox = new javax.swing.JComboBox();
+        departmentNameLabel = new javax.swing.JLabel();
+        departmentNameComboBox = new javax.swing.JComboBox();
         reassignButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
 
@@ -91,12 +92,12 @@ public class ReassignDialog extends javax.swing.JDialog {
         reassignPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         reassignPanel.setName("reassignPanel"); // NOI18N
 
-        clinicNameLabel.setText(resourceMap.getString("clinicNameLabel.text")); // NOI18N
-        clinicNameLabel.setName("clinicNameLabel"); // NOI18N
+        departmentNameLabel.setText(resourceMap.getString("departmentNameLabel.text")); // NOI18N
+        departmentNameLabel.setName("departmentNameLabel"); // NOI18N
 
-        clinicNameComboBox.setName("clinicNameComboBox"); // NOI18N
+        departmentNameComboBox.setName("departmentNameComboBox"); // NOI18N
 
-        org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, clinicList, clinicNameComboBox, "clinicListBinding");
+        org.jdesktop.swingbinding.JComboBoxBinding jComboBoxBinding = org.jdesktop.swingbinding.SwingBindings.createJComboBoxBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, departmentList, departmentNameComboBox, "departmentListBinding");
         bindingGroup.addBinding(jComboBoxBinding);
 
         javax.swing.GroupLayout reassignPanelLayout = new javax.swing.GroupLayout(reassignPanel);
@@ -105,9 +106,9 @@ public class ReassignDialog extends javax.swing.JDialog {
             reassignPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(reassignPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(clinicNameLabel)
+                .addComponent(departmentNameLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(clinicNameComboBox, 0, 296, Short.MAX_VALUE)
+                .addComponent(departmentNameComboBox, 0, 296, Short.MAX_VALUE)
                 .addContainerGap())
         );
         reassignPanelLayout.setVerticalGroup(
@@ -115,8 +116,8 @@ public class ReassignDialog extends javax.swing.JDialog {
             .addGroup(reassignPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(reassignPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clinicNameLabel)
-                    .addComponent(clinicNameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(departmentNameLabel)
+                    .addComponent(departmentNameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -165,21 +166,21 @@ public class ReassignDialog extends javax.swing.JDialog {
 
     @Action
     public void cancel() {
-        selectedClinic.setSelected(false);
+        selectedDepartment.setSelected(false);
         dispose();
     }
 
     @Action
     public void reassign() {
-        Object selectedItem = clinicNameComboBox.getSelectedItem();
+        Object selectedItem = departmentNameComboBox.getSelectedItem();
         if (selectedItem != null) {
-            Clinic reassignClinic = (Clinic) selectedItem;
-            selectedClinic.setCode(reassignClinic.getCode());
-            selectedClinic.setName(reassignClinic.getName());
-            selectedClinic.setSelected(true);
+            Department reassignDepartment = (Department) selectedItem;
+            selectedDepartment.setCode(reassignDepartment.getCode());
+            selectedDepartment.setName(reassignDepartment.getName());
+            selectedDepartment.setSelected(true);
             dispose();
         } else {
-            showWarningMessage("Please select the clinic to which you want to reassign "
+            showWarningMessage("Please select the department to which you want to reassign "
                     + "this notification.");
         }
     }
@@ -195,9 +196,9 @@ public class ReassignDialog extends javax.swing.JDialog {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    private java.util.List<Clinic> clinicList;
-    private javax.swing.JComboBox clinicNameComboBox;
-    private javax.swing.JLabel clinicNameLabel;
+    private java.util.List<ke.go.moh.oec.reception.data.Department> departmentList;
+    private javax.swing.JComboBox departmentNameComboBox;
+    private javax.swing.JLabel departmentNameLabel;
     private javax.swing.JButton reassignButton;
     private javax.swing.JPanel reassignPanel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;

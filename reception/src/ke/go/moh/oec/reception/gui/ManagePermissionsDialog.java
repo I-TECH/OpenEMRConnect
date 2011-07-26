@@ -35,9 +35,9 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.reception.security.User;
-import ke.go.moh.oec.reception.security.UserManager;
-import ke.go.moh.oec.reception.security.exceptions.UserManagerCreationException;
+import ke.go.moh.oec.reception.data.User;
+import ke.go.moh.oec.reception.controller.PersistenceManager;
+import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
 import org.jdesktop.application.Action;
 
 /**
@@ -46,13 +46,14 @@ import org.jdesktop.application.Action;
  */
 public class ManagePermissionsDialog extends javax.swing.JDialog {
 
-    private final UserManager userManager;
+    private final PersistenceManager userManager;
 
     /** Creates new form ManagePermissionsDialog */
-    public ManagePermissionsDialog(java.awt.Frame parent, boolean modal) throws UserManagerCreationException {
+    public ManagePermissionsDialog(java.awt.Frame parent, boolean modal) throws PersistenceManagerException {
         super(parent, modal);
-        userManager = UserManager.getInstance();
+        userManager = PersistenceManager.getInstance();
         initComponents();
+        this.setIconImage(OECReception.applicationIcon());
     }
 
     /** This method is called from within the constructor to
@@ -194,7 +195,7 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
         try {
             userManager.modifyUser(user);
             showInformationMessage("Done!", okButton);
-        } catch (UserManagerCreationException ex) {
+        } catch (PersistenceManagerException ex) {
             Logger.getLogger(ManagePermissionsDialog.class.getName()).log(Level.SEVERE, null, ex);
             showErrorMessage(ex.getMessage(), okButton);
         }
@@ -222,7 +223,7 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
     private javax.swing.JButton okButton;
     private javax.swing.JPanel permissionsPanel;
     private javax.swing.JComboBox userComboBox;
-    private final java.util.List<User> userList = UserManager.getInstance().getUserList();
+    private final java.util.List<User> userList = PersistenceManager.getInstance().getUserList();
     private javax.swing.JLabel usernameLabel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables

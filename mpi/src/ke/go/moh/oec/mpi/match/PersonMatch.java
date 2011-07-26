@@ -240,7 +240,7 @@ public class PersonMatch {
             double weight = 1.0; // Weight if sex doesn't match.
             if (sex1.ordinal() == sex2.ordinal()) {
                 score = 1.0; // Score if sex matches.
-                weight = 0.25; // Score if sex matches.
+                weight = 0.25; // Weignt if sex matches.
             }
             s.addScore(score, weight);
             if (Mediator.testLoggerLevel(Level.FINEST)) {

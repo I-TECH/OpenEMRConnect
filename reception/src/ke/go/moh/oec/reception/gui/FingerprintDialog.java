@@ -30,6 +30,7 @@
 package ke.go.moh.oec.reception.gui;
 
 import com.griaule.grfingerjava.GrFingerJavaException;
+import com.griaule.grfingerjava.Template;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -55,6 +56,8 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
 
     private final ReaderManager readerManager;
     private Session session;
+    private final ImagedFingerprint missingFingerprint;
+    private final ImagedFingerprint refusedFingerprint;
 
     public void setSession(Session session) {
         this.session = session;
@@ -84,10 +87,14 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     }
 
     /** Creates new form FingerprintDialog */
-    public FingerprintDialog(java.awt.Frame parent, boolean modal) throws GrFingerJavaException {
+    public FingerprintDialog(java.awt.Frame parent, boolean modal,
+            ImagedFingerprint missingFingerprint, ImagedFingerprint refusedFingerprint) throws GrFingerJavaException {
         super(parent, modal);
         this.readerManager = new ReaderManager(this);
         initComponents();
+        this.setIconImage(OECReception.applicationIcon());
+        this.missingFingerprint = missingFingerprint;
+        this.refusedFingerprint = refusedFingerprint;
     }
 
     /** This method is called from within the constructor to
@@ -292,7 +299,9 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     // End of variables declaration//GEN-END:variables
 
     public void log(String message) {
-        statusLabel.setText(message);
+        if (statusLabel != null) {
+            statusLabel.setText(message);
+        }
     }
 
     public void showImage(BufferedImage fingerprintImage) {
@@ -301,7 +310,19 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         }
     }
 
-    public void showQuality(String message) {
+    public void showQuality(int quality) {
+        String message = "Unknown quality.";
+        switch (quality) {
+            case Template.HIGH_QUALITY:
+                message = "High quality.";
+                break;
+            case Template.MEDIUM_QUALITY:
+                message = "Medium quality.";
+                break;
+            case Template.LOW_QUALITY:
+                message = "Low quality.";
+                break;
+        }
         qualityTextField.setText(message);
     }
 
@@ -339,8 +360,8 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         } else if (leftRingRadioButton.isSelected()) {
             fingerPrint.setFingerprintType(Type.leftRingFinger);
         }
+        fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
         try {
-            fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
             fingerPrint.setTemplate(readerManager.getTemplate().getData());
         } catch (Exception ex) {
             showWarningMessage("Please ask the client to place a finger on the reader.", this, fingerprintImagePanel);
@@ -375,7 +396,7 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
 
     @Action
     public void addUnavailableFingerprint() {
-        showImage(OECReception.getRefusedFingerprint().getImage());
+        showImage(refusedFingerprint.getImage());
         Fingerprint fingerPrint = new Fingerprint();
         if (rightIndexRadioButton.isSelected()) {
             fingerPrint.setFingerprintType(Type.rightIndexFinger);

@@ -70,6 +70,25 @@ public class PersonWrapper {
         return person.getPersonGuid();
     }
 
+    private List<PersonIdentifier> preparedPersonIdentifierList(PersonIdentifier personIdentifier) {
+        List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
+        if (personIdentifierList == null) {
+            personIdentifierList = new ArrayList<PersonIdentifier>();
+        } else {
+            //remove any existing identifiers of this type
+            if (!personIdentifierList.isEmpty()) {
+                List<PersonIdentifier> toRemove = new ArrayList<PersonIdentifier>();
+                for (PersonIdentifier pi : personIdentifierList) {
+                    if (pi.getIdentifierType().equals(personIdentifier.getIdentifierType())) {
+                        toRemove.add(pi);
+                    }
+                }
+                personIdentifierList.removeAll(toRemove);
+            }
+        }
+        return personIdentifierList;
+    }
+
     public void setClinicId(String clinicId) throws MalformedCliniIdException {
         if (!OECReception.validateClinicId(clinicId)) {
             throw new MalformedCliniIdException();
@@ -81,10 +100,7 @@ public class PersonWrapper {
         }
         personIdentifier.setIdentifier(clinicId);
         personIdentifier.setIdentifierType(type);
-        List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
-        if (personIdentifierList == null) {
-            personIdentifierList = new ArrayList<PersonIdentifier>();
-        }
+        List<PersonIdentifier> personIdentifierList = preparedPersonIdentifierList(personIdentifier);
         if (!personIdentifierList.contains(personIdentifier)) {
             personIdentifierList.add(personIdentifier);
         }
@@ -110,13 +126,8 @@ public class PersonWrapper {
         PersonIdentifier personIdentifier = new PersonIdentifier();
         personIdentifier.setIdentifier(kisumuHdssId);
         personIdentifier.setIdentifierType(PersonIdentifier.Type.kisumuHdssId);
-        List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
-        if (personIdentifierList == null) {
-            personIdentifierList = new ArrayList<PersonIdentifier>();
-        }
-        if (!personIdentifierList.contains(personIdentifier)) {
-            personIdentifierList.add(personIdentifier);
-        }
+        List<PersonIdentifier> personIdentifierList = preparedPersonIdentifierList(personIdentifier);
+        personIdentifierList.add(personIdentifier);
         person.setPersonIdentifierList(personIdentifierList);
     }
 
@@ -138,13 +149,8 @@ public class PersonWrapper {
         PersonIdentifier personIdentifier = new PersonIdentifier();
         personIdentifier.setIdentifier(mpiPersonIdentifier);
         personIdentifier.setIdentifierType(PersonIdentifier.Type.masterPatientRegistryId);
-        List<PersonIdentifier> personIdentifierList = person.getPersonIdentifierList();
-        if (personIdentifierList == null) {
-            personIdentifierList = new ArrayList<PersonIdentifier>();
-        }
-        if (!personIdentifierList.contains(personIdentifier)) {
-            personIdentifierList.add(personIdentifier);
-        }
+        List<PersonIdentifier> personIdentifierList = preparedPersonIdentifierList(personIdentifier);
+        personIdentifierList.add(personIdentifier);
         person.setPersonIdentifierList(personIdentifierList);
     }
 
@@ -177,10 +183,9 @@ public class PersonWrapper {
     public void addFingerprint(Fingerprint fingerprint) {
         List<Fingerprint> fingerprintList = person.getFingerprintList();
         if (fingerprintList == null) {
-            fingerprintList = new ArrayList<Fingerprint>();
+            person.setFingerprintList(new ArrayList<Fingerprint>());
         }
-        fingerprintList.add(fingerprint);
-        person.setFingerprintList(fingerprintList);
+        person.getFingerprintList().add(fingerprint);
     }
 
     public void setBirthdate(Date birthdate) {
@@ -213,6 +218,30 @@ public class PersonWrapper {
 
     public String getLastName() {
         String lastName = person.getLastName();
+        if (lastName == null) {
+            return "";
+        }
+        return lastName;
+    }
+
+    public void setOtherName(String lastName) {
+        person.setOtherName(lastName);
+    }
+
+    public String getOtherName() {
+        String lastName = person.getOtherName();
+        if (lastName == null) {
+            return "";
+        }
+        return lastName;
+    }
+
+    public void setClanName(String lastName) {
+        person.setClanName(lastName);
+    }
+
+    public String getClanName() {
+        String lastName = person.getClanName();
         if (lastName == null) {
             return "";
         }
@@ -496,5 +525,27 @@ public class PersonWrapper {
 
     public String getLongName() {
         return (this.getFirstName() + " " + this.getMiddleName() + " " + this.getLastName()).trim().replace("  ", " ");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PersonWrapper other = (PersonWrapper) obj;
+        if (this.person != other.person && (this.person == null || !this.person.equals(other.person))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 29 * hash + (this.person != null ? this.person.hashCode() : 0);
+        return hash;
     }
 }

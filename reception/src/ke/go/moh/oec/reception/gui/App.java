@@ -3,11 +3,9 @@
  */
 package ke.go.moh.oec.reception.gui;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.reception.security.exceptions.UserManagerCreationException;
+import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -23,9 +21,9 @@ public class App extends SingleFrameApplication {
     protected void startup() {
         try {
             show(new LoginDialog(null, true, this));
-        } catch (UserManagerCreationException ex) {
-            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, ex.getMessage(), OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
+        } catch (PersistenceManagerException ex) {
+            JOptionPane.showMessageDialog(null, "Database malfunction! " + ex.getMessage() 
+                    + ". Please contact your administrator.", OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
             System.exit(1);
         }
     }

@@ -33,6 +33,8 @@ package ke.go.moh.oec.reception.gui;
 import java.util.ArrayList;
 import java.util.List;
 import ke.go.moh.oec.Person;
+import ke.go.moh.oec.reception.controller.OECReception;
+import org.jdesktop.application.Action;
 import org.jdesktop.beansbinding.Binding;
 
 /**
@@ -46,6 +48,7 @@ public class HouseholdMembersDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         displayHouseholdMembers(householdMemberList);
+        this.setIconImage(OECReception.applicationIcon());
     }
 
     private void displayHouseholdMembers(List<Person> householdMemberList) {
@@ -71,16 +74,39 @@ public class HouseholdMembersDialog extends javax.swing.JDialog {
         householdMembersPanel = new javax.swing.JPanel();
         householdMembersScrollPane = new javax.swing.JScrollPane();
         householdMembersTable = new javax.swing.JTable();
+        closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setName("Form"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getResourceMap(HouseholdMembersDialog.class);
-        householdMembersPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("householdMembersPanel.border.title"))); // NOI18N
+        householdMembersPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         householdMembersPanel.setName("householdMembersPanel"); // NOI18N
 
         householdMembersScrollPane.setName("householdMembersScrollPane"); // NOI18N
 
+        householdMembersTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "First Name", "Middle Name", "Last Name", "Other Name", "Birthdate"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         householdMembersTable.setName("householdMembersTable"); // NOI18N
 
         org.jdesktop.swingbinding.JTableBinding jTableBinding = org.jdesktop.swingbinding.SwingBindings.createJTableBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, householdMemberList, householdMembersTable, "householdMembersBinding");
@@ -92,6 +118,9 @@ public class HouseholdMembersDialog extends javax.swing.JDialog {
         columnBinding.setColumnClass(String.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${lastName}"));
         columnBinding.setColumnName("Last Name");
+        columnBinding.setColumnClass(String.class);
+        columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${otherName}"));
+        columnBinding.setColumnName("Other Name");
         columnBinding.setColumnClass(String.class);
         columnBinding = jTableBinding.addColumnBinding(org.jdesktop.beansbinding.ELProperty.create("${birthdate}"));
         columnBinding.setColumnName("Birthdate");
@@ -106,15 +135,22 @@ public class HouseholdMembersDialog extends javax.swing.JDialog {
             householdMembersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(householdMembersPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(householdMembersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE)
+                .addComponent(householdMembersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 673, Short.MAX_VALUE)
                 .addContainerGap())
         );
         householdMembersPanelLayout.setVerticalGroup(
             householdMembersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(householdMembersPanelLayout.createSequentialGroup()
-                .addComponent(householdMembersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, householdMembersPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(householdMembersScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(HouseholdMembersDialog.class, this);
+        closeButton.setAction(actionMap.get("close")); // NOI18N
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getResourceMap(HouseholdMembersDialog.class);
+        closeButton.setText(resourceMap.getString("closeButton.text")); // NOI18N
+        closeButton.setName("closeButton"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -122,7 +158,9 @@ public class HouseholdMembersDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(householdMembersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(householdMembersPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(closeButton))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -130,6 +168,8 @@ public class HouseholdMembersDialog extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(householdMembersPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(closeButton)
                 .addContainerGap())
         );
 
@@ -137,7 +177,13 @@ public class HouseholdMembersDialog extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    @Action
+    public void close() {
+        dispose();
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton closeButton;
     private java.util.List<Person> householdMemberList;
     private javax.swing.JPanel householdMembersPanel;
     private javax.swing.JScrollPane householdMembersScrollPane;
