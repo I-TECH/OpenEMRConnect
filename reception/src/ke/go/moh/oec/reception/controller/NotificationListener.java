@@ -74,7 +74,7 @@ public class NotificationListener implements IService, Runnable {
                 PersonRequest personRequest = (PersonRequest) requestData;
                 Person person = personRequest.getPerson();
                 PersonWrapper personWrapper = new PersonWrapper(person);
-                personWrapper.setRequestReference(personRequest.getRequestReference());
+                personWrapper.setReference(personRequest.getRequestReference());
                 notificationManager.addNotifications(personWrapper.getNotificationList());
             } else {
                 Logger.getLogger(NotificationListener.class.getName()).log(Level.SEVERE,

@@ -58,9 +58,7 @@ public class LoginDialog extends javax.swing.JDialog {
         this.setIconImage(OECReception.applicationIcon());
         persistenceManager = PersistenceManager.getInstance();
         persistenceManager.createUserTable();
-        if (persistenceManager.noUsersExist()) {
-            persistenceManager.createDefaultUser();
-        }
+        persistenceManager.createDefaultUser();
         this.app = app;
     }
 

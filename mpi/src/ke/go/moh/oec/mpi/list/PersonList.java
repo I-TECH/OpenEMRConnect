@@ -319,7 +319,7 @@ public class PersonList {
         String maritalStatusId = Sql.getMaritalStatusId(conn, p.getMaritalStatus());
         String consentSigned = ValueMap.CONSENT_SIGNED.getDb().get(p.getConsentSigned());
         String sql = "INSERT INTO person (person_guid, first_name, middle_name, last_name,\n"
-                + "       other_name, sex, birthdate, deathdate,\n"
+                + "       other_name, clan_name, sex, birthdate, deathdate,\n"
                 + "       mothers_first_name, mothers_middle_name, mothers_last_name,\n"
                 + "       fathers_first_name, fathers_middle_name, fathers_last_name,\n"
                 + "       compoundhead_first_name, compoundhead_middle_name, compoundhead_last_name,\n"
@@ -329,6 +329,7 @@ public class PersonList {
                 + Sql.quote(p.getMiddleName()) + ", "
                 + Sql.quote(p.getLastName()) + ",\n   "
                 + Sql.quote(p.getOtherName()) + ", "
+                + Sql.quote(p.getClanName()) + ", "
                 + Sql.quote(sex) + ", "
                 + Sql.quote(p.getBirthdate()) + ", "
                 + Sql.quote(p.getDeathdate()) + ",\n   "
@@ -405,6 +406,7 @@ public class PersonList {
                 + "middle_name = " + Sql.quote(p.getMiddleName()) + ", "
                 + "last_name = " + Sql.quote(p.getLastName()) + ",\n       "
                 + "other_name = " + Sql.quote(p.getOtherName()) + ", "
+                + "clan_name = " + Sql.quote(p.getClanName()) + ", "
                 + "sex = " + Sql.quote(sex) + ", "
                 + "birthdate = " + Sql.quote(p.getBirthdate()) + ", "
                 + "deathdate = " + Sql.quote(p.getDeathdate()) + ",\n       "
