@@ -33,7 +33,7 @@ import ke.go.moh.oec.reception.controller.RequestDispatcher;
 import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
 import ke.go.moh.oec.reception.data.Department;
 import ke.go.moh.oec.reception.data.Notification;
-import ke.go.moh.oec.reception.data.TargetServer;
+import ke.go.moh.oec.reception.data.Server;
 import ke.go.moh.oec.reception.gui.NotificationDialog;
 
 /**
@@ -51,17 +51,17 @@ public class NotificationDialogHelper {
     private Work createWork(Notification notification) {
         Work work = new Work();
         work.setSourceAddress(OECReception.applicationAddress());
-        work.setNotificationId(notification.getPersonWrapper().getRequestReference());
+        work.setNotificationId(notification.getPersonWrapper().getReference());
         work.setReassignAddress(notification.getReassignAggress());
         return work;
     }
 
     public void flagWorkAsDone(Notification notification) {
-        RequestDispatcher.dispatch(createWork(notification), RequestDispatcher.DispatchType.WORK_DONE, TargetServer.CDS);
+        RequestDispatcher.dispatch(createWork(notification), RequestDispatcher.DispatchType.WORK_DONE, Server.CDS);
     }
 
     public void reassignWork(Notification notification) {
-        RequestDispatcher.dispatch(createWork(notification), RequestDispatcher.DispatchType.REASSIGN, TargetServer.CDS);
+        RequestDispatcher.dispatch(createWork(notification), RequestDispatcher.DispatchType.REASSIGN, Server.CDS);
     }
     
     public List<Department> getClinicList() throws PersistenceManagerException {

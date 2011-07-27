@@ -54,10 +54,11 @@ import org.jdesktop.application.Action;
  */
 public class FingerprintDialog extends javax.swing.JDialog implements FingerprintingComponent {
 
-    private final ReaderManager readerManager;
+    private ReaderManager readerManager;
     private Session session;
     private final ImagedFingerprint missingFingerprint;
     private final ImagedFingerprint refusedFingerprint;
+    private boolean readerAvailable = false;
 
     public void setSession(Session session) {
         this.session = session;
@@ -90,11 +91,15 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     public FingerprintDialog(java.awt.Frame parent, boolean modal,
             ImagedFingerprint missingFingerprint, ImagedFingerprint refusedFingerprint) throws GrFingerJavaException {
         super(parent, modal);
-        this.readerManager = new ReaderManager(this);
         initComponents();
         this.setIconImage(OECReception.applicationIcon());
         this.missingFingerprint = missingFingerprint;
         this.refusedFingerprint = refusedFingerprint;
+        initReaderManager();
+    }
+
+    private void initReaderManager() {
+        initializeReaderManager(this);
     }
 
     /** This method is called from within the constructor to
@@ -333,14 +338,8 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
 
     @Override
     public void dispose() {
-        try {
-            this.setVisible(false);
-            if (readerManager != null) {
-                readerManager.destroy();
-            }
-        } catch (GrFingerJavaException ex) {
-            Logger.getLogger(FingerprintDialog.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.setVisible(false);
+        destroyReaderManager();
         super.dispose();
     }
 
@@ -448,5 +447,44 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         if (imagedFingerprintList.contains(dummy)) {
             showImage(imagedFingerprintList.get(imagedFingerprintList.indexOf(dummy)).getImage());
         }
+    }
+
+    private void initializeReaderManager(final FingerprintingComponent fingerprintingComponent) {
+        //initialize reader in a new thread to prevent gui from hanging.
+        Runnable readerInitializer = new Runnable() {
+
+            public void run() {
+                log("Preparing fingerprinting software");
+                try {
+                    readerManager = new ReaderManager(fingerprintingComponent);
+                    readerAvailable = true;
+                    log("Waiting for device");
+                } catch (GrFingerJavaException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+        new Thread(readerInitializer).start();
+    }
+
+    private void destroyReaderManager() {
+        //destroy reader in a new thread to prevent gui from hanging.
+        Runnable readerDestroyer = new Runnable() {
+
+            public void run() {
+                log("Disconneting from device");
+                try {
+                    if (readerManager != null) {
+                        readerManager.destroy();
+                        log("Disconneted from device");
+                    }
+                } catch (GrFingerJavaException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                readerManager = null;
+                readerAvailable = false;
+            }
+        };
+        new Thread(readerDestroyer).start();
     }
 }

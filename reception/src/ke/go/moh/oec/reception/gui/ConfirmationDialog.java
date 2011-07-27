@@ -41,9 +41,9 @@ import org.jdesktop.application.Action;
  * @author Gitahi Ng'ang'a
  */
 public class ConfirmationDialog extends javax.swing.JDialog {
-
+    
     private final PersonWrapper personWrapper;
-
+    
     public ConfirmationDialog(java.awt.Frame parent, boolean modal, PersonWrapper personWrapper, String title) {
         super(parent, modal);
         initComponents();
@@ -52,13 +52,14 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         this.setIconImage(OECReception.applicationIcon());
         this.setTitle(title);
     }
-
+    
     private void populateFields() {
         clinicIdTextField.setText(personWrapper.getClinicId());
         firstNameTextField.setText(personWrapper.getFirstName());
         middleNameTextField.setText(personWrapper.getMiddleName());
         lastNameTextField.setText(personWrapper.getLastName());
         birthDateChooser.setDate(personWrapper.getBirthdate());
+        unknownBirthdateCheckBox.setSelected(personWrapper.getBirthdate() == null);
         Person.Sex sex = personWrapper.getSex();
         if (sex != null) {
             maleRadioButton.setSelected(sex == Person.Sex.M);
@@ -115,6 +116,7 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         femaleRadioButton = new javax.swing.JRadioButton();
         birthDateLabel = new javax.swing.JLabel();
         birthDateChooser = new com.toedter.calendar.JDateChooser();
+        unknownBirthdateCheckBox = new javax.swing.JCheckBox();
         maritalStatusLabel = new javax.swing.JLabel();
         maritalStatusComboBox = new javax.swing.JComboBox();
         otherNameLabel = new javax.swing.JLabel();
@@ -199,6 +201,9 @@ public class ConfirmationDialog extends javax.swing.JDialog {
 
         birthDateChooser.setEnabled(false);
         birthDateChooser.setName("birthDateChooser"); // NOI18N
+
+        unknownBirthdateCheckBox.setText(resourceMap.getString("unknownBirthdateCheckBox.text")); // NOI18N
+        unknownBirthdateCheckBox.setName("unknownBirthdateCheckBox"); // NOI18N
 
         maritalStatusLabel.setText(resourceMap.getString("maritalStatusLabel.text")); // NOI18N
         maritalStatusLabel.setName("maritalStatusLabel"); // NOI18N
@@ -321,18 +326,22 @@ public class ConfirmationDialog extends javax.swing.JDialog {
                             .addComponent(clanNameLabel))
                         .addGap(86, 86, 86)
                         .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(confirmationPanelLayout.createSequentialGroup()
-                                .addComponent(maleRadioButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(femaleRadioButton))
                             .addComponent(lastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
                             .addComponent(maritalStatusComboBox, 0, 756, Short.MAX_VALUE)
-                            .addComponent(birthDateChooser, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
                             .addComponent(firstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
                             .addComponent(clinicIdTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
                             .addComponent(middleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
                             .addComponent(clanNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
-                            .addComponent(otherNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)))
+                            .addComponent(otherNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)
+                            .addGroup(confirmationPanelLayout.createSequentialGroup()
+                                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(confirmationPanelLayout.createSequentialGroup()
+                                        .addComponent(maleRadioButton)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(femaleRadioButton))
+                                    .addComponent(birthDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(unknownBirthdateCheckBox))))
                     .addComponent(compoundHeadsLastNameLabel)
                     .addGroup(confirmationPanelLayout.createSequentialGroup()
                         .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -384,17 +393,22 @@ public class ConfirmationDialog extends javax.swing.JDialog {
                 .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lastNameLabel)
                     .addComponent(lastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(sexLabel)
-                    .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(femaleRadioButton)
-                        .addComponent(maleRadioButton)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(birthDateLabel)
-                    .addComponent(birthDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(confirmationPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(sexLabel)
+                            .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(femaleRadioButton)
+                                .addComponent(maleRadioButton)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(birthDateLabel)
+                            .addComponent(birthDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, confirmationPanelLayout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addComponent(unknownBirthdateCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(6, 6, 6)
                 .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(maritalStatusLabel)
                     .addComponent(maritalStatusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -502,7 +516,7 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         personWrapper.setConfirmed(true);
         dispose();
     }
-
+    
     @Action
     public void reject() {
         personWrapper.setConfirmed(false);
@@ -556,6 +570,7 @@ public class ConfirmationDialog extends javax.swing.JDialog {
     private javax.swing.JButton rejectButton;
     private javax.swing.ButtonGroup sexButtonGroup;
     private javax.swing.JLabel sexLabel;
+    private javax.swing.JCheckBox unknownBirthdateCheckBox;
     private javax.swing.JLabel villageLabel;
     private javax.swing.JTextField villageTextField;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;

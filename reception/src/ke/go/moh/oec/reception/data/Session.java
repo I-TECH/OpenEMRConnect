@@ -44,8 +44,8 @@ public class Session {
         TRANSFER_IN,
         UNSPECIFIED
     }
-    private final ClientType clientType;
-    private final String sessionReference;
+    private ClientType clientType;
+    private final String reference;
     private PersonWrapper searchPersonWrapper;
     private RequestResult mpiRequestResult;
     private RequestResult lpiRequestResult;
@@ -65,13 +65,17 @@ public class Session {
 
     public Session(ClientType clientType) {
         this.clientType = clientType;
-        this.sessionReference = OECReception.generateSessionReference();
+        this.reference = OECReception.generateSessionReference();
         searchPersonWrapper = new PersonWrapper(new Person());
         mpiRequestResult = new RequestResult();
         lpiRequestResult = new RequestResult();
         fingerprint = true;
         imagedFingerprintList = new ArrayList<ImagedFingerprint>();
         clinicName = (clientType == ClientType.VISITOR || clientType == ClientType.TRANSFER_IN);
+    }
+
+    public void changeSessionClientType(ClientType clientType) {
+        this.clientType = clientType;
     }
 
     public ImagedFingerprint getActiveImagedFingerprint() {
@@ -198,13 +202,12 @@ public class Session {
         return clientType;
     }
 
-    public String getSessionReference() {
-        return sessionReference;
+    public String getReference() {
+        return reference;
     }
-    
+
     //TODO: Disallow getAnyUnsentFingerprints() from ever being necessary by ensuing that each
     //fingerprint takes is sent to the indices
-
     public List<ImagedFingerprint> getAnyUnsentFingerprints() {
         List<ImagedFingerprint> unsentFingerprintList = new ArrayList<ImagedFingerprint>();
         for (ImagedFingerprint imagedFingerprint : imagedFingerprintList) {

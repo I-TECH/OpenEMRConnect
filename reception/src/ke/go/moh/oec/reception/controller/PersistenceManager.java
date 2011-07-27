@@ -298,7 +298,7 @@ public final class PersistenceManager {
     }
 
     public void createDefaultUser() throws PersistenceManagerException {
-        if (!noUsersExist()) {
+        if (noUsersExist()) {
             try {
                 char[] defaultPassword = {'a', 'd', 'm', 'i', 'n'};
                 createUser(new User("admin", defaultPassword, true));
@@ -309,15 +309,15 @@ public final class PersistenceManager {
         }
     }
 
-    public boolean noUsersExist() throws PersistenceManagerException {
-        boolean exist = false;
+    private boolean noUsersExist() throws PersistenceManagerException {
+        boolean exist = true;
         Statement statement = null;
         ResultSet resultSet = null;
         try {
             statement = this.getStatement();
             resultSet = statement.executeQuery("SELECT username FROM " + userTable);
             if (resultSet.next()) {
-                exist = true;
+                exist = false;
             }
         } catch (SQLException ex) {
             Logger.getLogger(PersistenceManager.class.getName()).log(Level.SEVERE, null, ex);

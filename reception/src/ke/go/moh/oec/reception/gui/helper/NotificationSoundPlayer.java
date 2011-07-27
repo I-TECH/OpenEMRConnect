@@ -43,7 +43,7 @@ public class NotificationSoundPlayer {
     private AudioInputStream audioInputStream;
     private File soundFile;
     //make sure this file path is correct if you'd like to hear a sound
-    private String filePath = "notification.wav";
+    private String filePath = new File("notification.wav").getAbsolutePath();
     //timer variables for the sound
     private boolean ready = true;
     // TIME_DELAY is the time that must pass before letting the sound play again.

@@ -93,19 +93,25 @@
                           </Group>
                           <EmptySpace min="-2" pref="86" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="maleRadioButton" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
-                              </Group>
                               <Component id="lastNameTextField" alignment="1" pref="756" max="32767" attributes="0"/>
                               <Component id="maritalStatusComboBox" alignment="0" pref="756" max="32767" attributes="1"/>
-                              <Component id="birthDateChooser" alignment="1" pref="756" max="32767" attributes="0"/>
                               <Component id="firstNameTextField" alignment="1" pref="756" max="32767" attributes="0"/>
                               <Component id="clinicIdTextField" alignment="1" pref="756" max="32767" attributes="0"/>
                               <Component id="middleNameTextField" alignment="1" pref="756" max="32767" attributes="1"/>
                               <Component id="clanNameTextField" alignment="0" pref="756" max="32767" attributes="0"/>
                               <Component id="otherNameTextField" alignment="0" pref="756" max="32767" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Component id="maleRadioButton" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="birthDateChooser" pref="685" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="unknownBirthdateCheckBox" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                       </Group>
                       <Component id="compoundHeadsLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -170,20 +176,28 @@
                       <Component id="lastNameLabel" min="-2" max="-2" attributes="0"/>
                       <Component id="lastNameTextField" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="sexLabel" min="-2" max="-2" attributes="0"/>
-                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                          <Component id="femaleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="maleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="sexLabel" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                                  <Component id="femaleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="maleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="birthDateLabel" min="-2" max="-2" attributes="0"/>
+                              <Component id="birthDateChooser" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+                          <Component id="unknownBirthdateCheckBox" min="-2" pref="17" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="birthDateLabel" min="-2" max="-2" attributes="0"/>
-                      <Component id="birthDateChooser" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="maritalStatusLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="maritalStatusComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -344,6 +358,12 @@
           <Properties>
             <Property name="enabled" type="boolean" value="false"/>
             <Property name="name" type="java.lang.String" value="birthDateChooser" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="unknownBirthdateCheckBox">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="unknownBirthdateCheckBox.text"/>
+            <Property name="name" type="java.lang.String" value="unknownBirthdateCheckBox" noResource="true"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="maritalStatusLabel">

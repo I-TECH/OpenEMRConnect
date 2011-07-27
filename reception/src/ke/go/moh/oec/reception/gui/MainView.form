@@ -274,7 +274,10 @@
                                           <Component id="quickSearchFingerprintImagePanel" alignment="1" max="32767" attributes="1"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="quickSearchMessageLabel" pref="460" max="32767" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="quickSearchMessageLabel" pref="458" max="32767" attributes="0"/>
+                                          <Component id="forcePrepareButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -282,17 +285,17 @@
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="quickSearchFingerprintImagePanel" min="-2" max="-2" attributes="1"/>
-                                              <EmptySpace max="32767" attributes="0"/>
-                                              <Component id="quickSearchQualityTextField" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Group type="102" alignment="0" attributes="1">
                                               <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                                               <Component id="quickSearchMessageLabel" min="-2" pref="20" max="-2" attributes="0"/>
+                                              <EmptySpace max="32767" attributes="0"/>
+                                              <Component id="forcePrepareButton" min="-2" max="-2" attributes="0"/>
                                           </Group>
+                                          <Component id="quickSearchFingerprintImagePanel" alignment="0" min="-2" max="-2" attributes="1"/>
                                       </Group>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="quickSearchQualityTextField" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -333,6 +336,15 @@
                               <Properties>
                                 <Property name="text" type="java.lang.String" resourceKey="quickSearchMessageLabel.text"/>
                                 <Property name="name" type="java.lang.String" value="quickSearchMessageLabel" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="forcePrepareButton">
+                              <Properties>
+                                <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="forcePrepare" methodName="forcePrepare"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" resourceKey="forcePrepareButton.text"/>
+                                <Property name="name" type="java.lang.String" value="forcePrepareButton" noResource="true"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -773,19 +785,23 @@
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Group type="102" attributes="0">
-                                                      <Component id="extendedSearchMaleRadioButton" min="-2" max="-2" attributes="0"/>
-                                                      <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="extendedSearchFemaleRadioButton" min="-2" max="-2" attributes="0"/>
-                                                  </Group>
                                                   <Component id="extendedSearchLastNameTextField" alignment="1" pref="486" max="32767" attributes="1"/>
                                                   <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="486" max="32767" attributes="1"/>
                                                   <Component id="extendedSearchFirstNameTextField" alignment="1" pref="486" max="32767" attributes="1"/>
                                                   <Component id="extendedSearchClinicNameTextField" alignment="1" pref="486" max="32767" attributes="1"/>
                                                   <Component id="extendedSearchClinicIdTextField" alignment="0" pref="486" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchBirthdateChooser" alignment="0" pref="486" max="32767" attributes="0"/>
                                                   <Component id="extendedSearchOtherNameTextField" alignment="0" pref="486" max="32767" attributes="0"/>
                                                   <Component id="extendedSearchClanNameTextField" alignment="0" pref="486" max="32767" attributes="0"/>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Component id="extendedSearchMaleRadioButton" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="extendedSearchFemaleRadioButton" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Group type="102" alignment="1" attributes="0">
+                                                      <Component id="extendedSearchBirthdateChooser" pref="415" max="32767" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="extendedSearchUnknownBirthdateCheckBox" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
                                               </Group>
                                           </Group>
                                           <Group type="102" alignment="1" attributes="0">
@@ -849,9 +865,10 @@
                                           <Component id="extendedSearchFemaleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="extendedSearchBirthdateChooser" min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Component id="extendedSearchBirthdateLabel" min="-2" max="-2" attributes="0"/>
+                                          <Component id="extendedSearchBirthdateChooser" alignment="0" max="32767" attributes="1"/>
+                                          <Component id="extendedSearchUnknownBirthdateCheckBox" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -984,6 +1001,15 @@
                                   <Connection code="null" type="code"/>
                                 </Property>
                                 <Property name="name" type="java.lang.String" value="extendedSearchBirthdateChooser" noResource="true"/>
+                              </Properties>
+                              <BindingProperties>
+                                <BindingProperty name="enabled" source="extendedSearchUnknownBirthdateCheckBox" sourcePath="${!selected}" target="extendedSearchBirthdateChooser" targetPath="enabled" updateStrategy="0" immediately="false"/>
+                              </BindingProperties>
+                            </Component>
+                            <Component class="javax.swing.JCheckBox" name="extendedSearchUnknownBirthdateCheckBox">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="extendedSearchUnknownBirthdateCheckBox.text"/>
+                                <Property name="name" type="java.lang.String" value="extendedSearchUnknownBirthdateCheckBox" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JLabel" name="extendedSearchOtherNameLabel">
@@ -1433,19 +1459,19 @@
                                                       <Component id="middleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Component id="middleNameTextField" pref="480" max="32767" attributes="0"/>
-                                                  <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altSexTextField" pref="440" max="32767" attributes="0"/>
-                                                      <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="sexAcceptRadioButton" min="-2" max="-2" attributes="0"/>
-                                                      <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="sexRejectRadioButton" min="-2" max="-2" attributes="0"/>
-                                                  </Group>
                                                   <Group type="102" attributes="0">
                                                       <Component id="altLastNameTextField" pref="440" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="lastNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="lastNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Group type="102" alignment="1" attributes="0">
+                                                      <Component id="altSexTextField" pref="440" max="32767" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="sexAcceptRadioButton" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="sexRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                               </Group>
                                           </Group>
@@ -1484,7 +1510,6 @@
                                                       <Component id="otherNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Component id="otherNameTextField" alignment="1" pref="480" max="32767" attributes="0"/>
-                                                  <Component id="birthDateChooser" alignment="1" pref="480" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
                                                       <Component id="altBirthDateTextField" pref="440" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -1500,6 +1525,11 @@
                                                       <Component id="maritalStatusRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Component id="maritalStatusComboBox" alignment="1" pref="480" max="32767" attributes="1"/>
+                                                  <Group type="102" alignment="1" attributes="0">
+                                                      <Component id="birthDateChooser" pref="409" max="32767" attributes="0"/>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="unknownBirthdateCheckBox" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
                                               </Group>
                                           </Group>
                                       </Group>
@@ -1509,7 +1539,7 @@
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="clinicIdLabel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1576,15 +1606,23 @@
                                           </Group>
                                           <Component id="altSexTextField" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" alignment="0" attributes="0">
-                                              <EmptySpace pref="4" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                                               <Component id="birthDateLabel" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="birthDateChooser" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                              <Group type="102" alignment="0" attributes="1">
+                                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                                  <Component id="unknownBirthdateCheckBox" min="0" pref="0" max="32767" attributes="1"/>
+                                              </Group>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                                                  <Component id="birthDateChooser" min="-2" max="-2" attributes="1"/>
+                                              </Group>
+                                          </Group>
                                       </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" attributes="0">
                                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                               <Component id="birthDateRejectRadioButton" alignment="0" min="0" pref="0" max="32767" attributes="1"/>
@@ -1592,7 +1630,7 @@
                                           </Group>
                                           <Component id="altBirthDateTextField" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="maritalStatusComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="maritalStatusLabel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1871,6 +1909,15 @@
                             <Component class="com.toedter.calendar.JDateChooser" name="birthDateChooser">
                               <Properties>
                                 <Property name="name" type="java.lang.String" value="birthDateChooser" noResource="true"/>
+                              </Properties>
+                              <BindingProperties>
+                                <BindingProperty name="enabled" source="unknownBirthdateCheckBox" sourcePath="${!selected}" target="birthDateChooser" targetPath="enabled" updateStrategy="0" immediately="false"/>
+                              </BindingProperties>
+                            </Component>
+                            <Component class="javax.swing.JCheckBox" name="unknownBirthdateCheckBox">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="unknownBirthdateCheckBox.text"/>
+                                <Property name="name" type="java.lang.String" value="unknownBirthdateCheckBox" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JTextField" name="altBirthDateTextField">
@@ -3356,12 +3403,6 @@
       </AuxValues>
     </Component>
     <Component class="javax.swing.ButtonGroup" name="hdssDataConsentButtonGroup">
-    </Component>
-    <Component class="java.util.List" name="masterNotificationList">
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ArrayList&lt;Notification&gt;()"/>
-        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;Notification&gt;"/>
-      </AuxValues>
     </Component>
     <Component class="javax.swing.ButtonGroup" name="clanButtonGroup">
     </Component>

@@ -46,7 +46,7 @@ import ke.go.moh.oec.reception.data.ImagedFingerprint;
 import ke.go.moh.oec.reception.data.Notification;
 import ke.go.moh.oec.reception.data.RequestResult;
 import ke.go.moh.oec.reception.data.Session;
-import ke.go.moh.oec.reception.data.TargetServer;
+import ke.go.moh.oec.reception.data.Server;
 import ke.go.moh.oec.reception.gui.MainView;
 
 /**
@@ -59,8 +59,6 @@ public class MainViewHelper implements NotificationManager {
     private Session session;
     private BufferedImage missingFingerprintImage;
     private BufferedImage refusedFingerprintImage;
-    public static final int MINIMUM_FINGERPRINTS_FOR_SEARCH = 2;
-    public static final int MINIMUM_FINGERPRINTS_FOR_REGISTRATION = 2;
 
     public MainViewHelper(MainView mainView) {
         this.mainView = mainView;
@@ -76,17 +74,26 @@ public class MainViewHelper implements NotificationManager {
         session = new Session(clientType);
     }
 
+    public void changeSessionClientType(Session.ClientType clientType) {
+        if (session == null) {
+            session = new Session(clientType);
+        } else {
+            session.changeSessionClientType(clientType);
+        }
+    }
+
     public Session getSession() {
         return session;
     }
 
-    public ProcessResult findPersonHdss(PersonWrapper searchPersonWrapper) {
+    public ProcessResult findHouseholdMembers(PersonWrapper searchPersonWrapper) {
         List<Person> householdMemberList = new ArrayList<Person>();
         RequestResult kisumuHdssRequestResult = new RequestResult();
         PersonRequest personRequest = new PersonRequest();
+        personRequest.setRequestReference(session.getReference());
         personRequest.setPerson(searchPersonWrapper.unwrap());
         RequestDispatcher.dispatch(personRequest, kisumuHdssRequestResult,
-                RequestDispatcher.DispatchType.FIND, TargetServer.KISUMU_HDSS);
+                RequestDispatcher.DispatchType.FIND, Server.KISUMU_HDSS);
         if (kisumuHdssRequestResult.isSuccessful()) {
             List<Person> searchPersonList = (List<Person>) kisumuHdssRequestResult.getData();
             if (!searchPersonList.isEmpty()) {
@@ -95,7 +102,7 @@ public class MainViewHelper implements NotificationManager {
                     householdMemberList.add(relatedPerson.getPerson());
                 }
             }
-            return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(TargetServer.KISUMU_HDSS, householdMemberList));
+            return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.KISUMU_HDSS, householdMemberList));
         } else {
             return new ProcessResult(ProcessResult.Type.UNREACHABLE_SERVER, null);
         }
@@ -111,10 +118,14 @@ public class MainViewHelper implements NotificationManager {
 
     public ProcessResult findPerson(int targetServer, PersonWrapper searchPersonWrapper, boolean lastResort) {
         //reset results display
-        if (targetServer == TargetServer.MPI || targetServer == TargetServer.MPI_LPI) {
+        if (targetServer == Server.MPI_LPI) {
+            session.setMpiResultDisplayed(false);
+            session.setLpiResultDisplayed(false);
+        }
+        if (targetServer == Server.MPI) {
             session.setMpiResultDisplayed(false);
         }
-        if (targetServer == TargetServer.LPI || targetServer == TargetServer.MPI_LPI) {
+        if (targetServer == Server.LPI) {
             session.setLpiResultDisplayed(false);
         }
         //we only maintain rejected candidate lists if we are doing a last resort search
@@ -135,10 +146,10 @@ public class MainViewHelper implements NotificationManager {
             mpiPersonList = (List<Person>) mpiRequestResult.getData();
             lpiPersonList = (List<Person>) lpiRequestResult.getData();
             if (checkForLinkedCandidates(lpiPersonList)) {
-                return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(TargetServer.LPI, removeRejectedLpiCandidates(lpiPersonList)));
+                return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.LPI, removeRejectedLpiCandidates(lpiPersonList)));
             } else {
                 if (checkForFingerprintCandidates(mpiPersonList)) {
-                    return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(TargetServer.MPI, removeRejectedMpiCandidates(mpiPersonList)));
+                    return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.MPI, removeRejectedMpiCandidates(mpiPersonList)));
                 } else {
                     if (!minimumSearchFingerprintsTaken()) {
                         return new ProcessResult(ProcessResult.Type.NEXT_FINGERPRINT, null);
@@ -146,17 +157,16 @@ public class MainViewHelper implements NotificationManager {
                         if (!session.getAnyUnsentFingerprints().isEmpty()) {
                             for (ImagedFingerprint imagedFingerprint : session.getAnyUnsentFingerprints()) {
                                 session.setActiveImagedFingerprint(imagedFingerprint);
-                                searchPersonWrapper.addFingerprint(imagedFingerprint.getFingerprint());
-                                imagedFingerprint.setSent(true);
+                                searchPersonWrapper.addFingerprint(imagedFingerprint);
                                 break;
                             }
-                            return findPerson(TargetServer.MPI_LPI, searchPersonWrapper);
+                            return findPerson(Server.MPI_LPI, searchPersonWrapper);
                         } else {
                             if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
-                                return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(TargetServer.LPI, lpiPersonList));
+                                return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.LPI, lpiPersonList));
                             } else {
                                 if (!removeRejectedMpiCandidates(mpiPersonList).isEmpty()) {
-                                    return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(TargetServer.MPI, mpiPersonList));
+                                    return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.MPI, mpiPersonList));
                                 } else {
                                     return new ProcessResult(ProcessResult.Type.EXIT, null);
                                 }
@@ -170,7 +180,7 @@ public class MainViewHelper implements NotificationManager {
                     && !lpiRequestResult.isSuccessful()) {
                 if (mainView.showConfirmMessage("Both the Master and the Local Person Indices could not be contacted. "
                         + "Would you like to try contacting them again?", ((MainView) mainView).getFrame())) {
-                    return findPerson(TargetServer.MPI_LPI, searchPersonWrapper);
+                    return findPerson(Server.MPI_LPI, searchPersonWrapper);
                 }
             } else {
                 if (!mpiRequestResult.isSuccessful()
@@ -178,10 +188,10 @@ public class MainViewHelper implements NotificationManager {
                     lpiPersonList = (List<Person>) lpiRequestResult.getData();
                     if (mainView.showConfirmMessage("The Master Person Index could not be contacted. "
                             + "Would you like to try contacting it again?", ((MainView) mainView).getFrame())) {
-                        return findPerson(TargetServer.MPI, searchPersonWrapper);
+                        return findPerson(Server.MPI, searchPersonWrapper);
                     }
                     if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
-                        return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(TargetServer.MPI, lpiPersonList));
+                        return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.MPI, lpiPersonList));
                     } else {
                         return new ProcessResult(ProcessResult.Type.EXIT, null);
                     }
@@ -190,10 +200,10 @@ public class MainViewHelper implements NotificationManager {
                     mpiPersonList = (List<Person>) mpiRequestResult.getData();
                     if (mainView.showConfirmMessage("The Local Person Index could not be contacted. "
                             + "Would you like to try contacting it again?", ((MainView) mainView).getFrame())) {
-                        return findPerson(TargetServer.LPI, searchPersonWrapper);
+                        return findPerson(Server.LPI, searchPersonWrapper);
                     }
                     if (!removeRejectedMpiCandidates(mpiPersonList).isEmpty()) {
-                        return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(TargetServer.MPI, mpiPersonList));
+                        return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.MPI, mpiPersonList));
                     } else {
                         return new ProcessResult(ProcessResult.Type.EXIT, null);
                     }
@@ -244,10 +254,10 @@ public class MainViewHelper implements NotificationManager {
     }
 
     public void noMatchFound(int targetServer) {
-        if (targetServer == TargetServer.MPI) {
+        if (targetServer == Server.MPI) {
             session.setMpiMatchPersonWrapper(null);
             saveRejectedMPICandidateList();
-        } else if (targetServer == TargetServer.LPI) {
+        } else if (targetServer == Server.LPI) {
             session.setLpiMatchPersonWrapper(null);
             saveRejectedLPICandidateList();
         }
@@ -292,10 +302,10 @@ public class MainViewHelper implements NotificationManager {
     }
 
     public void acceptMatch(int targetServer, PersonWrapper personWrapper) {
-        if (targetServer == TargetServer.MPI) {
+        if (targetServer == Server.MPI) {
             session.setMpiMatchPersonWrapper(personWrapper);
             session.setRejectedMPICandidateList(null);
-        } else if (targetServer == TargetServer.LPI) {
+        } else if (targetServer == Server.LPI) {
             session.setLpiMatchPersonWrapper(personWrapper);
             session.setRejectedLPICandidateList(null);
         }
@@ -350,13 +360,13 @@ public class MainViewHelper implements NotificationManager {
     }
 
     private void getWork() {
-        RequestDispatcher.dispatch(createDummyWork(), RequestDispatcher.DispatchType.GET_WORK, TargetServer.CDS);
+        RequestDispatcher.dispatch(createDummyWork(), RequestDispatcher.DispatchType.GET_WORK, Server.CDS);
     }
 
     private PersonRequest createPersonRequest(PersonWrapper personWrapper) {
         PersonRequest personRequest = new PersonRequest();
         personRequest.setPerson(personWrapper.unwrap());
-        personRequest.setRequestReference(personWrapper.getRequestReference());
+        personRequest.setRequestReference(session.getReference());
         return personRequest;
     }
 
@@ -389,7 +399,8 @@ public class MainViewHelper implements NotificationManager {
     public ImagedFingerprint getMissingFingerprint() {
         if (missingFingerprintImage == null) {
             try {
-                missingFingerprintImage = ImageIO.read(new File("missing_fingerprint.png"));
+                String filePath = new File("missing_fingerprint.png").getAbsolutePath();
+                missingFingerprintImage = ImageIO.read(new File(filePath));
             } catch (IOException ex) {
                 Logger.getLogger(Session.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -400,7 +411,8 @@ public class MainViewHelper implements NotificationManager {
     public ImagedFingerprint getRefusedFingerprint() {
         if (refusedFingerprintImage == null) {
             try {
-                refusedFingerprintImage = ImageIO.read(new File("refused_fingerprint.png"));
+                String filePath = new File("refused_fingerprint.png").getAbsolutePath();
+                refusedFingerprintImage = ImageIO.read(new File(filePath));
             } catch (IOException ex) {
                 Logger.getLogger(Session.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -520,10 +532,14 @@ public class MainViewHelper implements NotificationManager {
             minimumRequiredFingerprintsTaken = true;
         } else {
             if (session.getImagedFingerprintList() != null
-                    && session.getImagedFingerprintList().size() >= MINIMUM_FINGERPRINTS_FOR_SEARCH) {
+                    && session.getImagedFingerprintList().size() >= OECReception.MINIMUM_FINGERPRINTS_FOR_SEARCH) {
                 minimumRequiredFingerprintsTaken = true;
             }
         }
         return minimumRequiredFingerprintsTaken;
+    }
+
+    public void endSession() {
+        this.session = null;
     }
 }

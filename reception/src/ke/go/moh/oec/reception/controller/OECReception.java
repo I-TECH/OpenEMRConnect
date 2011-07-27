@@ -36,6 +36,8 @@ import ke.go.moh.oec.reception.data.User;
  */
 public class OECReception {
 
+    public static final int MINIMUM_FINGERPRINTS_FOR_SEARCH = 2;
+    public static final int MINIMUM_FINGERPRINTS_FOR_REGISTRATION = 2;
     private static User user;
 
     public static String applicationAddress() {
