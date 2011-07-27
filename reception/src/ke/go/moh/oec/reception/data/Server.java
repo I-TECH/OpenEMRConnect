@@ -28,7 +28,7 @@ package ke.go.moh.oec.reception.data;
  *
  * @author Gitahi Ng'ang'a
  */
-public class TargetServer {
+public class Server {
 
     /**
      * Signals the RequestDispatcher to dispatch a request to both the 

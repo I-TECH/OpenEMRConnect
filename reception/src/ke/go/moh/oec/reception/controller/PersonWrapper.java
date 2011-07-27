@@ -44,7 +44,7 @@ public class PersonWrapper {
 
     private final Person person;
     private boolean confirmed = false;
-    private String requestReference;
+    private String reference;
 
     public PersonWrapper(Person person) {
         this.person = person;
@@ -180,12 +180,17 @@ public class PersonWrapper {
         return clinicName;
     }
 
-    public void addFingerprint(Fingerprint fingerprint) {
-        List<Fingerprint> fingerprintList = person.getFingerprintList();
-        if (fingerprintList == null) {
+    public void addFingerprint(ImagedFingerprint imagedFingerprint) {
+        if (person.getFingerprintList() == null) {
             person.setFingerprintList(new ArrayList<Fingerprint>());
+        } else {
+            person.getFingerprintList().clear();
         }
-        person.getFingerprintList().add(fingerprint);
+        if (imagedFingerprint != null && !imagedFingerprint.isSent()
+                && !imagedFingerprint.isPlaceholder()) {
+            person.getFingerprintList().add(imagedFingerprint.getFingerprint());
+            imagedFingerprint.setSent(true);
+        }
     }
 
     public void setBirthdate(Date birthdate) {
@@ -434,12 +439,12 @@ public class PersonWrapper {
         person.setFingerprintList(fingerprintList);
     }
 
-    public String getRequestReference() {
-        return requestReference;
+    public String getReference() {
+        return reference;
     }
 
-    public void setRequestReference(String requestReference) {
-        this.requestReference = requestReference;
+    public void setReference(String requestReference) {
+        this.reference = requestReference;
     }
 
     public List<Notification> getNotificationList() {

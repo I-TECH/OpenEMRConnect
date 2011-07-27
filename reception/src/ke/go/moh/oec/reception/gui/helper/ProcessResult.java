@@ -39,14 +39,14 @@ public class ProcessResult {
         ABORT
     }
     private final Type type;
-    private final Object data;
+    private final PersonIndexListData data;
 
-    public ProcessResult(Type type, Object data) {
+    public ProcessResult(Type type, PersonIndexListData data) {
         this.type = type;
         this.data = data;
     }
 
-    public Object getData() {
+    public PersonIndexListData getData() {
         return data;
     }
 
