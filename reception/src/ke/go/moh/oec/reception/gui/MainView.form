@@ -276,7 +276,8 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="quickSearchMessageLabel" pref="458" max="32767" attributes="0"/>
-                                          <Component id="forcePrepareButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="quickSearchButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="readerMessageLabel" alignment="0" pref="458" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -287,10 +288,11 @@
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Group type="102" alignment="0" attributes="1">
-                                              <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                                              <Component id="readerMessageLabel" min="-2" pref="21" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="quickSearchMessageLabel" min="-2" pref="20" max="-2" attributes="0"/>
                                               <EmptySpace max="32767" attributes="0"/>
-                                              <Component id="forcePrepareButton" min="-2" max="-2" attributes="0"/>
+                                              <Component id="quickSearchButton" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <Component id="quickSearchFingerprintImagePanel" alignment="0" min="-2" max="-2" attributes="1"/>
                                       </Group>
@@ -338,13 +340,19 @@
                                 <Property name="name" type="java.lang.String" value="quickSearchMessageLabel" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JButton" name="forcePrepareButton">
+                            <Component class="javax.swing.JButton" name="quickSearchButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="forcePrepare" methodName="forcePrepare"/>
+                                  <action class="ke.go.moh.oec.reception.gui.MainView" id="quickSearch" methodName="quickSearch"/>
                                 </Property>
-                                <Property name="text" type="java.lang.String" resourceKey="forcePrepareButton.text"/>
-                                <Property name="name" type="java.lang.String" value="forcePrepareButton" noResource="true"/>
+                                <Property name="text" type="java.lang.String" resourceKey="quickSearchButton.text"/>
+                                <Property name="name" type="java.lang.String" value="quickSearchButton" noResource="true"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="readerMessageLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" resourceKey="readerMessageLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="readerMessageLabel" noResource="true"/>
                               </Properties>
                             </Component>
                           </SubComponents>
