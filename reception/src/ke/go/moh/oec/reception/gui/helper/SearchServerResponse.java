@@ -24,33 +24,28 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.gui.helper;
 
+import java.util.List;
+import ke.go.moh.oec.Person;
+
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class ProcessResult {
+public class SearchServerResponse {
 
-    public enum Type {
+    private final int server;
+    private final List<Person> personList;
 
-        LIST,
-        NEXT_FINGERPRINT,
-        EXIT,
-        UNREACHABLE_SERVER,
-        ABORT
-    }
-    private final Type type;
-    private final PersonIndexListData data;
-
-    public ProcessResult(Type type, PersonIndexListData data) {
-        this.type = type;
-        this.data = data;
+    public SearchServerResponse(int server, List<Person> personList) {
+        this.server = server;
+        this.personList = personList;
     }
 
-    public PersonIndexListData getData() {
-        return data;
+    public List<Person> getPersonList() {
+        return personList;
     }
 
-    public Type getType() {
-        return type;
+    public int getServer() {
+        return server;
     }
 }

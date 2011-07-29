@@ -95,6 +95,12 @@ public class ImagedFingerprint {
             return false;
         }
         final ImagedFingerprint other = (ImagedFingerprint) obj;
+        if (this.fingerprint == null || other.fingerprint == null) {
+            //return false if both fingerprints are null to prevent NPE below.
+            //I know this is an irresposible implementation of equals but it
+            //works for my purposes. It mostly shouldn't bother you too.
+            return false;
+        }
         if (this.fingerprint != other.fingerprint && (this.fingerprint == null || !this.fingerprint.getFingerprintType().equals(other.fingerprint.getFingerprintType()))) {
             return false;
         }

@@ -106,8 +106,8 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
     private void initialize() throws GrFingerJavaException {
         try {
             matchingContext = new MatchingContext();
-            //TODO: Investigate why this line sometime hangs
             GrFingerJava.installLicense("ZMFAG-PKWUK-CABDA-KSDJF");
+            //TODO: Investigate why this line sometimes hangs
             GrFingerJava.initializeCapture(this);
             fingerprintingComponent.log("Waiting for device.");
         } catch (GrFingerJavaException ex) {
@@ -117,7 +117,7 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
     }
 
     public void destroy() throws GrFingerJavaException {
-        //TODO: Investigate why this line sometime hangs
+        //TODO: Investigate why this line sometimes hangs
         GrFingerJava.finalizeCapture();
         fingerprintingComponent.log("Disconnected from device.");
     }
