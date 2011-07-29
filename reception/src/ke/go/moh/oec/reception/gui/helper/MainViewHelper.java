@@ -86,7 +86,7 @@ public class MainViewHelper implements NotificationManager {
         return session;
     }
 
-    public ProcessResult findHouseholdMembers(PersonWrapper searchPersonWrapper) {
+    public SearchProcessResult findHouseholdMembers(PersonWrapper searchPersonWrapper) {
         List<Person> householdMemberList = new ArrayList<Person>();
         RequestResult kisumuHdssRequestResult = new RequestResult();
         PersonRequest personRequest = new PersonRequest();
@@ -102,21 +102,21 @@ public class MainViewHelper implements NotificationManager {
                     householdMemberList.add(relatedPerson.getPerson());
                 }
             }
-            return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.KISUMU_HDSS, householdMemberList));
+            return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.KISUMU_HDSS, householdMemberList));
         } else {
-            return new ProcessResult(ProcessResult.Type.UNREACHABLE_SERVER, null);
+            return new SearchProcessResult(SearchProcessResult.Type.UNREACHABLE_SERVER, null);
         }
     }
 
-    public ProcessResult findPerson(int targetServer) {
+    public SearchProcessResult findPerson(int targetServer) {
         return findPerson(targetServer, session.getSearchPersonWrapper(), false);
     }
 
-    public ProcessResult findPerson(int targetServer, PersonWrapper searchPersonWrapper) {
+    public SearchProcessResult findPerson(int targetServer, PersonWrapper searchPersonWrapper) {
         return findPerson(targetServer, searchPersonWrapper, false);
     }
 
-    public ProcessResult findPerson(int targetServer, PersonWrapper searchPersonWrapper, boolean lastResort) {
+    public SearchProcessResult findPerson(int targetServer, PersonWrapper searchPersonWrapper, boolean lastResort) {
         //reset results display
         if (targetServer == Server.MPI_LPI) {
             session.setMpiResultDisplayed(false);
@@ -146,13 +146,13 @@ public class MainViewHelper implements NotificationManager {
             mpiPersonList = (List<Person>) mpiRequestResult.getData();
             lpiPersonList = (List<Person>) lpiRequestResult.getData();
             if (checkForLinkedCandidates(lpiPersonList)) {
-                return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.LPI, removeRejectedLpiCandidates(lpiPersonList)));
+                return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, removeRejectedLpiCandidates(lpiPersonList)));
             } else {
                 if (checkForFingerprintCandidates(mpiPersonList)) {
-                    return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.MPI, removeRejectedMpiCandidates(mpiPersonList)));
+                    return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, removeRejectedMpiCandidates(mpiPersonList)));
                 } else {
                     if (!minimumSearchFingerprintsTaken()) {
-                        return new ProcessResult(ProcessResult.Type.NEXT_FINGERPRINT, null);
+                        return new SearchProcessResult(SearchProcessResult.Type.NEXT_FINGERPRINT, null);
                     } else {
                         if (!session.getAnyUnsentFingerprints().isEmpty()) {
                             for (ImagedFingerprint imagedFingerprint : session.getAnyUnsentFingerprints()) {
@@ -163,12 +163,12 @@ public class MainViewHelper implements NotificationManager {
                             return findPerson(Server.MPI_LPI, searchPersonWrapper);
                         } else {
                             if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
-                                return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.LPI, lpiPersonList));
+                                return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, lpiPersonList));
                             } else {
                                 if (!removeRejectedMpiCandidates(mpiPersonList).isEmpty()) {
-                                    return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.MPI, mpiPersonList));
+                                    return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, mpiPersonList));
                                 } else {
-                                    return new ProcessResult(ProcessResult.Type.EXIT, null);
+                                    return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
                                 }
                             }
                         }
@@ -191,9 +191,9 @@ public class MainViewHelper implements NotificationManager {
                         return findPerson(Server.MPI, searchPersonWrapper);
                     }
                     if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
-                        return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.MPI, lpiPersonList));
+                        return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, lpiPersonList));
                     } else {
-                        return new ProcessResult(ProcessResult.Type.EXIT, null);
+                        return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
                     }
                 } else if (!lpiRequestResult.isSuccessful()
                         && mpiRequestResult.isSuccessful()) {
@@ -203,13 +203,13 @@ public class MainViewHelper implements NotificationManager {
                         return findPerson(Server.LPI, searchPersonWrapper);
                     }
                     if (!removeRejectedMpiCandidates(mpiPersonList).isEmpty()) {
-                        return new ProcessResult(ProcessResult.Type.LIST, new PersonIndexListData(Server.MPI, mpiPersonList));
+                        return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, mpiPersonList));
                     } else {
-                        return new ProcessResult(ProcessResult.Type.EXIT, null);
+                        return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
                     }
                 }
             }
-            return new ProcessResult(ProcessResult.Type.UNREACHABLE_SERVER, null);
+            return new SearchProcessResult(SearchProcessResult.Type.UNREACHABLE_SERVER, null);
         }
     }
 
