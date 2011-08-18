@@ -121,8 +121,18 @@ public class DataTransactionGenerator {
     }
 
     private void update(List<Transaction> transactionList, Table table, SourceResultSet sourceRs, ShadowResultSet shadowRs) throws SQLException {
+        List<DataTransaction> dataTransactionList = new ArrayList<DataTransaction>();
         LoggableTransaction loggableTransaction = new LoggableTransaction(table, TransactionType.UPDATE);
         List<LoggableTransactionDatum> loggableTransactionDatumList = new ArrayList<LoggableTransactionDatum>();
+        /*
+         * We will set the variable update to true if an update has taken place anywhere in the row.
+         * In this case, all cells in the row will be included in the update just incase they are 
+         * interpreted as inserts by the mpi (in that case it will need all of them, not only the 
+         * ones that changed). The implementation for other applications may be much leaner, omiting
+         * unchanged cells in the row from the generated update transaction. The variable ignore,
+         * further down can be used to customize this.
+         */
+        boolean update = false;
         for (Column column : table.getColumnList()) {
             /*
              * Ensure cells associated with new columns are created
@@ -138,22 +148,31 @@ public class DataTransactionGenerator {
             }
             String shadowColumnValue = shadowRs.getCell(column).getData();
             boolean compare = (shadowColumnValue != null && sourceColumnValue != null);//only compare column values if both are not null
-            boolean ignore = (shadowColumnValue == null && sourceColumnValue == null);//if both values are null, no update has tahen place
-            boolean update = false;//true if an update has happened
+            boolean ignore = (shadowColumnValue == null && sourceColumnValue == null);//if both values are null, no update has taken place
             if (compare) {
-                update = !shadowColumnValue.equals(sourceColumnValue);//if both values are not equal then an update has taken place
+                if (!update) {//if update has already been set to true then just leave it alone. We know this is an update.
+                    update = !shadowColumnValue.equals(sourceColumnValue);//if both values are not equal then an update has taken place
+                }
             } else {
-                update = !ignore;//if only one value is null then an update has taken place
+                if (!update) {//if update has already been set to true then just leave it alone. We know this is an update.
+                    update = !ignore;//if only one value is null then an update has taken place
+                }
             }
-            if (update) {
-                Cell cell = shadowRs.getCell(column);
-                cell.setData(sourceColumnValue);
-                cell.setColumn(column);
-                transactionList.add(new DataTransaction(cell, TransactionType.UPDATE));
-                loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
-            }
+            /*
+             * Prepare all the transactions accordingly anyway. Depending on the value of the update variable,
+             * they may discarded without being added to the main transactionList (if update == false) or added
+             * otherwise.
+             */
+            Cell cell = shadowRs.getCell(column);
+            cell.setData(sourceColumnValue);
+            cell.setColumn(column);
+            dataTransactionList.add(new DataTransaction(cell, TransactionType.UPDATE));
+            loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
         }
-        if (!loggableTransactionDatumList.isEmpty()) { // If not the same:
+        //make the decision whether do add the prepared transactions to the main transactionList based on whether
+        //an update actually happened
+        if (update && !loggableTransactionDatumList.isEmpty()) { // If not the same:
+            transactionList.addAll(dataTransactionList);
             loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);
             transactionList.add(loggableTransaction);
         }
