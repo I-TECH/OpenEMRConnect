@@ -2854,33 +2854,25 @@ public class MainView extends FrameView implements FingerprintingComponent {
         if (notification.getType() == Notification.Type.PREGNANCY_OUTCOME) {
             reload = pregnancyOutcomeNotificationList.isEmpty();
             pregnancyOutcomeNotificationList.add(notification);
-            if (pregnancyOutcomeNode.getParent() == null) {
-                notificationRootNode.add(pregnancyOutcomeNode);
-            }
+            insertNotificationTypeNode(pregnancyOutcomeNode);
             treeModel.insertNodeInto(newNotificationNode, pregnancyOutcomeNode, pregnancyOutcomeNotificationList.indexOf(notification));
             pregnancyOutcomeNode.setUserObject("Pregnancy outcome" + "(" + pregnancyOutcomeNotificationList.size() + ")");
         } else if (notification.getType() == Notification.Type.PREGNANCY) {
             reload = (reload || pregnancyNotificationList.isEmpty());
             pregnancyNotificationList.add(notification);
-            if (pregnancyNode.getParent() == null) {
-                notificationRootNode.add(pregnancyNode);
-            }
+            insertNotificationTypeNode(pregnancyNode);
             treeModel.insertNodeInto(newNotificationNode, pregnancyNode, pregnancyNotificationList.indexOf(notification));
             pregnancyNode.setUserObject("Pregnancy" + "(" + pregnancyNotificationList.size() + ")");
         } else if (notification.getType() == Notification.Type.DEATH) {
             reload = (reload || deathNotificationList.isEmpty());
             deathNotificationList.add(notification);
-            if (deathNode.getParent() == null) {
-                notificationRootNode.add(deathNode);
-            }
+            insertNotificationTypeNode(deathNode);
             treeModel.insertNodeInto(newNotificationNode, deathNode, deathNotificationList.indexOf(notification));
             deathNode.setUserObject("Death" + "(" + deathNotificationList.size() + ")");
         } else if (notification.getType() == Notification.Type.MIGRATION) {
             reload = (reload || migrationNotificationList.isEmpty());
             migrationNotificationList.add(notification);
-            if (migrationNode.getParent() == null) {
-                notificationRootNode.add(migrationNode);
-            }
+            insertNotificationTypeNode(migrationNode);
             treeModel.insertNodeInto(newNotificationNode, migrationNode, migrationNotificationList.indexOf(notification));
             migrationNode.setUserObject("Migration" + "(" + migrationNotificationList.size() + ")");
         }
@@ -2888,6 +2880,30 @@ public class MainView extends FrameView implements FingerprintingComponent {
             treeModel.reload();
         }
         notificationRootNode.setUserObject("Notifications" + "(" + totalNotifications() + ")");
+    }
+    /*
+     * Inserts a notification type node into the root node if it hasn't already been
+     * inserted
+     */
+    private void insertNotificationTypeNode(DefaultMutableTreeNode notificationTypeNode) {
+        if (notificationTypeNode.getParent() == null) {
+            int count = notificationRootNode.getChildCount();
+            boolean inserted = false;
+            if (count > 0) {
+                String notificationType = (String) notificationTypeNode.getUserObject();
+                for (int i = 0; i < count; i++) {
+                    DefaultMutableTreeNode currentNotificationTypeNode = (DefaultMutableTreeNode) notificationRootNode.getChildAt(i);
+                    String currentNotificationType = (String) currentNotificationTypeNode.getUserObject();
+                    if (notificationType.compareToIgnoreCase(currentNotificationType) < 0) {
+                        notificationRootNode.insert(notificationTypeNode, notificationRootNode.getIndex(currentNotificationTypeNode));
+                        inserted = true;
+                    }
+                }
+            }
+            if (count < 1 || !inserted) {
+                notificationRootNode.add(notificationTypeNode);
+            }
+        }
     }
 
     private void removeNotificationFromTree(Notification notification) {
@@ -3807,7 +3823,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                     && mainViewHelper.noLPIMatchWasFound()) {
                 searchProcessResult = mainViewHelper.findPerson(Server.LPI, lpiUpdatePersonWrapper, true);
                 if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
-                    showSearchResults(new SearchServerResponse(Server.LPI, (List<Person>) searchProcessResult.getData()), true);
+                    showSearchResults(new SearchServerResponse(Server.LPI, searchProcessResult.getData().getPersonList()), true);
                 }
             }
             mainViewHelper.setLastResortSearchDone(true);
@@ -4030,13 +4046,11 @@ public class MainView extends FrameView implements FingerprintingComponent {
         visit.setAddress(OECReception.applicationAddress());
         visit.setVisitDate(new Date());
         if (mainViewHelper.getSession().getClientType() == Session.ClientType.ENROLLED
-                || mainViewHelper.getSession().getClientType() == Session.ClientType.NEW) {
+                || mainViewHelper.getSession().getClientType() == Session.ClientType.NEW
+                || mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
             personWrapper.setLastRegularVisit(visit);
         } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR) {
             personWrapper.setLastOneOffVisit(visit);
-        } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {
-            personWrapper.setLastRegularVisit(visit);
-            personWrapper.setLastMoveDate(new Date());
         }
     }
 
