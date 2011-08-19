@@ -60,7 +60,7 @@ public class Notifier {
             if (v != null) {
                 String address = v.getAddress();
                 if (address != null) {
-                    String facility = address.substring(0, address.indexOf(".facility.")+15);
+                    String facility = address.substring(0, address.indexOf(".facility.") + 15);
                     String destination = facility + ".cds";
                     PersonRequest pr = new PersonRequest();
                     pr.setPerson(p);

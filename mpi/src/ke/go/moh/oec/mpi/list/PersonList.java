@@ -144,8 +144,8 @@ public class PersonList {
                 + "       v.village_name, m.marital_status_name, p.consent_signed,\n"
                 + "       MAX(v_reg.visit_date) AS v_reg_date,\n"
                 + "       MAX(v_one.visit_date) AS v_one_date,\n"
-                + "       MID(MAX(CONCAT(v_reg.visit_date, a_reg.address)),21) AS v_reg_address,\n"
-                + "       MID(MAX(CONCAT(v_one.visit_date, a_one.address)),21) AS v_one_address\n"
+                + "       MID(MAX(CONCAT(v_reg.visit_date, a_reg.address)),20) AS v_reg_address,\n"
+                + "       MID(MAX(CONCAT(v_one.visit_date, a_one.address)),20) AS v_one_address\n"
                 + "FROM person p\n"
                 + "LEFT OUTER JOIN village v ON v.village_id = p.village_id\n"
                 + "LEFT OUTER JOIN marital_status_type m ON m.marital_status_type_id = p.marital_status\n"
@@ -188,6 +188,7 @@ public class PersonList {
                 p.setMaritalStatus((Person.MaritalStatus) ValueMap.MARITAL_STATUS.getVal().get(rs.getString("marital_status_name")));
                 p.setPersonIdentifierList(PersonIdentifierList.load(listConn, dbPersonId));
                 p.setFingerprintList(FingerprintList.load(listConn, dbPersonId));
+                p.setConsentSigned((Person.ConsentSigned) ValueMap.CONSENT_SIGNED.getVal().get(rs.getString("consent_signed")));
                 p.setLastRegularVisit(Visit.getVisit(rs.getDate("v_reg_date"), rs.getString("v_reg_address")));
                 p.setLastOneOffVisit(Visit.getVisit(rs.getDate("v_one_date"), rs.getString("v_one_address")));
                 PersonMatch per = new PersonMatch(p);
