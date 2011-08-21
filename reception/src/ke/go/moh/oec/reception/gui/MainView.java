@@ -4629,18 +4629,18 @@ public class MainView extends FrameView implements FingerprintingComponent {
             ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, quickSearchFingerprintImagePanel.getImage(), false);
 
 
-            if (imagedFingerprintList.contains(imagedFingerprint)) {
-                if (showConfirmMessage("A print has already been taken from the finger you want to"
-                        + " add. Would you like to overwite it?")) {
-                    imagedFingerprintList.remove(imagedFingerprintList.indexOf(imagedFingerprint));
-                    mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
-                } else {
-                    return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
-                }
-            } else {
+//            if (imagedFingerprintList.contains(imagedFingerprint)) {
+//                if (showConfirmMessage("A print has already been taken from the finger you want to"
+//                        + " add. Would you like to overwite it?")) {
+//                    imagedFingerprintList.remove(imagedFingerprintList.indexOf(imagedFingerprint));
+//                    mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
+//                } else {
+//                    return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
+//                }
+//            } else {
                 mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
                 mainViewHelper.getSession().setActiveImagedFingerprint(imagedFingerprint);
-            }
+//            }
             quickSearchPersonWrapper.addFingerprint(mainViewHelper.getSession().getActiveImagedFingerprint());
             return mainViewHelper.findPerson(Server.MPI_LPI, quickSearchPersonWrapper);
         }
