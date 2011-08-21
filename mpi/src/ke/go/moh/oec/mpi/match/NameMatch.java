@@ -117,12 +117,48 @@ public class NameMatch extends StringMatch {
     public NameMatch(String original) {
         super(original);
         if (original != null) {
-            String modifiedOriginal = "A" + original;
+            String str = clean(original);
+            String modifiedOriginal = "A" + str;
             soundexValue = soundex.encode(modifiedOriginal);
             refinedSoundexValue = refinedSoundex.encode(modifiedOriginal);
             metaphone1 = doubleMetaphone.doubleMetaphone(original);
             metaphone2 = doubleMetaphone.doubleMetaphone(original, true);
         }
+    }
+
+    /**
+     * Clean the string before finding its soundex (or metaphone) value.
+     * This is necessary because the soundex library methods used make
+     * the erroneous assumption that if the java Character.isLetter()
+     * method returns true then the character will be in the range
+     * A-Z or a-z. This is true for the basic 7-bit ASCII codes, but it may not
+     * be for the extended 8-bit ASCII codes. If the character is an accented
+     * letter in the extended 8-bit ASCII range, then isLetter() will return
+     * true but the character will not be in the range A-Z or a-z.
+     * <p>
+     * To compensate for this problem in the library methods called, this
+     * method strips from the string any characters for which isLetter()
+     * returns true, but the character is not in the range A-Z or a-z.
+     * 
+     * @param str String for which the soundex value will be computed.
+     * @return String with accented characters (if any) removed.
+     */
+    private String clean(String str) {
+        if (str.length() > 0) {
+            int len = str.length();
+            char[] chars = new char[len];
+            int count = 0;
+            for (int i = 0; i < len; i++) {
+                char c = Character.toUpperCase(str.charAt(i));
+                if (!Character.isLetter(c) || (c >= 'A' && c <= 'Z')) {
+                    chars[count++] = str.charAt(i);
+                }
+            }
+            if (count != len) {
+                str = new String(chars, 0, count);
+            }
+        }
+        return str;
     }
 
     /**
@@ -164,21 +200,21 @@ public class NameMatch extends StringMatch {
      */
     public static Double computeScore(NameMatch n1, NameMatch n2, StringMatch.MatchType stringMatchType) {
         Double score = StringMatch.computeScore(n1, n2, stringMatchType);
-        if (score != null && score < 1.0) {
-            if (n1.soundexValue.equals(n2.soundexValue)
-                    || n1.refinedSoundexValue.equals(n2.refinedSoundexValue)
-                    || n1.metaphone1.equals(n2.metaphone1)
-                    || n1.metaphone2.equals(n2.metaphone2)
-                    || n1.metaphone1.equals(n2.metaphone2)
-                    || n1.metaphone2.equals(n2.metaphone1)) {
-                score = 0.8 + (score / 5.0);
-            }
-            Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
-                    "NameMatch.computeScore({0},{1}) = {2}", new Object[]{n1.getOriginal(), n2.getOriginal(), score});
-        }
+//        if (score != null && score < 1.0) {
+//            if (n1.soundexValue.equals(n2.soundexValue)
+//                    || n1.refinedSoundexValue.equals(n2.refinedSoundexValue)
+//                    || n1.metaphone1.equals(n2.metaphone1)
+//                    || n1.metaphone2.equals(n2.metaphone2)
+//                    || n1.metaphone1.equals(n2.metaphone2)
+//                    || n1.metaphone2.equals(n2.metaphone1)) {
+//                score = 0.8 + (score / 5.0);
+//            }
+//            Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
+//                    "NameMatch.computeScore({0},{1}) = {2}", new Object[]{n1.getOriginal(), n2.getOriginal(), score});
+//        }
         return score;
     }
-    
+
     /**
      * Computes the score as a result of matching two NameMatch objects,
      * using approximate matching, and using NORMAL string matching.
