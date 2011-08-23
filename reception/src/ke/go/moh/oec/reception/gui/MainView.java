@@ -24,6 +24,8 @@ import org.jdesktop.application.Task;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,6 +79,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private String currentCardName = "homeCard";
     private List<String> visitedCardList = new ArrayList<String>();
     private ReaderManager readerManager;
+    private final SearchStatus searchStatus = new SearchStatus(false);
     private boolean readerAvailable = false;
     private static final int MIN_WIDTH = 670;
     private static final int MIN_HEIGHT = 670;
@@ -94,6 +97,18 @@ public class MainView extends FrameView implements FingerprintingComponent {
         super(app);
         initComponents();
         initializeNotificationTree();
+        this.getFrame().addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                destroyReaderManager(true);
+//            try {
+//                Thread.sleep(5000);
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+            }
+        });
         this.getFrame().addComponentListener(new java.awt.event.ComponentAdapter() {
 
             @Override
@@ -2614,7 +2629,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         if (cardName.equalsIgnoreCase("homeCard")) {
             log("");
             showQuickSearchStatus("");
-            destroyReaderManager();
+            destroyReaderManager(false);
         }
     }
 
@@ -2885,6 +2900,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
      * Inserts a notification type node into the root node if it hasn't already been
      * inserted
      */
+
     private void insertNotificationTypeNode(DefaultMutableTreeNode notificationTypeNode) {
         if (notificationTypeNode.getParent() == null) {
             int count = notificationRootNode.getChildCount();
@@ -3009,29 +3025,37 @@ public class MainView extends FrameView implements FingerprintingComponent {
     }
 
     private void destroyReaderManager() {
-        //destroy reader in a new thread to prevent gui from hanging.
-        Runnable readerDestroyer = new Runnable() {
-
-            public void run() {
-                log("Disconneting from device");
-                try {
-                    System.out.println("Destroying Griaule");
-                    if (readerManager != null) {
-                        System.out.println("Griaule is not null");
-                        readerManager.destroy();
-                        System.out.println("Griaule destroyed");
-                        log("Disconneted from device");
-                    } else {
-                        System.out.println("Griaule is null");
-                    }
-                } catch (GrFingerJavaException ex) {
-                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                readerManager = null;
-                readerAvailable = false;
+        log("Disconneting from device");
+        try {
+            System.out.println("Destroying Griaule");
+            if (readerManager != null) {
+                System.out.println("Griaule is not null");
+                readerManager.destroy();
+                System.out.println("Griaule destroyed");
+                log("Disconneted from device");
+            } else {
+                System.out.println("Griaule is null");
             }
-        };
-        new Thread(readerDestroyer).start();
+        } catch (GrFingerJavaException ex) {
+            Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        readerManager = null;
+        readerAvailable = false;
+    }
+
+    private void destroyReaderManager(boolean synchronously) {
+        //destroy reader in a new thread to prevent gui from hanging.
+        if (synchronously) {
+            destroyReaderManager();
+        } else {
+            Runnable readerDestroyer = new Runnable() {
+
+                public void run() {
+                    destroyReaderManager();
+                }
+            };
+            new Thread(readerDestroyer).start();
+        }
     }
 
     public void log(String message) {
@@ -3078,7 +3102,11 @@ public class MainView extends FrameView implements FingerprintingComponent {
             return;
         }
         //simulate an actual gui button click in order to take advamtage of background task
-        quickSearchButton.doClick();
+        if (searchStatus.isOn()) {
+            showErrorMessage("Another search is going on!", homeCard);
+        } else {
+            quickSearchButton.doClick();
+        }
     }
 
     public void showImage(BufferedImage fingerprintImage) {
@@ -4555,8 +4583,6 @@ public class MainView extends FrameView implements FingerprintingComponent {
 
     private class QuickSearchTask extends org.jdesktop.application.Task<Object, Void> {
 
-        final SearchStatus searchStatus = new SearchStatus(true);
-
         QuickSearchTask(org.jdesktop.application.Application app) {
             super(app);
         }
@@ -4592,7 +4618,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 }
             };
             new Thread(searchMessageDisplayer).start();
-
+            searchStatus.setOn(true);
             startUnspecifiedClientSession();
             PersonWrapper quickSearchPersonWrapper = mainViewHelper.getSession().getSearchPersonWrapper();
             List<ImagedFingerprint> imagedFingerprintList = mainViewHelper.getSession().getImagedFingerprintList();
@@ -4627,20 +4653,18 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 return new SearchProcessResult(SearchProcessResult.Type.BAD_FINGERPRINT, null);
             }
             ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, quickSearchFingerprintImagePanel.getImage(), false);
-
-
-            if (imagedFingerprintList.contains(imagedFingerprint)) {
-                if (showConfirmMessage("A print has already been taken from the finger you want to"
-                        + " add. Would you like to overwite it?")) {
-                    imagedFingerprintList.remove(imagedFingerprintList.indexOf(imagedFingerprint));
-                    mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
-                } else {
-                    return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
-                }
-            } else {
-                mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
-                mainViewHelper.getSession().setActiveImagedFingerprint(imagedFingerprint);
-            }
+//            if (imagedFingerprintList.contains(imagedFingerprint)) {
+//                if (showConfirmMessage("A print has already been taken from the finger you want to"
+//                        + " add. Would you like to overwite it?")) {
+//                    imagedFingerprintList.remove(imagedFingerprintList.indexOf(imagedFingerprint));
+//                    mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
+//                } else {
+//                    return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
+//                }
+//            } else {
+            mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
+            mainViewHelper.getSession().setActiveImagedFingerprint(imagedFingerprint);
+//            }
             quickSearchPersonWrapper.addFingerprint(mainViewHelper.getSession().getActiveImagedFingerprint());
             return mainViewHelper.findPerson(Server.MPI_LPI, quickSearchPersonWrapper);
         }

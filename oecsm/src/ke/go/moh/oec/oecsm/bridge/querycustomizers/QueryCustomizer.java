@@ -33,7 +33,7 @@ import ke.go.moh.oec.oecsm.data.Table;
  */
 public interface QueryCustomizer {
 
-    String buildCompositePrimaryKey(Table tableStructure);
+    String buildCompositePrimaryKey(Table table);
 
     String getOpenningSafetyPad();
 
