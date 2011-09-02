@@ -52,10 +52,10 @@ public class Notifier {
      * @param p updated person
      */
     public static void notify(Person p) {
-        if (p.getPreviousVillageName() != null
+        if (p.getLastMoveDate() != null
                 || p.getExpectedDeliveryDate() != null
                 || p.getPregnancyEndDate() != null
-                || p.getAliveStatus() == Person.AliveStatus.no) {
+                || p.getDeathdate() != null) {
             Visit v = p.getLastRegularVisit();
             if (v != null) {
                 String address = v.getAddress();
@@ -68,6 +68,11 @@ public class Notifier {
                     pr.setDestinationName("Clinical Document Store");
                     Mediator mediator = Main.getMediator();
                     mediator.getData(RequestTypeId.NOTIFY_PERSON_CHANGED, pr);
+                    //reset notification fields to avoid recurrent notification
+                    p.setLastMoveDate(null);
+                    p.setExpectedDeliveryDate(null);
+                    p.setPregnancyEndDate(null);
+                    p.setDeathdate(null);
                 }
             }
         }

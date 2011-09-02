@@ -19,11 +19,12 @@
  * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(sql):
  *
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi.list;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -303,8 +304,37 @@ public class PersonList {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "CREATE PERSON called with no person data.");
             return returnData;
         }
+        //Check to see if this person'sql hdssid, if available, already exists in the mpi. Log error if it does.
+        boolean exists = false;
+        if (p.getPersonIdentifierList() != null
+                && !p.getPersonIdentifierList().isEmpty()) {
+            for (PersonIdentifier personIdentifier : p.getPersonIdentifierList()) {
+                if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
+                    if (personIdentifier.getIdentifier() != null
+                            && !personIdentifier.getIdentifier().isEmpty()) {
+                        List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
+                        personIdentifierList.add(personIdentifier);
+                        Person find = new Person();
+                        find.setPersonIdentifierList(personIdentifierList);
+                        PersonRequest personRequest = new PersonRequest();
+                        personRequest.setPerson(find);
+                        PersonResponse personResponse = (PersonResponse) find(personRequest);
+                        if (personResponse != null
+                                && personResponse.getPersonList() != null
+                                && !personResponse.getPersonList().isEmpty()) {
+                            exists = true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        if (exists) {
+            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "CREATE PERSON called with existing kisumuhdssid person identifier.");
+            return returnData;
+        }
         Connection conn = Sql.connect();
-        ResultSet rs = Sql.query(conn, "select uuid() as uuid");
+        ResultSet rs = Sql.query(conn, "SELECT UUID() AS uuid");
         String guid = null;
         try {
             rs.next();
@@ -376,81 +406,315 @@ public class PersonList {
      */
     public Object modify(PersonRequest req) {
         PersonResponse returnData = null;
-        Person p = req.getPerson();
-        if (p == null) {
+        Person newPerson = req.getPerson();//person containing modified data
+        if (newPerson == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person data.");
             return returnData;
         }
-
-        String personGuid = p.getPersonGuid();
-        if (p == null) {
-            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person GUID.");
-            return returnData;
+        String personGuid = newPerson.getPersonGuid();
+        if (personGuid == null
+                || personGuid.isEmpty()) {//True if this update is NOT the result of a 'sought and found' person i.e. 
+            //it came from kisumuhdss. We now try to find this person (using their kisumuhdssid) just to make sure 
+            //we agree with kisumu hdss that they are already known to us. 
+            if (newPerson.getPersonIdentifierList() != null
+                    && !newPerson.getPersonIdentifierList().isEmpty()) {
+                for (PersonIdentifier personIdentifier : newPerson.getPersonIdentifierList()) {
+                    if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
+                        if (personIdentifier.getIdentifier() != null
+                                && !personIdentifier.getIdentifier().isEmpty()) {
+                            List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
+                            personIdentifierList.add(personIdentifier);
+                            Person find = new Person();
+                            find.setPersonIdentifierList(personIdentifierList);
+                            PersonRequest personRequest = new PersonRequest();
+                            personRequest.setPerson(find);
+                            //Find the person locally. No network communication is involved.
+                            PersonResponse personResponse = (PersonResponse) find(personRequest);
+                            if (personResponse != null
+                                    && personResponse.getPersonList() != null
+                                    && !personResponse.getPersonList().isEmpty()) {
+                                if (personResponse.getPersonList().isEmpty()) {
+                                    Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with non-existing kisumuHdssId person identifier.");
+                                    return returnData;
+                                } else if (personResponse.getPersonList().size() == 1) {
+                                    //We think this person exists once and we know their person guid. We'll use it to
+                                    //find him in the personList (this).
+                                    personGuid = personResponse.getPersonList().get(0).getPersonGuid();
+                                } else {
+                                    Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with a duplicated kisumuHdssId person identifier.");
+                                    return returnData;
+                                }
+                            }
+                            //We only break if we find a NON-EMPTY kisumuhdssid, otherwise we keep going.
+                            break;
+                        }
+                    }
+                }
+            }
         }
-
-        PersonMatch oldPer = this.get(personGuid);
-        if (oldPer == null) {
+        PersonMatch oldPersonMatch = null;
+        if (personGuid != null
+                && !personGuid.isEmpty()) {
+            oldPersonMatch = this.get(personGuid);
+            if (oldPersonMatch == null) {
+                Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person GUID.");
+                return returnData;
+            }
+        } else {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON GUID {0} not found.", personGuid);
             return returnData;
         }
-
-        SearchHistory.update(req, oldPer, p); // Log the search result (if any) BEFORE modifying the person.
-        int dbPersonId = oldPer.getDbPersonId();
-        Person oldP = oldPer.getPerson();
+        newPerson.setPersonGuid(personGuid);
+        SearchHistory.update(req, oldPersonMatch, newPerson); // Log the search result (if any) BEFORE modifying the person.
+        int dbPersonId = oldPersonMatch.getDbPersonId();
+        Person oldPerson = oldPersonMatch.getPerson();
         Connection conn = Sql.connect();
-        String sex = ValueMap.SEX.getDb().get(p.getSex());
-        String villageId = Sql.getVillageId(conn, p.getVillageName());
-        String maritalStatusId = Sql.getMaritalStatusId(conn, p.getMaritalStatus());
-        String consentSigned = ValueMap.CONSENT_SIGNED.getDb().get(p.getConsentSigned());
-        String sql = "UPDATE person set\n       "
-                + "first_name = " + Sql.quote(p.getFirstName()) + ", "
-                + "middle_name = " + Sql.quote(p.getMiddleName()) + ", "
-                + "last_name = " + Sql.quote(p.getLastName()) + ",\n       "
-                + "other_name = " + Sql.quote(p.getOtherName()) + ", "
-                + "clan_name = " + Sql.quote(p.getClanName()) + ", "
-                + "sex = " + Sql.quote(sex) + ", "
-                + "birthdate = " + Sql.quote(p.getBirthdate()) + ", "
-                + "deathdate = " + Sql.quote(p.getDeathdate()) + ",\n       "
-                + "mothers_first_name = " + Sql.quote(p.getMothersFirstName()) + ", "
-                + "mothers_middle_name = " + Sql.quote(p.getMothersMiddleName()) + ", "
-                + "mothers_last_name = " + Sql.quote(p.getMothersLastName()) + ",\n       "
-                + "fathers_first_name = " + Sql.quote(p.getFathersFirstName()) + ", "
-                + "fathers_middle_name = " + Sql.quote(p.getFathersMiddleName()) + ", "
-                + "fathers_last_name = " + Sql.quote(p.getFathersLastName()) + ",\n       "
-                + "compoundhead_first_name = " + Sql.quote(p.getCompoundHeadFirstName()) + ", "
-                + "compoundhead_middle_name = " + Sql.quote(p.getCompoundHeadMiddleName()) + ", "
-                + "compoundhead_last_name = " + Sql.quote(p.getCompoundHeadLastName()) + ",\n       "
-                + "village_id = " + villageId + ", "
-                + "marital_status = " + maritalStatusId + ", "
-                + "consent_signed = " + consentSigned + ", "
-                + "date_changed = NOW()\n"
-                + "WHERE person_id = " + dbPersonId;
-        Sql.startTransaction(conn);
-        Sql.execute(conn, sql);
-        List<PersonIdentifier> pList = PersonIdentifierList.update(conn, dbPersonId, p.getPersonIdentifierList(), oldP.getPersonIdentifierList());
-        p.setPersonIdentifierList(pList);
-        List<Fingerprint> fList = FingerprintList.update(conn, dbPersonId, p.getFingerprintList(), oldP.getFingerprintList());
-        p.setFingerprintList(fList);
-        VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
-        VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
-        if (p.getLastRegularVisit() == null) {
-            p.setLastRegularVisit(oldP.getLastRegularVisit());
+        String sex = ValueMap.SEX.getDb().get(newPerson.getSex());
+        String villageId = Sql.getVillageId(conn, newPerson.getVillageName());
+        String maritalStatusId = Sql.getMaritalStatusId(conn, newPerson.getMaritalStatus());
+        String consentSigned = ValueMap.CONSENT_SIGNED.getDb().get(newPerson.getConsentSigned());
+        int columnCount = 0;
+        String sql = "UPDATE person SET\n";
+        if (newPerson.getFirstName() != null) {
+            if (newPerson.getFirstName().isEmpty()) {
+                sql += (separate(columnCount) + "first_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "first_name = " + Sql.quote(newPerson.getFirstName()) + "\n");
+            }
+            columnCount++;
         }
-        if (p.getLastOneOffVisit() == null) {
-            p.setLastOneOffVisit(oldP.getLastOneOffVisit());
+        if (newPerson.getMiddleName() != null) {
+            if (newPerson.getMiddleName().isEmpty()) {
+                sql += (separate(columnCount) + "middle_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "middle_name = " + Sql.quote(newPerson.getMiddleName()) + "\n");
+            }
+            columnCount++;
         }
-        Sql.commit(conn);
-        PersonMatch newPer = new PersonMatch(p);
-        newPer.setDbPersonId(dbPersonId);
-        this.remove(oldPer); // Remove old person from our in-memory list.
-        this.add(newPer); // Add new person to our in-memory list.
-        Notifier.notify(p);
+        if (newPerson.getLastName() != null) {
+            if (newPerson.getLastName().isEmpty()) {
+                sql += (separate(columnCount) + "last_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "last_name = " + Sql.quote(newPerson.getLastName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getClanName() != null) {
+            if (newPerson.getClanName().isEmpty()) {
+                sql += (separate(columnCount) + "clan_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "clan_name = " + Sql.quote(newPerson.getClanName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getSex() != null) {
+            sql += (separate(columnCount) + "sex = " + Sql.quote(sex) + "\n");
+            columnCount++;
+        }
+        if (newPerson.getBirthdate() != null) {
+            sql += (separate(columnCount) + "birthdate = " + Sql.quote(newPerson.getBirthdate()) + "\n");
+            columnCount++;
+        }
+        if (newPerson.getDeathdate() != null) {
+            sql += (separate(columnCount) + "deathdate = " + Sql.quote(newPerson.getDeathdate()) + "\n");
+            columnCount++;
+        }
+        if (newPerson.getMothersFirstName() != null) {
+            if (newPerson.getMothersFirstName().isEmpty()) {
+                sql += (separate(columnCount) + "mothers_first_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "mothers_first_name = " + Sql.quote(newPerson.getMothersFirstName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getMothersMiddleName() != null) {
+            if (newPerson.getMothersMiddleName().isEmpty()) {
+                sql += (separate(columnCount) + "mothers_middle_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "mothers_middle_name = " + Sql.quote(newPerson.getMothersMiddleName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getMothersLastName() != null) {
+            if (newPerson.getMothersLastName().isEmpty()) {
+                sql += (separate(columnCount) + "mothers_last_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "mothers_last_name = " + Sql.quote(newPerson.getMothersLastName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getFathersFirstName() != null) {
+            if (newPerson.getFathersFirstName().isEmpty()) {
+                sql += (separate(columnCount) + "fathers_first_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "fathers_first_name = " + Sql.quote(newPerson.getFathersFirstName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getFathersMiddleName() != null) {
+            if (newPerson.getFathersMiddleName().isEmpty()) {
+                sql += (separate(columnCount) + "fathers_middle_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "fathers_middle_name = " + Sql.quote(newPerson.getFathersMiddleName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getFathersLastName() != null) {
+            if (newPerson.getFathersLastName().isEmpty()) {
+                sql += (separate(columnCount) + "fathers_last_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "fathers_last_name = " + Sql.quote(newPerson.getFathersLastName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getCompoundHeadFirstName() != null) {
+            if (newPerson.getCompoundHeadFirstName().isEmpty()) {
+                sql += (separate(columnCount) + "compoundhead_first_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "compoundhead_first_name = " + Sql.quote(newPerson.getCompoundHeadFirstName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getCompoundHeadMiddleName() != null) {
+            if (newPerson.getCompoundHeadMiddleName().isEmpty()) {
+                sql += (separate(columnCount) + "compoundhead_middle_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "compoundhead_middle_name = " + Sql.quote(newPerson.getCompoundHeadMiddleName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getCompoundHeadLastName() != null) {
+            if (newPerson.getCompoundHeadLastName().isEmpty()) {
+                sql += (separate(columnCount) + "compoundhead_last_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "compoundhead_last_name = " + Sql.quote(newPerson.getCompoundHeadLastName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getVillageName() != null) {
+            if (newPerson.getVillageName().isEmpty()) {
+                sql += (separate(columnCount) + "village_id = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "village_id = " + Sql.quote(villageId) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getMaritalStatus() != null) {
+            sql += (separate(columnCount) + "marital_status = " + Sql.quote(maritalStatusId) + "\n");
+            columnCount++;
+        }
+        if (newPerson.getConsentSigned() != null) {
+            sql += (separate(columnCount) + "consent_signed = " + Sql.quote(consentSigned) + "\n");
+            columnCount++;
+        }
+        sql += " WHERE person_id = " + dbPersonId;
+        if (columnCount != 0) {//some 'real' mpi data has changed and needs to be updated
+            Sql.startTransaction(conn);
+            Sql.execute(conn, sql);
+            List<PersonIdentifier> pList = PersonIdentifierList.update(conn, dbPersonId, newPerson.getPersonIdentifierList(), oldPerson.getPersonIdentifierList());
+            newPerson.setPersonIdentifierList(pList);
+            List<Fingerprint> fList = FingerprintList.update(conn, dbPersonId, newPerson.getFingerprintList(), oldPerson.getFingerprintList());
+            newPerson.setFingerprintList(fList);
+            VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, newPerson.getLastRegularVisit());
+            VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, newPerson.getLastOneOffVisit());
+            if (newPerson.getLastRegularVisit() == null) {
+                newPerson.setLastRegularVisit(oldPerson.getLastRegularVisit());
+            }
+            if (newPerson.getLastOneOffVisit() == null) {
+                newPerson.setLastOneOffVisit(oldPerson.getLastOneOffVisit());
+            }
+            Sql.commit(conn);
+        }
+        if (newPerson.getLastMoveDate() != null) {
+            newPerson.setPreviousVillageName(oldPerson.getVillageName());
+        }
+        Person mergedPerson = merge(newPerson, oldPersonMatch.getPerson());//merge old and new person
+        PersonMatch newPersonMatch = new PersonMatch(mergedPerson);
+        newPersonMatch.setDbPersonId(dbPersonId);
+        this.remove(oldPersonMatch); // Remove old person from our in-memory list.
+        this.add(newPersonMatch); // Add new person to our in-memory list.
+        Notifier.notify(mergedPerson);
         if (req.isResponseRequested()) {
             returnData = new PersonResponse();
             List<Person> returnList = new ArrayList<Person>();
-            returnList.add(p);
+            returnList.add(mergedPerson);
             returnData.setPersonList(returnList);
         }
         return returnData;
+    }
+    /*
+     * Returns a String containing either a space ' ' or a comma and a space ', ' depending on the
+     * number of columns included in the update sql statement.
+     */
+
+    private String separate(int columnCount) {
+        if (columnCount == 0) {
+            return " ";
+        } else {
+            return ", ";
+        }
+    }
+    /*
+     * This method merges the fields of two person objects to override null fields where applicable.
+     * Where the same field from both person objects is non-null, the value of newPerson prevails
+     * because it is the one most recently updated
+     */
+
+    private Person merge(Person newPerson, Person oldPerson) {
+        Person mergedPerson = new Person();
+        Class personClass = Person.class;
+        Field[] personFields = personClass.getDeclaredFields();
+        for (Field field : personFields) {
+            try {
+                field.setAccessible(true);
+                Object p1FieldValue = field.get(newPerson);
+                Object p2FieldValue = field.get(oldPerson);
+                if (!(p1FieldValue == null && p2FieldValue == null)) {
+                    Object p3FieldValue = null;
+                    if (p1FieldValue != null && p2FieldValue != null) {
+                        p3FieldValue = p1FieldValue;
+                    } else {
+                        if (p1FieldValue != null && p2FieldValue == null) {
+                            p3FieldValue = p1FieldValue;
+                        } else if (p1FieldValue == null && p2FieldValue != null) {
+                            p3FieldValue = p2FieldValue;
+                        }
+                    }
+                    field.set(mergedPerson, p3FieldValue);
+                }
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        mergedPerson.setPersonIdentifierList(mergePersonIdentifierLists(newPerson.getPersonIdentifierList(),
+                oldPerson.getPersonIdentifierList()));
+        return mergedPerson;
+    }
+    /*
+     * This method effectively copies over the contents of both newPersonIdentifierList and
+     * oldPersonIdentifierList into the mergedPersonIdentifierList
+     */
+    private List<PersonIdentifier> mergePersonIdentifierLists(List<PersonIdentifier> newPersonIdentifierList,
+            List<PersonIdentifier> oldPersonIdentifierList) {
+        List<PersonIdentifier> mergedPersonIdentifierList = new ArrayList<PersonIdentifier>();
+        boolean newExists = (newPersonIdentifierList != null && !newPersonIdentifierList.isEmpty());
+        boolean oldExists = (oldPersonIdentifierList != null && !oldPersonIdentifierList.isEmpty());
+        if (newExists && oldExists) {
+            mergedPersonIdentifierList.addAll(newPersonIdentifierList);
+            for (PersonIdentifier personIdentifier : oldPersonIdentifierList) {
+                if (!mergedPersonIdentifierList.contains(personIdentifier)) {
+                    mergedPersonIdentifierList.add(personIdentifier);
+                }
+            }
+        } else {
+            if (newExists && !oldExists) {
+                mergedPersonIdentifierList.addAll(newPersonIdentifierList);
+            } else if (!newExists && oldExists) {
+                mergedPersonIdentifierList.addAll(oldPersonIdentifierList);
+            }
+        }
+        return mergedPersonIdentifierList;
     }
 }

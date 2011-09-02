@@ -45,7 +45,7 @@ import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
  */
 public class DataSynchronizer extends DatabaseConnector {
 
-    public void Synchronize() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
+    public void synchronize() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
         try {
             List<Transaction> dataTransactionList = new DataTransactionGenerator().generate();
             connectToShadow();

@@ -271,8 +271,6 @@ class QueueManager implements Runnable {
         try {
             //this driver is for embedded mode and loads "derby.jar"
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-
-            System.out.print("QueueManager forName worked. ");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ie) {
