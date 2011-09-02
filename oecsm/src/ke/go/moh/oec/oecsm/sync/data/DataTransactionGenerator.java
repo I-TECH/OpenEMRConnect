@@ -164,7 +164,8 @@ public class DataTransactionGenerator {
 
             Cell cell = shadowRs.getCell("PK");
             cell.setData(sourceRs.getString("PK"));
-            cell.setColumn(table.getColumnList().get(1));
+            //TODO: Accommodate cases where the pk is not the first column of the table
+            cell.setColumn(table.getColumnList().get(0));
             loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
 
             loggableTransaction.setLoggableTransactionDatumList(loggableTransactionDatumList);

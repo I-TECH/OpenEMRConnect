@@ -148,7 +148,7 @@ public class Updater {
         ResultSet rsMaster = query(connMaster, sql);
         while (rsMaster.next()) {
             int transId = rsMaster.getInt("id");
-            String transType = rsMaster.getString("type");
+            String transactionType = rsMaster.getString("type");
             int tableId = rsMaster.getInt("table_id");
             List<Row> rowList = new ArrayList<Row>();
             sql = "select d.data, c.name as column_name\n"
@@ -170,7 +170,7 @@ public class Updater {
             rsDetail.close();
             //TODO: Uncoment if statement
 //            if (
-            updateTransaction(transId, hdssId, rowList);
+            updateTransaction(transactionType, hdssId, rowList);
 //                    ) {
             lastReceivedTransaction = transId;
             sql = "UPDATE `destination` SET `last_received_transaction_id` = " + transId + " WHERE `name` = '" + HDSS_COMPANION_NAME + "'";
@@ -188,12 +188,23 @@ public class Updater {
         rsMaster.close();
     }
 
-    private boolean updateTransaction(int transId, String hdssId, List<Row> rowList) {
-        Person p = getPersonFromMpi(hdssId);
-        int requestTypeId = RequestTypeId.MODIFY_PERSON_MPI;
-        if (p == null) {
-            p = new Person();
+    private boolean updateTransaction(String transactionType, String hdssId, List<Row> rowList) {
+
+        Person p = new Person();
+        int requestTypeId = 0;
+        if (transactionType.equals("INSERT")) {
             requestTypeId = RequestTypeId.CREATE_PERSON_MPI;
+        } else if (transactionType.equals("UPDATE")) {
+            requestTypeId = RequestTypeId.MODIFY_PERSON_MPI;
+        } else if (transactionType.equals("DELETE")) {
+            //TODO: Determine and code how deletes be treated
+            //Treat as modify but remove hdssid?
+            requestTypeId = RequestTypeId.MODIFY_PERSON_MPI;
+        } else {
+            //this should never happen and should be logged as an error
+            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, "Unknown transaction type [{0}] "
+                    + "exists in the shadow database", transactionType);
+            return false;
         }
         String marriageStatus = null;
         String marriageType = null;
@@ -276,7 +287,6 @@ public class Updater {
             p.setAliveStatus(Person.AliveStatus.no);
             p.setDeathdate(eventDate);
         } else if (event.equalsIgnoreCase("EXT")) {
-            p.setPreviousVillageName(p.getVillageName());
             p.setLastMoveDate(eventDate);
         }
         //
@@ -335,25 +345,24 @@ public class Updater {
         return returnStatus;
     }
 
-    private Person getPersonFromMpi(String hdssId) {
-        Person p = new Person();
-        List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-        PersonIdentifier pi = new PersonIdentifier();
-        pi.setIdentifier(hdssId);
-        pi.setIdentifierType(PersonIdentifier.Type.kisumuHdssId);
-        personIdentifierList.add(pi);
-        p.setPersonIdentifierList(personIdentifierList);
-        PersonResponse pr = requestMpi(p, RequestTypeId.FIND_PERSON_MPI);
-        Person returnPerson = null;
-        if (pr != null) {
-            List<Person> personList = pr.getPersonList();
-            if (personList != null && personList.size() > 0) {
-                returnPerson = personList.get(0);
-            }
-        }
-        return returnPerson;
-    }
-
+//    private Person getPersonFromMpi(String hdssId) {
+//        Person p = new Person();
+//        List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
+//        PersonIdentifier pi = new PersonIdentifier();
+//        pi.setIdentifier(hdssId);
+//        pi.setIdentifierType(PersonIdentifier.Type.kisumuHdssId);
+//        personIdentifierList.add(pi);
+//        p.setPersonIdentifierList(personIdentifierList);
+//        PersonResponse pr = requestMpi(p, RequestTypeId.FIND_PERSON_MPI);
+//        Person returnPerson = null;
+//        if (pr != null) {
+//            List<Person> personList = pr.getPersonList();
+//            if (personList != null && personList.size() > 0) {
+//                returnPerson = personList.get(0);
+//            }
+//        }
+//        return returnPerson;
+//    }
     private PersonResponse requestMpi(Person p, int requestTypeId) {
         PersonRequest personRequest = new PersonRequest();
         personRequest.setPerson(p);
