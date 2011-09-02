@@ -449,32 +449,26 @@ public class PersonWrapper {
 
     public List<Notification> getNotificationList() {
         List<Notification> notificationList = new ArrayList<Notification>();
-        if (person.getPreviousVillageName() != null) {
-            Date occurenceDate = person.getLastMoveDate();
+        if (person.getLastMoveDate() != null) {
+            String previousVillageName = person.getPreviousVillageName();
             String additionalInformation = "";
-            if (occurenceDate != null) {
-                additionalInformation = this.getLongName() + " migrated from '" + person.getPreviousVillageName() + "' village to '"
+            if (previousVillageName != null) {
+                additionalInformation = this.getLongName() + " migrated from '" + previousVillageName + "' village to '"
                         + this.getVillageName() + "' village on "
-                        + new SimpleDateFormat("dd/MM/yyyy").format(occurenceDate) + ".";
+                        + new SimpleDateFormat("dd/MM/yyyy").format(person.getLastMoveDate()) + ".";
             } else {
-                additionalInformation = this.getLongName() + " migrated from '" + person.getPreviousVillageName() + "' village to '"
+                additionalInformation = this.getLongName() + " migrated from an unspecified village to '"
                         + this.getVillageName() + "' village on an unspecified date.";
             }
-            notificationList.add(new Notification(this, Notification.Type.MIGRATION, occurenceDate, additionalInformation));
+            notificationList.add(new Notification(this, Notification.Type.MIGRATION, person.getLastMoveDate(), additionalInformation));
         }
         if (person.getExpectedDeliveryDate() != null) {
-            Date occurenceDate = person.getExpectedDeliveryDate();
             String additionalInformation = "";
-            if (occurenceDate != null) {
-                additionalInformation = this.getLongName() + " is pregnant. Her expected delivery date is "
-                        + new SimpleDateFormat("dd/MM/yyyy").format(occurenceDate) + ".";
-            } else {
-                additionalInformation = this.getLongName() + " is pregnant. Her expected delivery date is unknown.";
-            }
-            notificationList.add(new Notification(this, Notification.Type.PREGNANCY, occurenceDate, additionalInformation));
+            additionalInformation = this.getLongName() + " is pregnant. Her expected delivery date is "
+                    + new SimpleDateFormat("dd/MM/yyyy").format(person.getExpectedDeliveryDate()) + ".";
+            notificationList.add(new Notification(this, Notification.Type.PREGNANCY, person.getExpectedDeliveryDate(), additionalInformation));
         }
         if (person.getPregnancyEndDate() != null) {
-            Date occurenceDate = person.getPregnancyEndDate();
             Person.PregnancyOutcome pregnancyOutcome = person.getPregnancyOutcome();
             String additionalInformation = this.getLongName();
             if (pregnancyOutcome != null) {
@@ -486,25 +480,16 @@ public class PersonWrapper {
                     additionalInformation = additionalInformation + " had a still birth";
                 }
             } else {
-                additionalInformation = additionalInformation + "'s pregnancy came to an end";
+                additionalInformation = additionalInformation + "'s pregnancy came to an unspecified end";
             }
-            if (occurenceDate != null) {
-                additionalInformation = additionalInformation + " on "
-                        + new SimpleDateFormat("dd/MM/yyyy").format(occurenceDate) + ".";
-            } else {
-                additionalInformation = additionalInformation + " on an unspecified date.";
-            }
-            notificationList.add(new Notification(this, Notification.Type.PREGNANCY_OUTCOME, occurenceDate, additionalInformation));
+            additionalInformation = additionalInformation + " on "
+                    + new SimpleDateFormat("dd/MM/yyyy").format(person.getPregnancyEndDate()) + ".";
+            notificationList.add(new Notification(this, Notification.Type.PREGNANCY_OUTCOME, person.getPregnancyEndDate(), additionalInformation));
         }
-        if (person.getAliveStatus() == Person.AliveStatus.no) {
-            Date occurenceDate = person.getDeathdate();
+        if (person.getDeathdate() != null) {
             String additionalInformation = "";
-            if (occurenceDate != null) {
-                additionalInformation = this.getLongName() + " died on "
-                        + new SimpleDateFormat("dd/MM/yyyy").format(occurenceDate) + ".";
-            } else {
-                additionalInformation = this.getLongName() + " died on an unspecified date.";
-            }
+            additionalInformation = this.getLongName() + " died on "
+                    + new SimpleDateFormat("dd/MM/yyyy").format(person.getDeathdate()) + ".";
             notificationList.add(new Notification(this, Notification.Type.DEATH, person.getDeathdate(), additionalInformation));
         }
         return notificationList;

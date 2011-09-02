@@ -117,7 +117,7 @@ public class Notification {
 
     @Override
     public String toString() {
-        return personWrapper.getLongName();
+        return personWrapper.getLongName() + ": " + type.toString();
     }
 
     @Override

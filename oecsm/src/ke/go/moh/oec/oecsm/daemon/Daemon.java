@@ -70,7 +70,7 @@ public class Daemon extends Thread {
         try {
             while (true) {
                 new SchemaSynchronizer().synchronize();
-                new DataSynchronizer().Synchronize();
+                new DataSynchronizer().synchronize();
 
                 // T H I S    I S    L O G I C    F O R     X M L    L O G G I N G//
 

@@ -104,13 +104,11 @@ public class Mpi implements IService {
                 Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "CreatePerson");
                 returnData = personList.create((PersonRequest) requestData);
                 break;
-
             case RequestTypeId.MODIFY_PERSON_MPI:
             case RequestTypeId.MODIFY_PERSON_LPI:
                 Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "ModifyPerson");
                 returnData = personList.modify((PersonRequest) requestData);
                 break;
-
             default:
                 Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                         "getData() called with unepxected requestTypeId {0}", requestTypeId);
