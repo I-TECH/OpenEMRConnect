@@ -400,6 +400,14 @@ public class PersonWrapper {
         }
         return compoundHeadLastName;
     }
+    
+    public void setAliveStatus(Person.AliveStatus aliveStatus) {
+        person.setAliveStatus(aliveStatus);
+    }
+    
+    public Person.AliveStatus getAliveStatus() {
+        return person.getAliveStatus();
+    }
 
     public void setConsentSigned(Person.ConsentSigned consentSigned) {
         person.setConsentSigned(consentSigned);
