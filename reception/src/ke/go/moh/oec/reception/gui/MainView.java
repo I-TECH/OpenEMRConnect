@@ -2981,6 +2981,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
             }
             personWrapper.setClinicName(basicSearchClinicNameTextField.getText());
+            personWrapper.setAliveStatus(Person.AliveStatus.yes);
             ImagedFingerprint imagedFingerprint = mainViewHelper.getActiveImagedFingerprint();
             personWrapper.addFingerprint(imagedFingerprint);
             return mainViewHelper.findPerson(Server.MPI_LPI);
@@ -3130,6 +3131,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         @Override
         protected Object doInBackground() {
             PersonWrapper personWrapper = mainViewHelper.getSearchPersonWrapper();
+            personWrapper.setAliveStatus(Person.AliveStatus.yes);
             try {
                 if (mainViewHelper.requiresClinicId()) {
                     personWrapper.setClinicId(extendedSearchClinicIdTextField.getText());
@@ -4621,6 +4623,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
             searchStatus.setOn(true);
             startUnspecifiedClientSession();
             PersonWrapper quickSearchPersonWrapper = mainViewHelper.getSession().getSearchPersonWrapper();
+            quickSearchPersonWrapper.setAliveStatus(Person.AliveStatus.yes);
             List<ImagedFingerprint> imagedFingerprintList = mainViewHelper.getSession().getImagedFingerprintList();
             Fingerprint fingerPrint = new Fingerprint();
             switch (imagedFingerprintList.size()) {
