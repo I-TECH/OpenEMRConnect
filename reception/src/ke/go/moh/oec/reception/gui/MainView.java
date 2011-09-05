@@ -4537,7 +4537,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         personWrapper.setKisumuHdssId(kisumuHdssId);
         SearchProcessResult searchProcessResult = mainViewHelper.findHouseholdMembers(personWrapper);
         if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
-            HouseholdMembersDialog hmd = new HouseholdMembersDialog(this.getFrame(), true, (List<Person>) searchProcessResult.getData());
+            HouseholdMembersDialog hmd = new HouseholdMembersDialog(this.getFrame(), true, (List<Person>) searchProcessResult.getData().getPersonList());
             hmd.setTitle("Household members of " + mpiMatchPersonWrapper.getLongName());
             hmd.setLocationRelativeTo(this.getFrame());
             hmd.setVisible(true);
