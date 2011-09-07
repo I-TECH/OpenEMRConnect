@@ -55,6 +55,7 @@ public class LoginDialog extends javax.swing.JDialog {
     public LoginDialog(java.awt.Frame parent, boolean modal, SingleFrameApplication app) throws PersistenceManagerException, TableCreationException {
         super(parent, modal);
         initComponents();
+        this.getRootPane().setDefaultButton(loginButton);
         this.setIconImage(OECReception.applicationIcon());
         persistenceManager = PersistenceManager.getInstance();
         persistenceManager.createUserTable();
