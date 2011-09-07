@@ -76,7 +76,7 @@ public class FindPersonResponder implements IService {
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                String connectionUrl = "jdbc:jtds:sqlserver://localhost:57460/hdss;";
+                String connectionUrl = "jdbc:jtds:sqlserver://localhost:1435/hdss;";
                 Connection conn = DriverManager.getConnection(connectionUrl, "sa", "2806");
                 PreparedStatement sql = null;
                 //Set Query To Run

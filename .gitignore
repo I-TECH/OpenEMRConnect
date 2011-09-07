@@ -49,7 +49,9 @@ loggingserver/oec.log.lck
 */lockfile.lck
 */*/lockfile.lck
 
-# QueueManager embedded databases #
+# Embedded databases #
 ###################################
 */QUEUEMANAGER_DATABASE/*
 */*/QUEUEMANAGER_DATABASE/*
+reception/reception_database/*
+reception/*/reception_database/*
