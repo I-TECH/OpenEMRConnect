@@ -45,15 +45,24 @@ public class DaemonManager {
     private static Daemon daemon = null;
 
     public static void main(String[] args) {
-        DaemonManager dm = new DaemonManager();
+        DaemonManager daemonManager = new DaemonManager();
         DaemonManager.startDaemon();
         daemonFrame.getOutputTextArea().append("OECSM Daemon started.\n");
-        dm.minimizeToTray();
+        daemonManager.minimizeToTray();
     }
 
     private static void startDaemon() {
+        int pollingTime = 10000;
+        String timeOfDay = "00:00";
         try {
-            daemon = new Daemon(10000, daemonFrame);
+            String pollingMethod = Daemon.getProperty("scheduler.method");
+            if (pollingMethod.equalsIgnoreCase("interval")) {
+                pollingTime = Integer.parseInt(Daemon.getProperty("scheduler.interval"));
+                daemon = new Daemon(pollingTime, daemonFrame);
+            } else if (pollingMethod.equalsIgnoreCase("timeOfDay")) {
+                timeOfDay = Daemon.getProperty("scheduler.timeOfDay");
+                daemon = new Daemon(timeOfDay, daemonFrame);
+            }
             daemon.setDaemon(true);
             daemon.start();
         } catch (Exception ex) {
@@ -66,7 +75,7 @@ public class DaemonManager {
             if (!daemon.isAlive()) {
                 startDaemon();
             }
-            daemon.setSnooze(snooze);
+            daemon.setInterval(snooze);
         } catch (Exception ex) {
             daemonFrame.getOutputTextArea().append(ex.getMessage() + "\n");
         }

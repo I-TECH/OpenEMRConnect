@@ -80,7 +80,7 @@ public class FindPersonResponder implements IService {
                 Connection conn = DriverManager.getConnection(connectionUrl, "sa", "2806");
                 PreparedStatement sql = null;
                 //Set Query To Run
-                sql = conn.prepareStatement("SELECT * FROM [dbo].[household_members] ('" + hdssID + "')");
+                sql = conn.prepareStatement("SELECT * FROM [dbo].[getMembersinIndividualHousehold] ('" + hdssID + "')");
                 ResultSet rs = null;
                 //Execute Query
                 rs = sql.executeQuery(); //excute query
@@ -89,7 +89,6 @@ public class FindPersonResponder implements IService {
                     RelatedPerson rp = new RelatedPerson();
                     // rp.setRelation(RelatedPerson.Relation.spouse);
                     Person p = new Person();
-                    rp.setPerson(p);
                     p.setFirstName(rs.getString("fname")); //FirstName
                     p.setMiddleName(rs.getString("jname")); //Middle Name
                     p.setLastName(rs.getString("lname")); //LastName
@@ -103,6 +102,8 @@ public class FindPersonResponder implements IService {
                     p.setFathersFirstName(rs.getString("ffname")); //Fathers First Name
                     p.setFathersMiddleName(rs.getString("fjname")); //Fathers MiddleName
                     p.setFathersLastName(rs.getString("flname")); //Fathers LastName
+                    rp.setPerson(p);
+                    relatedPersonList.add(rp);
                 }
                 person.setHouseholdMembers(relatedPersonList);
                 List<Person> personList = new ArrayList<Person>();

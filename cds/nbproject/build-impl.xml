@@ -1023,7 +1023,7 @@ is divided into following sections:
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
             <param location="${project.oeclib}" name="call.subproject"/>
-            <param location="${project.oeclib}/nbbuild.xml" name="call.script"/>
+            <param location="${project.oeclib}/build.xml" name="call.script"/>
             <param name="call.target" value="clean"/>
             <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
         </antcall>
