@@ -22,7 +22,7 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.oecsm.sync.data;
+package ke.go.moh.oec.oecsm.sync.data.resultsets;
 
 import ke.go.moh.oec.oecsm.data.Column;
 import java.sql.ResultSet;

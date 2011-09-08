@@ -24,6 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.sync.data;
 
+import ke.go.moh.oec.oecsm.sync.data.resultsets.SourceResultSet;
+import ke.go.moh.oec.oecsm.sync.data.resultsets.ShadowResultSet;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -55,7 +57,6 @@ public class DataSynchronizer extends DatabaseConnector {
 
     private boolean sourceRsHasRecords = false;
     private boolean shadowRsHasRecords = false;
-    private boolean connectedToShadow = false;
 
     public void synchronize() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
         SourceDataMiner sourceDataMiner = new SourceDataMiner();
@@ -186,11 +187,9 @@ public class DataSynchronizer extends DatabaseConnector {
         shadowRsHasRecords = shadowRs.next();
     }
 
-    private void processTransactions(List<Transaction> dataTransactionList) throws SQLException  {
+    private void processTransactions(List<Transaction> dataTransactionList) throws SQLException {
         try {
-            if (!connectedToShadow) {
-                connectToShadow();
-            }
+            connectToShadow();
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
             for (Transaction dataTransaction : dataTransactionList) {
@@ -214,9 +213,7 @@ public class DataSynchronizer extends DatabaseConnector {
         } catch (Exception ex) {
             Logger.getLogger(DataSynchronizer.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            if (connectedToShadow) {
-                disconnect();
-            }
+            disconnect();
         }
     }
 }
