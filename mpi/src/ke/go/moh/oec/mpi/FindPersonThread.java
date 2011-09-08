@@ -121,9 +121,6 @@ public class FindPersonThread implements Runnable {
                 candidateSet.add(pm, s);
             }
         }
-        
-        // Destroy the matching context for each fingerprint in our search list.
-        
         for (FingerprintMatch f : fSearchList) {
             f.destroy();
         }
