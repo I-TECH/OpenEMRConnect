@@ -97,12 +97,13 @@ class HttpService {
             //output.write(xml);
             output.close();
 
-            Object o = connection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream());
+            BufferedReader br = new BufferedReader(inputStreamReader);
             while (br.readLine() != null) {
                 //content not required, just acknowlegment that message was received.
             }
+            br.close();
+            inputStreamReader.close();
             returnStatus = true;
         } catch (ConnectException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
@@ -195,6 +196,7 @@ class HttpService {
                 InputStream input = exchange.getRequestBody();
                 byte[] compressedXml = new byte[30000];
                 int compressedXmlLength = input.read(compressedXml);
+                input.close();
                 m.setCompressedXml(compressedXml);
                 m.setCompressedXmlLength(compressedXmlLength);
                 String sendingIpAddress = exchange.getRemoteAddress().getAddress().getHostAddress();
@@ -211,6 +213,7 @@ class HttpService {
                 exchange.sendResponseHeaders(200, 0);
                 OutputStream responseBody = exchange.getResponseBody();
                 responseBody.close();
+                exchange.close();
             }
         }
     }

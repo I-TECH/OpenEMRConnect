@@ -53,6 +53,7 @@ public class Compresser {
         compresser.finish();
         int compressedXmlLength = compresser.deflate(compressedXml);
         m.setCompressedXmlLength(compressedXmlLength);
+        compresser.end();
     }
     
     static void decompress(Message m) {
