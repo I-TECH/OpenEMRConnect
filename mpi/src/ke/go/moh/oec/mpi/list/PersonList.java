@@ -299,6 +299,10 @@ public class PersonList {
      */
     public Object create(PersonRequest req) {
         PersonResponse returnData = null;
+        if (req.isResponseRequested()) {    // Has the client requested a response?
+            returnData = new PersonResponse();
+            returnData.setSuccessful(false); // Until we succeed, assume that we failed.
+        }
         Person p = req.getPerson().clone(); // Clone because we may modify our copy below.
         if (p == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "CREATE PERSON called with no person data.");
@@ -390,11 +394,11 @@ public class PersonList {
         newPer.setDbPersonId(dbPersonId);
         this.add(newPer);
         SearchHistory.update(req, null, null); // Update search history showing that no candidate was selected.
-        if (req.isResponseRequested()) {
-            returnData = new PersonResponse();
+        if (returnData != null) {
             List<Person> returnList = new ArrayList<Person>();
             returnList.add(p);
             returnData.setPersonList(returnList);
+            returnData.setSuccessful(true); // We have succeeded.
         }
         return returnData;
     }
@@ -406,6 +410,10 @@ public class PersonList {
      */
     public Object modify(PersonRequest req) {
         PersonResponse returnData = null;
+        if (req.isResponseRequested()) {    // Has the client requested a response?
+            returnData = new PersonResponse();
+            returnData.setSuccessful(false); // Until we succeed, assume that we failed.
+        }
         Person newPerson = req.getPerson();//person containing modified data
         if (newPerson == null) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person data.");
@@ -634,19 +642,22 @@ public class PersonList {
         this.remove(oldPersonMatch); // Remove old person from our in-memory list.
         this.add(newPersonMatch); // Add new person to our in-memory list.
         Notifier.notify(mergedPerson);
-        if (req.isResponseRequested()) {
-            returnData = new PersonResponse();
+        if (returnData != null) {
             List<Person> returnList = new ArrayList<Person>();
             returnList.add(mergedPerson);
             returnData.setPersonList(returnList);
+            returnData.setSuccessful(true); // We have succeeded.
         }
         return returnData;
     }
-    /*
+
+    /**
      * Returns a String containing either a space ' ' or a comma and a space ', ' depending on the
      * number of columns included in the update sql statement.
+     * 
+     * @param columnCount number of columns in the sql statement
+     * @return " " if the count is zero, otherwise ", ".
      */
-
     private String separate(int columnCount) {
         if (columnCount == 0) {
             return " ";
@@ -654,12 +665,16 @@ public class PersonList {
             return ", ";
         }
     }
-    /*
-     * This method merges the fields of two person objects to override null fields where applicable.
-     * Where the same field from both person objects is non-null, the value of newPerson prevails
-     * because it is the one most recently updated
-     */
 
+    /**
+     * Merges the fields of two Person objects to override null fields where applicable.
+     * Where the same field from both Person objects is non-null, the value of newPerson prevails
+     * because it is the one most recently updated.
+     * 
+     * @param newPerson new Person object
+     * @param oldPerson old Person object
+     * @return merged Person object
+     */
     private Person merge(Person newPerson, Person oldPerson) {
         Person mergedPerson = new Person();
         Class personClass = Person.class;
@@ -692,9 +707,14 @@ public class PersonList {
                 oldPerson.getPersonIdentifierList()));
         return mergedPerson;
     }
-    /*
-     * This method effectively copies over the contents of both newPersonIdentifierList and
+    
+    /**
+     * Copies over the contents of both newPersonIdentifierList and
      * oldPersonIdentifierList into the mergedPersonIdentifierList
+     * 
+     * @param newPersonIdentifierList new PersonIdentifier list to merge
+     * @param oldPersonIdentifierList old PersonIdentifier list to merge
+     * @return merged PersonIdentifier list
      */
     private List<PersonIdentifier> mergePersonIdentifierLists(List<PersonIdentifier> newPersonIdentifierList,
             List<PersonIdentifier> oldPersonIdentifierList) {

@@ -97,19 +97,25 @@ public class MainView extends FrameView implements FingerprintingComponent {
         super(app);
         initComponents();
         initializeNotificationTree();
-        this.getFrame().addWindowListener(new WindowAdapter() {
+        final JFrame frame = this.getFrame();
+        frame.addWindowListener(new WindowAdapter() {
 
             @Override
             public void windowClosing(WindowEvent e) {
+                //hide the window and then hang on a while to allow the fg sdk to be destroyed
+                //somehow you just have to do this for destroy to be successful
+                frame.setVisible(false);
                 destroyReaderManager(true);
-//            try {
-//                Thread.sleep(5000);
-//            } catch (InterruptedException ex) {
-//                Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+                try {
+                    Thread.sleep(5000);
+                    System.exit(0);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                    System.exit(1);
+                }
             }
         });
-        this.getFrame().addComponentListener(new java.awt.event.ComponentAdapter() {
+        frame.addComponentListener(new java.awt.event.ComponentAdapter() {
 
             @Override
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -413,6 +419,11 @@ public class MainView extends FrameView implements FingerprintingComponent {
         altHdssDataConsentTextField = new javax.swing.JTextField();
         hdssDataConsentAcceptRadioButton = new javax.swing.JRadioButton();
         hdssDataConsentRejectRadioButton = new javax.swing.JRadioButton();
+        clientTypeLabel = new javax.swing.JLabel();
+        enrolledRadioButton = new javax.swing.JRadioButton();
+        visitorRadioButton = new javax.swing.JRadioButton();
+        newRadioButton = new javax.swing.JRadioButton();
+        transferInRadioButton = new javax.swing.JRadioButton();
         fingerprintLabel = new javax.swing.JLabel();
         fingerprintImagePanel = new ke.go.moh.oec.reception.gui.custom.ImagePanel();
         clientRefusesCheckBox = new javax.swing.JCheckBox();
@@ -462,6 +473,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         hdssDataConsentButtonGroup = new javax.swing.ButtonGroup();
         clanButtonGroup = new javax.swing.ButtonGroup();
         otherNameButtonGroup = new javax.swing.ButtonGroup();
+        clientTypeButtonGroup = new javax.swing.ButtonGroup();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -2145,6 +2157,25 @@ public class MainView extends FrameView implements FingerprintingComponent {
         hdssDataConsentRejectRadioButton.setName("hdssDataConsentRejectRadioButton"); // NOI18N
         hdssDataConsentRejectRadioButton.setSelectedIcon(resourceMap.getIcon("hdssDataConsentRejectRadioButton.selectedIcon")); // NOI18N
 
+        clientTypeLabel.setText(resourceMap.getString("clientTypeLabel.text")); // NOI18N
+        clientTypeLabel.setName("clientTypeLabel"); // NOI18N
+
+        clientTypeButtonGroup.add(enrolledRadioButton);
+        enrolledRadioButton.setText(resourceMap.getString("enrolledRadioButton.text")); // NOI18N
+        enrolledRadioButton.setName("enrolledRadioButton"); // NOI18N
+
+        clientTypeButtonGroup.add(visitorRadioButton);
+        visitorRadioButton.setText(resourceMap.getString("visitorRadioButton.text")); // NOI18N
+        visitorRadioButton.setName("visitorRadioButton"); // NOI18N
+
+        clientTypeButtonGroup.add(newRadioButton);
+        newRadioButton.setText(resourceMap.getString("newRadioButton.text")); // NOI18N
+        newRadioButton.setName("newRadioButton"); // NOI18N
+
+        clientTypeButtonGroup.add(transferInRadioButton);
+        transferInRadioButton.setText(resourceMap.getString("transferInRadioButton.text")); // NOI18N
+        transferInRadioButton.setName("transferInRadioButton"); // NOI18N
+
         fingerprintLabel.setText(resourceMap.getString("fingerprintLabel.text")); // NOI18N
         fingerprintLabel.setName("fingerprintLabel"); // NOI18N
 
@@ -2188,15 +2219,14 @@ public class MainView extends FrameView implements FingerprintingComponent {
             .addGroup(reviewPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(finishButton, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
-                    .addComponent(viewHouseholdButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
                     .addGroup(reviewPanel3Layout.createSequentialGroup()
                         .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(compoundHeadsFirstNameLabel)
                             .addComponent(compoundHeadsMiddleNameLabel)
-                            .addComponent(fingerprintLabel)
                             .addComponent(compoundHeadsLastNameLabel)
-                            .addComponent(hdssDataConsentLabel))
+                            .addComponent(hdssDataConsentLabel)
+                            .addComponent(clientTypeLabel)
+                            .addComponent(fingerprintLabel))
                         .addGap(23, 23, 23)
                         .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
@@ -2211,18 +2241,6 @@ public class MainView extends FrameView implements FingerprintingComponent {
                                 .addComponent(hdssDataConsentNoRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(hdssDataConsentNoAnswerRadioButton))
-                            .addGroup(reviewPanel3Layout.createSequentialGroup()
-                                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(reviewPanel3Layout.createSequentialGroup()
-                                        .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(clientRefusesCheckBox))
-                                    .addComponent(takeButton)
-                                    .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(hdssDataConsentAcceptRadioButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(hdssDataConsentRejectRadioButton))
                             .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
                                 .addComponent(altCompoundHeadsMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
@@ -2237,7 +2255,31 @@ public class MainView extends FrameView implements FingerprintingComponent {
                                 .addComponent(compoundHeadsFirstNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(compoundHeadsFirstNameRejectRadioButton))
-                            .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE))))
+                            .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+                            .addGroup(reviewPanel3Layout.createSequentialGroup()
+                                .addComponent(enrolledRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(visitorRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(newRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(transferInRadioButton))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
+                                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(reviewPanel3Layout.createSequentialGroup()
+                                        .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(hdssDataConsentAcceptRadioButton))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, reviewPanel3Layout.createSequentialGroup()
+                                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(takeButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(clientRefusesCheckBox)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentRejectRadioButton))))
+                    .addComponent(viewHouseholdButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
+                    .addComponent(finishButton, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE))
                 .addContainerGap())
         );
         reviewPanel3Layout.setVerticalGroup(
@@ -2282,25 +2324,31 @@ public class MainView extends FrameView implements FingerprintingComponent {
                         .addComponent(compoundHeadsLastNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(reviewPanel3Layout.createSequentialGroup()
-                        .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(reviewPanel3Layout.createSequentialGroup()
-                                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(clientRefusesCheckBox))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(takeButton))
-                            .addComponent(fingerprintLabel)))
+                    .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(hdssDataConsentRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
                         .addComponent(hdssDataConsentAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(enrolledRadioButton)
+                    .addComponent(visitorRadioButton)
+                    .addComponent(newRadioButton)
+                    .addComponent(transferInRadioButton)
+                    .addComponent(clientTypeLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(reviewPanel3Layout.createSequentialGroup()
+                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fingerprintLabel)
+                            .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(takeButton))
+                    .addComponent(clientRefusesCheckBox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(viewHouseholdButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(finishButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout reviewCard3Layout = new javax.swing.GroupLayout(reviewCard3);
@@ -2316,8 +2364,8 @@ public class MainView extends FrameView implements FingerprintingComponent {
             reviewCard3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(reviewCard3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(reviewPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(57, Short.MAX_VALUE))
+                .addComponent(reviewPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         wizardPanel.add(reviewCard3, "reviewCard3");
@@ -2522,12 +2570,26 @@ public class MainView extends FrameView implements FingerprintingComponent {
     }
 
     public final void showCard(String cardName, boolean home, boolean confirm) {
-        if ((home && !currentCardName.equalsIgnoreCase("homeCard"))) {
-            if (confirm && !showConfirmMessage("Are you sure you want to go back to the home page and"
-                    + " start a new session? You will loose any data collected in the current session.", this.getFrame())) {
+        if (home) {
+            if ((!currentCardName.equalsIgnoreCase("homeCard"))) {
+                if (confirm && !showConfirmMessage("Are you sure you want to go back to the home page and"
+                        + " start a new session? You will loose any data collected in the current session.", this.getFrame())) {
+                    return;
+                }
+                flipToCard(cardName);
+            } else {
+                //avoid destroying and re-initializing fp sdk unnecessarily
+                if (!readerAvailable) {
+                    flipToCard(cardName);
+                }
                 return;
             }
+        } else {
+            flipToCard(cardName);
         }
+    }
+
+    private void flipToCard(String cardName) {
         finalizeCard(currentCardName);
         currentCardName = cardName;
         initializeCard(cardName);
@@ -3141,7 +3203,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 personWrapper.setLastName(extendedSearchLastNameTextField.getText());
                 if (extendedSearchMaleRadioButton.isSelected()) {
                     personWrapper.setSex(Person.Sex.M);
-                                           } else if (extendedSearchFemaleRadioButton.isSelected()) {
+                } else if (extendedSearchFemaleRadioButton.isSelected()) {
                     personWrapper.setSex(Person.Sex.F);
                 }
                 if (!extendedSearchUnknownBirthdateCheckBox.isSelected()) {
@@ -4509,17 +4571,19 @@ public class MainView extends FrameView implements FingerprintingComponent {
     @Action
     public void processNotification() {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) notificationTree.getLastSelectedPathComponent();
-        if (node == null || !node.isLeaf()) {
-            showWarningMessage("Please select the notification to process.", processNotificationButton);
-        } else {
-            Notification notification = (Notification) node.getUserObject();
-            NotificationDialog nd = new NotificationDialog(this.getFrame(), true, notification);
-            nd.setLocationRelativeTo(this.getFrame());
-            nd.setVisible(true);
-            if (notification.isFlaggedOff()) {
-                removeNotificationFromTree(notification);
-                statusMessageLabel.setText("1 notification processed. You now have " + totalNotifications()
-                        + " notification(s) to process.");
+        if (!node.isRoot()) {
+            if (node == null || !node.isLeaf()) {
+                showWarningMessage("Please select the notification to process.", processNotificationButton);
+            } else {
+                Notification notification = (Notification) node.getUserObject();
+                NotificationDialog nd = new NotificationDialog(this.getFrame(), true, notification);
+                nd.setLocationRelativeTo(this.getFrame());
+                nd.setVisible(true);
+                if (notification.isFlaggedOff()) {
+                    removeNotificationFromTree(notification);
+                    statusMessageLabel.setText("1 notification processed. You now have " + totalNotifications()
+                            + " notification(s) to process.");
+                }
             }
         }
     }
@@ -4742,6 +4806,8 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JTextField clanTextField;
     private javax.swing.JPanel clientIdPanel;
     private javax.swing.JCheckBox clientRefusesCheckBox;
+    private javax.swing.ButtonGroup clientTypeButtonGroup;
+    private javax.swing.JLabel clientTypeLabel;
     private javax.swing.JRadioButton clinicIdAcceptRadioButton;
     private javax.swing.ButtonGroup clinicIdButtonGroup;
     private javax.swing.JPanel clinicIdCard;
@@ -4767,6 +4833,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JTextField compoundHeadsMiddleNameTextField;
     private javax.swing.JMenuItem departmentsMenuItem;
     private javax.swing.JButton enrolledButton;
+    private javax.swing.JRadioButton enrolledRadioButton;
     private com.toedter.calendar.JDateChooser extendedSearchBirthdateChooser;
     private javax.swing.JLabel extendedSearchBirthdateLabel;
     private javax.swing.JButton extendedSearchButton;
@@ -4884,6 +4951,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JTable mpiResultsTable;
     private java.util.List<ke.go.moh.oec.Person> mpiSearchResultList;
     private javax.swing.JButton newButton;
+    private javax.swing.JRadioButton newRadioButton;
     private javax.swing.JPanel notificationListPanel;
     private javax.swing.JScrollPane notificationScrollPane;
     private javax.swing.JTree notificationTree;
@@ -4919,6 +4987,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JButton takeButton;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JButton transferInButton;
+    private javax.swing.JRadioButton transferInRadioButton;
     private javax.swing.JCheckBox unknownBirthdateCheckBox;
     private javax.swing.JMenu usersMenu;
     private javax.swing.JButton viewHouseholdButton;
@@ -4928,6 +4997,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JRadioButton villageRejectRadioButton;
     private javax.swing.JTextField villageTextField;
     private javax.swing.JButton visitorButton;
+    private javax.swing.JRadioButton visitorRadioButton;
     private javax.swing.JPanel wizardPanel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables

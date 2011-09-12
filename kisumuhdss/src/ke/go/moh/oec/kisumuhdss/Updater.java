@@ -45,7 +45,8 @@ import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
 
 /**
- *
+ * Looks for all new transactions from the shadow database, updates the MPI accordingly.
+ * 
  * @author Jim Grace
  */
 public class Updater {
@@ -56,17 +57,34 @@ public class Updater {
     private final static String HDSS_COMPANION_NAME = "HDSS COMPANION";
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
+    /**
+     * Used within the Updater class to hold a single row of transaction detail.
+     */
     private class Row {
 
         private String name;
         private String value;
 
+        /**
+         * Constructs a row of transaction detail.
+         * A transaction detail consists of a (name, value) pair, with the
+         * name of the database column to be inserted/updated
+         * and value it will contain.
+         * 
+         * @param name name of database column to be inserted/updated
+         * @param value value of that database column
+         */
         private Row(String name, String value) {
             this.name = name;
             this.value = value;
         }
     }
 
+    /**
+     * Creates and initializes an instance of the updater class.
+     * Creates connections to the shadow database to be used for finding new
+     * shadow transactions and transaction details.
+     */
     public Updater() {
         try {
             String url = Mediator.getProperty("Shadow.url");
@@ -125,6 +143,13 @@ public class Updater {
         return returnValue;
     }
 
+    /**
+     * Find the last transaction ID that we processed in the past.
+     * If there is no record of what we processed in the past, set the
+     * last transaction ID to 0 in the database and return 0.
+     * 
+     * @return ID of the last transaction we processed in the past, or 0 if none.
+     */
     private int getLastReceivedTransaction() {
         if (lastReceivedTransaction < 0) {
             lastReceivedTransaction = 0;
@@ -133,6 +158,10 @@ public class Updater {
             try {
                 if (rs.next()) {
                     lastReceivedTransaction = rs.getInt("last_received_transaction_id");
+                } else {
+                    rs.close();
+                    sql = "INSERT INTO destination SET name = '" + HDSS_COMPANION_NAME + "', last_received_transaction_id = 0";
+                    execute(connMaster, sql);
                 }
                 rs.close();
             } catch (SQLException ex) {
@@ -142,6 +171,11 @@ public class Updater {
         return lastReceivedTransaction;
     }
 
+    /**
+     * Looks for all new transactions from the shadow database, updates the MPI accordingly.
+     * 
+     * @throws SQLException 
+     */
     public void updateAllTransactions() throws SQLException {
         int trans = getLastReceivedTransaction();
         String sql = "SELECT `id`, `type`, `table_id` FROM `transaction` WHERE `id` > " + trans + " ORDER BY `id`";
@@ -188,8 +222,16 @@ public class Updater {
         rsMaster.close();
     }
 
+    /**
+     * Processes a single new transaction from the shadow database and requests the MPI
+     * to make the change.
+     * 
+     * @param transactionType Type of the transaction, "INSERT", "UPDATE", or "DELETE".
+     * @param hdssId HDSS ID of the person this transaction is for.
+     * @param rowList List of transaction row details (column name/value pairs).
+     * @return true if we succeeded, otherwise false.
+     */
     private boolean updateTransaction(String transactionType, String hdssId, List<Row> rowList) {
-
         Person p = new Person();
         int requestTypeId = 0;
         if (transactionType.equals("INSERT")) {
