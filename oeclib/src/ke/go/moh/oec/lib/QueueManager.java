@@ -63,6 +63,8 @@ class QueueManager implements Runnable {
 
     /* Indication if it is time to shut down -- stop() has been called. */
     private boolean timeToShutDown = false;
+    /* Disable Queue Manager functions (just pass through -- used for debugging) */
+    private boolean queueManagerDisabled = false;
 
     /* Interval at which to retry sending queued messages. */
     private int pollingInterval;
@@ -103,18 +105,24 @@ class QueueManager implements Runnable {
     QueueManager(HttpService httpService) {
         this.httpService = httpService;
 
-        //link the Connection to the database
-        dataBaseConnection = establishDataBaseConnection();
-
-        if (dataBaseConnection != null) {   //create the MESSAGE_SENDING_QUEUE table
-            createTable();
-        }
         // set polling interval
         String queueManagerPollingInterval = Mediator.getProperty("QueueManager.PollingInterval");
         if (queueManagerPollingInterval != null) {
             pollingInterval = Integer.parseInt(queueManagerPollingInterval);
         } else {
             pollingInterval = 10 * 60 * 1000; // Default polling interval of 10 minutes.
+        }
+
+        String disable = Mediator.getProperty("QueueManager.Disable");
+        if (disable != null && disable.trim().compareToIgnoreCase("true") == 0) {
+            queueManagerDisabled = true;
+        } else {
+            //link the Connection to the database
+            dataBaseConnection = establishDataBaseConnection();
+
+            if (dataBaseConnection != null) {   //create the MESSAGE_SENDING_QUEUE table
+                createTable();
+            }
         }
     }
 
@@ -125,7 +133,7 @@ class QueueManager implements Runnable {
      * then we start a polling thread.
      */
     synchronized void start() {
-        if (!isEmpty() && !timeToShutDown) {
+        if (!queueManagerDisabled && !isEmpty() && !timeToShutDown) {
             if (pollingThreadStarted) {
                 this.notify();
             } else {
@@ -162,21 +170,31 @@ class QueueManager implements Runnable {
     public boolean enqueue(Message m) {
         boolean messageAdded = false;
 
-        //prepare SQL Statement to perform the insertion
-        String querySQL = "INSERT INTO " + TABLE_NAME + 
-          "( DESTINATION, XML_CODE, HOP_COUNT ) VALUES ( " +
-          quote(m.getDestinationAddress()) + ", " +
-          "?, " +    
-          m.getHopCount() + ")";
-        try
-        {
-            PreparedStatement stmt = dataBaseConnection.prepareStatement(querySQL);
-            stmt.setObject(1, m.getCompressedXml());
-            stmt.executeUpdate();
-            stmt.close();
-            messageAdded = true;
-        } catch (SQLException ex) {
-            Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
+        if (queueManagerDisabled) {
+            try {
+                messageAdded = httpService.send(m); // (toBeQueued = false)
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+
+            //prepare SQL Statement to perform the insertion
+            String querySQL = "INSERT INTO " + TABLE_NAME
+                    + "( DESTINATION, XML_CODE, HOP_COUNT ) VALUES ( "
+                    + quote(m.getDestinationAddress()) + ", "
+                    + "?, "
+                    + m.getHopCount() + ")";
+            try {
+                PreparedStatement stmt = dataBaseConnection.prepareStatement(querySQL);
+                stmt.setObject(1, m.getCompressedXml());
+                stmt.executeUpdate();
+                stmt.close();
+                messageAdded = true;
+            } catch (SQLException ex) {
+                Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return messageAdded;
     }
@@ -292,7 +310,7 @@ class QueueManager implements Runnable {
         }
         return con;
     }
-        
+
     /**
      * Creates the MESSAGE_SENDING_QUEUE JavaDataBase table using SQL.
      * This table keeps track of which Messages still need to be sent out.

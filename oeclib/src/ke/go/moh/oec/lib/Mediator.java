@@ -763,8 +763,7 @@ public class Mediator implements IService {
                     "sendMessage() - Hop count {0} exceeds maximum hop count {1} for destination ''{2}'', routed to ''{3}''",
                     new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getIpAddressPort()});
         } else if (m.isToBeQueued()) {
-            queueManager.enqueue(m);
-            messageSent = true;
+            messageSent = queueManager.enqueue(m);
         } else {
             try {
                 messageSent = httpService.send(m); // (toBeQueued = false)
