@@ -141,7 +141,7 @@ public class FingerprintMatch implements Cloneable {
     }
 
     /**
-     * Prepares a fingerprit to be matched as a search term. Note that
+     * Prepares a fingerprint to be matched as a search term. Note that
      * the comparison between a search term fingerprint and a database
      * fingerprint is not symmetric. The search term fingerprint requires
      * extra preparation. This method does that extra preparation.
@@ -158,6 +158,22 @@ public class FingerprintMatch implements Cloneable {
             }
             try {
                 grMatchingContext.prepareForIdentification(grTemplate);
+            } catch (GrFingerJavaException ex) {
+                Logger.getLogger(FingerprintMatch.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(FingerprintMatch.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    /**
+     * Destroys this fingerprint context, releasing any resources.
+     * After a call to destroy(), this template may not be used again.
+     */
+    public void destroy() {
+        if (useFingerprintSdk) {
+            try {
+                grMatchingContext.destroy();
             } catch (GrFingerJavaException ex) {
                 Logger.getLogger(FingerprintMatch.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {

@@ -163,7 +163,12 @@ class XmlPacker {
         } catch (TransformerException ex) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return stringWriter.toString();
+        String returnString = stringWriter.toString();
+        try {
+            stringWriter.close();
+        } catch (IOException ex) {
+        }
+        return returnString;
     }
 
     /**

@@ -24,6 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.sync.data;
 
+import ke.go.moh.oec.oecsm.sync.data.resultsets.ShadowResultSet;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;

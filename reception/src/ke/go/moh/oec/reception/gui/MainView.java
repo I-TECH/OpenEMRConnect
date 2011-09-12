@@ -3141,7 +3141,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 personWrapper.setLastName(extendedSearchLastNameTextField.getText());
                 if (extendedSearchMaleRadioButton.isSelected()) {
                     personWrapper.setSex(Person.Sex.M);
-                } else if (extendedSearchFemaleRadioButton.isSelected()) {
+                                           } else if (extendedSearchFemaleRadioButton.isSelected()) {
                     personWrapper.setSex(Person.Sex.F);
                 }
                 if (!extendedSearchUnknownBirthdateCheckBox.isSelected()) {
@@ -4667,8 +4667,8 @@ public class MainView extends FrameView implements FingerprintingComponent {
 //                    return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
 //                }
 //            } else {
-                mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
-                mainViewHelper.getSession().setActiveImagedFingerprint(imagedFingerprint);
+            mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
+            mainViewHelper.getSession().setActiveImagedFingerprint(imagedFingerprint);
 //            }
             quickSearchPersonWrapper.addFingerprint(mainViewHelper.getSession().getActiveImagedFingerprint());
             return mainViewHelper.findPerson(Server.MPI_LPI, quickSearchPersonWrapper);
