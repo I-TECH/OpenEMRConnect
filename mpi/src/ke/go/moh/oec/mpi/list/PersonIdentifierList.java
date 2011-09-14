@@ -111,41 +111,53 @@ public class PersonIdentifierList {
         if (updateList != null && updateList.size() > 0) { // Do we have anything to update?
             List<PersonIdentifier> deleteList = new ArrayList<PersonIdentifier>(); // What person identifiers should we delete?
             List<PersonIdentifier> addList = new ArrayList<PersonIdentifier>(); // What person identifiers should we add?
+            String sql;
             for (PersonIdentifier newP : updateList) { // Go through all the identifiers on the update list:
                 PersonIdentifier.Type piType = newP.getIdentifierType();
                 String id = newP.getIdentifier();
                 String dbType = ValueMap.PERSON_IDENTIFIER_TYPE.getDb().get(piType);
-                String sql;
+                boolean idExists = false; // Does the new ID exist in the current list?
                 if (piList != null) { // Might we have any existing identifiers to delete?
                     for (PersonIdentifier oldP : piList) {
                         if (oldP.getIdentifierType() == piType) {
                             String existingId = oldP.getIdentifier();
-                            if ((piType != PersonIdentifier.Type.cccLocalId && piType != PersonIdentifier.Type.cccUniqueId)
+                            if (existingId.equals(id)) {
+                                idExists = true; // Existing ID matches new ID -- don't need to delete or add.
+                            } else if ((piType != PersonIdentifier.Type.cccLocalId && piType != PersonIdentifier.Type.cccUniqueId)
                                     || (id != null && id.substring(0, 5).equals(existingId.substring(0, 5)))) {
                                 deleteList.add(oldP);
-                                sql = "DELETE FROM person_identifier "
-                                        + " WHERE person_id = " + personId
-                                        + " AND identifier_type_id = " + dbType
-                                        + " AND identifier = " + Sql.quote(existingId);
-                                Sql.execute(conn, sql);
                             }
                         }
                     }
                 }
-                if (id != null && !id.isEmpty()) { // If have a new identifier, then add it.
-//                    if (!(piType == PersonIdentifier.Type.cccLocalId || piType == PersonIdentifier.Type.cccUniqueId)
-//                            && id.length() <= 6) {
+                if (id != null && !id.isEmpty() && !idExists) { // If have a new identifier (and not already existing), then add it.
+                    // Make sure we don't add a clinic ID of the form '12345' or '12345-'
+                    // If this form is specified, it is a spacial request to delete any IDs from this clinic
+                    // but to not add a new ID for this clinic. (See the JavaDoc for this method, above.)
+                    if (!(piType == PersonIdentifier.Type.cccLocalId || piType == PersonIdentifier.Type.cccUniqueId)
+                            && id.length() <= 6) {
                         addList.add(newP);
-                        sql = "INSERT INTO person_identifier (person_id, identifier_type_id, identifier) values ("
-                                + personId + ", " + dbType + ", " + Sql.quote(id) + ")";
-                        Sql.execute(conn, sql);
-//                    }
+                    }
                 }
             }
-            if (!deleteList.isEmpty()) { // Do we have anything to remove from our in-memory list?
+            if (!deleteList.isEmpty()) { // Do we have any identifiers to delete from the database / remove from memory?
+                for (PersonIdentifier pi : deleteList) {
+                    String dbType = ValueMap.PERSON_IDENTIFIER_TYPE.getDb().get(pi.getIdentifierType());
+                    sql = "DELETE FROM person_identifier "
+                            + " WHERE person_id = " + personId
+                            + " AND identifier_type_id = " + dbType
+                            + " AND identifier = " + Sql.quote(pi.getIdentifier());
+                    Sql.execute(conn, sql);
+                }
                 piList.removeAll(deleteList);
             }
-            if (!addList.isEmpty()) { // Do we have anything to add to our in-memory list?
+            if (!addList.isEmpty()) { // Do we have anything to insert into the database / add to memory?
+                for (PersonIdentifier pi : addList) {
+                    String dbType = ValueMap.PERSON_IDENTIFIER_TYPE.getDb().get(pi.getIdentifierType());
+                    sql = "INSERT INTO person_identifier (person_id, identifier_type_id, identifier) values ("
+                            + personId + ", " + dbType + ", " + Sql.quote(pi.getIdentifier()) + ")";
+                    Sql.execute(conn, sql);
+                }
                 if (piList == null) {
                     piList = new ArrayList<PersonIdentifier>();
                 }

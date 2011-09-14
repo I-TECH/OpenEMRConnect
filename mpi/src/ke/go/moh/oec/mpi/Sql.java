@@ -327,16 +327,21 @@ public class Sql {
 
     /**
      * Quotes a Date value for use in a SQL statement
+     * <p>
+     * If the date is null or January 1, 0001, return a value of null.
      * 
      * @param d Date to quote.
      * @return quoted date string.
      */
     public static String quote(Date d) {
+        String returnString = "null"; // Default to return if date is null or January 1, 0001
         if (d != null) {
-            return quote(SIMPLE_DATE_TIME_FORMAT.format(d));
-        } else {
-            return "null";
+            String dateString = SIMPLE_DATE_TIME_FORMAT.format(d);
+            if (!dateString.equals("0001-01-01 00:00:00.0")) {
+                returnString = quote(dateString);
+            }
         }
+        return returnString;
     }
 
     /**

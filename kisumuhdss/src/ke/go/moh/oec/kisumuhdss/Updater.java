@@ -55,6 +55,7 @@ public class Updater {
     private Connection connMaster = null; // Connection for master query
     private Connection connDetail = null; // Connection for detail query
     private final static String HDSS_COMPANION_NAME = "HDSS COMPANION";
+    private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
     /**
@@ -225,6 +226,18 @@ public class Updater {
     /**
      * Processes a single new transaction from the shadow database and requests the MPI
      * to make the change.
+     * <p>
+     * There is some special logic to handle the case where the UPDATE statement is
+     * updating a non-null value to a null value. In this case, we want to pack the
+     * person object with a special value indicating that the field was present but null.
+     * For strings, this special value is the empty string "". For dates, this special
+     * value is January 1, 0001.
+     * <p>
+     * For enums, there is no such special value. At the time this code was written,
+     * the only enums that are in the HDSS database to be updated in the MPI are
+     * sex and marital status. It is not expected that these would ever be changed
+     * in the HDSS database to null. Note that pregnancy status does not need this
+     * special value, because it is not stored in the MPI.
      * 
      * @param transactionType Type of the transaction, "INSERT", "UPDATE", or "DELETE".
      * @param hdssId HDSS ID of the person this transaction is for.
@@ -255,74 +268,80 @@ public class Updater {
         String event = "";
         Date eventDate = null;
         for (Row r : rowList) {
+            String value = r.value;
+            if (value == null) {
+                value = "";
+            }
             if (r.name.equals("fname")) {
-                p.setFirstName(r.value);
+                p.setFirstName(value);
             } else if (r.name.equals("jname")) {
-                p.setMiddleName(r.value);
+                p.setMiddleName(value);
             } else if (r.name.equals("lname")) {
-                p.setLastName(r.value);
+                p.setLastName(value);
             } else if (r.name.equals("famcla")) {
-                p.setClanName(r.value);
+                p.setClanName(value);
             } else if (r.name.equals("akaname")) {
-                p.setOtherName(r.value);
+                p.setOtherName(value);
             } else if (r.name.equals("gender")) {
-                p.setSex(parseSex(r.value));
+                p.setSex(parseSex(value));
             } else if (r.name.equals("dob")) {
-                p.setBirthdate(parseDate(r.value));
+                p.setBirthdate(parseDate(value));
             } else if (r.name.equals("mfname")) {
-                p.setMothersFirstName(r.value);
+                p.setMothersFirstName(value);
             } else if (r.name.equals("mjname")) {
-                p.setMothersMiddleName(r.value);
+                p.setMothersMiddleName(value);
             } else if (r.name.equals("mlname")) {
-                p.setMothersLastName(r.value);
+                p.setMothersLastName(value);
             } else if (r.name.equals("ffname")) {
-                p.setFathersFirstName(r.value);
+                p.setFathersFirstName(value);
             } else if (r.name.equals("fjname")) {
-                p.setFathersMiddleName(r.value);
+                p.setFathersMiddleName(value);
             } else if (r.name.equals("flname")) {
-                p.setFathersLastName(r.value);
+                p.setFathersLastName(value);
             } else if (r.name.equals("mtal")) {
-                marriageStatus = r.value;
+                marriageStatus = value;
             } else if (r.name.equals("mtyp")) {
-                marriageType = r.value;
+                marriageType = value;
             } else if (r.name.equals("cfname")) {
-                p.setCompoundHeadFirstName(r.value);
+                p.setCompoundHeadFirstName(value);
             } else if (r.name.equals("cjname")) {
-                p.setCompoundHeadMiddleName(r.value);
+                p.setCompoundHeadMiddleName(value);
             } else if (r.name.equals("clname")) {
-                p.setCompoundHeadLastName(r.value);
+                p.setCompoundHeadLastName(value);
             } else if (r.name.equals("villname")) {
-                p.setVillageName(r.value);
+                p.setVillageName(value);
             } else if (r.name.equals("lasteventdate")) {
-                eventDate = parseDate(r.value);
+                eventDate = parseDate(value);
             } else if (r.name.equals("lastevent")) {
-                event = r.value;
+                event = value;
             } else if (r.name.equals("expectedDeliveryDate")) {
-                p.setExpectedDeliveryDate(parseDate(r.value));
+                p.setExpectedDeliveryDate(parseDate(value));
             } else if (r.name.equals("pregnancyEndDate")) {
-                p.setPregnancyEndDate(parseDate(r.value));
+                p.setPregnancyEndDate(parseDate(value));
             } else if (r.name.equals("pregnancyOutcome")) {
-                p.setPregnancyOutcome(Person.PregnancyOutcome.valueOf(r.value));
+                if (!value.isEmpty()) {
+                    p.setPregnancyOutcome(Person.PregnancyOutcome.valueOf(value));
+                }
             } else if (r.name.equals("f_Template")) {
-                fp1.setTemplate(parseHex(r.value));
+                fp1.setTemplate(parseHex(value));
             } else if (r.name.equals("f_Type")) {
-                fp1.setFingerprintType(parseFingerprintType(r.value));
+                fp1.setFingerprintType(parseFingerprintType(value));
             } else if (r.name.equals("f_Technology")) {
-                fp1.setTechnologyType(parseTechnologyType(r.value));
+                fp1.setTechnologyType(parseTechnologyType(value));
             } else if (r.name.equals("f_DateEntered")) {
-                fp1.setDateEntered(parseDate(r.value));
+                fp1.setDateEntered(parseDate(value));
             } else if (r.name.equals("f_DateModified")) {
-                fp1.setDateChanged(parseDate(r.value));
+                fp1.setDateChanged(parseDate(value));
             } else if (r.name.equals("s_Template")) {
-                fp2.setTemplate(parseHex(r.value));
+                fp2.setTemplate(parseHex(value));
             } else if (r.name.equals("s_Type")) {
-                fp2.setFingerprintType(parseFingerprintType(r.value));
+                fp2.setFingerprintType(parseFingerprintType(value));
             } else if (r.name.equals("s_Technology")) {
-                fp2.setTechnologyType(parseTechnologyType(r.value));
+                fp2.setTechnologyType(parseTechnologyType(value));
             } else if (r.name.equals("s_DateEntered")) {
-                fp2.setDateEntered(parseDate(r.value));
+                fp2.setDateEntered(parseDate(value));
             } else if (r.name.equals("s_DateModified")) {
-                fp2.setDateChanged(parseDate(r.value));
+                fp2.setDateChanged(parseDate(value));
             }
         }
         if (event.equalsIgnoreCase("DTH")) {
@@ -419,13 +438,19 @@ public class Updater {
      *
      * @param sDateTime contains date and time
      * @return the date and time in <code>Date</code> format
-     * Returns null if the date and time string was null.
+     * If the date and time string was null, returns null.
+     * If the date and time string was empty, returns January 1, 0001.
+     * This is done so there can be a special value if the date is present but empty.
      */
     private Date parseDate(String sDateTime) {
         Date returnDateTime = null;
         if (sDateTime != null) {
             try {
-                returnDateTime = SIMPLE_DATE_TIME_FORMAT.parse(sDateTime);
+                if (sDateTime.isEmpty()) {
+                    returnDateTime = SIMPLE_DATE_FORMAT.parse("0001-01-01");
+                } else {
+                    returnDateTime = SIMPLE_DATE_TIME_FORMAT.parse(sDateTime);
+                }
             } catch (ParseException ex) {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             }
