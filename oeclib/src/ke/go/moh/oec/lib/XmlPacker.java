@@ -276,9 +276,12 @@ class XmlPacker {
         }
         if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
             Person p = null;
-            PersonResponse persoResponse = (PersonResponse) m.getMessageData();
-            p = persoResponse.getPersonList().get(0);
-            packPerson(personNode, p);
+            PersonResponse personResponse = (PersonResponse) m.getMessageData();
+            List<Person> personList = personResponse.getPersonList();
+            if (personList != null && !personList.isEmpty()) { // Are we responding with person data?
+                p = personResponse.getPersonList().get(0);
+                packPerson(personNode, p);
+            }
         }
         return doc;
     }
