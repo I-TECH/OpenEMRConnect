@@ -42,7 +42,22 @@ public class Session {
         VISITOR,
         NEW,
         TRANSFER_IN,
-        UNSPECIFIED
+        UNSPECIFIED;
+
+        @Override
+        public String toString() {
+            if (this == ENROLLED) {
+                return "Enrolled";
+            } else if (this == VISITOR) {
+                return "Visitor";
+            } else if (this == NEW) {
+                return "New";
+            } else if (this == TRANSFER_IN) {
+                return "Transfer in";
+            } else {
+                return "Unspecified";
+            }
+        }
     }
     private ClientType clientType;
     private final String reference;

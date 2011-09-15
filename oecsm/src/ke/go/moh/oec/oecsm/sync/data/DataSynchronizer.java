@@ -186,6 +186,9 @@ public class DataSynchronizer extends DatabaseConnector {
         sourceRsHasRecords = sourceRs.next();
         shadowRsHasRecords = shadowRs.next();
     }
+    /*
+     * Applies a set of transactions to the database
+     */
 
     private void processTransactions(List<Transaction> dataTransactionList) throws SQLException {
         try {

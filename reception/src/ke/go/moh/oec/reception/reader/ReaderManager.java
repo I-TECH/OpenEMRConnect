@@ -54,37 +54,12 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
 
     private MatchingContext matchingContext;
     private FingerprintingComponent fingerprintingComponent;
-    private boolean autoExtract = true;
-    private boolean autoIdentify = false;
     private FingerprintImage fingerprintImage;
     private Template template;
 
     public ReaderManager(FingerprintingComponent fingerprintingComponent) throws GrFingerJavaException {
         this.fingerprintingComponent = fingerprintingComponent;
         initialize();
-    }
-
-    public ReaderManager(FingerprintingComponent fingerprintingComponent, boolean autoExtract, boolean autoIdentify) throws GrFingerJavaException {
-        this.fingerprintingComponent = fingerprintingComponent;
-        initialize();
-        this.autoExtract = autoExtract;
-        this.autoIdentify = autoIdentify;
-    }
-
-    public boolean isAutoExtract() {
-        return autoExtract;
-    }
-
-    public void setAutoExtract(boolean autoExtract) {
-        this.autoExtract = autoExtract;
-    }
-
-    public boolean isAutoIdentify() {
-        return autoIdentify;
-    }
-
-    public void setAutoIdentify(boolean autoIdentify) {
-        this.autoIdentify = autoIdentify;
     }
 
     public FingerprintImage getFingerprintImage() {
@@ -152,9 +127,7 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
         fingerprintingComponent.log("Image Captured!");
         this.fingerprintImage = fingerprintImage;
         fingerprintingComponent.showImage(fingerprintImage);
-        if (autoExtract) {
-            extract();
-        }
+        extract();
     }
 
     public String getFingerprintSDKVersion() throws GrFingerJavaException {
@@ -175,7 +148,7 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
         }
     }
 
-    public void extract() {
+    private void extract() {
         try {
             template = matchingContext.extract(fingerprintImage);
             fingerprintingComponent.showQuality(template.getQuality());
@@ -183,6 +156,18 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
         } catch (GrFingerJavaException e) {
             fingerprintingComponent.log(e.getMessage());
         }
+    }
+
+    public boolean identify(Template template) {
+        boolean match = false;
+        try {
+            match = matchingContext.identify(template);
+        } catch (GrFingerJavaException ex) {
+            Logger.getLogger(ReaderManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(ReaderManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return match;
     }
 
     public static void setFingerprintSDKNativeDirectory(String nativeDirectory) {

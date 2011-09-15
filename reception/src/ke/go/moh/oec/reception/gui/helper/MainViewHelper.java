@@ -191,7 +191,7 @@ public class MainViewHelper implements NotificationManager {
                         return findPerson(Server.MPI, searchPersonWrapper);
                     }
                     if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
-                        return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, lpiPersonList));
+                        return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, lpiPersonList));
                     } else {
                         return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
                     }

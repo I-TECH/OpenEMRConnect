@@ -49,6 +49,7 @@ public class Daemon extends Thread {
     private final Method method;
     private int interval;
     private String timeOfDay;
+    private boolean working = false;
     private DaemonFrame daemonFrame;
     private static Properties properties = null;
 
@@ -92,7 +93,7 @@ public class Daemon extends Thread {
 
     @Override
     public void run() {
-        int afterWorkPause = 60000;//pause to avoid redoing work unnecessarily
+        int afterWorkPause = 60000;//pause to avoid redoing (potentially the same) work unnecessarily
         DateFormat dateFormat = new SimpleDateFormat("HH:mm");
         try {
             if (method == Method.INTERVAL) {
@@ -114,10 +115,18 @@ public class Daemon extends Thread {
             daemonFrame.getOutputTextArea().append(ex.getMessage() + "\n");
         }
     }
+    /*
+     * Does the actual source and shadow database synchronization. If another synchronization
+     * process is ongoing, a second one is not started.
+     */
 
-    public void work() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
-        new SchemaSynchronizer().synchronize();
-        new DataSynchronizer().synchronize();
+    private void work() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
+        if (!working) {
+            working = true;
+            new SchemaSynchronizer().synchronize();
+            new DataSynchronizer().synchronize();
+            working = false;
+        }
     }
 
     public static String getProperty(String propertyName) {

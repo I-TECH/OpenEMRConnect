@@ -79,6 +79,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private String currentCardName = "homeCard";
     private List<String> visitedCardList = new ArrayList<String>();
     private ReaderManager readerManager;
+    private QuickSearchManager quickSearchManager = null;
     private final SearchStatus searchStatus = new SearchStatus(false);
     private boolean readerAvailable = false;
     private static final int MIN_WIDTH = 670;
@@ -87,29 +88,35 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private List<Notification> pregnancyNotificationList = new ArrayList<Notification>();
     private List<Notification> deathNotificationList = new ArrayList<Notification>();
     private List<Notification> migrationNotificationList = new ArrayList<Notification>();
-    private DefaultMutableTreeNode notificationRootNode = new DefaultMutableTreeNode("Notifications(0)");
-    private DefaultMutableTreeNode pregnancyOutcomeNode = new DefaultMutableTreeNode("Pregnancy outcome(0)");
-    private DefaultMutableTreeNode pregnancyNode = new DefaultMutableTreeNode("Pregnancy(0)");
-    private DefaultMutableTreeNode deathNode = new DefaultMutableTreeNode("Death(0)");
-    private DefaultMutableTreeNode migrationNode = new DefaultMutableTreeNode("Migration(0)");
+    private DefaultMutableTreeNode notificationRootNode = new DefaultMutableTreeNode("Notifications (0)");
+    private DefaultMutableTreeNode pregnancyOutcomeNode = new DefaultMutableTreeNode("Pregnancy outcome (0)");
+    private DefaultMutableTreeNode pregnancyNode = new DefaultMutableTreeNode("Pregnancy (0)");
+    private DefaultMutableTreeNode deathNode = new DefaultMutableTreeNode("Death (0)");
+    private DefaultMutableTreeNode migrationNode = new DefaultMutableTreeNode("Migration (0)");
 
     public MainView(SingleFrameApplication app) {
         super(app);
         initComponents();
         initializeNotificationTree();
-        this.getFrame().addWindowListener(new WindowAdapter() {
+        final JFrame frame = this.getFrame();
+        frame.addWindowListener(new WindowAdapter() {
 
             @Override
             public void windowClosing(WindowEvent e) {
+                //Hide the window and then hang on a while to allow the fp sdk to be destroyed.
+                //This seems to raise the chances of the fp sdk being destroyed successfully
+                frame.setVisible(false);
                 destroyReaderManager(true);
-//            try {
-//                Thread.sleep(5000);
-//            } catch (InterruptedException ex) {
-//                Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-//            }
+                try {
+                    Thread.sleep(5000);
+                    System.exit(0);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                    System.exit(1);
+                }
             }
         });
-        this.getFrame().addComponentListener(new java.awt.event.ComponentAdapter() {
+        frame.addComponentListener(new java.awt.event.ComponentAdapter() {
 
             @Override
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -134,6 +141,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         this.getFrame().setTitle(OECReception.applicationName());
         this.getFrame().setIconImage(OECReception.applicationIcon());
         this.mainViewHelper = new MainViewHelper(this);
+        loggedInLabel.setText("Logged in as: " + OECReception.getUser().getUsername());
         showCard("homeCard", true, false);
         // status bar initialization - message timeout, idle icon and busy animation, etc
         ResourceMap resourceMap = getResourceMap();
@@ -232,14 +240,18 @@ public class MainView extends FrameView implements FingerprintingComponent {
         rightPanel = new javax.swing.JPanel();
         homeButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
+        loggedInLabel = new javax.swing.JLabel();
         wizardPanel = new javax.swing.JPanel();
         homeCard = new javax.swing.JPanel();
         quickSearchPanel = new javax.swing.JPanel();
+        readerMessageLabel = new javax.swing.JLabel();
         quickSearchFingerprintImagePanel = new ke.go.moh.oec.reception.gui.custom.ImagePanel();
+        clearRightIndexButton = new javax.swing.JButton();
+        clearLeftIndexButton = new javax.swing.JButton();
+        resetQuickSearchButton = new javax.swing.JButton();
         quickSearchQualityTextField = new javax.swing.JTextField();
         quickSearchMessageLabel = new javax.swing.JLabel();
         quickSearchButton = new javax.swing.JButton();
-        readerMessageLabel = new javax.swing.JLabel();
         homePanel = new javax.swing.JPanel();
         enrolledButton = new javax.swing.JButton();
         visitorButton = new javax.swing.JButton();
@@ -413,6 +425,11 @@ public class MainView extends FrameView implements FingerprintingComponent {
         altHdssDataConsentTextField = new javax.swing.JTextField();
         hdssDataConsentAcceptRadioButton = new javax.swing.JRadioButton();
         hdssDataConsentRejectRadioButton = new javax.swing.JRadioButton();
+        clientTypeLabel = new javax.swing.JLabel();
+        enrolledRadioButton = new javax.swing.JRadioButton();
+        visitorRadioButton = new javax.swing.JRadioButton();
+        newRadioButton = new javax.swing.JRadioButton();
+        transferInRadioButton = new javax.swing.JRadioButton();
         fingerprintLabel = new javax.swing.JLabel();
         fingerprintImagePanel = new ke.go.moh.oec.reception.gui.custom.ImagePanel();
         clientRefusesCheckBox = new javax.swing.JCheckBox();
@@ -462,6 +479,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         hdssDataConsentButtonGroup = new javax.swing.ButtonGroup();
         clanButtonGroup = new javax.swing.ButtonGroup();
         otherNameButtonGroup = new javax.swing.ButtonGroup();
+        clientTypeButtonGroup = new javax.swing.ButtonGroup();
 
         mainPanel.setName("mainPanel"); // NOI18N
 
@@ -477,6 +495,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(MainView.class, this);
         processNotificationButton.setAction(actionMap.get("processNotification")); // NOI18N
         processNotificationButton.setText(resourceMap.getString("processNotificationButton.text")); // NOI18N
+        processNotificationButton.setEnabled(false);
         processNotificationButton.setName("processNotificationButton"); // NOI18N
 
         notificationScrollPane.setName("notificationScrollPane"); // NOI18N
@@ -543,14 +562,21 @@ public class MainView extends FrameView implements FingerprintingComponent {
         backButton.setText(resourceMap.getString("backButton.text")); // NOI18N
         backButton.setName("backButton"); // NOI18N
 
+        loggedInLabel.setFont(resourceMap.getFont("loggedInLabel.font")); // NOI18N
+        loggedInLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        loggedInLabel.setText(resourceMap.getString("loggedInLabel.text")); // NOI18N
+        loggedInLabel.setName("loggedInLabel"); // NOI18N
+
         wizardPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         wizardPanel.setName("wizardPanel"); // NOI18N
         wizardPanel.setLayout(new java.awt.CardLayout());
 
         homeCard.setName("homeCard"); // NOI18N
 
-        quickSearchPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("quickSearchPanel.border.title"))); // NOI18N
         quickSearchPanel.setName("quickSearchPanel"); // NOI18N
+
+        readerMessageLabel.setText(resourceMap.getString("readerMessageLabel.text")); // NOI18N
+        readerMessageLabel.setName("readerMessageLabel"); // NOI18N
 
         quickSearchFingerprintImagePanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         quickSearchFingerprintImagePanel.setName("quickSearchFingerprintImagePanel"); // NOI18N
@@ -559,12 +585,24 @@ public class MainView extends FrameView implements FingerprintingComponent {
         quickSearchFingerprintImagePanel.setLayout(quickSearchFingerprintImagePanelLayout);
         quickSearchFingerprintImagePanelLayout.setHorizontalGroup(
             quickSearchFingerprintImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 75, Short.MAX_VALUE)
+            .addGap(0, 77, Short.MAX_VALUE)
         );
         quickSearchFingerprintImagePanelLayout.setVerticalGroup(
             quickSearchFingerprintImagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 74, Short.MAX_VALUE)
+            .addGap(0, 79, Short.MAX_VALUE)
         );
+
+        clearRightIndexButton.setAction(actionMap.get("clearRightIndex")); // NOI18N
+        clearRightIndexButton.setText(resourceMap.getString("clearRightIndexButton.text")); // NOI18N
+        clearRightIndexButton.setName("clearRightIndexButton"); // NOI18N
+
+        clearLeftIndexButton.setAction(actionMap.get("clearLeftIndex")); // NOI18N
+        clearLeftIndexButton.setText(resourceMap.getString("clearLeftIndexButton.text")); // NOI18N
+        clearLeftIndexButton.setName("clearLeftIndexButton"); // NOI18N
+
+        resetQuickSearchButton.setAction(actionMap.get("resertQuickSearch")); // NOI18N
+        resetQuickSearchButton.setText(resourceMap.getString("resetQuickSearchButton.text")); // NOI18N
+        resetQuickSearchButton.setName("resetQuickSearchButton"); // NOI18N
 
         quickSearchQualityTextField.setEditable(false);
         quickSearchQualityTextField.setText(resourceMap.getString("quickSearchQualityTextField.text")); // NOI18N
@@ -577,40 +615,64 @@ public class MainView extends FrameView implements FingerprintingComponent {
         quickSearchButton.setText(resourceMap.getString("quickSearchButton.text")); // NOI18N
         quickSearchButton.setName("quickSearchButton"); // NOI18N
 
-        readerMessageLabel.setText(resourceMap.getString("readerMessageLabel.text")); // NOI18N
-        readerMessageLabel.setName("readerMessageLabel"); // NOI18N
-
         javax.swing.GroupLayout quickSearchPanelLayout = new javax.swing.GroupLayout(quickSearchPanel);
         quickSearchPanel.setLayout(quickSearchPanelLayout);
         quickSearchPanelLayout.setHorizontalGroup(
             quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(quickSearchPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(quickSearchQualityTextField)
-                    .addComponent(quickSearchFingerprintImagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(quickSearchMessageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
-                    .addComponent(quickSearchButton)
-                    .addComponent(readerMessageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addGroup(quickSearchPanelLayout.createSequentialGroup()
+                        .addComponent(readerMessageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(quickSearchPanelLayout.createSequentialGroup()
+                        .addGroup(quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(quickSearchFingerprintImagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(quickSearchQualityTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(quickSearchPanelLayout.createSequentialGroup()
+                                .addGroup(quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(quickSearchPanelLayout.createSequentialGroup()
+                                        .addComponent(resetQuickSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(quickSearchButton))
+                                    .addComponent(clearLeftIndexButton)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, quickSearchPanelLayout.createSequentialGroup()
+                                        .addComponent(clearRightIndexButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(99, 99, 99)))
+                                .addGap(396, 396, 396))
+                            .addGroup(quickSearchPanelLayout.createSequentialGroup()
+                                .addComponent(quickSearchMessageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 598, Short.MAX_VALUE)
+                                .addContainerGap())))))
         );
+
+        quickSearchPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {clearLeftIndexButton, clearRightIndexButton, resetQuickSearchButton});
+
         quickSearchPanelLayout.setVerticalGroup(
             quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(quickSearchPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(readerMessageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(quickSearchPanelLayout.createSequentialGroup()
-                        .addComponent(readerMessageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(clearRightIndexButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(quickSearchMessageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(clearLeftIndexButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(quickSearchButton))
+                        .addGroup(quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(resetQuickSearchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(quickSearchButton)))
                     .addComponent(quickSearchFingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(quickSearchQualityTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(quickSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(quickSearchQualityTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(quickSearchMessageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE))
                 .addContainerGap())
         );
+
+        quickSearchPanelLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {clearLeftIndexButton, clearRightIndexButton, resetQuickSearchButton});
 
         homePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(resourceMap.getString("homePanel.border.title"))); // NOI18N
         homePanel.setName("homePanel"); // NOI18N
@@ -638,10 +700,10 @@ public class MainView extends FrameView implements FingerprintingComponent {
             .addGroup(homePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(homePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
-                    .addComponent(visitorButton, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
-                    .addComponent(enrolledButton, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
-                    .addComponent(transferInButton, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE))
+                    .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                    .addComponent(visitorButton, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                    .addComponent(enrolledButton, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                    .addComponent(transferInButton, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE))
                 .addContainerGap())
         );
         homePanelLayout.setVerticalGroup(
@@ -655,18 +717,18 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 .addComponent(newButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(transferInButton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(103, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout homeCardLayout = new javax.swing.GroupLayout(homeCard);
         homeCard.setLayout(homeCardLayout);
         homeCardLayout.setHorizontalGroup(
             homeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(homeCardLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, homeCardLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(homeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(quickSearchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(homePanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(homeCardLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(homePanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(quickSearchPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         homeCardLayout.setVerticalGroup(
@@ -675,8 +737,8 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 .addContainerGap()
                 .addComponent(quickSearchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(homePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(118, Short.MAX_VALUE))
+                .addComponent(homePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         wizardPanel.add(homeCard, "homeCard");
@@ -701,8 +763,8 @@ public class MainView extends FrameView implements FingerprintingComponent {
             .addGroup(clientIdPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(clientIdPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(clinicIdNoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
-                    .addComponent(clinicIdYesButton, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE))
+                    .addComponent(clinicIdNoButton, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                    .addComponent(clinicIdYesButton, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE))
                 .addContainerGap())
         );
         clientIdPanelLayout.setVerticalGroup(
@@ -805,15 +867,15 @@ public class MainView extends FrameView implements FingerprintingComponent {
                             .addComponent(basicSearchFingerprintLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(basicSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(basicSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
-                            .addComponent(basicSearchClinicNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
+                            .addComponent(basicSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
+                            .addComponent(basicSearchClinicNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
                             .addGroup(basicSearchPanelLayout.createSequentialGroup()
                                 .addGroup(basicSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(basicSearchTakeButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(basicSearchFingerprintImagePanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(basicSearchClientRefusesCheckBox))))
-                    .addComponent(basicSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE))
+                    .addComponent(basicSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE))
                 .addContainerGap())
         );
         basicSearchPanelLayout.setVerticalGroup(
@@ -995,25 +1057,25 @@ public class MainView extends FrameView implements FingerprintingComponent {
                             .addComponent(extendedSearchClanNameLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(extendedSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(extendedSearchLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-                            .addComponent(extendedSearchMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-                            .addComponent(extendedSearchFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-                            .addComponent(extendedSearchClinicNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-                            .addComponent(extendedSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-                            .addComponent(extendedSearchOtherNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-                            .addComponent(extendedSearchClanNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                            .addComponent(extendedSearchLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                            .addComponent(extendedSearchMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                            .addComponent(extendedSearchFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                            .addComponent(extendedSearchClinicNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                            .addComponent(extendedSearchClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                            .addComponent(extendedSearchOtherNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                            .addComponent(extendedSearchClanNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
                             .addGroup(extendedSearchPanelLayout.createSequentialGroup()
                                 .addComponent(extendedSearchMaleRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(extendedSearchFemaleRadioButton))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, extendedSearchPanelLayout.createSequentialGroup()
-                                .addComponent(extendedSearchBirthdateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
+                                .addComponent(extendedSearchBirthdateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(extendedSearchUnknownBirthdateCheckBox))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, extendedSearchPanelLayout.createSequentialGroup()
                         .addComponent(extendedSearchVillageLabel)
                         .addGap(35, 35, 35)
-                        .addComponent(extendedSearchVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE))
+                        .addComponent(extendedSearchVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE))
                     .addGroup(extendedSearchPanelLayout.createSequentialGroup()
                         .addGroup(extendedSearchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, extendedSearchPanelLayout.createSequentialGroup()
@@ -1025,8 +1087,8 @@ public class MainView extends FrameView implements FingerprintingComponent {
                                 .addComponent(extendedSearchFingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(extendedSearchClientRefusesCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 315, Short.MAX_VALUE))
-                    .addComponent(extendedSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 449, Short.MAX_VALUE))
+                    .addComponent(extendedSearchButton, javax.swing.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE))
                 .addContainerGap())
         );
         extendedSearchPanelLayout.setVerticalGroup(
@@ -1155,9 +1217,9 @@ public class MainView extends FrameView implements FingerprintingComponent {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mpiResultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(mpiResultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(mpiResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
-                    .addComponent(mpiNotFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
-                    .addComponent(mpiConfirmButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE))
+                    .addComponent(mpiResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                    .addComponent(mpiNotFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                    .addComponent(mpiConfirmButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE))
                 .addContainerGap())
         );
         mpiResultsPanelLayout.setVerticalGroup(
@@ -1241,9 +1303,9 @@ public class MainView extends FrameView implements FingerprintingComponent {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, lpiResultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(lpiResultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lpiResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
-                    .addComponent(lpiNotFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
-                    .addComponent(lpiConfirmButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE))
+                    .addComponent(lpiResultsScrollPane, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                    .addComponent(lpiNotFoundButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                    .addComponent(lpiConfirmButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE))
                 .addContainerGap())
         );
         lpiResultsPanelLayout.setVerticalGroup(
@@ -1488,7 +1550,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                         .addGap(10, 10, 10)
                         .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                                .addComponent(altFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(firstNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1497,22 +1559,22 @@ public class MainView extends FrameView implements FingerprintingComponent {
                                 .addComponent(maleRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(femaleRadioButton))
-                            .addComponent(lastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                            .addComponent(lastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                                .addComponent(altMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(middleNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(middleNameRejectRadioButton))
-                            .addComponent(middleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                            .addComponent(middleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
                             .addGroup(reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                                .addComponent(altLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lastNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lastNameRejectRadioButton))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altSexTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                                .addComponent(altSexTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(sexAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1523,15 +1585,15 @@ public class MainView extends FrameView implements FingerprintingComponent {
                             .addComponent(clinicIdLabel))
                         .addGap(18, 18, 18)
                         .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(clinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
+                            .addComponent(clinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 615, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
+                                .addComponent(altClinicIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(clinicIdAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(clinicIdRejectRadioButton))
-                            .addComponent(firstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)))
-                    .addComponent(reviewCard1NextButton, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
+                            .addComponent(firstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 615, Short.MAX_VALUE)))
+                    .addComponent(reviewCard1NextButton, javax.swing.GroupLayout.DEFAULT_SIZE, 683, Short.MAX_VALUE)
                     .addGroup(reviewPanel1Layout.createSequentialGroup()
                         .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(birthDateLabel)
@@ -1540,27 +1602,27 @@ public class MainView extends FrameView implements FingerprintingComponent {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(reviewPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altOtherNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                                .addComponent(altOtherNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(otherNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(otherNameRejectRadioButton))
-                            .addComponent(otherNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+                            .addComponent(otherNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altBirthDateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                                .addComponent(altBirthDateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(birthDateAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(birthDateRejectRadioButton))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(altMaritalStatusTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE)
+                                .addComponent(altMaritalStatusTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(maritalStatusAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(maritalStatusRejectRadioButton))
-                            .addComponent(maritalStatusComboBox, javax.swing.GroupLayout.Alignment.TRAILING, 0, 480, Short.MAX_VALUE)
+                            .addComponent(maritalStatusComboBox, javax.swing.GroupLayout.Alignment.TRAILING, 0, 614, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel1Layout.createSequentialGroup()
-                                .addComponent(birthDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
+                                .addComponent(birthDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(unknownBirthdateCheckBox)))))
                 .addContainerGap())
@@ -1866,7 +1928,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                     .addGroup(reviewPanel2Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(review2NextButton, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
+                            .addComponent(review2NextButton, javax.swing.GroupLayout.DEFAULT_SIZE, 683, Short.MAX_VALUE)
                             .addGroup(reviewPanel2Layout.createSequentialGroup()
                                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(mothersLastNameLabel)
@@ -1877,54 +1939,54 @@ public class MainView extends FrameView implements FingerprintingComponent {
                                     .addComponent(fathersFirstNameLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(fathersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                                    .addComponent(fathersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                        .addComponent(altFathersFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                                        .addComponent(altFathersFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(fathersFirstNameAcceptRadioButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(fathersFirstNameRejectRadioButton))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                        .addComponent(altMothersFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                                        .addComponent(altMothersFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(mothersFirstNameAcceptRadioButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(mothersFirstNameRejectRadioButton))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                        .addComponent(altFathersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                                        .addComponent(altFathersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(fathersMiddleNameAcceptRadioButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(fathersMiddleNameRejectRadioButton))
-                                    .addComponent(fathersLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                                    .addComponent(fathersLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                        .addComponent(altFathersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                                        .addComponent(altFathersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(fathersLastNameAcceptRadioButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(fathersLastNameRejectRadioButton))
-                                    .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
-                                    .addComponent(mothersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                                    .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
+                                    .addComponent(mothersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                        .addComponent(altMothersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                                        .addComponent(altMothersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(mothersLastNameAcceptRadioButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(mothersLastNameRejectRadioButton))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                        .addComponent(altMothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                                        .addComponent(altMothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(mothersMiddleNameAcceptRadioButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(mothersMiddleNameRejectRadioButton))
-                                    .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                                    .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel2Layout.createSequentialGroup()
-                                        .addComponent(altVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                                        .addComponent(altVillageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(villageAcceptRadioButton)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(villageRejectRadioButton))
-                                    .addComponent(fathersMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)))))
+                                    .addComponent(fathersMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)))))
                     .addGroup(reviewPanel2Layout.createSequentialGroup()
                         .addGap(14, 14, 14)
                         .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1932,14 +1994,14 @@ public class MainView extends FrameView implements FingerprintingComponent {
                             .addComponent(clanLabel))
                         .addGap(73, 73, 73)
                         .addGroup(reviewPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(clanTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                            .addComponent(clanTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
                             .addGroup(reviewPanel2Layout.createSequentialGroup()
-                                .addComponent(altClanTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
+                                .addComponent(altClanTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 536, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(clanAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(clanRejectRadioButton))
-                            .addComponent(villageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE))))
+                            .addComponent(villageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         reviewPanel2Layout.setVerticalGroup(
@@ -2145,6 +2207,25 @@ public class MainView extends FrameView implements FingerprintingComponent {
         hdssDataConsentRejectRadioButton.setName("hdssDataConsentRejectRadioButton"); // NOI18N
         hdssDataConsentRejectRadioButton.setSelectedIcon(resourceMap.getIcon("hdssDataConsentRejectRadioButton.selectedIcon")); // NOI18N
 
+        clientTypeLabel.setText(resourceMap.getString("clientTypeLabel.text")); // NOI18N
+        clientTypeLabel.setName("clientTypeLabel"); // NOI18N
+
+        clientTypeButtonGroup.add(enrolledRadioButton);
+        enrolledRadioButton.setText(resourceMap.getString("enrolledRadioButton.text")); // NOI18N
+        enrolledRadioButton.setName("enrolledRadioButton"); // NOI18N
+
+        clientTypeButtonGroup.add(visitorRadioButton);
+        visitorRadioButton.setText(resourceMap.getString("visitorRadioButton.text")); // NOI18N
+        visitorRadioButton.setName("visitorRadioButton"); // NOI18N
+
+        clientTypeButtonGroup.add(newRadioButton);
+        newRadioButton.setText(resourceMap.getString("newRadioButton.text")); // NOI18N
+        newRadioButton.setName("newRadioButton"); // NOI18N
+
+        clientTypeButtonGroup.add(transferInRadioButton);
+        transferInRadioButton.setText(resourceMap.getString("transferInRadioButton.text")); // NOI18N
+        transferInRadioButton.setName("transferInRadioButton"); // NOI18N
+
         fingerprintLabel.setText(resourceMap.getString("fingerprintLabel.text")); // NOI18N
         fingerprintLabel.setName("fingerprintLabel"); // NOI18N
 
@@ -2188,19 +2269,24 @@ public class MainView extends FrameView implements FingerprintingComponent {
             .addGroup(reviewPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(finishButton, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
-                    .addComponent(viewHouseholdButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 549, Short.MAX_VALUE)
                     .addGroup(reviewPanel3Layout.createSequentialGroup()
                         .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(compoundHeadsFirstNameLabel)
                             .addComponent(compoundHeadsMiddleNameLabel)
-                            .addComponent(fingerprintLabel)
                             .addComponent(compoundHeadsLastNameLabel)
-                            .addComponent(hdssDataConsentLabel))
+                            .addComponent(hdssDataConsentLabel)
+                            .addComponent(clientTypeLabel)
+                            .addComponent(fingerprintLabel))
                         .addGap(23, 23, 23)
                         .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(reviewPanel3Layout.createSequentialGroup()
+                                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(takeButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(clientRefusesCheckBox))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
-                                .addComponent(altCompoundHeadsLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                                .addComponent(altCompoundHeadsLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(compoundHeadsLastNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2211,33 +2297,37 @@ public class MainView extends FrameView implements FingerprintingComponent {
                                 .addComponent(hdssDataConsentNoRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(hdssDataConsentNoAnswerRadioButton))
-                            .addGroup(reviewPanel3Layout.createSequentialGroup()
-                                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(reviewPanel3Layout.createSequentialGroup()
-                                        .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(clientRefusesCheckBox))
-                                    .addComponent(takeButton)
-                                    .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(hdssDataConsentAcceptRadioButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(hdssDataConsentRejectRadioButton))
-                            .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+                            .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
-                                .addComponent(altCompoundHeadsMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                                .addComponent(altCompoundHeadsMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(compoundHeadsMiddleNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(compoundHeadsMiddleNameRejectRadioButton))
-                            .addComponent(compoundHeadsMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+                            .addComponent(compoundHeadsMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
-                                .addComponent(altCompoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
+                                .addComponent(altCompoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(compoundHeadsFirstNameAcceptRadioButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(compoundHeadsFirstNameRejectRadioButton))
-                            .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE))))
+                            .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE)
+                            .addGroup(reviewPanel3Layout.createSequentialGroup()
+                                .addComponent(enrolledRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(visitorRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(newRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(transferInRadioButton))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, reviewPanel3Layout.createSequentialGroup()
+                                .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentAcceptRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentRejectRadioButton))))
+                    .addComponent(viewHouseholdButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 683, Short.MAX_VALUE)
+                    .addComponent(finishButton, javax.swing.GroupLayout.DEFAULT_SIZE, 683, Short.MAX_VALUE))
                 .addContainerGap())
         );
         reviewPanel3Layout.setVerticalGroup(
@@ -2282,25 +2372,30 @@ public class MainView extends FrameView implements FingerprintingComponent {
                         .addComponent(compoundHeadsLastNameAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(reviewPanel3Layout.createSequentialGroup()
-                        .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(reviewPanel3Layout.createSequentialGroup()
-                                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(clientRefusesCheckBox))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(takeButton))
-                            .addComponent(fingerprintLabel)))
+                    .addComponent(altHdssDataConsentTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(hdssDataConsentRejectRadioButton, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
                         .addComponent(hdssDataConsentAcceptRadioButton, javax.swing.GroupLayout.Alignment.LEADING)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(enrolledRadioButton)
+                    .addComponent(visitorRadioButton)
+                    .addComponent(newRadioButton)
+                    .addComponent(transferInRadioButton)
+                    .addComponent(clientTypeLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(reviewPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(fingerprintLabel)
+                    .addGroup(reviewPanel3Layout.createSequentialGroup()
+                        .addComponent(fingerprintImagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(takeButton))
+                    .addComponent(clientRefusesCheckBox))
+                .addGap(6, 6, 6)
                 .addComponent(viewHouseholdButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(finishButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout reviewCard3Layout = new javax.swing.GroupLayout(reviewCard3);
@@ -2316,8 +2411,8 @@ public class MainView extends FrameView implements FingerprintingComponent {
             reviewCard3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(reviewCard3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(reviewPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(57, Short.MAX_VALUE))
+                .addComponent(reviewPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         wizardPanel.add(reviewCard3, "reviewCard3");
@@ -2331,13 +2426,14 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 .addGroup(rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(rightPanelLayout.createSequentialGroup()
                         .addGap(1, 1, 1)
-                        .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
-                        .addContainerGap())
+                        .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(rightPanelLayout.createSequentialGroup()
                         .addComponent(homeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(backButton, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(1, 1, 1))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(loggedInLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 618, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
         rightPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {backButton, homeButton});
@@ -2348,7 +2444,8 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 .addContainerGap()
                 .addGroup(rightPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(backButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)
-                    .addComponent(homeButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(homeButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(loggedInLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(wizardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
                 .addContainerGap())
@@ -2362,7 +2459,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(mainSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 874, Short.MAX_VALUE)
+            .addComponent(mainSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 881, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2439,11 +2536,11 @@ public class MainView extends FrameView implements FingerprintingComponent {
         statusPanel.setLayout(statusPanelLayout);
         statusPanelLayout.setHorizontalGroup(
             statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 874, Short.MAX_VALUE)
+            .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 881, Short.MAX_VALUE)
             .addGroup(statusPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(statusMessageLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 704, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 711, Short.MAX_VALUE)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusAnimationLabel)
@@ -2484,9 +2581,16 @@ public class MainView extends FrameView implements FingerprintingComponent {
     }//GEN-LAST:event_extendedSearchClinicNameTextFieldKeyTyped
 
     private void notificationTreeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_notificationTreeMouseClicked
-        if (evt.getClickCount() == 2) {
+        if (evt.getClickCount() == 1) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) notificationTree.getLastSelectedPathComponent();
-            if (node != null && node.isLeaf()) {
+            if (node == null || node.isRoot() || !node.isLeaf()) {
+                processNotificationButton.setEnabled(false);
+            } else {
+                processNotificationButton.setEnabled(true);
+            }
+        } else if (evt.getClickCount() == 2) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) notificationTree.getLastSelectedPathComponent();
+            if (node != null && !node.isRoot() && node.isLeaf()) {
                 processNotification();
             }
         }
@@ -2494,7 +2598,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
 
     @Action
     public void goHome() {
-        showCard("homeCard", true, true);
+        showCard("homeCard", true, sessionHasData());
     }
 
     @Action
@@ -2509,11 +2613,51 @@ public class MainView extends FrameView implements FingerprintingComponent {
             }
             visitedCardList.remove(i);
             if (i == 1) {
-                showCard(visitedCardList.get(i - 1), true, true);
+                showCard(visitedCardList.get(i - 1), true, sessionHasData());
             } else if (i > 1) {
                 showCard(visitedCardList.get(i - 1));
             }
         }
+    }
+
+    private boolean sessionHasData() {
+        boolean hasData = false;
+        if (quickSearchManager != null) {
+            if (quickSearchManager.getRightIndex().getFingerprint().getTemplate() != null
+                    || quickSearchManager.getLeftIndex().getFingerprint().getTemplate() != null) {
+                hasData = true;
+            }
+        }
+        if (!extendedSearchClinicIdTextField.getText().isEmpty()
+                || !extendedSearchClinicNameTextField.getText().isEmpty()
+                || !extendedSearchFirstNameTextField.getText().isEmpty()
+                || !extendedSearchMiddleNameTextField.getText().isEmpty()
+                || !extendedSearchLastNameTextField.getText().isEmpty()
+                || !extendedSearchOtherNameTextField.getText().isEmpty()
+                || !extendedSearchClanNameTextField.getText().isEmpty()
+                || !extendedSearchVillageTextField.getText().isEmpty()
+                || extendedSearchMaleRadioButton.isSelected()
+                || extendedSearchFemaleRadioButton.isSelected()) {
+            hasData = true;
+        }
+        if (mainViewHelper != null) {
+            if (mainViewHelper.getSession().getImagedFingerprintList() != null
+                    && !mainViewHelper.getSession().getImagedFingerprintList().isEmpty()) {
+                hasData = true;
+            }
+        }
+        if (extendedSearchBirthdateChooser.getDate() != null) {
+            String selectedDate = new SimpleDateFormat("yyyy-MM-dd").format(extendedSearchBirthdateChooser.getDate());
+            String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            if (!selectedDate.equals(dateToday)) {
+                hasData = true;
+            }
+        }
+        if (!basicSearchClinicIdTextField.getText().isEmpty()
+                || !basicSearchClinicNameTextField.getText().isEmpty()) {
+            hasData = true;
+        }
+        return hasData;
     }
 
     private void showCard(String cardName) {
@@ -2522,12 +2666,26 @@ public class MainView extends FrameView implements FingerprintingComponent {
     }
 
     public final void showCard(String cardName, boolean home, boolean confirm) {
-        if ((home && !currentCardName.equalsIgnoreCase("homeCard"))) {
-            if (confirm && !showConfirmMessage("Are you sure you want to go back to the home page and"
-                    + " start a new session? You will loose any data collected in the current session.", this.getFrame())) {
+        if (home) {
+            if ((!currentCardName.equalsIgnoreCase("homeCard"))) {
+                if (confirm && !showConfirmMessage("Are you sure you want to go back to the home page and"
+                        + " start a new session? You will loose the data collected in the current session.", this.getFrame())) {
+                    return;
+                }
+                flipToCard(cardName);
+            } else {
+                //avoid destroying and re-initializing fp sdk unnecessarily
+                if (!readerAvailable) {
+                    flipToCard(cardName);
+                }
                 return;
             }
+        } else {
+            flipToCard(cardName);
         }
+    }
+
+    private void flipToCard(String cardName) {
         finalizeCard(currentCardName);
         currentCardName = cardName;
         initializeCard(cardName);
@@ -2545,9 +2703,20 @@ public class MainView extends FrameView implements FingerprintingComponent {
         if (cardName.equalsIgnoreCase("homeCard")) {
             quickSearchButton.setVisible(false);
             initializeReaderManager(this);
+            if (readerAvailable) {
+                showFingerToBeTaken("Take right-index fingerprint");
+            } else {
+                showFingerToBeTaken("Fingerprinting is not available");
+            }
             endCurrentSession();
             clearFields(wizardPanel);
+            quickSearchManager = new QuickSearchManager();
+            quickSearchManager.toggleQuickSearchButtons();
 
+        } else if (cardName.equalsIgnoreCase("clinicIdCard")) {
+            TitledBorder clinicIdPanelBorder = (TitledBorder) clientIdPanel.getBorder();
+            clinicIdPanelBorder.setTitle("\"" + mainViewHelper.getSession().getClientType().toString() + " client\" "
+                    + "knows their Clinic ID?");
         } else if (cardName.equalsIgnoreCase("basicSearchCard")) {
             basicSearchClinicNameLabel.setVisible((mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR)
                     || (mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN));
@@ -2609,19 +2778,40 @@ public class MainView extends FrameView implements FingerprintingComponent {
             extendedSearchClientRefusesCheckBox.setSelected(!mainViewHelper.getSession().isFingerprint());
             enableExtendedSearchButton();
         } else if (cardName.equalsIgnoreCase("reviewCard3")) {
+            toggleClientTypeOptions(false);
+            if (mainViewHelper.getSession().getClientType() == Session.ClientType.UNSPECIFIED) {
+                String clinicId = clinicIdTextField.getText();
+                if (!clinicId.isEmpty() && OECReception.validateClinicId(clinicId)) {
+                    String clinicCode = OECReception.extractFacilityCode(clinicId);
+                    if (clinicCode.equalsIgnoreCase(OECReception.facilityCode())) {
+                        mainViewHelper.getSession().changeSessionClientType(Session.ClientType.ENROLLED);
+                    } else {
+                        toggleClientTypeOptions(true);
+                    }
+                } else {
+                    showErrorMessage("Please key in a valid Clinic ID for this client.", clinicIdTextField);
+                    showCard("reviewCard1");
+                }
+            }
+
+            viewHouseholdButton.setVisible(false);
             PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
             if (mpiMatchPersonWrapper != null) {
                 String kisumuHdssId = mpiMatchPersonWrapper.getKisumuHdssId();
                 Person.ConsentSigned consentSigned = mpiMatchPersonWrapper.getConsentSigned();
+                if (!kisumuHdssId.isEmpty()) {
+                    viewHouseholdButton.setVisible(true);
+                    viewHouseholdButton.setEnabled(false);
+                } else {
+                    return;
+                }
                 if (consentSigned == Person.ConsentSigned.yes) {
-                    if (!kisumuHdssId.isEmpty()) {
-                        viewHouseholdButton.setVisible(true);
-                        return;
-                    }
+                    viewHouseholdButton.setEnabled(true);
+                    return;
+                } else {
+                    return;
                 }
             }
-            viewHouseholdButton.setVisible(false);
-            return;
         }
     }
 
@@ -2631,6 +2821,14 @@ public class MainView extends FrameView implements FingerprintingComponent {
             showQuickSearchStatus("");
             destroyReaderManager(false);
         }
+    }
+
+    private void toggleClientTypeOptions(boolean visible) {
+        clientTypeLabel.setVisible(visible);
+        enrolledRadioButton.setVisible(visible);
+        visitorRadioButton.setVisible(visible);
+        newRadioButton.setVisible(visible);
+        transferInRadioButton.setVisible(visible);
     }
 
     public void enableBasicSearchButton() {
@@ -2816,19 +3014,25 @@ public class MainView extends FrameView implements FingerprintingComponent {
         return new SearchBasicTask(getApplication());
     }
 
-    public void addNotifications(List<Notification> notificationList) {
-        statusMessageLabel.setText("Receiving " + notificationList.size() + " notification(s).");
-        for (Notification notification : notificationList) {
-            addNotificationToTree(notification);
-        }
-        statusMessageLabel.setText(notificationList.size() + " notification(s) received. You now have "
-                + totalNotifications() + " notification(s) to pr"
-                + "ocess.");
-        if (NotificationSoundPlayer.getInstance() != null) {
-            NotificationSoundPlayer.getInstance().play();
-            flash(statusMessageLabel, Color.RED, Font.BOLD, 5);
-        }
-        notificationTree.repaint();
+    public void addNotifications(final List<Notification> notificationList) {
+        Runnable notificationAdder = new Runnable() {
+
+            public void run() {
+                statusMessageLabel.setText("Receiving " + notificationList.size() + " notification(s).");
+                for (Notification notification : notificationList) {
+                    addNotificationToTree(notification);
+                }
+                statusMessageLabel.setText(notificationList.size() + " notification(s) received. You now have "
+                        + totalNotifications() + " notification(s) to pr"
+                        + "ocess.");
+                if (NotificationSoundPlayer.getInstance() != null) {
+                    NotificationSoundPlayer.getInstance().play();
+                    flash(statusMessageLabel, Color.RED, Font.BOLD, 5);
+                }
+                notificationTree.repaint();
+            }
+        };
+        new Thread(notificationAdder).start();
     }
 
     public void flash(final JLabel label, final Color flashColor, final int flashFont, final int noOfTimes) {
@@ -2870,31 +3074,43 @@ public class MainView extends FrameView implements FingerprintingComponent {
             reload = pregnancyOutcomeNotificationList.isEmpty();
             pregnancyOutcomeNotificationList.add(notification);
             insertNotificationTypeNode(pregnancyOutcomeNode);
-            treeModel.insertNodeInto(newNotificationNode, pregnancyOutcomeNode, pregnancyOutcomeNotificationList.indexOf(notification));
-            pregnancyOutcomeNode.setUserObject("Pregnancy outcome" + "(" + pregnancyOutcomeNotificationList.size() + ")");
+            int size = treeModel.getChildCount(pregnancyOutcomeNode);
+            int preferredPosition = pregnancyOutcomeNotificationList.indexOf(notification);
+            int safePosition = (preferredPosition < size ? preferredPosition : size);
+            treeModel.insertNodeInto(newNotificationNode, pregnancyOutcomeNode, safePosition);
+            pregnancyOutcomeNode.setUserObject("Pregnancy outcome " + "(" + pregnancyOutcomeNotificationList.size() + ")");
         } else if (notification.getType() == Notification.Type.PREGNANCY) {
             reload = (reload || pregnancyNotificationList.isEmpty());
             pregnancyNotificationList.add(notification);
             insertNotificationTypeNode(pregnancyNode);
-            treeModel.insertNodeInto(newNotificationNode, pregnancyNode, pregnancyNotificationList.indexOf(notification));
-            pregnancyNode.setUserObject("Pregnancy" + "(" + pregnancyNotificationList.size() + ")");
+            int size = treeModel.getChildCount(pregnancyNode);
+            int preferredPosition = pregnancyNotificationList.indexOf(notification);
+            int safePosition = (preferredPosition < size ? preferredPosition : size);
+            treeModel.insertNodeInto(newNotificationNode, pregnancyNode, safePosition);
+            pregnancyNode.setUserObject("Pregnancy " + "(" + pregnancyNotificationList.size() + ")");
         } else if (notification.getType() == Notification.Type.DEATH) {
             reload = (reload || deathNotificationList.isEmpty());
             deathNotificationList.add(notification);
             insertNotificationTypeNode(deathNode);
-            treeModel.insertNodeInto(newNotificationNode, deathNode, deathNotificationList.indexOf(notification));
-            deathNode.setUserObject("Death" + "(" + deathNotificationList.size() + ")");
+            int size = treeModel.getChildCount(deathNode);
+            int preferredPosition = deathNotificationList.indexOf(notification);
+            int safePosition = (preferredPosition < size ? preferredPosition : size);
+            treeModel.insertNodeInto(newNotificationNode, deathNode, safePosition);
+            deathNode.setUserObject("Death " + "(" + deathNotificationList.size() + ")");
         } else if (notification.getType() == Notification.Type.MIGRATION) {
             reload = (reload || migrationNotificationList.isEmpty());
             migrationNotificationList.add(notification);
             insertNotificationTypeNode(migrationNode);
-            treeModel.insertNodeInto(newNotificationNode, migrationNode, migrationNotificationList.indexOf(notification));
-            migrationNode.setUserObject("Migration" + "(" + migrationNotificationList.size() + ")");
+            int size = treeModel.getChildCount(migrationNode);
+            int preferredPosition = migrationNotificationList.indexOf(notification);
+            int safePosition = (preferredPosition < size ? preferredPosition : size);
+            treeModel.insertNodeInto(newNotificationNode, migrationNode, safePosition);
+            migrationNode.setUserObject("Migration " + "(" + migrationNotificationList.size() + ")");
         }
         if (reload) {
             treeModel.reload();
         }
-        notificationRootNode.setUserObject("Notifications" + "(" + totalNotifications() + ")");
+        notificationRootNode.setUserObject("Notifications " + "(" + totalNotifications() + ")");
     }
     /*
      * Inserts a notification type node into the root node if it hasn't already been
@@ -2911,7 +3127,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                     DefaultMutableTreeNode currentNotificationTypeNode = (DefaultMutableTreeNode) notificationRootNode.getChildAt(i);
                     String currentNotificationType = (String) currentNotificationTypeNode.getUserObject();
                     if (notificationType.compareToIgnoreCase(currentNotificationType) < 0) {
-                        notificationRootNode.insert(notificationTypeNode, notificationRootNode.getIndex(currentNotificationTypeNode));
+                        notificationRootNode.insert(notificationTypeNode, i);
                         inserted = true;
                     }
                 }
@@ -2957,7 +3173,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 treeModel.removeNodeFromParent(migrationNode);
             }
         }
-        notificationRootNode.setUserObject("Notifications" + "(" + totalNotifications() + ")");
+        notificationRootNode.setUserObject("Notifications " + "(" + totalNotifications() + ")");
         notificationTree.repaint();
     }
 
@@ -3060,8 +3276,11 @@ public class MainView extends FrameView implements FingerprintingComponent {
     }
 
     public void log(String message) {
-        if (readerMessageLabel != null) {
-            readerMessageLabel.setText(message);
+        //do nothing if another search is in progress
+        if (!searchStatus.isOn()) {
+            if (readerMessageLabel != null) {
+                readerMessageLabel.setText(message);
+            }
         }
     }
 
@@ -3071,21 +3290,34 @@ public class MainView extends FrameView implements FingerprintingComponent {
         }
     }
 
-    public void showQuality(int quality) {
-        String message = "Unknown quality.";
-        switch (quality) {
-            case Template.HIGH_QUALITY:
-                message = "High quality.";
-                break;
-            case Template.MEDIUM_QUALITY:
-                message = "Medium quality.";
-                break;
-            case Template.LOW_QUALITY:
-                message = "Low quality.";
-                break;
+    public void showFingerToBeTaken(String message) {
+        if (readerMessageLabel != null) {
+            if (readerMessageLabel.getText().isEmpty()) {
+                readerMessageLabel.setText(message);
+            } else {
+                readerMessageLabel.setText(readerMessageLabel.getText() + " " + message);
+            }
         }
-        quickSearchQualityTextField.setText(message);
-        judgeTemplateQuality(quality);
+    }
+
+    public void showQuality(int quality) {
+        //do nothing if another search is in progress
+        if (!searchStatus.isOn()) {
+            String message = "Unknown quality.";
+            switch (quality) {
+                case Template.HIGH_QUALITY:
+                    message = "High quality.";
+                    break;
+                case Template.MEDIUM_QUALITY:
+                    message = "Medium quality.";
+                    break;
+                case Template.LOW_QUALITY:
+                    message = "Low quality.";
+                    break;
+            }
+            quickSearchQualityTextField.setText(message);
+            judgeTemplateQuality(quality);
+        }
     }
 
     private void judgeTemplateQuality(int quality) {
@@ -3103,16 +3335,15 @@ public class MainView extends FrameView implements FingerprintingComponent {
             return;
         }
         //simulate an actual gui button click in order to take advamtage of background task
-        if (searchStatus.isOn()) {
-            showErrorMessage("Another search is going on!", homeCard);
-        } else {
-            quickSearchButton.doClick();
-        }
+        quickSearchButton.doClick();
     }
 
     public void showImage(BufferedImage fingerprintImage) {
-        if (fingerprintImage != null) {
-            quickSearchFingerprintImagePanel.setImage(fingerprintImage);
+        //do nothing if another search is in progress
+        if (!searchStatus.isOn()) {
+            if (fingerprintImage != null) {
+                quickSearchFingerprintImagePanel.setImage(fingerprintImage);
+            }
         }
     }
 
@@ -3141,7 +3372,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 personWrapper.setLastName(extendedSearchLastNameTextField.getText());
                 if (extendedSearchMaleRadioButton.isSelected()) {
                     personWrapper.setSex(Person.Sex.M);
-                                           } else if (extendedSearchFemaleRadioButton.isSelected()) {
+                } else if (extendedSearchFemaleRadioButton.isSelected()) {
                     personWrapper.setSex(Person.Sex.F);
                 }
                 if (!extendedSearchUnknownBirthdateCheckBox.isSelected()) {
@@ -3203,6 +3434,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         } else {
             mainViewHelper.startSession(Session.ClientType.ENROLLED);
         }
+        carryQuickPrintsOver(quickSearchManager.getImagedFingerprintList());
         showCard("clinicIdCard");
     }
 
@@ -3213,6 +3445,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         } else {
             mainViewHelper.startSession(Session.ClientType.VISITOR);
         }
+        carryQuickPrintsOver(quickSearchManager.getImagedFingerprintList());
         showCard("clinicIdCard");
     }
 
@@ -3223,6 +3456,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         } else {
             mainViewHelper.startSession(Session.ClientType.NEW);
         }
+        carryQuickPrintsOver(quickSearchManager.getImagedFingerprintList());
         showCard("extendedSearchCard");
     }
 
@@ -3233,6 +3467,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         } else {
             mainViewHelper.startSession(Session.ClientType.TRANSFER_IN);
         }
+        carryQuickPrintsOver(quickSearchManager.getImagedFingerprintList());
         showCard("clinicIdCard");
     }
 
@@ -3244,6 +3479,20 @@ public class MainView extends FrameView implements FingerprintingComponent {
         } else {
             mainViewHelper.startSession(Session.ClientType.UNSPECIFIED);
         }
+    }
+
+    private void carryQuickPrintsOver(List<ImagedFingerprint> quickImagedFingerprintList) {
+        List<ImagedFingerprint> imagedFingerprintList = new ArrayList<ImagedFingerprint>();
+        ImagedFingerprint rightIndex = quickImagedFingerprintList.get(0);
+        if (rightIndex.getFingerprint().getTemplate() != null) {
+            imagedFingerprintList.add(rightIndex);
+        }
+        ImagedFingerprint leftIndex = quickImagedFingerprintList.get(1);
+        if (leftIndex.getFingerprint().getTemplate() != null) {
+            imagedFingerprintList.add(leftIndex);
+        }
+        mainViewHelper.getSession().getImagedFingerprintList().clear();
+        mainViewHelper.getSession().getImagedFingerprintList().addAll(imagedFingerprintList);
     }
 
     @Action
@@ -3790,6 +4039,21 @@ public class MainView extends FrameView implements FingerprintingComponent {
         if (!ensurePreUpdateConfirmation()) {
             return;
         }
+        if (!hasSelectedButton(clientTypeButtonGroup)) {
+            showWarningMessage("Please specify the type of client whose details you are reviewing.",
+                    enrolledRadioButton);
+            return;
+        } else {
+            if (enrolledRadioButton.isSelected()) {
+                mainViewHelper.getSession().changeSessionClientType(Session.ClientType.ENROLLED);
+            } else if (visitorRadioButton.isSelected()) {
+                mainViewHelper.getSession().changeSessionClientType(Session.ClientType.VISITOR);
+            } else if (newRadioButton.isSelected()) {
+                mainViewHelper.getSession().changeSessionClientType(Session.ClientType.NEW);
+            } else if (transferInRadioButton.isSelected()) {
+                mainViewHelper.getSession().changeSessionClientType(Session.ClientType.TRANSFER_IN);
+            }
+        }
         PersonWrapper mpiMatchPersonWrapper = mainViewHelper.getSession().getMpiMatchPersonWrapper();
         PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         boolean mpiMatched = mpiMatchPersonWrapper != null;
@@ -3841,7 +4105,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
                     && mainViewHelper.noLPIMatchWasFound()) {
                 searchProcessResult = mainViewHelper.findPerson(Server.MPI_LPI, mpiUpdatePersonWrapper, true);
                 if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
-                    showSearchResults(new SearchServerResponse(Server.MPI_LPI, (List<Person>) searchProcessResult.getData()), true);
+                    showSearchResults(new SearchServerResponse(Server.MPI_LPI, (List<Person>) searchProcessResult.getData().getPersonList()), true);
                 }
             } else if (mainViewHelper.noMPIMatchWasFound()
                     && !mainViewHelper.noLPIMatchWasFound()) {
@@ -4081,6 +4345,9 @@ public class MainView extends FrameView implements FingerprintingComponent {
             personWrapper.setLastRegularVisit(visit);
         } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR) {
             personWrapper.setLastOneOffVisit(visit);
+        } else {
+            Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, "Client type not specified before updating the"
+                    + "person index.");
         }
     }
 
@@ -4509,17 +4776,19 @@ public class MainView extends FrameView implements FingerprintingComponent {
     @Action
     public void processNotification() {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) notificationTree.getLastSelectedPathComponent();
-        if (node == null || !node.isLeaf()) {
-            showWarningMessage("Please select the notification to process.", processNotificationButton);
-        } else {
-            Notification notification = (Notification) node.getUserObject();
-            NotificationDialog nd = new NotificationDialog(this.getFrame(), true, notification);
-            nd.setLocationRelativeTo(this.getFrame());
-            nd.setVisible(true);
-            if (notification.isFlaggedOff()) {
-                removeNotificationFromTree(notification);
-                statusMessageLabel.setText("1 notification processed. You now have " + totalNotifications()
-                        + " notification(s) to process.");
+        if (!node.isRoot()) {
+            if (node == null || !node.isLeaf()) {
+                showWarningMessage("Please select the notification to process.", processNotificationButton);
+            } else {
+                Notification notification = (Notification) node.getUserObject();
+                NotificationDialog nd = new NotificationDialog(this.getFrame(), true, notification);
+                nd.setLocationRelativeTo(this.getFrame());
+                nd.setVisible(true);
+                if (notification.isFlaggedOff()) {
+                    removeNotificationFromTree(notification);
+                    statusMessageLabel.setText("1 notification processed. You now have " + totalNotifications()
+                            + " notification(s) to process.");
+                }
             }
         }
     }
@@ -4592,7 +4861,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
         @Override
         protected Object doInBackground() {
             //display search "on" status in own thread
-            Runnable searchMessageDisplayer = new Runnable() {
+            Runnable searchMessagePlayer = new Runnable() {
 
                 String searchMessage = "Searching. Please wait";
                 String dots = "";
@@ -4619,57 +4888,40 @@ public class MainView extends FrameView implements FingerprintingComponent {
                     }
                 }
             };
-            new Thread(searchMessageDisplayer).start();
+            new Thread(searchMessagePlayer).start();
             searchStatus.setOn(true);
+            toggleSessionStarterButtons();
             startUnspecifiedClientSession();
             PersonWrapper quickSearchPersonWrapper = mainViewHelper.getSession().getSearchPersonWrapper();
             quickSearchPersonWrapper.setAliveStatus(Person.AliveStatus.yes);
-            List<ImagedFingerprint> imagedFingerprintList = mainViewHelper.getSession().getImagedFingerprintList();
-            Fingerprint fingerPrint = new Fingerprint();
-            switch (imagedFingerprintList.size()) {
-                case 0:
-                    fingerPrint.setFingerprintType(Fingerprint.Type.rightIndexFinger);
-                    break;
-                case 1:
-                    fingerPrint.setFingerprintType(Fingerprint.Type.leftIndexFinger);
-                    break;
-                case 2:
-                    fingerPrint.setFingerprintType(Fingerprint.Type.rightMiddleFinger);
-                    break;
-                case 3:
-                    fingerPrint.setFingerprintType(Fingerprint.Type.leftMiddleFinger);
-                    break;
-                case 4:
-                    fingerPrint.setFingerprintType(Fingerprint.Type.rightRingFinger);
-                    break;
-                case 5:
-                    fingerPrint.setFingerprintType(Fingerprint.Type.leftRingFinger);
-                    break;
+
+            ImagedFingerprint ifp = null;
+            ImagedFingerprint rightIndex = quickSearchManager.getRightIndex();
+            ImagedFingerprint leftIndex = quickSearchManager.getLeftIndex();
+            byte[] rightIndexTemplate = rightIndex.getFingerprint().getTemplate();
+            byte[] leftIndexTemplate = leftIndex.getFingerprint().getTemplate();
+            if (rightIndexTemplate == null && leftIndexTemplate == null) {
+                ifp = rightIndex;
+            } else {
+                if (rightIndexTemplate == null && leftIndexTemplate != null) {
+                    ifp = rightIndex;
+                } else if (rightIndexTemplate != null && leftIndexTemplate == null) {
+                    ifp = leftIndex;
+                } else {
+                    showWarningMessage("No more than two fingerprints are allowed on the quick search"
+                            + " page. Please clear or reset to retake.", quickSearchFingerprintImagePanel);
+                    return new SearchProcessResult(SearchProcessResult.Type.MAX, null);
+                }
             }
-            fingerPrint.setTechnologyType(Fingerprint.TechnologyType.griauleTemplate);
-
-
-
             try {
-                fingerPrint.setTemplate(readerManager.getTemplate().getData());
+                ifp.getFingerprint().setTemplate(readerManager.getTemplate().getData());
+                ifp.setImage(quickSearchFingerprintImagePanel.getImage());
             } catch (Exception ex) {
-                return new SearchProcessResult(SearchProcessResult.Type.BAD_FINGERPRINT, null);
+                return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
             }
-            ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, quickSearchFingerprintImagePanel.getImage(), false);
 
-
-//            if (imagedFingerprintList.contains(imagedFingerprint)) {
-//                if (showConfirmMessage("A print has already been taken from the finger you want to"
-//                        + " add. Would you like to overwite it?")) {
-//                    imagedFingerprintList.remove(imagedFingerprintList.indexOf(imagedFingerprint));
-//                    mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
-//                } else {
-//                    return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
-//                }
-//            } else {
-            mainViewHelper.getSession().getImagedFingerprintList().add(imagedFingerprint);
-            mainViewHelper.getSession().setActiveImagedFingerprint(imagedFingerprint);
-//            }
+            mainViewHelper.getSession().getImagedFingerprintList().add(ifp);
+            mainViewHelper.getSession().setActiveImagedFingerprint(ifp);
             quickSearchPersonWrapper.addFingerprint(mainViewHelper.getSession().getActiveImagedFingerprint());
             return mainViewHelper.findPerson(Server.MPI_LPI, quickSearchPersonWrapper);
         }
@@ -4677,19 +4929,126 @@ public class MainView extends FrameView implements FingerprintingComponent {
         @Override
         protected void succeeded(Object result) {
             searchStatus.setOn(false);
+            toggleSessionStarterButtons();
             SearchProcessResult searchProcessResult = (SearchProcessResult) result;
             if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
                 showQuickSearchStatus("Candidates found.");
                 showSearchResults((SearchServerResponse) searchProcessResult.getData());
-            } else if (searchProcessResult.getType() == SearchProcessResult.Type.BAD_FINGERPRINT) {
-                showQuickSearchStatus("Bad fingerprint. Please retake");
-                //showWarningMessage("Fingerprint was not taken correctly. Please ask the client to place a finger on the reader.", quickSearchFingerprintImagePanel);
+            } else if (searchProcessResult.getType() == SearchProcessResult.Type.MAX) {
+                showQuickSearchStatus("Meximum quick search fingerprints taken.");
             } else if (searchProcessResult.getType() == SearchProcessResult.Type.ABORT) {
-                showQuickSearchStatus("Existing fingerprint.");
+                showQuickSearchStatus("Bad fingerprint. Please retake.");
             } else if (searchProcessResult.getType() == SearchProcessResult.Type.EXIT
                     || searchProcessResult.getType() == SearchProcessResult.Type.NEXT_FINGERPRINT) {
                 showQuickSearchStatus("No candidates found.");
-                //showWarningMessage("Your quick search returned no candidates.", quickSearchFingerprintImagePanel);
+            } else if (searchProcessResult.getType() == SearchProcessResult.Type.UNREACHABLE_SERVER) {
+                showQuickSearchStatus("Master and Local Person Indices could not be contacted.");
+            }
+            quickSearchManager.toggleQuickSearchButtons();
+        }
+    }
+
+    private void toggleSessionStarterButtons() {
+        boolean enabled = !searchStatus.isOn();
+        enrolledButton.setEnabled(enabled);
+        visitorButton.setEnabled(enabled);
+        newButton.setEnabled(enabled);
+        transferInButton.setEnabled(enabled);
+    }
+
+    @Action
+    public void clearRightIndex() {
+        quickSearchManager.clearRightIndex();
+        clearFingerprintImagePanel();
+    }
+
+    @Action
+    public void clearLeftIndex() {
+        quickSearchManager.clearLeftIndex();
+        clearFingerprintImagePanel();
+    }
+
+    @Action
+    public void resertQuickSearch() {
+        quickSearchManager.reset();
+        clearFingerprintImagePanel();
+    }
+
+    private void clearFingerprintImagePanel() {
+        quickSearchFingerprintImagePanel.setImage(mainViewHelper.getMissingFingerprint().getImage());
+    }
+
+    private class QuickSearchManager {
+
+        private final List<ImagedFingerprint> imagedFingerprintList;
+
+        private QuickSearchManager() {
+            imagedFingerprintList = new ArrayList<ImagedFingerprint>();
+
+            Fingerprint fp1 = new Fingerprint();
+            fp1.setFingerprintType(Fingerprint.Type.rightIndexFinger);
+            fp1.setTechnologyType(Fingerprint.TechnologyType.griauleTemplate);
+            fp1.setTemplate(null);
+            ImagedFingerprint ifp1 = new ImagedFingerprint(fp1, mainViewHelper.getMissingFingerprint().getImage());
+            imagedFingerprintList.add(ifp1);
+
+            Fingerprint fp2 = new Fingerprint();
+            fp2.setFingerprintType(Fingerprint.Type.leftIndexFinger);
+            fp2.setTechnologyType(Fingerprint.TechnologyType.griauleTemplate);
+            fp2.setTemplate(null);
+            ImagedFingerprint ifp2 = new ImagedFingerprint(fp2, mainViewHelper.getMissingFingerprint().getImage());
+            imagedFingerprintList.add(ifp2);
+        }
+
+        private List<ImagedFingerprint> getImagedFingerprintList() {
+            return imagedFingerprintList;
+        }
+
+        private ImagedFingerprint getRightIndex() {
+            return imagedFingerprintList.get(0);
+        }
+
+        private ImagedFingerprint getLeftIndex() {
+            return imagedFingerprintList.get(1);
+        }
+
+        private void clearRightIndex() {
+            ImagedFingerprint ifp = imagedFingerprintList.get(0);
+            ifp.getFingerprint().setTemplate(null);
+            ifp.setSent(false);
+            ifp.setImage(mainViewHelper.getMissingFingerprint().getImage());
+            toggleQuickSearchButtons();
+        }
+
+        private void clearLeftIndex() {
+            ImagedFingerprint ifp = imagedFingerprintList.get(1);
+            ifp.getFingerprint().setTemplate(null);
+            ifp.setSent(false);
+            ifp.setImage(mainViewHelper.getMissingFingerprint().getImage());
+            toggleQuickSearchButtons();
+        }
+
+        private void reset() {
+            clearRightIndex();
+            clearLeftIndex();
+        }
+
+        private void toggleQuickSearchButtons() {
+            if (imagedFingerprintList.get(0).getFingerprint().getTemplate() != null) {
+                clearRightIndexButton.setEnabled(true);
+            } else {
+                clearRightIndexButton.setEnabled(false);
+            }
+            if (imagedFingerprintList.get(1).getFingerprint().getTemplate() != null) {
+                clearLeftIndexButton.setEnabled(true);
+            } else {
+                clearLeftIndexButton.setEnabled(false);
+            }
+            if (imagedFingerprintList.get(0).getFingerprint().getTemplate() != null
+                    || imagedFingerprintList.get(1).getFingerprint().getTemplate() != null) {
+                resetQuickSearchButton.setEnabled(true);
+            } else {
+                resetQuickSearchButton.setEnabled(false);
             }
         }
     }
@@ -4740,8 +5099,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JLabel clanLabel;
     private javax.swing.JRadioButton clanRejectRadioButton;
     private javax.swing.JTextField clanTextField;
+    private javax.swing.JButton clearLeftIndexButton;
+    private javax.swing.JButton clearRightIndexButton;
     private javax.swing.JPanel clientIdPanel;
     private javax.swing.JCheckBox clientRefusesCheckBox;
+    private javax.swing.ButtonGroup clientTypeButtonGroup;
+    private javax.swing.JLabel clientTypeLabel;
     private javax.swing.JRadioButton clinicIdAcceptRadioButton;
     private javax.swing.ButtonGroup clinicIdButtonGroup;
     private javax.swing.JPanel clinicIdCard;
@@ -4767,6 +5130,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JTextField compoundHeadsMiddleNameTextField;
     private javax.swing.JMenuItem departmentsMenuItem;
     private javax.swing.JButton enrolledButton;
+    private javax.swing.JRadioButton enrolledRadioButton;
     private com.toedter.calendar.JDateChooser extendedSearchBirthdateChooser;
     private javax.swing.JLabel extendedSearchBirthdateLabel;
     private javax.swing.JButton extendedSearchButton;
@@ -4837,6 +5201,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JRadioButton lastNameRejectRadioButton;
     private javax.swing.JTextField lastNameTextField;
     private javax.swing.JPanel leftPanel;
+    private javax.swing.JLabel loggedInLabel;
     private javax.swing.JButton lpiConfirmButton;
     private javax.swing.JButton lpiNotFoundButton;
     private javax.swing.JPanel lpiResultsCard;
@@ -4884,6 +5249,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JTable mpiResultsTable;
     private java.util.List<ke.go.moh.oec.Person> mpiSearchResultList;
     private javax.swing.JButton newButton;
+    private javax.swing.JRadioButton newRadioButton;
     private javax.swing.JPanel notificationListPanel;
     private javax.swing.JScrollPane notificationScrollPane;
     private javax.swing.JTree notificationTree;
@@ -4900,6 +5266,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JPanel quickSearchPanel;
     private javax.swing.JTextField quickSearchQualityTextField;
     private javax.swing.JLabel readerMessageLabel;
+    private javax.swing.JButton resetQuickSearchButton;
     private javax.swing.JButton review2NextButton;
     private javax.swing.JPanel reviewCard1;
     private javax.swing.JButton reviewCard1NextButton;
@@ -4919,6 +5286,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JButton takeButton;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JButton transferInButton;
+    private javax.swing.JRadioButton transferInRadioButton;
     private javax.swing.JCheckBox unknownBirthdateCheckBox;
     private javax.swing.JMenu usersMenu;
     private javax.swing.JButton viewHouseholdButton;
@@ -4928,6 +5296,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private javax.swing.JRadioButton villageRejectRadioButton;
     private javax.swing.JTextField villageTextField;
     private javax.swing.JButton visitorButton;
+    private javax.swing.JRadioButton visitorRadioButton;
     private javax.swing.JPanel wizardPanel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
