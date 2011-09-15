@@ -253,8 +253,8 @@ public class PersonList {
                 }
             }
         }
-        if (guidMatch == null) {
-            int personMatchCount = personList.size();
+        int personMatchCount = personList.size();
+        if (guidMatch == null && personMatchCount > 0) { // Skip if matched already, or if MPI is empty
             int threadCount = Mpi.getMaxThreadCount();
             if (threadCount > personMatchCount) {
                 threadCount = personMatchCount;
