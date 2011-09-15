@@ -139,4 +139,16 @@ public class OECReception {
         }
         return clinicId;
     }
+
+    public static String extractFacilityCode(String clinicId) {
+        String facilityCode = "";
+        int m = clinicId.split("-").length;
+        if (m == 2) {
+            String[] partsOfWhole = clinicId.split("-");
+            if (partsOfWhole[0].length() == 5) {
+                facilityCode = partsOfWhole[0];
+            }
+        }
+        return facilityCode;
+    }
 }

@@ -326,7 +326,7 @@ public class Updater {
             }
         }
         if (event.equalsIgnoreCase("DTH")) {
-            p.setAliveStatus(Person.AliveStatus.no);
+            //p.setAliveStatus(Person.AliveStatus.no);
             p.setDeathdate(eventDate);
         } else if (event.equalsIgnoreCase("EXT")) {
             p.setLastMoveDate(eventDate);

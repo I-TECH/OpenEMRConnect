@@ -34,7 +34,7 @@ public class SearchProcessResult {
 
         LIST,
         NEXT_FINGERPRINT,
-        BAD_FINGERPRINT,
+        MAX,
         EXISTING_FINGERPRINT,
         EXIT,
         UNREACHABLE_SERVER,
