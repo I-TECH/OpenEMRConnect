@@ -64,7 +64,21 @@ public class DatabaseConnector {
         connection = DriverManager.getConnection(url, username, password);
     }
 
-    protected void loadConnectionProperties(String propertiesFile) throws InaccessibleConfigurationFileException {
+    protected void connectToSource() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
+        connectToDatabase("source_database.properties");
+    }
+
+    protected void connectToShadow() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
+        connectToDatabase("shadow_database.properties");
+    }
+
+    private void connectToDatabase(String databasePropertiesFile) throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
+        loadConnectionProperties(databasePropertiesFile);
+        loadDriver();
+        connection = DriverManager.getConnection(url, username, password);
+    }
+
+    private void loadConnectionProperties(String propertiesFile) throws InaccessibleConfigurationFileException {
         try {
             Properties properties = new Properties();
             properties.load(new FileInputStream(propertiesFile));
@@ -85,25 +99,13 @@ public class DatabaseConnector {
 
     }
 
-    protected void loadDriver() throws DriverNotFoundException {
+    private void loadDriver() throws DriverNotFoundException {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DatabaseConnector.class.getName()).log(Level.SEVERE, null, ex);
             throw new DriverNotFoundException(ex);
         }
-    }
-
-    protected void connectToSource() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
-        loadConnectionProperties("source_database.properties");
-        loadDriver();
-        connection = DriverManager.getConnection(url, username, password);
-    }
-
-    protected void connectToShadow() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
-        loadConnectionProperties("shadow_database.properties");
-        loadDriver();
-        connection = DriverManager.getConnection(url, username, password);
     }
 
     protected void disconnect() throws SQLException {

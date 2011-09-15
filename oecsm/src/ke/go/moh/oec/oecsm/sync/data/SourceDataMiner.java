@@ -46,6 +46,7 @@ public class SourceDataMiner extends DatabaseConnector {
     public void start() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
         connectToSource();
         statement = connection.createStatement();
+        statement.setFetchSize(Integer.MIN_VALUE);
     }
 
     /**

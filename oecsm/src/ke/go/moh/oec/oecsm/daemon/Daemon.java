@@ -49,7 +49,6 @@ public class Daemon extends Thread {
     private final Method method;
     private int interval;
     private String timeOfDay;
-    private boolean working = false;
     private DaemonFrame daemonFrame;
     private static Properties properties = null;
 
@@ -121,12 +120,13 @@ public class Daemon extends Thread {
      */
 
     private void work() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
-        if (!working) {
-            working = true;
             new SchemaSynchronizer().synchronize();
             new DataSynchronizer().synchronize();
-            working = false;
-        }
+            try {
+                Thread.sleep(15000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }
 
     public static String getProperty(String propertyName) {
