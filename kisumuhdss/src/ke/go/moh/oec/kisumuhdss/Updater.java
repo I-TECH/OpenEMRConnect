@@ -353,7 +353,7 @@ public class Updater {
         //
         // Set marital status, if present.
         //
-        if (marriageStatus != null) {
+        if (marriageStatus != null && !marriageStatus.isEmpty()) {
             Person.MaritalStatus ms = null;
             if (marriageStatus.equals("Married")) {
                 if (marriageType != null) {
@@ -463,11 +463,11 @@ public class Updater {
      *
      * @param hex the hexadecimal string to unpack
      * @return the resulting binary byte array.
-     * Returns null if the hex string was null.
+     * Returns null if the hex string was null or empty.
      */
     private byte[] parseHex(String hex) {
         byte[] bytes = null;
-        if (hex != null) {
+        if (hex != null && !hex.isEmpty()) {
             bytes = new byte[hex.length() / 2];
             for (int i = 0; i < hex.length(); i += 2) {
                 bytes[i / 2] = (byte) Integer.parseInt(hex.substring(i, i + 2), 16);
@@ -478,40 +478,48 @@ public class Updater {
 
     private Person.Sex parseSex(String sexString) {
         Person.Sex sex = null;
-        try {
-            sex = Person.Sex.valueOf(sexString);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        if (sexString != null && !sexString.isEmpty()) {
+            try {
+                sex = Person.Sex.valueOf(sexString);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return sex;
     }
 
     private Person.MaritalStatus parseMaritalStatus(String maritalStatusString) {
         Person.MaritalStatus maritalStatus = null;
-        try {
-            maritalStatus = Person.MaritalStatus.valueOf(maritalStatusString);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        if (maritalStatusString != null && !maritalStatusString.isEmpty()) {
+            try {
+                maritalStatus = Person.MaritalStatus.valueOf(maritalStatusString);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return maritalStatus;
     }
 
     private Fingerprint.TechnologyType parseTechnologyType(String technologyTypeString) {
         Fingerprint.TechnologyType technologyType = null;
-        try {
-            technologyType = Fingerprint.TechnologyType.valueOf(technologyTypeString);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        if (technologyTypeString != null && !technologyTypeString.isEmpty()) {
+            try {
+                technologyType = Fingerprint.TechnologyType.valueOf(technologyTypeString);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return technologyType;
     }
 
     private Fingerprint.Type parseFingerprintType(String fingerprintTypeString) {
         Fingerprint.Type type = null;
-        try {
-            type = Fingerprint.Type.valueOf(fingerprintTypeString);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        if (fingerprintTypeString != null && !fingerprintTypeString.isEmpty()) {
+            try {
+                type = Fingerprint.Type.valueOf(fingerprintTypeString);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return type;
     }
