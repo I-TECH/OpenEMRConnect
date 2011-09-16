@@ -309,7 +309,7 @@ public class PersonList {
             return returnData;
         }
         //Check to see if this person'sql hdssid, if available, already exists in the mpi. Log error if it does.
-        boolean exists = false;
+        String existingId = null;
         if (p.getPersonIdentifierList() != null
                 && !p.getPersonIdentifierList().isEmpty()) {
             for (PersonIdentifier personIdentifier : p.getPersonIdentifierList()) {
@@ -326,15 +326,16 @@ public class PersonList {
                         if (personResponse != null
                                 && personResponse.getPersonList() != null
                                 && !personResponse.getPersonList().isEmpty()) {
-                            exists = true;
+                            existingId = personIdentifier.getIdentifier();
                         }
                         break;
                     }
                 }
             }
         }
-        if (exists) {
-            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "CREATE PERSON called with existing kisumuhdssid person identifier.");
+        if (existingId != null) {
+            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE,
+                    "CREATE PERSON called with existing kisumuhdssid person identifier {0}.", existingId);
             return returnData;
         }
         Connection conn = Sql.connect();
@@ -707,7 +708,7 @@ public class PersonList {
                 oldPerson.getPersonIdentifierList()));
         return mergedPerson;
     }
-    
+
     /**
      * Copies over the contents of both newPersonIdentifierList and
      * oldPersonIdentifierList into the mergedPersonIdentifierList

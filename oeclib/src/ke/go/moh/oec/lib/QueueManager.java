@@ -186,6 +186,7 @@ class QueueManager implements Runnable {
                     + quote(m.getDestinationAddress()) + ", "
                     + "?, "
                     + m.getHopCount() + ")";
+            Logger.getLogger(QueueManager.class.getName()).log(Level.FINER, querySQL);
             try {
                 PreparedStatement stmt = dataBaseConnection.prepareStatement(querySQL);
                 stmt.setObject(1, m.getCompressedXml());
@@ -359,6 +360,7 @@ class QueueManager implements Runnable {
         Statement stmt = null;
         String deleteQuerySQL = "DELETE FROM " + TABLE_NAME
                 + " WHERE MESSAGE_ID = " + msgID;
+        Logger.getLogger(QueueManager.class.getName()).log(Level.FINER, deleteQuerySQL);
         //try to make the deletion
         try {
             stmt = dataBaseConnection.createStatement();

@@ -637,11 +637,13 @@ public class Mediator implements IService {
                     boolean responseDelivered = pendingQueue.findRequest(m);
                     if (responseDelivered) { // Was the message a response to a request that we just delivered?
                         if (Mediator.testLoggerLevel(Level.FINE)) {
-                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Received message {0} delivered as response to API.", summarizeMessage(m));
+                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                    "Received message delivered as response to API: {0}", summarizeMessage(m));
                         }
                     } else {
                         if (Mediator.testLoggerLevel(Level.FINE)) {
-                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Received message {0} delivered unsolicited to API.", summarizeMessage(m));
+                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                    "Received message delivered unsolicited to API: {0}", summarizeMessage(m));
                         }
                         processUnsolicitedMessage(m);
                     }
@@ -653,7 +655,7 @@ public class Mediator implements IService {
                      */
                     if (Mediator.testLoggerLevel(Level.FINE)) {
                         Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                                "Received message {0} destination matches our own name, but router returns IP Address:port of ''{1}''",
+                                "Received message destination matches our own name, but router returns IP Address:port of ''{1}'': {0}",
                                 new Object[]{summarizeMessage(m), ipAddressPort});
                     }
                 }
@@ -677,8 +679,8 @@ public class Mediator implements IService {
                      */
                     if (Mediator.testLoggerLevel(Level.FINE)) {
                         Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                "Relaying received message {0} to {1} at {2}",
-                                new Object[]{summarizeMessage(m), destinationAddress, ipAddressPort});
+                                "Relaying received message to {0} at {1}: {2}",
+                                new Object[]{destinationAddress, ipAddressPort, summarizeMessage(m)});
                     }
                     m.setIpAddressPort(ipAddressPort);
                     int hopCount = m.getHopCount();
@@ -780,6 +782,7 @@ public class Mediator implements IService {
      * Summarizes the message in question. Returns the message type if known,
      * otherwise returns the root tag of the XML message. Also returns information
      * such as from and to addresses, if known, and hop count and queuing status.
+     * If the logging level is FINER or greater, also returns the message itself.
      * <p>
      * Note that this routine uncompresses the message if necessary. It should
      * only be called if the caller knows that the result will be used.
@@ -821,6 +824,14 @@ public class Mediator implements IService {
         }
         summary += " toBeQueued " + m.isToBeQueued()
                 + " hopCount " + m.getHopCount();
-        return "[" + summary + "]";
+        if (Mediator.testLoggerLevel(Level.FINER)) {
+            if (m.getXml() == null) {
+                Compresser.decompress(m);
+            }
+            if (m.getXml() != null) {
+                summary += "\n" + m.getXml(); // Include the whole message.
+            }
+        }
+        return summary;
     }
 }
