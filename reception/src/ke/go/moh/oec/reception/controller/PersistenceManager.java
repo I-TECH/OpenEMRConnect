@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.reception.data.Department;
 import ke.go.moh.oec.reception.data.User;
 import ke.go.moh.oec.reception.controller.exceptions.ExistingUserException;
@@ -257,7 +258,7 @@ public final class PersistenceManager {
 
     private void connect() throws SQLException {
         try {
-            connection = DriverManager.getConnection(protocol + ":" + database + ";create=true;"
+            connection = DriverManager.getConnection(protocol + ":" + Mediator.getRuntimeDirectory() + database + ";create=true;"
                     + "user=" + username + ";password=" + password + "");
         } catch (SQLException ex) {
             Logger.getLogger(PersistenceManager.class.getName()).log(Level.SEVERE, null, ex);
