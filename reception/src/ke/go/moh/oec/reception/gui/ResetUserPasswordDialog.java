@@ -24,9 +24,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 /*
- * ManagePermissionsDialog.java
+ * ResetUserPasswordDialog.java
  *
- * Created on Jun 30, 2011, 4:54:06 PM
+ * Created on Sep 16, 2011, 12:34:35 PM
  */
 package ke.go.moh.oec.reception.gui;
 
@@ -35,9 +35,9 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.reception.controller.OECReception;
-import ke.go.moh.oec.reception.data.User;
 import ke.go.moh.oec.reception.controller.PersistenceManager;
 import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
+import ke.go.moh.oec.reception.data.User;
 import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import org.jdesktop.application.Action;
 
@@ -45,17 +45,15 @@ import org.jdesktop.application.Action;
  *
  * @author Gitahi Ng'ang'a
  */
-public class ManagePermissionsDialog extends javax.swing.JDialog {
+public class ResetUserPasswordDialog extends javax.swing.JDialog {
 
     private final PersistenceManager persistenceManager;
 
-    /** Creates new form ManagePermissionsDialog */
-    public ManagePermissionsDialog(java.awt.Frame parent, boolean modal) throws PersistenceManagerException {
+    public ResetUserPasswordDialog(java.awt.Frame parent, boolean modal) throws PersistenceManagerException {
         super(parent, modal);
         persistenceManager = PersistenceManager.getInstance();
         initComponents();
-        this.setIconImage(OECReception.applicationIcon());
-        this.getRootPane().setDefaultButton(okButton);
+        this.getRootPane().setDefaultButton(resetButton);
         addEscapeListener();
     }
 
@@ -71,19 +69,19 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
         permissionsPanel = new javax.swing.JPanel();
         usernameLabel = new javax.swing.JLabel();
         userComboBox = new javax.swing.JComboBox();
-        adminCheckBox = new javax.swing.JCheckBox();
-        okButton = new javax.swing.JButton();
+        passwordLabel = new javax.swing.JLabel();
+        passwordField = new javax.swing.JPasswordField();
+        resetButton = new javax.swing.JButton();
         closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getResourceMap(ManagePermissionsDialog.class);
-        setTitle(resourceMap.getString("Form.title")); // NOI18N
         setName("Form"); // NOI18N
         setResizable(false);
 
         permissionsPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         permissionsPanel.setName("permissionsPanel"); // NOI18N
 
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getResourceMap(ResetUserPasswordDialog.class);
         usernameLabel.setText(resourceMap.getString("usernameLabel.text")); // NOI18N
         usernameLabel.setName("usernameLabel"); // NOI18N
 
@@ -98,8 +96,11 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
             }
         });
 
-        adminCheckBox.setText(resourceMap.getString("adminCheckBox.text")); // NOI18N
-        adminCheckBox.setName("adminCheckBox"); // NOI18N
+        passwordLabel.setText(resourceMap.getString("passwordLabel.text")); // NOI18N
+        passwordLabel.setName("passwordLabel"); // NOI18N
+
+        passwordField.setText(resourceMap.getString("passwordField.text")); // NOI18N
+        passwordField.setName("passwordField"); // NOI18N
 
         javax.swing.GroupLayout permissionsPanelLayout = new javax.swing.GroupLayout(permissionsPanel);
         permissionsPanel.setLayout(permissionsPanelLayout);
@@ -107,11 +108,15 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
             permissionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(permissionsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(usernameLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(permissionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(adminCheckBox)
-                    .addComponent(userComboBox, 0, 277, Short.MAX_VALUE))
+                    .addGroup(permissionsPanelLayout.createSequentialGroup()
+                        .addComponent(usernameLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+                        .addComponent(userComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(permissionsPanelLayout.createSequentialGroup()
+                        .addComponent(passwordLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(passwordField, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         permissionsPanelLayout.setVerticalGroup(
@@ -122,14 +127,16 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
                     .addComponent(usernameLabel)
                     .addComponent(userComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(adminCheckBox)
+                .addGroup(permissionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(passwordLabel)
+                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(ManagePermissionsDialog.class, this);
-        okButton.setAction(actionMap.get("modify")); // NOI18N
-        okButton.setText(resourceMap.getString("okButton.text")); // NOI18N
-        okButton.setName("okButton"); // NOI18N
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(ResetUserPasswordDialog.class, this);
+        resetButton.setAction(actionMap.get("reset")); // NOI18N
+        resetButton.setText(resourceMap.getString("resetButton.text")); // NOI18N
+        resetButton.setName("resetButton"); // NOI18N
 
         closeButton.setAction(actionMap.get("close")); // NOI18N
         closeButton.setText(resourceMap.getString("closeButton.text")); // NOI18N
@@ -142,15 +149,15 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(permissionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(permissionsPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(okButton)
+                        .addComponent(resetButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(closeButton)))
                 .addContainerGap())
         );
 
-        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {closeButton, okButton});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {closeButton, resetButton});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -159,22 +166,20 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
                 .addComponent(permissionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(closeButton)
-                    .addComponent(okButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(closeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(resetButton))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
+
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {closeButton, resetButton});
 
         bindingGroup.bind();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void userComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userComboBoxActionPerformed
-        Object selectedItem = userComboBox.getSelectedItem();
-        if (selectedItem != null) {
-            adminCheckBox.setSelected(((User) selectedItem).isAdmin());
-        }
-    }//GEN-LAST:event_userComboBoxActionPerformed
+private void userComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_userComboBoxActionPerformed
+}//GEN-LAST:event_userComboBoxActionPerformed
 
     @Action
     public void close() {
@@ -182,25 +187,20 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
     }
 
     @Action
-    public void modify() {
+    public void reset() {
         Object selectedItem = userComboBox.getSelectedItem();
         if (selectedItem == null) {
-            showWarningMessage("Select the user you want to grant or revoke permissions from .", okButton);
+            showWarningMessage("Select the user whose password you want to reset.", resetButton);
             return;
         }
         User user = (User) selectedItem;
-        user.setAdmin(adminCheckBox.isSelected());
-        if (user.equals(OECReception.getUser())
-                && !user.isAdmin()) {
-            showWarningMessage("You are not allowed to revoke admin rights from yourself!", okButton);
-            return;
-        }
         try {
+            user.setPassword(passwordField.getPassword());
             persistenceManager.modifyUser(user);
-            showInformationMessage("Done!", okButton);
+            showInformationMessage("Done!", resetButton);
         } catch (PersistenceManagerException ex) {
             Logger.getLogger(ManagePermissionsDialog.class.getName()).log(Level.SEVERE, null, ex);
-            showErrorMessage(ex.getMessage(), okButton);
+            showErrorMessage(ex.getMessage(), resetButton);
         }
     }
 
@@ -221,10 +221,11 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
         toFocus.requestFocus();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox adminCheckBox;
     private javax.swing.JButton closeButton;
-    private javax.swing.JButton okButton;
+    private javax.swing.JPasswordField passwordField;
+    private javax.swing.JLabel passwordLabel;
     private javax.swing.JPanel permissionsPanel;
+    private javax.swing.JButton resetButton;
     private javax.swing.JComboBox userComboBox;
     private final java.util.List<User> userList = ke.go.moh.oec.reception.controller.PersistenceManager.getInstance().getUserList();
     private javax.swing.JLabel usernameLabel;

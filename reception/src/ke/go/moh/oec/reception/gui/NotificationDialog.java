@@ -40,6 +40,7 @@ import ke.go.moh.oec.reception.controller.PersonWrapper;
 import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
 import ke.go.moh.oec.reception.data.Department;
 import ke.go.moh.oec.reception.data.Notification;
+import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import ke.go.moh.oec.reception.gui.helper.NotificationDialogHelper;
 import org.jdesktop.application.Action;
 
@@ -60,6 +61,12 @@ public class NotificationDialog extends javax.swing.JDialog {
         notificationDialogHelper = new NotificationDialogHelper(this);
         showNotification();
         this.setIconImage(OECReception.applicationIcon());
+        this.getRootPane().setDefaultButton(doneButton);
+        addEscapeListener();
+    }
+
+    private void addEscapeListener() {
+        DialogEscaper.addEscapeListener(this);
     }
 
     private void showNotification() {

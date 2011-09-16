@@ -58,6 +58,7 @@ public class Session {
                 return "Unspecified";
             }
         }
+        
     }
     private ClientType clientType;
     private final String reference;

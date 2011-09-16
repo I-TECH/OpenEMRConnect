@@ -39,6 +39,7 @@ import ke.go.moh.oec.reception.controller.exceptions.TableCreationException;
 import ke.go.moh.oec.reception.data.User;
 import ke.go.moh.oec.reception.controller.PersistenceManager;
 import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
+import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -61,6 +62,11 @@ public class LoginDialog extends javax.swing.JDialog {
         persistenceManager.createUserTable();
         persistenceManager.createDefaultUser();
         this.app = app;
+        addEscapeListener();
+    }
+
+    private void addEscapeListener() {
+        DialogEscaper.addEscapeListener(this);
     }
 
     /** This method is called from within the constructor to
@@ -173,33 +179,26 @@ public class LoginDialog extends javax.swing.JDialog {
 
     @Action
     public void login() {
+        if (usernameTextField.getText().isEmpty()) {
+            showWarningMessage("You must enter a username before proceeding!", usernameTextField);
+            return;
+        }
+        boolean authentic = false;
+        User user = new User(usernameTextField.getText(), passwordField.getPassword());
         try {
-            showWarningMessage("Check point 1 ", loginButton);
-            if (usernameTextField.getText().isEmpty()) {
-                showWarningMessage("Check point 2 ", loginButton);
-                showWarningMessage("You must enter a username before proceeding!", usernameTextField);
-                return;
-            }
-            showWarningMessage("Check point 3 ", loginButton);
-            boolean authentic = false;
-            User user = new User(usernameTextField.getText(), passwordField.getPassword());
-            try {
-                authentic = persistenceManager.authenticateUser(user);
-            } catch (PersistenceManagerException ex) {
-                Logger.getLogger(LoginDialog.class.getName()).log(Level.SEVERE, null, ex);
-                showErrorMessage(ex.getMessage(), loginButton);
-                return;
-            }
-            if (authentic) {
-                OECReception.setUser(user);
-                this.setVisible(false);
-                app.show(new MainView(app));
-                this.dispose();
-            } else {
-                showWarningMessage("Login failed! Unknown username or password.", loginButton);
-            }
-        } catch (Exception e) {
-            showWarningMessage("Check point Issues " + e.getMessage(), loginButton);
+            authentic = persistenceManager.authenticateUser(user);
+        } catch (PersistenceManagerException ex) {
+            Logger.getLogger(LoginDialog.class.getName()).log(Level.SEVERE, null, ex);
+            showErrorMessage(ex.getMessage(), loginButton);
+            return;
+        }
+        if (authentic) {
+            OECReception.setUser(user);
+            this.setVisible(false);
+            app.show(new MainView(app));
+            this.dispose();
+        } else {
+            showWarningMessage("Login failed! Unknown username or password.", loginButton);
         }
     }
 

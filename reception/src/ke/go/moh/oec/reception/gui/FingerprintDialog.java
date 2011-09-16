@@ -44,6 +44,7 @@ import ke.go.moh.oec.Fingerprint.Type;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
 import ke.go.moh.oec.reception.data.Session;
+import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import ke.go.moh.oec.reception.reader.FingerprintingComponent;
 import ke.go.moh.oec.reception.reader.ReaderManager;
 import org.jdesktop.application.Action;
@@ -95,7 +96,13 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         this.setIconImage(OECReception.applicationIcon());
         this.missingFingerprint = missingFingerprint;
         this.refusedFingerprint = refusedFingerprint;
+        this.getRootPane().setDefaultButton(okButton);
+        addEscapeListener();
         initReaderManager();
+    }
+
+    private void addEscapeListener() {
+        DialogEscaper.addEscapeListener(this);
     }
 
     private void initReaderManager() {
@@ -207,7 +214,7 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         qualityTextField.setEditable(false);
 
         notAvailableCheckBox.setAction(actionMap.get("addUnavailableFingerprint")); // NOI18N
-        notAvailableCheckBox.setText("Not available");
+        notAvailableCheckBox.setText("Unavailable");
 
         org.jdesktop.layout.GroupLayout fingerprintPanelLayout = new org.jdesktop.layout.GroupLayout(fingerprintPanel);
         fingerprintPanel.setLayout(fingerprintPanelLayout);
@@ -417,6 +424,7 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
                 imagedFingerprintList.remove(imagedFingerprintList.indexOf(imagedFingerprint));
                 session.getImagedFingerprintList().add(imagedFingerprint);
             } else {
+                notAvailableCheckBox.setSelected(false);
                 return;
             }
         } else {
@@ -444,6 +452,8 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         ImagedFingerprint dummy = new ImagedFingerprint(fingerprint);
         if (imagedFingerprintList.contains(dummy)) {
             showImage(imagedFingerprintList.get(imagedFingerprintList.indexOf(dummy)).getImage());
+        } else {
+            showImage(missingFingerprint.getImage());
         }
     }
 

@@ -25,6 +25,7 @@
 package ke.go.moh.oec.reception.gui;
 
 import ke.go.moh.oec.reception.controller.OECReception;
+import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import org.jdesktop.application.Action;
 
 public class AboutDialog extends javax.swing.JDialog {
@@ -34,6 +35,11 @@ public class AboutDialog extends javax.swing.JDialog {
         initComponents();
         getRootPane().setDefaultButton(closeButton);
         this.setIconImage(OECReception.applicationIcon());
+        addEscapeListener();
+    }
+
+    private void addEscapeListener() {
+        DialogEscaper.addEscapeListener(this);
     }
 
     @Action

@@ -77,8 +77,8 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="notificationScrollPane" alignment="1" pref="71" max="32767" attributes="0"/>
-                                  <Component id="processNotificationButton" alignment="1" pref="71" max="32767" attributes="0"/>
+                                  <Component id="notificationScrollPane" alignment="1" pref="197" max="32767" attributes="0"/>
+                                  <Component id="processNotificationButton" alignment="1" pref="197" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -102,6 +102,7 @@
                           <action class="ke.go.moh.oec.reception.gui.MainView" id="processNotification" methodName="processNotification"/>
                         </Property>
                         <Property name="text" type="java.lang.String" resourceKey="processNotificationButton.text"/>
+                        <Property name="enabled" type="boolean" value="false"/>
                         <Property name="name" type="java.lang.String" value="processNotificationButton" noResource="true"/>
                       </Properties>
                     </Component>
@@ -155,14 +156,14 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="1" pref="1" max="1" attributes="0"/>
-                                  <Component id="wizardPanel" pref="632" max="32767" attributes="0"/>
+                                  <Component id="wizardPanel" pref="506" max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="homeButton" linkSize="1" min="-2" pref="48" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="backButton" linkSize="1" min="-2" pref="51" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="loggedInLabel" pref="521" max="32767" attributes="0"/>
+                                  <Component id="loggedInLabel" pref="395" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -242,7 +243,7 @@
                               <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" attributes="0">
-                                      <Component id="quickSearchPanel" alignment="0" pref="610" max="32767" attributes="0"/>
+                                      <Component id="quickSearchPanel" alignment="0" max="32767" attributes="0"/>
                                       <Component id="homePanel" alignment="0" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -270,42 +271,35 @@
                           <Layout>
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Component id="readerMessageLabel" pref="687" max="32767" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                          </Group>
+                                          <Component id="readerStatusLabel" alignment="0" pref="464" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
-                                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                                  <Component id="quickSearchFingerprintImagePanel" max="32767" attributes="1"/>
-                                                  <Component id="quickSearchQualityTextField" alignment="1" min="-2" pref="79" max="-2" attributes="1"/>
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="quickSearchQualityTextField" min="-2" pref="79" max="-2" attributes="1"/>
+                                                  <Component id="quickSearchFingerprintImagePanel" alignment="1" min="-2" max="-2" attributes="1"/>
                                               </Group>
                                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Group type="102" attributes="0">
-                                                      <Group type="103" groupAlignment="0" attributes="0">
-                                                          <Group type="102" alignment="0" attributes="0">
-                                                              <Component id="resetQuickSearchButton" linkSize="5" pref="113" max="32767" attributes="1"/>
-                                                              <EmptySpace max="-2" attributes="0"/>
-                                                              <Component id="quickSearchButton" min="-2" max="-2" attributes="0"/>
-                                                          </Group>
-                                                          <Component id="clearLeftIndexButton" linkSize="5" min="-2" max="-2" attributes="1"/>
-                                                          <Group type="102" alignment="1" attributes="0">
-                                                              <Component id="clearRightIndexButton" linkSize="5" max="32767" attributes="1"/>
-                                                              <EmptySpace min="-2" pref="99" max="-2" attributes="0"/>
-                                                          </Group>
-                                                      </Group>
-                                                      <EmptySpace min="-2" pref="396" max="-2" attributes="0"/>
-                                                  </Group>
-                                                  <Group type="102" attributes="0">
-                                                      <Component id="quickSearchMessageLabel" pref="598" max="32767" attributes="1"/>
+                                                  <Component id="quickSearchMessageLabel" pref="375" max="32767" attributes="1"/>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Component id="resetQuickSearchButton" linkSize="5" pref="113" max="32767" attributes="1"/>
                                                       <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="quickSearchButton" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Group type="102" alignment="1" attributes="0">
+                                                      <Group type="103" groupAlignment="1" attributes="0">
+                                                          <Component id="clearLeftIndexButton" linkSize="5" alignment="0" pref="113" max="32767" attributes="1"/>
+                                                          <Component id="clearRightIndexButton" linkSize="5" alignment="1" max="32767" attributes="1"/>
+                                                      </Group>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="fingerToBeTakenLabel" pref="258" max="32767" attributes="0"/>
                                                   </Group>
                                               </Group>
                                           </Group>
                                       </Group>
+                                      <EmptySpace max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -313,25 +307,28 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="readerMessageLabel" min="-2" pref="20" max="-2" attributes="0"/>
+                                      <Component id="readerStatusLabel" min="-2" pref="20" max="-2" attributes="1"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Group type="102" alignment="0" attributes="1">
+                                      <Group type="103" groupAlignment="1" attributes="0">
+                                          <Group type="102" attributes="0">
                                               <Component id="clearRightIndexButton" linkSize="4" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="clearLeftIndexButton" linkSize="4" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="32767" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="fingerToBeTakenLabel" pref="23" max="32767" attributes="1"/>
+                                                  <Component id="clearLeftIndexButton" linkSize="4" min="-2" max="-2" attributes="1"/>
+                                              </Group>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="3" attributes="0">
                                                   <Component id="resetQuickSearchButton" linkSize="4" alignment="3" min="-2" pref="21" max="-2" attributes="0"/>
                                                   <Component id="quickSearchButton" alignment="3" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                           </Group>
-                                          <Component id="quickSearchFingerprintImagePanel" min="-2" max="-2" attributes="1"/>
+                                          <Component id="quickSearchFingerprintImagePanel" alignment="0" min="-2" max="-2" attributes="1"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="quickSearchQualityTextField" min="-2" max="-2" attributes="1"/>
                                           <Component id="quickSearchMessageLabel" pref="20" max="32767" attributes="1"/>
+                                          <Component id="quickSearchQualityTextField" min="-2" max="-2" attributes="1"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -339,10 +336,10 @@
                             </DimensionLayout>
                           </Layout>
                           <SubComponents>
-                            <Component class="javax.swing.JLabel" name="readerMessageLabel">
+                            <Component class="javax.swing.JLabel" name="readerStatusLabel">
                               <Properties>
-                                <Property name="text" type="java.lang.String" resourceKey="readerMessageLabel.text"/>
-                                <Property name="name" type="java.lang.String" value="readerMessageLabel" noResource="true"/>
+                                <Property name="text" type="java.lang.String" resourceKey="readerStatusLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="readerStatusLabel" noResource="true"/>
                               </Properties>
                             </Component>
                             <Container class="ke.go.moh.oec.reception.gui.custom.ImagePanel" name="quickSearchFingerprintImagePanel">
@@ -368,6 +365,13 @@
                                 </DimensionLayout>
                               </Layout>
                             </Container>
+                            <Component class="javax.swing.JTextField" name="quickSearchQualityTextField">
+                              <Properties>
+                                <Property name="editable" type="boolean" value="false"/>
+                                <Property name="text" type="java.lang.String" resourceKey="quickSearchQualityTextField.text"/>
+                                <Property name="name" type="java.lang.String" value="quickSearchQualityTextField" noResource="true"/>
+                              </Properties>
+                            </Component>
                             <Component class="javax.swing.JButton" name="clearRightIndexButton">
                               <Properties>
                                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -395,11 +399,10 @@
                                 <Property name="name" type="java.lang.String" value="resetQuickSearchButton" noResource="true"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JTextField" name="quickSearchQualityTextField">
+                            <Component class="javax.swing.JLabel" name="fingerToBeTakenLabel">
                               <Properties>
-                                <Property name="editable" type="boolean" value="false"/>
-                                <Property name="text" type="java.lang.String" resourceKey="quickSearchQualityTextField.text"/>
-                                <Property name="name" type="java.lang.String" value="quickSearchQualityTextField" noResource="true"/>
+                                <Property name="text" type="java.lang.String" resourceKey="fingerToBeTakenLabel.text"/>
+                                <Property name="name" type="java.lang.String" value="fingerToBeTakenLabel" noResource="true"/>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JLabel" name="quickSearchMessageLabel">
@@ -437,10 +440,10 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="newButton" alignment="0" pref="578" max="32767" attributes="0"/>
-                                          <Component id="visitorButton" alignment="0" pref="578" max="32767" attributes="0"/>
-                                          <Component id="enrolledButton" alignment="0" pref="578" max="32767" attributes="0"/>
-                                          <Component id="transferInButton" alignment="0" pref="578" max="32767" attributes="0"/>
+                                          <Component id="newButton" alignment="0" pref="452" max="32767" attributes="0"/>
+                                          <Component id="visitorButton" alignment="0" pref="452" max="32767" attributes="0"/>
+                                          <Component id="enrolledButton" alignment="0" pref="452" max="32767" attributes="0"/>
+                                          <Component id="transferInButton" alignment="0" pref="452" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -552,8 +555,8 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="clinicIdNoButton" alignment="0" pref="578" max="32767" attributes="0"/>
-                                          <Component id="clinicIdYesButton" alignment="0" pref="578" max="32767" attributes="0"/>
+                                          <Component id="clinicIdNoButton" alignment="0" pref="452" max="32767" attributes="0"/>
+                                          <Component id="clinicIdYesButton" alignment="0" pref="452" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -651,8 +654,8 @@
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="520" max="32767" attributes="0"/>
-                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="520" max="32767" attributes="0"/>
+                                                  <Component id="basicSearchClinicIdTextField" alignment="0" pref="394" max="32767" attributes="0"/>
+                                                  <Component id="basicSearchClinicNameTextField" alignment="0" pref="394" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="0" attributes="0">
                                                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                                           <Component id="basicSearchTakeButton" alignment="0" max="32767" attributes="1"/>
@@ -663,7 +666,7 @@
                                                   </Group>
                                               </Group>
                                           </Group>
-                                          <Component id="basicSearchButton" alignment="0" pref="578" max="32767" attributes="0"/>
+                                          <Component id="basicSearchButton" alignment="0" pref="452" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -841,8 +844,11 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="extendedSearchButton" alignment="0" pref="462" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="extendedSearchFingerprintLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="extendedSearchVillageLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="extendedSearchClinicNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="extendedSearchClinicIdLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="extendedSearchFirstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -853,43 +859,36 @@
                                                   <Component id="extendedSearchOtherNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="extendedSearchClanNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="extendedSearchLastNameTextField" alignment="1" pref="523" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="523" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchFirstNameTextField" alignment="1" pref="523" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchClinicNameTextField" alignment="1" pref="523" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchClinicIdTextField" alignment="0" pref="523" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchOtherNameTextField" alignment="0" pref="523" max="32767" attributes="0"/>
-                                                  <Component id="extendedSearchClanNameTextField" alignment="0" pref="523" max="32767" attributes="0"/>
+                                                  <Component id="extendedSearchLastNameTextField" alignment="1" pref="396" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchMiddleNameTextField" alignment="1" pref="396" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchFirstNameTextField" alignment="1" pref="396" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicNameTextField" alignment="1" pref="396" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchClinicIdTextField" alignment="0" pref="396" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchOtherNameTextField" alignment="0" pref="396" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="0" attributes="0">
                                                       <Component id="extendedSearchMaleRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="extendedSearchFemaleRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="extendedSearchBirthdateChooser" pref="452" max="32767" attributes="0"/>
+                                                      <Component id="extendedSearchBirthdateChooser" pref="325" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="extendedSearchUnknownBirthdateCheckBox" min="-2" max="-2" attributes="0"/>
                                                   </Group>
+                                                  <Component id="extendedSearchClanNameTextField" alignment="1" pref="396" max="32767" attributes="0"/>
+                                                  <Component id="extendedSearchVillageTextField" alignment="0" pref="396" max="32767" attributes="1"/>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                          <Component id="extendedSearchTakeButton" alignment="1" max="32767" attributes="1"/>
+                                                          <Component id="extendedSearchFingerprintImagePanel" alignment="1" max="32767" attributes="1"/>
+                                                      </Group>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="extendedSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
+                                                      <EmptySpace pref="226" max="32767" attributes="0"/>
+                                                  </Group>
                                               </Group>
-                                          </Group>
-                                          <Group type="102" alignment="1" attributes="0">
-                                              <Component id="extendedSearchVillageLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                                              <Component id="extendedSearchVillageTextField" pref="523" max="32767" attributes="1"/>
-                                          </Group>
-                                          <Component id="extendedSearchButton" alignment="0" pref="588" max="32767" attributes="0"/>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                                  <Component id="extendedSearchTakeButton" alignment="1" max="32767" attributes="1"/>
-                                                  <Component id="extendedSearchFingerprintImagePanel" alignment="1" max="32767" attributes="1"/>
-                                              </Group>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="extendedSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace pref="352" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1225,9 +1224,9 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="mpiResultsScrollPane" alignment="0" pref="578" max="32767" attributes="0"/>
-                                          <Component id="mpiNotFoundButton" alignment="0" pref="578" max="32767" attributes="0"/>
-                                          <Component id="mpiConfirmButton" alignment="0" pref="578" max="32767" attributes="0"/>
+                                          <Component id="mpiResultsScrollPane" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="mpiNotFoundButton" alignment="0" pref="452" max="32767" attributes="0"/>
+                                          <Component id="mpiConfirmButton" alignment="0" pref="452" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -1361,9 +1360,9 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="lpiResultsScrollPane" alignment="0" pref="578" max="32767" attributes="0"/>
-                                          <Component id="lpiNotFoundButton" alignment="0" pref="578" max="32767" attributes="0"/>
-                                          <Component id="lpiConfirmButton" alignment="0" pref="578" max="32767" attributes="0"/>
+                                          <Component id="lpiResultsScrollPane" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="lpiNotFoundButton" alignment="0" pref="452" max="32767" attributes="0"/>
+                                          <Component id="lpiConfirmButton" alignment="0" pref="452" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -1504,7 +1503,7 @@
                                               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altFirstNameTextField" pref="477" max="32767" attributes="0"/>
+                                                      <Component id="altFirstNameTextField" pref="351" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="firstNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -1515,24 +1514,24 @@
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="lastNameTextField" alignment="1" pref="517" max="32767" attributes="0"/>
+                                                  <Component id="lastNameTextField" alignment="1" pref="391" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altMiddleNameTextField" pref="477" max="32767" attributes="0"/>
+                                                      <Component id="altMiddleNameTextField" pref="351" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="middleNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="middleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="middleNameTextField" pref="517" max="32767" attributes="0"/>
+                                                  <Component id="middleNameTextField" pref="391" max="32767" attributes="0"/>
                                                   <Group type="102" attributes="0">
-                                                      <Component id="altLastNameTextField" pref="477" max="32767" attributes="0"/>
+                                                      <Component id="altLastNameTextField" pref="351" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="lastNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="lastNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altSexTextField" pref="477" max="32767" attributes="0"/>
+                                                      <Component id="altSexTextField" pref="351" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="sexAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -1547,18 +1546,18 @@
                                               </Group>
                                               <EmptySpace type="separate" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="clinicIdTextField" alignment="0" pref="518" max="32767" attributes="0"/>
+                                                  <Component id="clinicIdTextField" alignment="0" pref="392" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altClinicIdTextField" pref="478" max="32767" attributes="0"/>
+                                                      <Component id="altClinicIdTextField" pref="352" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="clinicIdAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="clinicIdRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="firstNameTextField" alignment="0" pref="518" max="32767" attributes="0"/>
+                                                  <Component id="firstNameTextField" alignment="0" pref="392" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
-                                          <Component id="reviewCard1NextButton" alignment="0" pref="586" max="32767" attributes="0"/>
+                                          <Component id="reviewCard1NextButton" alignment="0" pref="460" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Component id="birthDateLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -1568,30 +1567,30 @@
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altOtherNameTextField" pref="477" max="32767" attributes="0"/>
+                                                      <Component id="altOtherNameTextField" pref="351" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="otherNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="otherNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="otherNameTextField" alignment="1" pref="517" max="32767" attributes="0"/>
+                                                  <Component id="otherNameTextField" alignment="1" pref="391" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altBirthDateTextField" pref="477" max="32767" attributes="0"/>
+                                                      <Component id="altBirthDateTextField" pref="351" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="birthDateAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="birthDateRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altMaritalStatusTextField" pref="477" max="32767" attributes="0"/>
+                                                      <Component id="altMaritalStatusTextField" pref="351" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="maritalStatusAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="maritalStatusRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="maritalStatusComboBox" alignment="1" pref="517" max="32767" attributes="1"/>
+                                                  <Component id="maritalStatusComboBox" alignment="1" pref="391" max="32767" attributes="1"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="birthDateChooser" pref="446" max="32767" attributes="0"/>
+                                                      <Component id="birthDateChooser" pref="320" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="unknownBirthdateCheckBox" min="-2" max="-2" attributes="0"/>
                                                   </Group>
@@ -2171,7 +2170,7 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="review2NextButton" alignment="0" pref="586" max="32767" attributes="0"/>
+                                          <Component id="review2NextButton" alignment="0" pref="460" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Component id="mothersLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -2185,70 +2184,70 @@
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="villageTextField" alignment="1" pref="479" max="32767" attributes="0"/>
+                                                  <Component id="villageTextField" alignment="1" pref="353" max="32767" attributes="0"/>
                                                   <Group type="102" attributes="0">
-                                                      <Component id="altClanTextField" pref="439" max="32767" attributes="0"/>
+                                                      <Component id="altClanTextField" pref="313" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="clanAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="clanRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altFathersFirstNameTextField" pref="439" max="32767" attributes="0"/>
+                                                      <Component id="altFathersFirstNameTextField" pref="313" max="32767" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="fathersFirstNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="fathersFirstNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altMothersFirstNameTextField" pref="439" max="32767" attributes="0"/>
+                                                      <Component id="altMothersFirstNameTextField" pref="313" max="32767" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="mothersFirstNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="mothersFirstNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altFathersMiddleNameTextField" pref="439" max="32767" attributes="0"/>
+                                                      <Component id="altFathersMiddleNameTextField" pref="313" max="32767" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="fathersMiddleNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="fathersMiddleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="fathersLastNameTextField" alignment="1" pref="479" max="32767" attributes="2"/>
+                                                  <Component id="fathersLastNameTextField" alignment="1" pref="353" max="32767" attributes="2"/>
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altFathersLastNameTextField" pref="439" max="32767" attributes="0"/>
+                                                      <Component id="altFathersLastNameTextField" pref="313" max="32767" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="fathersLastNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="fathersLastNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="mothersFirstNameTextField" alignment="1" pref="479" max="32767" attributes="2"/>
-                                                  <Component id="mothersLastNameTextField" alignment="0" pref="479" max="32767" attributes="0"/>
+                                                  <Component id="mothersFirstNameTextField" alignment="1" pref="353" max="32767" attributes="2"/>
+                                                  <Component id="mothersLastNameTextField" alignment="0" pref="353" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altMothersLastNameTextField" pref="439" max="32767" attributes="0"/>
+                                                      <Component id="altMothersLastNameTextField" pref="313" max="32767" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="mothersLastNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="mothersLastNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altMothersMiddleNameTextField" pref="439" max="32767" attributes="0"/>
+                                                      <Component id="altMothersMiddleNameTextField" pref="313" max="32767" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="mothersMiddleNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="mothersMiddleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="mothersMiddleNameTextField" alignment="0" pref="479" max="32767" attributes="0"/>
+                                                  <Component id="mothersMiddleNameTextField" alignment="0" pref="353" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altVillageTextField" pref="439" max="32767" attributes="0"/>
+                                                      <Component id="altVillageTextField" pref="313" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="villageAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                                       <Component id="villageRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="fathersMiddleNameTextField" alignment="1" pref="479" max="32767" attributes="2"/>
-                                                  <Component id="fathersFirstNameTextField" alignment="1" pref="479" max="32767" attributes="2"/>
-                                                  <Component id="clanTextField" alignment="1" pref="479" max="32767" attributes="0"/>
+                                                  <Component id="fathersMiddleNameTextField" alignment="1" pref="353" max="32767" attributes="2"/>
+                                                  <Component id="fathersFirstNameTextField" alignment="1" pref="353" max="32767" attributes="2"/>
+                                                  <Component id="clanTextField" alignment="1" pref="353" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
                                       </Group>
@@ -2793,7 +2792,7 @@
                                               <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
                                                   <Group type="102" alignment="1" attributes="1">
-                                                      <Component id="altCompoundHeadsLastNameTextField" pref="376" max="32767" attributes="0"/>
+                                                      <Component id="altCompoundHeadsLastNameTextField" pref="250" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsLastNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -2806,23 +2805,23 @@
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="hdssDataConsentNoAnswerRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="compoundHeadsLastNameTextField" alignment="1" pref="416" max="32767" attributes="1"/>
+                                                  <Component id="compoundHeadsLastNameTextField" alignment="1" pref="290" max="32767" attributes="1"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altCompoundHeadsMiddleNameTextField" pref="376" max="32767" attributes="0"/>
+                                                      <Component id="altCompoundHeadsMiddleNameTextField" pref="250" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsMiddleNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsMiddleNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="compoundHeadsMiddleNameTextField" alignment="1" pref="416" max="32767" attributes="0"/>
+                                                  <Component id="compoundHeadsMiddleNameTextField" alignment="1" pref="290" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altCompoundHeadsFirstNameTextField" pref="376" max="32767" attributes="0"/>
+                                                      <Component id="altCompoundHeadsFirstNameTextField" pref="250" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsFirstNameAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="compoundHeadsFirstNameRejectRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
-                                                  <Component id="compoundHeadsFirstNameTextField" alignment="0" pref="416" max="32767" attributes="0"/>
+                                                  <Component id="compoundHeadsFirstNameTextField" alignment="0" pref="290" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="0" attributes="0">
                                                       <Component id="enrolledRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -2833,7 +2832,7 @@
                                                       <Component id="transferInRadioButton" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                                   <Group type="102" alignment="1" attributes="0">
-                                                      <Component id="altHdssDataConsentTextField" pref="376" max="32767" attributes="0"/>
+                                                      <Component id="altHdssDataConsentTextField" pref="250" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="hdssDataConsentAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -2849,8 +2848,8 @@
                                                   </Group>
                                               </Group>
                                           </Group>
-                                          <Component id="viewHouseholdButton" alignment="1" pref="586" max="32767" attributes="0"/>
-                                          <Component id="finishButton" alignment="0" pref="586" max="32767" attributes="0"/>
+                                          <Component id="viewHouseholdButton" alignment="1" pref="460" max="32767" attributes="0"/>
+                                          <Component id="finishButton" alignment="0" pref="460" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -3348,12 +3347,18 @@
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="reserPasswordMenuItem">
                   <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                      <action class="ke.go.moh.oec.reception.gui.MainView" id="resetUserPassword" methodName="resetUserPassword"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" resourceKey="reserPasswordMenuItem.text"/>
                     <Property name="name" type="java.lang.String" value="reserPasswordMenuItem" noResource="true"/>
                   </Properties>
                 </MenuItem>
                 <MenuItem class="javax.swing.JMenuItem" name="deleteUserMenuItem">
                   <Properties>
+                    <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+                      <action class="ke.go.moh.oec.reception.gui.MainView" id="deleteUser" methodName="deleteUser"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" resourceKey="deleteUserMenuItem.text"/>
                     <Property name="name" type="java.lang.String" value="deleteUserMenuItem" noResource="true"/>
                   </Properties>
