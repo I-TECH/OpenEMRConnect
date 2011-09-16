@@ -207,7 +207,7 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         qualityTextField.setEditable(false);
 
         notAvailableCheckBox.setAction(actionMap.get("addUnavailableFingerprint")); // NOI18N
-        notAvailableCheckBox.setText("Unavailable");
+        notAvailableCheckBox.setText("Not available");
 
         org.jdesktop.layout.GroupLayout fingerprintPanelLayout = new org.jdesktop.layout.GroupLayout(fingerprintPanel);
         fingerprintPanel.setLayout(fingerprintPanelLayout);
@@ -239,10 +239,8 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         );
 
         okButton.setAction(actionMap.get("addFingerprint")); // NOI18N
-        okButton.setText("OK");
 
         cancelButton.setAction(actionMap.get("cancel")); // NOI18N
-        cancelButton.setText("Cancel");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

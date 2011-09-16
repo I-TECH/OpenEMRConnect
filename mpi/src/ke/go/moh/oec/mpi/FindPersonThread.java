@@ -121,6 +121,7 @@ public class FindPersonThread implements Runnable {
                 candidateSet.add(pm, s);
             }
         }
+
         if (fSearchList != null && !fSearchList.isEmpty()) {
             for (FingerprintMatch f : fSearchList) {
                 f.destroy();

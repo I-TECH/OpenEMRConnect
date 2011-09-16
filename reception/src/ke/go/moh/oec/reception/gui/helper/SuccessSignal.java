@@ -22,17 +22,25 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-Form.title=Departments
-nameLabel.text=Name
-nameTextField.text=
-codeLabel.text=Code
-codeTextField.text=
-saveButton.text=Save
-deleteButton.text=Delete
-closeButton.text=Close
-close.Action.text=Close
-close.Action.shortDescription=Close
-delete.Action.shortDescription=Delete
-delete.Action.text=Delete
-save.Action.shortDescription=Save
-save.Action.text=Save
+package ke.go.moh.oec.reception.gui.helper;
+
+/**
+ *
+ * @author Gitahi Ng'ang'a
+ */
+public class SuccessSignal {
+
+    private boolean successful;
+
+    public SuccessSignal() {
+        this.successful = false;
+    }
+
+    public boolean isSuccessful() {
+        return successful;
+    }
+
+    public void setSuccessful(boolean successful) {
+        this.successful = successful;
+    }
+}
