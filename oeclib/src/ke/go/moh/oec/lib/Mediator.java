@@ -491,6 +491,9 @@ public class Mediator implements IService {
          * Send the message.
          */
         m.setHopCount(1); // This will be the first hop.
+        if (Mediator.testLoggerLevel(Level.FINE)) {
+            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Sending message {0}", summarizeMessage(m));
+        }
         boolean messageSent = sendMessage(m);
         /*
          * If we expect a response to this message, wait for the response.
