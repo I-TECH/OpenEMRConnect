@@ -879,23 +879,18 @@
                                               <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
                                               <Component id="extendedSearchVillageTextField" pref="523" max="32767" attributes="1"/>
                                           </Group>
+                                          <Component id="extendedSearchButton" alignment="0" pref="588" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
-                                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                                  <Group type="102" alignment="0" attributes="1">
-                                                      <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
-                                                      <Component id="extendedSearchTakeButton" max="32767" attributes="1"/>
-                                                  </Group>
-                                                  <Group type="102" alignment="0" attributes="0">
-                                                      <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
-                                                      <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                                                      <Component id="extendedSearchFingerprintImagePanel" min="-2" max="-2" attributes="1"/>
-                                                  </Group>
+                                              <Component id="extendedSearchFingerprintLabel" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                  <Component id="extendedSearchTakeButton" alignment="1" max="32767" attributes="1"/>
+                                                  <Component id="extendedSearchFingerprintImagePanel" alignment="1" max="32767" attributes="1"/>
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="extendedSearchClientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace pref="352" max="32767" attributes="0"/>
                                           </Group>
-                                          <Component id="extendedSearchButton" alignment="0" pref="588" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -2797,14 +2792,6 @@
                                               </Group>
                                               <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Group type="102" attributes="0">
-                                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                                          <Component id="takeButton" alignment="0" max="32767" attributes="1"/>
-                                                          <Component id="fingerprintImagePanel" alignment="0" min="-2" max="-2" attributes="1"/>
-                                                      </Group>
-                                                      <EmptySpace max="-2" attributes="0"/>
-                                                      <Component id="clientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
-                                                  </Group>
                                                   <Group type="102" alignment="1" attributes="1">
                                                       <Component id="altCompoundHeadsLastNameTextField" pref="376" max="32767" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
@@ -2851,6 +2838,14 @@
                                                       <Component id="hdssDataConsentAcceptRadioButton" min="-2" max="-2" attributes="0"/>
                                                       <EmptySpace max="-2" attributes="0"/>
                                                       <Component id="hdssDataConsentRejectRadioButton" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                                          <Component id="takeButton" alignment="1" max="32767" attributes="1"/>
+                                                          <Component id="fingerprintImagePanel" alignment="1" max="32767" attributes="1"/>
+                                                      </Group>
+                                                      <EmptySpace max="-2" attributes="0"/>
+                                                      <Component id="clientRefusesCheckBox" min="-2" max="-2" attributes="0"/>
                                                   </Group>
                                               </Group>
                                           </Group>
@@ -2931,14 +2926,12 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="fingerprintLabel" min="-2" max="-2" attributes="0"/>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="fingerprintImagePanel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="takeButton" min="-2" max="-2" attributes="0"/>
-                                          </Group>
+                                          <Component id="fingerprintImagePanel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="clientRefusesCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="takeButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
                                       <Component id="viewHouseholdButton" min="-2" pref="41" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="finishButton" min="-2" pref="46" max="-2" attributes="0"/>

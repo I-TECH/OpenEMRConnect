@@ -4,7 +4,7 @@
   <NonVisualComponents>
     <Component class="java.util.List" name="userList">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="ke.go.moh.oec.reception.security.PersistenceManager.getInstance().getUserList()"/>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="ke.go.moh.oec.reception.controller.PersistenceManager.getInstance().getUserList()"/>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;User&gt;"/>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="18"/>
       </AuxValues>

@@ -223,7 +223,7 @@ public class ManagePermissionsDialog extends javax.swing.JDialog {
     private javax.swing.JButton okButton;
     private javax.swing.JPanel permissionsPanel;
     private javax.swing.JComboBox userComboBox;
-    private final java.util.List<User> userList = PersistenceManager.getInstance().getUserList();
+    private final java.util.List<User> userList = ke.go.moh.oec.reception.controller.PersistenceManager.getInstance().getUserList();
     private javax.swing.JLabel usernameLabel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
