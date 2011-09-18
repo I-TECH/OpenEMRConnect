@@ -46,6 +46,13 @@ public class ShadowDataMiner extends DatabaseConnector {
     public void start() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
         connectToShadow();
         statement = connection.createStatement();
+        // The following call sets the fetch size equal to the minimum integer value (largest negative value).
+        // This is a special value that is interpreted by the MySQL JDBC driver to fetch only one line
+        // at a time from the database into memory. Otherwise it would try to fetch the entire query
+        // result into memory. Because of the size of the shadow database, this can cause
+        // out of memory errors. So note that this call assumes for now that the shadow database
+        // is being stored in MySQL.
+        statement.setFetchSize(Integer.MIN_VALUE);
     }
 
     public ShadowResultSet mine(Table table) throws InaccessibleConfigurationFileException, SQLException, DriverNotFoundException {

@@ -134,8 +134,8 @@ public class PersonIdentifierList {
                     // Make sure we don't add a clinic ID of the form '12345' or '12345-'
                     // If this form is specified, it is a spacial request to delete any IDs from this clinic
                     // but to not add a new ID for this clinic. (See the JavaDoc for this method, above.)
-                    if (!(piType == PersonIdentifier.Type.cccLocalId || piType == PersonIdentifier.Type.cccUniqueId)
-                            && id.length() <= 6) {
+                    if (!((piType == PersonIdentifier.Type.cccLocalId || piType == PersonIdentifier.Type.cccUniqueId)
+                            && id.length() <= 6)) {
                         addList.add(newP);
                     }
                 }

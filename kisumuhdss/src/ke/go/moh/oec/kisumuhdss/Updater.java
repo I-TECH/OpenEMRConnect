@@ -283,7 +283,7 @@ public class Updater {
             } else if (r.name.equals("akaname")) {
                 p.setOtherName(value);
             } else if (r.name.equals("gender")) {
-                p.setSex(parseSex(value));
+                p.setSex(HdssDataParser.sex(value, hdssId));
             } else if (r.name.equals("dob")) {
                 p.setBirthdate(parseDate(value));
             } else if (r.name.equals("mfname")) {
@@ -319,15 +319,13 @@ public class Updater {
             } else if (r.name.equals("pregnancyEndDate")) {
                 p.setPregnancyEndDate(parseDate(value));
             } else if (r.name.equals("pregnancyOutcome")) {
-                if (!value.isEmpty()) {
-                    p.setPregnancyOutcome(Person.PregnancyOutcome.valueOf(value));
-                }
+                p.setPregnancyOutcome(HdssDataParser.pregnancyOutcome(value, hdssId));
             } else if (r.name.equals("f_Template")) {
                 fp1.setTemplate(parseHex(value));
             } else if (r.name.equals("f_Type")) {
-                fp1.setFingerprintType(parseFingerprintType(value));
+                fp1.setFingerprintType(HdssDataParser.fingerprintType(value, hdssId));
             } else if (r.name.equals("f_Technology")) {
-                fp1.setTechnologyType(parseTechnologyType(value));
+                fp1.setTechnologyType(HdssDataParser.fingerprintTechnologyType(value, hdssId));
             } else if (r.name.equals("f_DateEntered")) {
                 fp1.setDateEntered(parseDate(value));
             } else if (r.name.equals("f_DateModified")) {
@@ -335,9 +333,9 @@ public class Updater {
             } else if (r.name.equals("s_Template")) {
                 fp2.setTemplate(parseHex(value));
             } else if (r.name.equals("s_Type")) {
-                fp2.setFingerprintType(parseFingerprintType(value));
+                fp2.setFingerprintType(HdssDataParser.fingerprintType(value, hdssId));
             } else if (r.name.equals("s_Technology")) {
-                fp2.setTechnologyType(parseTechnologyType(value));
+                fp2.setTechnologyType(HdssDataParser.fingerprintTechnologyType(value, hdssId));
             } else if (r.name.equals("s_DateEntered")) {
                 fp2.setDateEntered(parseDate(value));
             } else if (r.name.equals("s_DateModified")) {
@@ -353,27 +351,7 @@ public class Updater {
         //
         // Set marital status, if present.
         //
-        if (marriageStatus != null && !marriageStatus.isEmpty()) {
-            Person.MaritalStatus ms = null;
-            if (marriageStatus.equals("Married")) {
-                if (marriageType != null) {
-                    if (marriageType.equals("Monogamous")) {
-                        ms = Person.MaritalStatus.marriedMonogamous;
-                    } else if (marriageType.equals("Polygamous")) {
-                        ms = Person.MaritalStatus.marriedPolygamous;
-                    }
-                }
-            } else if (marriageStatus.equals("Single")) {
-                ms = Person.MaritalStatus.single;
-            } else if (marriageStatus.equals("Widowed")) {
-                ms = Person.MaritalStatus.widowed;
-            } else if (marriageStatus.equals("Divorced/Separated")) {
-                ms = Person.MaritalStatus.divorced;
-            }
-            if (ms != null) {
-                p.setMaritalStatus(ms);
-            }
-        }
+        p.setMaritalStatus(HdssDataParser.maritalStatus(marriageStatus, marriageType, hdssId));
         //
         // Set the Kisumu HDSS person identifier.
         //
@@ -474,53 +452,5 @@ public class Updater {
             }
         }
         return bytes;
-    }
-
-    private Person.Sex parseSex(String sexString) {
-        Person.Sex sex = null;
-        if (sexString != null && !sexString.isEmpty()) {
-            try {
-                sex = Person.Sex.valueOf(sexString);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return sex;
-    }
-
-    private Person.MaritalStatus parseMaritalStatus(String maritalStatusString) {
-        Person.MaritalStatus maritalStatus = null;
-        if (maritalStatusString != null && !maritalStatusString.isEmpty()) {
-            try {
-                maritalStatus = Person.MaritalStatus.valueOf(maritalStatusString);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return maritalStatus;
-    }
-
-    private Fingerprint.TechnologyType parseTechnologyType(String technologyTypeString) {
-        Fingerprint.TechnologyType technologyType = null;
-        if (technologyTypeString != null && !technologyTypeString.isEmpty()) {
-            try {
-                technologyType = Fingerprint.TechnologyType.valueOf(technologyTypeString);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return technologyType;
-    }
-
-    private Fingerprint.Type parseFingerprintType(String fingerprintTypeString) {
-        Fingerprint.Type type = null;
-        if (fingerprintTypeString != null && !fingerprintTypeString.isEmpty()) {
-            try {
-                type = Fingerprint.Type.valueOf(fingerprintTypeString);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return type;
     }
 }
