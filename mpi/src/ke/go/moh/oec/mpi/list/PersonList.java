@@ -59,11 +59,17 @@ import ke.go.moh.oec.mpi.ValueMap;
 /**
  * Holds in memory the information about all persons in the MPI.
  * <p>
- * The persons are stored in memory as an ArrayList, so they can be
- * referenced by index. This is required for iterating through them to
- * find candidates entries that match search terms. But we also reference
- * them in a HashMap by the person GUID. This allows for fast finding in
+ * The persons are stored in memory in the following ways:
+ * <p>
+ * 1. in an ArrayList, so they can be referenced by index. This is required
+ * for iterating through them to find candidates entries that match search terms.
+ * <p>
+ * 2. in a HashMap by person GUID. This allows for fast finding in
  * memory a person based on their GUID.
+ * <p>
+ * 3. in a HashMap by HDSS ID (if any). This allows for a quick check to see
+ * if a HDSS ID already exists in the list before adding a new person with
+ * a HDSS ID.
  * 
  * @author Jim Grace
  */
@@ -71,6 +77,7 @@ public class PersonList {
 
     private List<PersonMatch> personList = new ArrayList<PersonMatch>();
     private Map<String, PersonMatch> personMap = new HashMap<String, PersonMatch>();
+    private Map<String, PersonMatch> hdssIdMap = new HashMap<String, PersonMatch>();
     private SiteList siteList;
 
     public void setSiteList(SiteList siteList) {
@@ -85,6 +92,14 @@ public class PersonList {
     private void add(PersonMatch personMatch) {
         personList.add(personMatch);
         personMap.put(personMatch.getPerson().getPersonGuid(), personMatch);
+        List<PersonIdentifier> pil = personMatch.getPerson().getPersonIdentifierList();
+        if (pil != null) {
+            for (PersonIdentifier pi : pil) {
+                if (pi.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
+                    hdssIdMap.put(pi.getIdentifier(), personMatch);
+                }
+            }
+        }
     }
 
     /**
@@ -95,6 +110,14 @@ public class PersonList {
     private void remove(PersonMatch personMatch) {
         personList.remove(personMatch);
         personMap.remove(personMatch.getPerson().getPersonGuid());
+        List<PersonIdentifier> pil = personMatch.getPerson().getPersonIdentifierList();
+        if (pil != null) {
+            for (PersonIdentifier pi : pil) {
+                if (pi.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
+                    hdssIdMap.put(pi.getIdentifier(), personMatch);
+                }
+            }
+        }
     }
 
     /**
@@ -314,21 +337,12 @@ public class PersonList {
                 && !p.getPersonIdentifierList().isEmpty()) {
             for (PersonIdentifier personIdentifier : p.getPersonIdentifierList()) {
                 if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
-                    if (personIdentifier.getIdentifier() != null
-                            && !personIdentifier.getIdentifier().isEmpty()) {
-                        List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-                        personIdentifierList.add(personIdentifier);
-                        Person find = new Person();
-                        find.setPersonIdentifierList(personIdentifierList);
-                        PersonRequest personRequest = new PersonRequest();
-                        personRequest.setPerson(find);
-                        PersonResponse personResponse = (PersonResponse) find(personRequest);
-                        if (personResponse != null
-                                && personResponse.getPersonList() != null
-                                && !personResponse.getPersonList().isEmpty()) {
-                            existingId = personIdentifier.getIdentifier();
+                    String pi = personIdentifier.getIdentifier();
+                    if (pi != null && !pi.isEmpty()) {
+                        if (hdssIdMap.containsKey(pi)) {
+                            existingId = pi;
+                            break;
                         }
-                        break;
                     }
                 }
             }

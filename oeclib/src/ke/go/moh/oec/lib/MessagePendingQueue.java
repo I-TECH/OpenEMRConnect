@@ -42,7 +42,7 @@ import java.util.List;
  */
 final class MessagePendingQueue implements Runnable {
 
-    private int replyTimeoutSeconds = 20; // Default message reply timeout in seconds
+    private int replyTimeoutSeconds = 0;
 
     class Entry {
 
@@ -54,11 +54,15 @@ final class MessagePendingQueue implements Runnable {
     private Thread timeoutThread = null;
     private long nextTimeout = 0;
 
-    public MessagePendingQueue() {
-        String replyTimeoutString = Mediator.getProperty("Reply.Timeout");
-        if (replyTimeoutString != null) {
-            replyTimeoutSeconds = Integer.parseInt(replyTimeoutString);
+    private int getReplyTimeoutSeconds() {
+        if (replyTimeoutSeconds == 0) {
+            replyTimeoutSeconds = 20; // Default message reply timeout in seconds
+            String replyTimeoutString = Mediator.getProperty("Reply.Timeout");
+            if (replyTimeoutString != null) {
+                replyTimeoutSeconds = Integer.parseInt(replyTimeoutString);
+            }
         }
+        return replyTimeoutSeconds;
     }
 
     /**
@@ -152,7 +156,7 @@ final class MessagePendingQueue implements Runnable {
         Entry e = new Entry();
         e.request = request;
         e.response = null;
-        e.timeout = System.currentTimeMillis() + replyTimeoutSeconds * 1000;
+        e.timeout = System.currentTimeMillis() + getReplyTimeoutSeconds() * 1000;
         queue.add(e);
         return e;
     }
