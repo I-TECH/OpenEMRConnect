@@ -102,7 +102,6 @@
                           <action class="ke.go.moh.oec.reception.gui.MainView" id="processNotification" methodName="processNotification"/>
                         </Property>
                         <Property name="text" type="java.lang.String" resourceKey="processNotificationButton.text"/>
-                        <Property name="enabled" type="boolean" value="false"/>
                         <Property name="name" type="java.lang.String" value="processNotificationButton" noResource="true"/>
                       </Properties>
                     </Component>

@@ -46,6 +46,7 @@ public class ShadowDataMiner extends DatabaseConnector {
     public void start() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
         connectToShadow();
         statement = connection.createStatement();
+        statement.setFetchSize(Integer.MIN_VALUE);
     }
 
     public ShadowResultSet mine(Table table) throws InaccessibleConfigurationFileException, SQLException, DriverNotFoundException {
@@ -56,7 +57,7 @@ public class ShadowDataMiner extends DatabaseConnector {
             for (Column c : table.getColumnList()) {
                 sql += c.getId() + ", "; // Add anyway, but the final one will be stripped.
             }
-            sql = sql.substring(0,sql.length()-2); // Strip the final ", ".
+            sql = sql.substring(0, sql.length() - 2); // Strip the final ", ".
             sql += ") ORDER BY `cell`.`PRIMARY_KEY_VALUE`";
             ResultSet rs = statement.executeQuery(sql);
             srs = new ShadowResultSet(rs);

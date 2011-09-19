@@ -28,23 +28,31 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="1" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="statusLabel" alignment="0" pref="244" max="32767" attributes="0"/>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="okButton" linkSize="1" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="statusLabel" alignment="0" pref="241" max="32767" attributes="0"/>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="okButton" linkSize="1" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="cancelButton" linkSize="1" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="cancelButton" linkSize="1" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="clearAllButton" min="-2" pref="93" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
           </Group>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="fingerprintPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="76" max="32767" attributes="0"/>
+                  <EmptySpace pref="11" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -52,12 +60,14 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
-              <EmptySpace pref="211" max="32767" attributes="0"/>
+              <EmptySpace pref="177" max="32767" attributes="0"/>
+              <Component id="clearAllButton" linkSize="2" min="-2" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="statusLabel" min="-2" pref="18" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="cancelButton" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
-                  <Component id="okButton" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                  <Component id="cancelButton" linkSize="2" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                  <Component id="okButton" linkSize="2" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -65,7 +75,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="fingerprintPanel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="61" max="32767" attributes="0"/>
+                  <EmptySpace pref="55" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -89,7 +99,6 @@
                   <Component id="fingerPanel" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="notAvailableCheckBox" alignment="0" min="-2" max="-2" attributes="1"/>
                       <Component id="fingerprintImagePanel" alignment="0" max="32767" attributes="1"/>
                       <Component id="qualityTextField" alignment="0" max="32767" attributes="1"/>
                   </Group>
@@ -100,15 +109,13 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="fingerPanel" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="1">
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="fingerprintImagePanel" min="-2" max="-2" attributes="1"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="qualityTextField" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
-                          <Component id="notAvailableCheckBox" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -170,6 +177,7 @@
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
+                <Property name="text" type="java.lang.String" value="Right index"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="leftIndexRadioButton">
@@ -180,6 +188,7 @@
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
+                <Property name="text" type="java.lang.String" value="Left index"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="rightMiddleRadioButton">
@@ -190,6 +199,7 @@
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
+                <Property name="text" type="java.lang.String" value="Right middle"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="leftMiddleRadioButton">
@@ -200,6 +210,7 @@
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
+                <Property name="text" type="java.lang.String" value="Left middle"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="rightRingRadioButton">
@@ -210,6 +221,7 @@
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
+                <Property name="text" type="java.lang.String" value="Right ring"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JRadioButton" name="leftRingRadioButton">
@@ -220,6 +232,7 @@
                 <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                   <ComponentRef name="fingerButtonGroup"/>
                 </Property>
+                <Property name="text" type="java.lang.String" value="Left ring"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -253,15 +266,10 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="notAvailableCheckBox">
-          <Properties>
-            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-              <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="addUnavailableFingerprint" methodName="addUnavailableFingerprint"/>
-            </Property>
-          </Properties>
-        </Component>
       </SubComponents>
     </Container>
+    <Component class="javax.swing.JLabel" name="statusLabel">
+    </Component>
     <Component class="javax.swing.JButton" name="okButton">
       <Properties>
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
@@ -276,7 +284,13 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="statusLabel">
+    <Component class="javax.swing.JButton" name="clearAllButton">
+      <Properties>
+        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+          <action class="ke.go.moh.oec.reception.gui.FingerprintDialog" id="clearAllFingerprints" methodName="clearAllFingerprints"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Clear all"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

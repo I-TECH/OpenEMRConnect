@@ -551,7 +551,6 @@ public class MainView extends FrameView implements FingerprintingComponent {
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(MainView.class, this);
         processNotificationButton.setAction(actionMap.get("processNotification")); // NOI18N
         processNotificationButton.setText(resourceMap.getString("processNotificationButton.text")); // NOI18N
-        processNotificationButton.setEnabled(false);
         processNotificationButton.setName("processNotificationButton"); // NOI18N
 
         notificationScrollPane.setName("notificationScrollPane"); // NOI18N
@@ -2769,6 +2768,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
             clearFields(wizardPanel);
             quickSearchManager = new QuickSearchManager();
             quickSearchManager.toggleQuickSearchButtons();
+            FingerprintDialog.clearImagedFingerprintCache();
 
         } else if (cardName.equalsIgnoreCase("clinicIdCard")) {
             TitledBorder clinicIdPanelBorder = (TitledBorder) clientIdPanel.getBorder();
@@ -2926,7 +2926,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     public void showFingerprintDialogBasic() {
         try {
             FingerprintDialog fingerprintDialog = new FingerprintDialog(this.getFrame(), true,
-                    mainViewHelper.getMissingFingerprint(), mainViewHelper.getRefusedFingerprint());
+                    mainViewHelper.getMissingFingerprint());
             fingerprintDialog.setLocationRelativeTo(this.getFrame());
             fingerprintDialog.setSession(mainViewHelper.getSession());
             fingerprintDialog.setVisible(true);
@@ -2946,7 +2946,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     public void showFingerprintDialogExtended() {
         try {
             FingerprintDialog fingerprintDialog = new FingerprintDialog(this.getFrame(), true,
-                    mainViewHelper.getMissingFingerprint(), mainViewHelper.getRefusedFingerprint());
+                    mainViewHelper.getMissingFingerprint());
             fingerprintDialog.setLocationRelativeTo(this.getFrame());
             fingerprintDialog.setSession(mainViewHelper.getSession());
             fingerprintDialog.setVisible(true);
@@ -2965,7 +2965,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     @Action
     public void showFingerprintDialogReview() {
         try {
-            FingerprintDialog fingerprintDialog = new FingerprintDialog(this.getFrame(), true, mainViewHelper.getMissingFingerprint(), mainViewHelper.getRefusedFingerprint());
+            FingerprintDialog fingerprintDialog = new FingerprintDialog(this.getFrame(), true, mainViewHelper.getMissingFingerprint());
             fingerprintDialog.setLocationRelativeTo(this.getFrame());
             fingerprintDialog.setSession(mainViewHelper.getSession());
             fingerprintDialog.setVisible(true);
@@ -3080,13 +3080,16 @@ public class MainView extends FrameView implements FingerprintingComponent {
                     addNotificationToTree(notification);
                 }
                 statusMessageLabel.setText(notificationList.size() + " notification(s) received. You now have "
-                        + totalNotifications() + " notification(s) to pr"
-                        + "ocess.");
+                        + totalNotifications() + " notification(s) to process.");
                 if (NotificationSoundPlayer.getInstance() != null) {
-                    NotificationSoundPlayer.getInstance().play();
-                    flash(statusMessageLabel, Color.RED, Font.BOLD, 5);
+                    //if sound is not due for playing then don't flash a label of
+                    // repaint the jtree either
+                    if (NotificationSoundPlayer.getInstance().play()) {
+                        flash(statusMessageLabel, Color.RED, Font.BOLD, 5);
+                        notificationTree.repaint();
+                    }
                 }
-                notificationTree.repaint();
+                //notificationTree.repaint();
             }
         };
         new Thread(notificationAdder).start();
@@ -3231,7 +3234,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
             }
         }
         notificationRootNode.setUserObject("Notifications " + "(" + totalNotifications() + ")");
-        notificationTree.repaint();
+        //notificationTree.repaint();
     }
 
     private void endCurrentSession() {
@@ -3355,6 +3358,9 @@ public class MainView extends FrameView implements FingerprintingComponent {
             if (!readerAvailable) {
                 message = "Fingerprinting is not available.";
             }
+            if (searchStatus.isOn()) {
+                message = "Search in progress. No fingerprints will be accepted.";
+            }
             fingerToBeTakenLabel.setText(message);
         }
     }
@@ -3393,8 +3399,18 @@ public class MainView extends FrameView implements FingerprintingComponent {
             showWarningMessage("Unknown Quality fingerprint captured. Please try for higher quality.", quickSearchFingerprintImagePanel);
             return;
         }
-        //simulate an actual gui button click in order to take advamtage of background task
-        quickSearchButton.doClick();
+        ImagedFingerprint rightIndex = quickSearchManager.getRightIndex();
+        ImagedFingerprint leftIndex = quickSearchManager.getLeftIndex();
+        byte[] rightIndexTemplate = rightIndex.getFingerprint().getTemplate();
+        byte[] leftIndexTemplate = leftIndex.getFingerprint().getTemplate();
+        if (rightIndexTemplate != null && leftIndexTemplate != null) {
+            showWarningMessage("No more than two fingerprints are allowed on the quick search"
+                    + " page. Please clear or reset to retake.", quickSearchFingerprintImagePanel);
+            return;
+        } else {
+            //simulate an actual gui button click in order to take advamtage of background task
+            quickSearchButton.doClick();
+        }
     }
 
     public void showImage(BufferedImage fingerprintImage) {
@@ -3410,6 +3426,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
     public Task searchExtended() {
         disableBusyButton(extendedSearchButton);
         return new SearchExtendedTask(getApplication());
+
+
+
+
+
+
     }
 
     private class SearchExtendedTask extends org.jdesktop.application.Task<Object, Void> {
@@ -3797,6 +3819,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
         if (lpiPersonWrapper.getClinicId().isEmpty()) {
             try {
                 lpiPersonWrapper.setClinicId(mpiPersonWrapper.getClinicId());
+
+
+
+
+
+
             } catch (MalformedCliniIdException ex) {
                 //This should not happen at all
                 Logger.getLogger(MainView.class.getName()).log(Level.INFO, null, ex);
@@ -3922,6 +3950,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
                     altBirthDateTextField.setVisible(!dateVisible);
                     birthDateAcceptRadioButton.setVisible(!dateVisible);
                     birthDateRejectRadioButton.setVisible(!dateVisible);
+
+
+
+
+
+
                 } catch (ParseException ex) {
                     Logger.getLogger(MainView.class.getName()).log(Level.INFO, null, ex);
                 }
@@ -4190,6 +4224,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
                 || !mpiUpdatePersonWrapper.getClinicId().equalsIgnoreCase(lpiUpdatePersonWrapper.getClinicId())) {
             try {
                 mpiUpdatePersonWrapper.setClinicId(mpiUpdatePersonWrapper.getClinicId());
+
+
+
+
+
+
             } catch (MalformedCliniIdException ex) {
                 Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -4404,6 +4444,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
             personWrapper.setLastRegularVisit(visit);
         } else if (mainViewHelper.getSession().getClientType() == Session.ClientType.VISITOR) {
             personWrapper.setLastOneOffVisit(visit);
+
+
+
+
+
+
         } else {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, "Client type not specified before updating the"
                     + "person index.");
@@ -4893,6 +4939,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
             } catch (PersistenceManagerException ex) {
                 showWarningMessage("Database malfunction! " + ex.getMessage()
                         + ". Please contact your administrator.", departmentsMenuItem);
+
+
+
+
+
+
             }
         }
     }
@@ -4918,6 +4970,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
     @Action
     public Task quickSearch() {
         return new QuickSearchTask(getApplication());
+
+
+
+
+
+
     }
 
     private class QuickSearchTask extends org.jdesktop.application.Task<Object, Void> {
@@ -4931,7 +4989,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
             //display search "on" status in own thread
             Runnable searchMessagePlayer = new Runnable() {
 
-                String searchMessage = "Attempting search. Please wait";
+                String searchMessage = "Searching. Please wait";
                 String dots = "";
 
                 public void run() {
@@ -4984,6 +5042,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
             try {
                 ifp.getFingerprint().setTemplate(readerManager.getTemplate().getData());
                 ifp.setImage(quickSearchFingerprintImagePanel.getImage());
+                ifp.setQuality(quickSearchQualityTextField.getText());
             } catch (Exception ex) {
                 return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
             }
@@ -5044,6 +5103,12 @@ public class MainView extends FrameView implements FingerprintingComponent {
 
     private void clearFingerprintImagePanel() {
         quickSearchFingerprintImagePanel.setImage(mainViewHelper.getMissingFingerprint().getImage());
+
+
+
+
+
+
     }
 
     private class QuickSearchManager {
@@ -5057,14 +5122,14 @@ public class MainView extends FrameView implements FingerprintingComponent {
             fp1.setFingerprintType(Fingerprint.Type.rightIndexFinger);
             fp1.setTechnologyType(Fingerprint.TechnologyType.griauleTemplate);
             fp1.setTemplate(null);
-            ImagedFingerprint ifp1 = new ImagedFingerprint(fp1, mainViewHelper.getMissingFingerprint().getImage());
+            ImagedFingerprint ifp1 = new ImagedFingerprint(fp1, mainViewHelper.getMissingFingerprint().getImage(), quickSearchQualityTextField.getText());
             imagedFingerprintList.add(ifp1);
 
             Fingerprint fp2 = new Fingerprint();
             fp2.setFingerprintType(Fingerprint.Type.leftIndexFinger);
             fp2.setTechnologyType(Fingerprint.TechnologyType.griauleTemplate);
             fp2.setTemplate(null);
-            ImagedFingerprint ifp2 = new ImagedFingerprint(fp2, mainViewHelper.getMissingFingerprint().getImage());
+            ImagedFingerprint ifp2 = new ImagedFingerprint(fp2, mainViewHelper.getMissingFingerprint().getImage(), quickSearchQualityTextField.getText());
             imagedFingerprintList.add(ifp2);
         }
 
@@ -5103,26 +5168,27 @@ public class MainView extends FrameView implements FingerprintingComponent {
 
         private void toggleQuickSearchButtons() {
             if (imagedFingerprintList.get(0).getFingerprint().getTemplate() != null) {
-                clearRightIndexButton.setEnabled(true);
+                clearRightIndexButton.setEnabled(!searchStatus.isOn());
             } else {
                 clearRightIndexButton.setEnabled(false);
             }
             if (imagedFingerprintList.get(1).getFingerprint().getTemplate() != null) {
-                clearLeftIndexButton.setEnabled(true);
+                clearLeftIndexButton.setEnabled(!searchStatus.isOn());
             } else {
                 clearLeftIndexButton.setEnabled(false);
             }
             if (imagedFingerprintList.get(0).getFingerprint().getTemplate() != null
                     || imagedFingerprintList.get(1).getFingerprint().getTemplate() != null) {
-                resetQuickSearchButton.setEnabled(true);
+                resetQuickSearchButton.setEnabled(!searchStatus.isOn());
             } else {
                 resetQuickSearchButton.setEnabled(false);
             }
+            showFingerToBeTaken("");
             if (!clearRightIndexButton.isEnabled() && !clearLeftIndexButton.isEnabled()) {
                 showFingerToBeTaken("Take right-index fingerprint.");
             } else {
                 if (clearRightIndexButton.isEnabled() && clearLeftIndexButton.isEnabled()) {
-                    showFingerToBeTaken("All required fingerprints have been taken.");
+                    showFingerToBeTaken("All required quick search fingerprints have been taken.");
                 } else {
                     if (!clearRightIndexButton.isEnabled() && clearLeftIndexButton.isEnabled()) {
                         showFingerToBeTaken("Take right-index fingerprint.");

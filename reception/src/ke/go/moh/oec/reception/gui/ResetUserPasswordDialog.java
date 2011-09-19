@@ -194,18 +194,25 @@ private void userComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
             return;
         }
         User user = (User) selectedItem;
-        try {
-            user.setPassword(passwordField.getPassword());
-            persistenceManager.modifyUser(user);
-            showInformationMessage("Done!", resetButton);
-        } catch (PersistenceManagerException ex) {
-            Logger.getLogger(ManagePermissionsDialog.class.getName()).log(Level.SEVERE, null, ex);
-            showErrorMessage(ex.getMessage(), resetButton);
+        if (showConfirmMessage("Are you sure you want to reset the password for user: '" + user.getUsername() + "'?")) {
+            try {
+                user.setPassword(passwordField.getPassword());
+                persistenceManager.modifyUser(user);
+                showInformationMessage("Done!", resetButton);
+            } catch (PersistenceManagerException ex) {
+                Logger.getLogger(ManagePermissionsDialog.class.getName()).log(Level.SEVERE, null, ex);
+                showErrorMessage(ex.getMessage(), resetButton);
+            }
         }
     }
 
     private void showInformationMessage(String message, JComponent toFocus) {
         showMessage(message, toFocus, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public boolean showConfirmMessage(String message) {
+        return JOptionPane.showConfirmDialog(this, message, OECReception.applicationName(),
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
     private void showErrorMessage(String message, JComponent toFocus) {

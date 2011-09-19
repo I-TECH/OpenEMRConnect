@@ -208,12 +208,13 @@ public class ChangePasswordDialog extends javax.swing.JDialog {
         char[] confirmPassword = confirmPasswordField.getPassword();
         if (!Arrays.equals(passedOldPassword, trueOldPasword)) {
             showWarningMessage("Please enter the correct old password.", oldPasswordField);
+            oldPasswordField.setText("");
             return;
         }
         if (!Arrays.equals(newPassword, confirmPassword)) {
+            showWarningMessage("Your new and confirmation passwords do not match.", newPasswordField);
             newPasswordField.setText("");
             confirmPasswordField.setText("");
-            showWarningMessage("Your new and confirmation passwords do not match.", newPasswordField);
             return;
         }
         user.setPassword(newPassword);

@@ -152,6 +152,7 @@ public class AdminAuthenticatorDialog extends javax.swing.JDialog {
             dispose();
         } else {
             showErrorMessage("Administrator authentification failed!", passwordField);
+            passwordField.setText("");
         }
     }
 

@@ -198,7 +198,8 @@ public class LoginDialog extends javax.swing.JDialog {
             app.show(new MainView(app));
             this.dispose();
         } else {
-            showWarningMessage("Login failed! Unknown username or password.", loginButton);
+            showWarningMessage("Login failed! Unknown username or password.", passwordField);
+            passwordField.setText("");
         }
     }
 

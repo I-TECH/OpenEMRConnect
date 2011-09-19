@@ -177,14 +177,16 @@ private void userComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
             showWarningMessage("You are not allowed to delete your own user account!", deleteButton);
             return;
         }
-        try {
-            persistenceManager.deleteUser(user);
-            userList.remove(user);
-            userComboBox.setSelectedItem(null);
-            showInformationMessage("Done!", deleteButton);
-        } catch (PersistenceManagerException ex) {
-            Logger.getLogger(ManagePermissionsDialog.class.getName()).log(Level.SEVERE, null, ex);
-            showErrorMessage(ex.getMessage(), deleteButton);
+        if (showConfirmMessage("Are you sure you want to delete '" + user.getUsername() + "'?")) {
+            try {
+                persistenceManager.deleteUser(user);
+                userList.remove(user);
+                userComboBox.setSelectedItem(null);
+                showInformationMessage("Done!", deleteButton);
+            } catch (PersistenceManagerException ex) {
+                Logger.getLogger(ManagePermissionsDialog.class.getName()).log(Level.SEVERE, null, ex);
+                showErrorMessage(ex.getMessage(), deleteButton);
+            }
         }
     }
 
@@ -198,6 +200,11 @@ private void userComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
     private void showWarningMessage(String message, JComponent toFocus) {
         showMessage(message, toFocus, JOptionPane.WARNING_MESSAGE);
+    }
+
+    public boolean showConfirmMessage(String message) {
+        return JOptionPane.showConfirmDialog(this, message, OECReception.applicationName(),
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
     private void showMessage(String message, JComponent toFocus, int messageType) {
