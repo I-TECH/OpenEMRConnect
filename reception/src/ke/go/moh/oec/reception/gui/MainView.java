@@ -56,6 +56,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
+import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.data.Session;
@@ -861,6 +862,11 @@ public class MainView extends FrameView implements FingerprintingComponent {
         basicSearchClinicIdLabel.setName("basicSearchClinicIdLabel"); // NOI18N
 
         basicSearchClinicIdTextField.setName("basicSearchClinicIdTextField"); // NOI18N
+        basicSearchClinicIdTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                basicSearchClinicIdTextFieldFocusLost(evt);
+            }
+        });
         basicSearchClinicIdTextField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 basicSearchClinicIdTextFieldKeyTyped(evt);
@@ -986,6 +992,11 @@ public class MainView extends FrameView implements FingerprintingComponent {
         extendedSearchClinicIdLabel.setName("extendedSearchClinicIdLabel"); // NOI18N
 
         extendedSearchClinicIdTextField.setName("extendedSearchClinicIdTextField"); // NOI18N
+        extendedSearchClinicIdTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                extendedSearchClinicIdTextFieldFocusLost(evt);
+            }
+        });
         extendedSearchClinicIdTextField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 extendedSearchClinicIdTextFieldKeyTyped(evt);
@@ -1397,6 +1408,11 @@ public class MainView extends FrameView implements FingerprintingComponent {
 
         clinicIdTextField.setText(resourceMap.getString("clinicIdTextField.text")); // NOI18N
         clinicIdTextField.setName("clinicIdTextField"); // NOI18N
+        clinicIdTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                clinicIdTextFieldFocusLost(evt);
+            }
+        });
 
         altClinicIdTextField.setEditable(false);
         altClinicIdTextField.setForeground(resourceMap.getColor("altClinicIdTextField.foreground")); // NOI18N
@@ -2655,6 +2671,36 @@ public class MainView extends FrameView implements FingerprintingComponent {
         }
     }//GEN-LAST:event_notificationTreeMouseClicked
 
+private void basicSearchClinicIdTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_basicSearchClinicIdTextFieldFocusLost
+    PersonIdentifier personIdentifier = OECReception.createPersonIdentifier(basicSearchClinicIdTextField.getText());
+    if (personIdentifier != null) {
+        basicSearchClinicIdTextField.setText(personIdentifier.getIdentifier());
+        basicSearchClinicIdTextField.setForeground(Color.BLACK);
+    } else {
+        basicSearchClinicIdTextField.setForeground(Color.RED);
+    }
+}//GEN-LAST:event_basicSearchClinicIdTextFieldFocusLost
+
+private void extendedSearchClinicIdTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_extendedSearchClinicIdTextFieldFocusLost
+    PersonIdentifier personIdentifier = OECReception.createPersonIdentifier(extendedSearchClinicIdTextField.getText());
+    if (personIdentifier != null) {
+        extendedSearchClinicIdTextField.setText(personIdentifier.getIdentifier());
+        extendedSearchClinicIdTextField.setForeground(Color.BLACK);
+    } else {
+        extendedSearchClinicIdTextField.setForeground(Color.RED);
+    }
+}//GEN-LAST:event_extendedSearchClinicIdTextFieldFocusLost
+
+private void clinicIdTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_clinicIdTextFieldFocusLost
+    PersonIdentifier personIdentifier = OECReception.createPersonIdentifier(clinicIdTextField.getText());
+    if (personIdentifier != null) {
+        clinicIdTextField.setText(personIdentifier.getIdentifier());
+        clinicIdTextField.setForeground(Color.BLACK);
+    } else {
+        clinicIdTextField.setForeground(Color.RED);
+    }
+}//GEN-LAST:event_clinicIdTextFieldFocusLost
+
     @Action
     public void goHome() {
         showCard("homeCard", true, sessionHasData());
@@ -2837,9 +2883,9 @@ public class MainView extends FrameView implements FingerprintingComponent {
         } else if (cardName.equalsIgnoreCase("reviewCard3")) {
             toggleClientTypeOptions(false);
             if (mainViewHelper.getSession().getClientType() == Session.ClientType.UNSPECIFIED) {
-                String clinicId = clinicIdTextField.getText();
-                if (!clinicId.isEmpty() && OECReception.validateClinicId(clinicId)) {
-                    String clinicCode = OECReception.extractFacilityCode(clinicId);
+                PersonIdentifier personIdentifier = OECReception.createPersonIdentifier(clinicIdTextField.getText());
+                if (personIdentifier != null && personIdentifier.getIdentifierType() == PersonIdentifier.Type.cccLocalId) {
+                    String clinicCode = OECReception.extractFacilityCode(personIdentifier.getIdentifier());
                     if (clinicCode.equalsIgnoreCase(OECReception.facilityCode())) {
                         mainViewHelper.getSession().changeSessionClientType(Session.ClientType.ENROLLED);
                     } else {
