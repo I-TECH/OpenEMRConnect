@@ -42,16 +42,16 @@ public class HdssDataParser {
      * @param hdssId HDSS ID for the person we are processing
      * @return pregnancyOutcome enumerated value
      */
-    static public Person.PregnancyOutcome pregnancyOutcome(String s, String hdssId) {
+    static public Person.PregnancyOutcome pregnancyOutcome(String val, String hdssId) {
         Person.PregnancyOutcome p = null;
-        if (s != null && !s.isEmpty()) {
-            s = s.trim();
+        if (val != null && !val.isEmpty()) {
+            String s = val.trim();
             if (s.compareTo("SINLBR") == 0) {
                 p = Person.PregnancyOutcome.singleBirth;
             } else if (s.compareTo("LBR") == 0) {
                 p = Person.PregnancyOutcome.singleBirth;
             } else if (s.compareTo("NOTAPP") == 0) {
-                p = null; // Don't know how to interpret NOTAPP.
+                p = null; // Don't know how to interpret NOTAPP (Not Applicable?)
             } else if (s.compareTo("CEN") == 0) {
                 p = null; // Don't know how to interpret CEN (Censored?).
             } else if (s.compareTo("MLB") == 0) {
@@ -59,7 +59,9 @@ public class HdssDataParser {
             } else if (s.compareTo("SLB") == 0) {
                 p = Person.PregnancyOutcome.singleBirth;
             } else if (s.compareTo("MULLBR") == 0) {
-                p = Person.PregnancyOutcome.singleBirth;
+                p = Person.PregnancyOutcome.multipleBirths;
+            } else if (s.compareTo("NAP") == 0) {
+                p = null; // Don't know how to interpret NAP (Not Applicable?).
             } else if (s.compareTo("SINSTB") == 0) {
                 p = Person.PregnancyOutcome.stillBirth;
             } else if (s.compareTo("MISCAR") == 0) {
@@ -79,7 +81,7 @@ public class HdssDataParser {
             } else if (s.compareTo("MST") == 0) {
                 p = Person.PregnancyOutcome.stillBirth;
             } else if (s.compareTo("SINLBR") == 0) {
-                p = Person.PregnancyOutcome.stillBirth;
+                p = Person.PregnancyOutcome.singleBirth;
             } else {
                 Logger.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
                         "Unexpected pregnancy outcome value from HDSS ID {0}: ''{1}''",
@@ -96,34 +98,40 @@ public class HdssDataParser {
      * @param hdssId HDSS ID for the person we are processing
      * @return maritalStatus enumerated value
      */
-    static public Person.MaritalStatus maritalStatus(String mtal, String mtyp, String hdssId) {
+    static public Person.MaritalStatus maritalStatus(String mtalVal, String mtypVal, String hdssId) {
         Person.MaritalStatus m = null;
+        String mtal = mtalVal;
+        String mtyp = mtypVal;
         if (mtyp != null) {
-            mtyp = mtyp.trim();
+            mtyp = mtyp.toUpperCase();
         }
         if (mtal != null && !mtal.isEmpty()) {
-            mtal = mtal.trim();
-            if (mtal.compareTo("Married") == 0 || mtal.compareTo("Married/Cohabitating") == 0) {
-                if (mtyp != null && mtyp.compareTo("Polygamous") == 0) {
+            mtal = mtal.toUpperCase();
+            if (mtal.compareTo("SINGLE") == 0) {
+                m = Person.MaritalStatus.single;
+            } else if (mtal.compareTo("MARRIED") == 0 || mtal.compareTo("MARRIED/COHABITING") == 0) {
+                if (mtyp != null && mtyp.compareTo("POLYGAMOUS") == 0) {
                     m = Person.MaritalStatus.marriedPolygamous;
                 } else {
                     m = Person.MaritalStatus.marriedMonogamous;
                 }
-            } else if (mtal.compareTo("Widowed") == 0) {
-                m = Person.MaritalStatus.widowed;
-            } else if (mtal.compareTo("Single") == 0) {
-                m = Person.MaritalStatus.single;
             } else if (mtal.compareTo("NA") == 0) { // Assume NA means single children?
                 m = Person.MaritalStatus.single;
+            } else if (mtal.compareTo("WIDOWED") == 0) {
+                m = Person.MaritalStatus.widowed;
+            } else if (mtal.compareTo("DIVORCE/SEPERATED") == 0) {
+                m = Person.MaritalStatus.widowed;
+            } else if (mtal.compareTo("DON'T KNOW") == 0) {
+                m = Person.MaritalStatus.widowed;
             } else {
                 Logger.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
                         "Unexpected marital status from HDSS ID {0}: ''{1}''",
-                        new Object[]{hdssId, mtal});
+                        new Object[]{hdssId, mtalVal});
             }
         } else if (mtyp != null) { // Marital Status was not present, but Marital type was.
-            if (mtyp.compareTo("Monogamous") == 0) {
+            if (mtyp.compareTo("MONOGAMOUS") == 0) {
                 m = Person.MaritalStatus.marriedMonogamous;
-            } else if (mtyp.compareTo("Polygamous") == 0) {
+            } else if (mtyp.compareTo("POLYGAMOUS") == 0) {
                 m = Person.MaritalStatus.marriedPolygamous;
             }
         }

@@ -40,8 +40,6 @@
     <!-- class code = entity, moodCode = executed task (including a task in progress) -->
     <controlActProcess classCode="CACT" moodCode="EVN">
         <code code="PRPA_TE201314UV02" codeSystem="2.16.840.1.113883.1.6"/>
-        <!-- The following <subject> block needs to be repeated
-             for each search result returned, or removed if no results returned. -->
         <subject typeCode="SUBJ">
             <registrationEvent classCode="REG" moodCode="EVN">
                 <id nullFlavor="NA"/>
