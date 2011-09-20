@@ -68,7 +68,7 @@ public class PersonIdentifierList {
                 pi.setIdentifierType(pit);
                 personIdentifierList.add(pi);
             }
-            rs.close();
+            Sql.close(rs);
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);

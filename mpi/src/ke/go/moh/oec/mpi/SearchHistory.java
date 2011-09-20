@@ -66,7 +66,7 @@ public class SearchHistory {
                         linkedId = Integer.toString(id);
                     }
                 }
-                rs.close();
+                Sql.close(rs);
             } catch (SQLException ex) {
                 Logger.getLogger(SearchHistory.class.getName()).log(Level.SEVERE,
                         "create() error getting max(search_history_id) for address_id = "
@@ -167,7 +167,7 @@ public class SearchHistory {
                         linkedId = Integer.toString(id);
                     }
                 }
-                rs.close();
+                Sql.close(rs);
             } catch (SQLException ex) {
                 Logger.getLogger(SearchHistory.class.getName()).log(Level.SEVERE,
                         "update() error getting max(search_history_id) for address_id = "

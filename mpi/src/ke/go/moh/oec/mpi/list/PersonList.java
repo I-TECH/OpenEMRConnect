@@ -222,7 +222,7 @@ public class PersonList {
                     Mediator.getLogger(PersonList.class.getName()).log(Level.FINE, "Loaded {0}.", recordCount);
                 }
             }
-            rs.close();
+            Sql.close(rs);
         } catch (SQLException ex) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
@@ -360,7 +360,7 @@ public class PersonList {
         try {
             rs.next();
             guid = rs.getString("uuid");
-            rs.close();
+            Sql.close(rs);
         } catch (SQLException ex) { // Won't happen
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
         }
