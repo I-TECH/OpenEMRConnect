@@ -38,6 +38,7 @@ import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.controller.PersistenceManager;
 import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
 import ke.go.moh.oec.reception.data.Department;
+import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import org.jdesktop.application.Action;
 import org.jdesktop.beansbinding.Binding;
 
@@ -46,7 +47,7 @@ import org.jdesktop.beansbinding.Binding;
  * @author Gitahi Ng'ang'a
  */
 public class DepartmentsDialog extends javax.swing.JDialog {
-    
+
     private final PersistenceManager persistenceManager;
 
     /** Creates new form DepartmentsDialog */
@@ -57,8 +58,14 @@ public class DepartmentsDialog extends javax.swing.JDialog {
         persistenceManager = PersistenceManager.getInstance();
         persistenceManager.createDepartmentTable();
         refreshDepartmentsTable(persistenceManager.getDepartmentList());
+        this.getRootPane().setDefaultButton(saveButton);
+        addEscapeListener();
     }
-    
+
+    private void addEscapeListener() {
+        DialogEscaper.addEscapeListener(this);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -205,17 +212,17 @@ public class DepartmentsDialog extends javax.swing.JDialog {
             showDepartment(departmentList.get(selectedRow));
         }
     }//GEN-LAST:event_departmentsTableMouseClicked
-    
+
     private void showDepartment(Department department) {
         nameTextField.setText(department.getName());
         codeTextField.setText(department.getCode());
     }
-    
+
     @Action
     public void close() {
         dispose();
     }
-    
+
     @Action
     public void delete() {
         int selectedRow = departmentsTable.getSelectedRow();
@@ -234,7 +241,7 @@ public class DepartmentsDialog extends javax.swing.JDialog {
             showWarningMessage("Pease selecte the department you want to delete.", rootPane);
         }
     }
-    
+
     @Action
     public void save() {
         if (nameTextField.getText().isEmpty()) {
@@ -260,7 +267,7 @@ public class DepartmentsDialog extends javax.swing.JDialog {
                     + " Please contact your administrator.", rootPane);
         }
     }
-    
+
     private void refreshDepartmentsTable(List<Department> departmentList) {
         Binding binding = bindingGroup.getBinding("departmentListBinding");
         binding.unbind();
@@ -269,7 +276,7 @@ public class DepartmentsDialog extends javax.swing.JDialog {
         binding.bind();
         departmentsTable.repaint();
     }
-    
+
     private void refreshDepartmentsTable(Department department, boolean add) {
         Binding binding = bindingGroup.getBinding("departmentListBinding");
         binding.unbind();
@@ -281,20 +288,20 @@ public class DepartmentsDialog extends javax.swing.JDialog {
         binding.bind();
         departmentsTable.repaint();
     }
-    
+
     private void showWarningMessage(String message, JComponent toFocus) {
         showMessage(message, toFocus, JOptionPane.WARNING_MESSAGE);
     }
-    
+
     public boolean showConfirmMessage(String message) {
         return JOptionPane.showConfirmDialog(this, message, OECReception.applicationName(),
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
-    
+
     private void showErrorMessage(String message, JComponent toFocus) {
         showMessage(message, toFocus, JOptionPane.ERROR_MESSAGE);
     }
-    
+
     private void showMessage(String message, JComponent toFocus, int messageType) {
         JOptionPane.showMessageDialog(this, message, OECReception.applicationName(), messageType);
         toFocus.requestFocus();

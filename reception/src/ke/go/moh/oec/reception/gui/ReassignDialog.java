@@ -35,6 +35,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.data.Department;
+import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import org.jdesktop.application.Action;
 import org.jdesktop.beansbinding.Binding;
 
@@ -56,6 +57,12 @@ public class ReassignDialog extends javax.swing.JDialog {
         this.selectedDepartment = selectedDepartment;
         fillDepartmentList();
         this.setIconImage(OECReception.applicationIcon());
+        this.getRootPane().setDefaultButton(reassignButton);
+        addEscapeListener();
+    }
+
+    private void addEscapeListener() {
+        DialogEscaper.addEscapeListener(this);
     }
 
     private void fillDepartmentList() {

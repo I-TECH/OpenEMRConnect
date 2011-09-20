@@ -35,6 +35,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.controller.exceptions.PersistenceManagerException;
+import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import ke.go.moh.oec.reception.gui.helper.SuccessSignal;
 import org.jdesktop.application.Action;
 
@@ -50,6 +51,12 @@ public class AdminAuthenticatorDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.successSignal = successSignal;
+        this.getRootPane().setDefaultButton(okButton);
+        addEscapeListener();
+    }
+
+    private void addEscapeListener() {
+        DialogEscaper.addEscapeListener(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -145,6 +152,7 @@ public class AdminAuthenticatorDialog extends javax.swing.JDialog {
             dispose();
         } else {
             showErrorMessage("Administrator authentification failed!", passwordField);
+            passwordField.setText("");
         }
     }
 

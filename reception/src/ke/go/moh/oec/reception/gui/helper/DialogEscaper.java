@@ -22,17 +22,32 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-cancel.Action.text=Cancel
-cancel.Action.shortDescription=Cancel
-addFingerprint.Action.text=OK
-addFingerprint.Action.shortDescription=OK
-setNotAvailable.Action.shortDescription=
-setNotAvailable.Action.text=
-addUnavailableFingerprint.Action.shortDescription=Fingerprint not available
-addUnavailableFingerprint.Action.text=
-showExistingFingerprintImage.Action.shortDescription=
-showExistingFingerprintImage.Action.text=
-showTakenFingerprint.Action.text=
-showTakenFingerprint.Action.shortDescription=Select finger
-clearAllFingerprints.Action.text=
-clearAllFingerprints.Action.shortDescription=Clear all fingerprints
+package ke.go.moh.oec.reception.gui.helper;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.KeyStroke;
+
+/**
+ *
+ * @author Gitahi Ng'ang'a
+ */
+public class DialogEscaper {
+
+    public static void addEscapeListener(final JDialog dialog) {
+        ActionListener escListener = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        };
+
+        dialog.getRootPane().registerKeyboardAction(escListener,
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+}
