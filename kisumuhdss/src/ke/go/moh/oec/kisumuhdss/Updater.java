@@ -269,6 +269,8 @@ public class Updater {
             String value = r.value;
             if (value == null) {
                 value = "";
+            } else {
+                value = value.trim(); // HDSS database values have a lot of trailing spaces.
             }
             if (r.name.equals("fname")) {
                 p.setFirstName(value);
