@@ -69,6 +69,19 @@ public class Sql {
     }
 
     /**
+     * Closes a connection. 
+     * 
+     * @param conn the connection to close
+     */
+    public static void close(Connection conn) {
+        try {
+            conn.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
      * Executes a SQL query on a database connection.
      * Logs the query using logging level FINE.
      * 

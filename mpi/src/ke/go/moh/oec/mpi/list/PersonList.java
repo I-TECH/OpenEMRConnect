@@ -227,6 +227,8 @@ public class PersonList {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
+        Sql.close(personConn);
+        Sql.close(listConn);
         double timeInterval = (System.currentTimeMillis() - startTime);
         Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
                 "Loaded {0} person entries in {1} milliseconds.",
@@ -405,6 +407,7 @@ public class PersonList {
         VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
         VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
         Sql.commit(conn);
+        Sql.close(conn);
         PersonMatch newPer = new PersonMatch(p.clone()); // Clone to protect from unit test modifications.
         newPer.setDbPersonId(dbPersonId);
         this.add(newPer);
@@ -648,6 +651,7 @@ public class PersonList {
             }
             Sql.commit(conn);
         }
+        Sql.close(conn);
         if (newPerson.getLastMoveDate() != null) {
             newPerson.setPreviousVillageName(oldPerson.getVillageName());
         }

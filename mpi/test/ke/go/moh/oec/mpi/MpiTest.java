@@ -45,7 +45,8 @@ public class MpiTest {
         Sql.execute(conn, s1);
         Sql.execute(conn, s2);
         Sql.commit(conn);
-        mpi = new Mpi(); 
+        Sql.close(conn);
+        mpi = new Mpi();
     }
 
     @AfterClass
@@ -202,7 +203,7 @@ public class MpiTest {
             String ds = dq.toString();
             ds = "DOB: " + dq.toString();
         }
-        
+
         // Search by a fake GUID should match nobody.
         p = new Person(); // Start fresh
         p.setPersonGuid("fake GUID");
@@ -363,7 +364,7 @@ public class MpiTest {
         p0.setMaritalStatus(Person.MaritalStatus.single);
         requestData.setPerson(p0);
         result = mpi.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
-        
+
     }
 
     /**

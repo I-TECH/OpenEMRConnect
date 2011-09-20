@@ -94,6 +94,7 @@ public class SearchHistory {
             } catch (Exception ex) {
                 Logger.getLogger(SearchHistory.class.getName()).log(Level.SEVERE,
                         "Error inserting into search_history:\n" + sql, ex);
+                Sql.close(conn);
                 return;
             }
             String searchHistoryId = Sql.getLastInsertId(conn);
@@ -111,6 +112,7 @@ public class SearchHistory {
                     } catch (Exception ex) {
                         Logger.getLogger(SearchHistory.class.getName()).log(Level.SEVERE,
                                 "Error inserting into search_history_person_identifier:\n" + sql, ex);
+                        Sql.close(conn);
                         return;
                     }
                     Sql.execute(conn, sql);
@@ -132,10 +134,12 @@ public class SearchHistory {
                     } catch (Exception ex) {
                         Logger.getLogger(SearchHistory.class.getName()).log(Level.SEVERE,
                                 "Error inserting into search_history_fingerprint:\n" + sql, ex);
+                        Sql.close(conn);
                         return;
                     }
                 }
             }
+            Sql.close(conn);
         }
     }
 
@@ -168,6 +172,7 @@ public class SearchHistory {
                 Logger.getLogger(SearchHistory.class.getName()).log(Level.SEVERE,
                         "update() error getting max(search_history_id) for address_id = "
                         + addressId + " and message_id = " + messageId, ex);
+                Sql.close(conn);
                 return;
             }
             /*
@@ -201,6 +206,7 @@ public class SearchHistory {
                             "Error updating search_history:\n" + sql, ex);
                 }
             }
+            Sql.close(conn);
         }
     }
 }
