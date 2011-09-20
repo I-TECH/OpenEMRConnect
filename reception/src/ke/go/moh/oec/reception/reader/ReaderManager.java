@@ -38,13 +38,8 @@ import com.griaule.grfingerjava.IStatusEventListener;
 import com.griaule.grfingerjava.MatchingContext;
 import com.griaule.grfingerjava.Template;
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-import javax.imageio.spi.ImageWriterSpi;
-import javax.imageio.stream.ImageOutputStream;
 
 /**
  *
@@ -54,20 +49,11 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
 
     private MatchingContext matchingContext;
     private FingerprintingComponent fingerprintingComponent;
-    private FingerprintImage fingerprintImage;
     private Template template;
 
     public ReaderManager(FingerprintingComponent fingerprintingComponent) throws GrFingerJavaException {
         this.fingerprintingComponent = fingerprintingComponent;
         initialize();
-    }
-
-    public FingerprintImage getFingerprintImage() {
-        return fingerprintImage;
-    }
-
-    public void setFingerprintImage(FingerprintImage fingerprintImage) {
-        this.fingerprintImage = fingerprintImage;
     }
 
     public Template getTemplate() {
@@ -125,9 +111,7 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
 
     public void onImageAcquired(String sensorId, FingerprintImage fingerprintImage) {
         fingerprintingComponent.log("Image Captured!");
-        this.fingerprintImage = fingerprintImage;
-        fingerprintingComponent.showImage(fingerprintImage);
-        extract();
+        extract(fingerprintImage);
     }
 
     public String getFingerprintSDKVersion() throws GrFingerJavaException {
@@ -135,24 +119,11 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
                 + "License type is '" + (GrFingerJava.getLicenseType() == GrFingerJava.GRFINGER_JAVA_FULL ? "Identification" : "Verification") + "'.";
     }
 
-    public void saveImageToFile(File file, ImageWriterSpi spi) {
-        try {
-            ImageWriter writer = spi.createWriterInstance();
-            ImageOutputStream output = ImageIO.createImageOutputStream(file);
-            writer.setOutput(output);
-            writer.write(fingerprintImage);
-            output.close();
-            writer.dispose();
-        } catch (IOException e) {
-            fingerprintingComponent.log(e.toString());
-        }
-    }
-
-    private void extract() {
+    private void extract(FingerprintImage fingerprintImage) {
         try {
             template = matchingContext.extract(fingerprintImage);
             fingerprintingComponent.showQuality(template.getQuality());
-            fingerprintingComponent.showImage(GrFingerJava.getBiometricImage(template, fingerprintImage));
+            fingerprintingComponent.showImage(fingerprintImage);
         } catch (GrFingerJavaException e) {
             fingerprintingComponent.log(e.getMessage());
         }

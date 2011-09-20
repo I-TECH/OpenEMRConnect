@@ -35,6 +35,7 @@ public class ImagedFingerprint {
 
     private Fingerprint fingerprint;
     private BufferedImage image;
+    private String quality = "Unknown quality.";
     private boolean sent = false;
     private boolean placeholder = false;
 
@@ -42,9 +43,10 @@ public class ImagedFingerprint {
         this.fingerprint = fingerprint;
     }
 
-    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image) {
+    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image, String quality) {
         this.fingerprint = fingerprint;
         this.image = image;
+        this.quality = quality;
     }
 
     public ImagedFingerprint(BufferedImage image, boolean placeholder) {
@@ -52,9 +54,10 @@ public class ImagedFingerprint {
         this.placeholder = placeholder;
     }
 
-    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image, boolean sent) {
+    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image, String quality, boolean sent) {
         this.fingerprint = fingerprint;
         this.image = image;
+        this.quality = quality;
         this.sent = sent;
     }
 
@@ -72,6 +75,14 @@ public class ImagedFingerprint {
 
     public void setImage(BufferedImage image) {
         this.image = image;
+    }
+
+    public String getQuality() {
+        return quality;
+    }
+
+    public void setQuality(String quality) {
+        this.quality = quality;
     }
 
     public boolean isSent() {
@@ -96,12 +107,9 @@ public class ImagedFingerprint {
         }
         final ImagedFingerprint other = (ImagedFingerprint) obj;
         if (this.fingerprint == null || other.fingerprint == null) {
-            //return false if both fingerprints are null to prevent NPE below.
-            //I know this is an irresposible implementation of equals but it
-            //works for my purposes. It mostly shouldn't bother you too.
             return false;
         }
-        if (this.fingerprint != other.fingerprint && (this.fingerprint == null || !this.fingerprint.getFingerprintType().equals(other.fingerprint.getFingerprintType()))) {
+        if (this.fingerprint.getFingerprintType() != other.fingerprint.getFingerprintType()) {
             return false;
         }
         return true;

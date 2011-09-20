@@ -26,6 +26,8 @@ package ke.go.moh.oec.reception.controller;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.reception.data.User;
@@ -80,75 +82,183 @@ public class OECReception {
         OECReception.user = user;
     }
 
-    public static PersonIdentifier.Type deducePersonIdentifierType(String personIdentifier) {
-        PersonIdentifier.Type identifierType = null;
-        if (personIdentifier != null && !personIdentifier.isEmpty()) {
-            if (personIdentifier.contains("-") && !personIdentifier.contains("/")) {
-                if ((personIdentifier.split("-").length == 2 && personIdentifier.split("-")[0].length() == 5)
-                        && (personIdentifier.split("-").length == 2 && personIdentifier.split("-")[1].length() == 5)) {
-                    identifierType = PersonIdentifier.Type.cccUniqueId;
-                } else if (personIdentifier.length() < 20
-                        && personIdentifier.split("-").length == 4) {
-                    identifierType = PersonIdentifier.Type.kisumuHdssId;
-                }
-            } else if (personIdentifier.contains("/") && !personIdentifier.contains("-")) {
-                if ((personIdentifier.split("/").length == 2 && personIdentifier.split("/")[0].length() == 5)
-                        && (personIdentifier.split("/").length == 2 && personIdentifier.split("/")[1].length() == 4)) {
-                    identifierType = PersonIdentifier.Type.cccLocalId;
-                }
-            } else if (personIdentifier.contains("/") && personIdentifier.contains("-")) {
-                if (isPrependedLocalClinicId(personIdentifier)) {
-                    identifierType = PersonIdentifier.Type.cccLocalId;
-                }
-            } else if (personIdentifier.length() == 30) {
-                identifierType = PersonIdentifier.Type.masterPatientRegistryId;
-            }
-        }
-        return identifierType;
-    }
-
-    public static boolean isPrependedLocalClinicId(String personIdentifier) {
-        boolean x = false;
-        int m = personIdentifier.split("-").length;
+//    public static PersonIdentifier.Type deducePersonIdentifierType(String personIdentifier) {
+//        PersonIdentifier.Type identifierType = null;
+//        if (personIdentifier != null && !personIdentifier.isEmpty()) {
+//            if (personIdentifier.contains("-") && !personIdentifier.contains("/")) {
+//                String[] partsOfWhole = personIdentifier.split("-");
+//                if ((partsOfWhole.length == 2 && partsOfWhole[0].length() == 5)
+//                        && (partsOfWhole.length == 2 && partsOfWhole[1].length() == 5)) {
+//                    identifierType = PersonIdentifier.Type.cccUniqueId;
+//                } else if (personIdentifier.length() < 20
+//                        && partsOfWhole.length == 4) {
+//                    identifierType = PersonIdentifier.Type.kisumuHdssId;
+//                }
+//            } else if (personIdentifier.contains("/") && !personIdentifier.contains("-")) {
+//                String[] partsOfWhole = personIdentifier.split("/");
+//                if ((partsOfWhole.length == 2 && partsOfWhole[0].length() == 5)
+//                        && (partsOfWhole.length == 2 && partsOfWhole[1].length() == 4)) {
+//                    identifierType = PersonIdentifier.Type.cccLocalId;
+//                }
+//            } else if (personIdentifier.contains("/") && personIdentifier.contains("-")) {
+//                String[] partsOfWhole = personIdentifier.split("-");
+//                if ((partsOfWhole.length == 2 && partsOfWhole[0].length() == 5)) {
+//                    String partsOfClinicId[] = personIdentifier.split("/");
+//                    if (partsOfClinicId.length == 2) {
+//                        if (partsOfClinicId[0].length() == 5 && partsOfClinicId[1].length() == 4) {
+//                            identifierType = PersonIdentifier.Type.cccUniqueId;
+//                        }
+//                    }
+//                }
+//                if (containsLocaFacilityCode(personIdentifier)) {
+//                    identifierType = PersonIdentifier.Type.cccLocalId;
+//                }
+//            } else if (personIdentifier.length() == 30) {
+//                identifierType = PersonIdentifier.Type.masterPatientRegistryId;
+//            }
+//        }
+//        return identifierType;
+//    }
+    private static boolean containsLocaFacilityCode(String clinicId) {
+        boolean prepended = false;
+        String[] partsOfWhole = clinicId.split("-");
+        int m = partsOfWhole.length;
         if (m == 2) {
-            String[] partsOfWhole = personIdentifier.split("-");
-            if (partsOfWhole[0].length() == 5) {
-                int n = partsOfWhole[1].split("/").length;
-                if (n == 2) {
-                    String[] partsOfClinicId = partsOfWhole[1].split("/");
-                    if (partsOfClinicId[0].length() == 5
-                            && partsOfClinicId[1].length() == 4) {
-                        x = true;
-                    }
-                }
+            if (partsOfWhole[0].equalsIgnoreCase(OECReception.facilityCode())) {
+                prepended = true;
             }
         }
-        return x;
+        return prepended;
     }
 
-    public static boolean validateClinicId(String clinicId) {
-        return deducePersonIdentifierType(clinicId) != null;
-    }
-
-    public static String prependClinicCode(String clinicId) {
-        if (!isPrependedLocalClinicId(clinicId)) {
-            String clinicCode = OECReception.facilityCode();
-            if (clinicCode != null) {
-                clinicId = clinicCode + "-" + clinicId;
-            }
-        }
-        return clinicId;
-    }
-
+//    public static boolean validateClinicId(String clinicId) {
+//        return deducePersonIdentifierType(clinicId) != null;
+//    }
+//    public static String prependClinicCode(String clinicId) {
+//        if (!containsLocaFacilityCode(clinicId)) {
+//            String clinicCode = OECReception.facilityCode();
+//            if (clinicCode != null) {
+//                clinicId = clinicCode + "-" + clinicId;
+//            }
+//        }
+//        return clinicId;
+//    }
     public static String extractFacilityCode(String clinicId) {
         String facilityCode = "";
-        int m = clinicId.split("-").length;
+        String[] partsOfWhole = clinicId.split("-");
+        int m = partsOfWhole.length;
         if (m == 2) {
-            String[] partsOfWhole = clinicId.split("-");
             if (partsOfWhole[0].length() == 5) {
                 facilityCode = partsOfWhole[0];
             }
         }
         return facilityCode;
+    }
+
+    /*
+     * Returns true if the string passed is a number not exceeding the specified
+     * length.
+     */
+    private static boolean isNumber(String string, int maxLength) {
+        return string != null ? string.matches("\\d{1," + maxLength + "}") : false;
+    }
+
+    /*
+     * Returns a String representing the integer passed padded with zeros to the left
+     * to achieve the specified size.
+     */
+    private static String padWithZeros(int input, int toSize) {
+        return String.format("%0" + toSize + "d", input);
+    }
+
+    /*
+     * This method inteprets the integer passed as a year in the 2nd millennium AD
+     * This is only necessary for the usual two-digit year representations or the
+     * unlikely one or three digit year representation.
+     */
+    private static int qualifyYear(int year) {
+        if (year > 9 && year < 100) {
+            return Integer.parseInt("20" + year);
+        } else if (year > -1 && year < 10) {
+            return Integer.parseInt("200" + year);
+        } else if (year > 99 && year < 1000) {
+            return Integer.parseInt("2" + year);
+        } else {
+            return year;
+        }
+    }
+
+    /**
+     * This method examines the String passed to determine the kind of clinic id 
+     * it is. If it can recognize the pattern, it uses the String passed to create
+     * a fully qualified clinic id of that type. If it cannot deduce the clinic type
+     * represented by the passed String, it returns null.
+     */
+    public static PersonIdentifier createPersonIdentifier(String clinicId) {
+        if (clinicId != null && !clinicId.isEmpty()) {
+            if (OECReception.isNumber(clinicId, 5)) {
+                PersonIdentifier personIdentifier = new PersonIdentifier();
+                personIdentifier.setIdentifier(facilityCode() + "-"
+                        + padWithZeros(Integer.parseInt(clinicId), 5));
+                personIdentifier.setIdentifierType(PersonIdentifier.Type.cccUniqueId);
+                return personIdentifier;
+            }
+            if (clinicId.contains("/") && !clinicId.contains("-") && clinicId.split("/").length == 2) {
+                String parts[] = clinicId.split("/");
+                String patientNumber = parts[0];
+                String year = parts[1];
+                if (isNumber(patientNumber, 5)) {
+                    int yr = 0;
+                    if (isNumber(year, 4)) {
+                        yr = qualifyYear(Integer.parseInt(year));
+                    }
+                    int yrToday = new GregorianCalendar().get(Calendar.YEAR);
+                    if (yr > 2000 && yr <= yrToday) {
+                        PersonIdentifier personIdentifier = new PersonIdentifier();
+                        personIdentifier.setIdentifier(facilityCode() + "-"
+                                + padWithZeros(Integer.parseInt(patientNumber), 5)
+                                + "/" + yr);
+                        personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
+                        return personIdentifier;
+                    }
+                }
+            }
+            if (clinicId.contains("-") && clinicId.split("-").length == 2) {
+                String[] mainParts = clinicId.split("-");
+                String facilityPart = mainParts[0];
+                if (facilityPart.length() == 5 && isNumber(facilityPart, 5)) {
+                    String patientPart = mainParts[1];
+                    if (!patientPart.contains("/")) {
+                        if (OECReception.isNumber(patientPart, 5)) {
+                            PersonIdentifier personIdentifier = new PersonIdentifier();
+                            personIdentifier.setIdentifier(facilityPart + "-"
+                                    + padWithZeros(Integer.parseInt(patientPart), 5));
+                            personIdentifier.setIdentifierType(PersonIdentifier.Type.cccUniqueId);
+                            return personIdentifier;
+                        }
+                    } else if (patientPart.contains("/")&& patientPart.split("/").length == 2) {
+                        String parts[] = patientPart.split("/");
+                        String patientNumber = parts[0];
+                        String year = parts[1];
+                        if (isNumber(patientNumber, 5)) {
+                            int yr = 0;
+                            if (isNumber(year, 4)) {
+                                yr = qualifyYear(Integer.parseInt(year));
+                            }
+                            int yrToday = new GregorianCalendar().get(Calendar.YEAR);
+                            if (yr > 2000 && yr <= yrToday) {
+                                PersonIdentifier personIdentifier = new PersonIdentifier();
+                                personIdentifier.setIdentifier(facilityPart + "-"
+                                        + padWithZeros(Integer.parseInt(patientNumber), 5)
+                                        + "/" + yr);
+                                personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
+                                return personIdentifier;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
