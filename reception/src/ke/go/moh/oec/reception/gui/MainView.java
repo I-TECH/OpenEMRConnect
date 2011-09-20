@@ -863,6 +863,9 @@ public class MainView extends FrameView implements FingerprintingComponent {
 
         basicSearchClinicIdTextField.setName("basicSearchClinicIdTextField"); // NOI18N
         basicSearchClinicIdTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                basicSearchClinicIdTextFieldFocusGained(evt);
+            }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 basicSearchClinicIdTextFieldFocusLost(evt);
             }
@@ -993,6 +996,9 @@ public class MainView extends FrameView implements FingerprintingComponent {
 
         extendedSearchClinicIdTextField.setName("extendedSearchClinicIdTextField"); // NOI18N
         extendedSearchClinicIdTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                extendedSearchClinicIdTextFieldFocusGained(evt);
+            }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 extendedSearchClinicIdTextFieldFocusLost(evt);
             }
@@ -1409,6 +1415,9 @@ public class MainView extends FrameView implements FingerprintingComponent {
         clinicIdTextField.setText(resourceMap.getString("clinicIdTextField.text")); // NOI18N
         clinicIdTextField.setName("clinicIdTextField"); // NOI18N
         clinicIdTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                clinicIdTextFieldFocusGained(evt);
+            }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 clinicIdTextFieldFocusLost(evt);
             }
@@ -2700,6 +2709,18 @@ private void clinicIdTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FI
         clinicIdTextField.setForeground(Color.RED);
     }
 }//GEN-LAST:event_clinicIdTextFieldFocusLost
+
+private void basicSearchClinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_basicSearchClinicIdTextFieldFocusGained
+    basicSearchClinicIdTextField.setForeground(Color.BLACK);
+}//GEN-LAST:event_basicSearchClinicIdTextFieldFocusGained
+
+private void extendedSearchClinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_extendedSearchClinicIdTextFieldFocusGained
+    extendedSearchClinicIdTextField.setForeground(Color.BLACK);
+}//GEN-LAST:event_extendedSearchClinicIdTextFieldFocusGained
+
+private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_clinicIdTextFieldFocusGained
+    clinicIdTextField.setForeground(Color.BLACK);
+}//GEN-LAST:event_clinicIdTextFieldFocusGained
 
     @Action
     public void goHome() {
