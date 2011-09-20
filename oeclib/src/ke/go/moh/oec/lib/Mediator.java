@@ -626,29 +626,34 @@ public class Mediator implements IService {
                      */
                     Compresser.decompress(m);
                     xmlPacker.unpack(m);
-                    if (m.getMessageData().getClass() == PersonRequest.class) {
-                        PersonRequest req = (PersonRequest) m.getMessageData();
-                        req.setSourceAddress(m.getSourceAddress());
-                        req.setSourceName(m.getSourceName());
-                        req.setRequestReference(m.getMessageId());
-                        req.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
-                    } else if (m.getMessageData().getClass() == PersonResponse.class) {
-                        PersonResponse rsp = (PersonResponse) m.getMessageData();
-                        rsp.setSuccessful(true);
-                        rsp.setRequestReference(m.getMessageId());
-                    }
-                    boolean responseDelivered = pendingQueue.findRequest(m);
-                    if (responseDelivered) { // Was the message a response to a request that we just delivered?
-                        if (Mediator.testLoggerLevel(Level.FINE)) {
-                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                    "Received message delivered as response to API: {0}", summarizeMessage(m));
-                        }
+                    if (m.getMessageData() == null) {
+                        Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                                "Received message did not unpack into messageData: {0}", summarizeMessage(m));
                     } else {
-                        if (Mediator.testLoggerLevel(Level.FINE)) {
-                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                    "Received message delivered unsolicited to API: {0}", summarizeMessage(m));
+                        if (m.getMessageData().getClass() == PersonRequest.class) {
+                            PersonRequest req = (PersonRequest) m.getMessageData();
+                            req.setSourceAddress(m.getSourceAddress());
+                            req.setSourceName(m.getSourceName());
+                            req.setRequestReference(m.getMessageId());
+                            req.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
+                        } else if (m.getMessageData().getClass() == PersonResponse.class) {
+                            PersonResponse rsp = (PersonResponse) m.getMessageData();
+                            rsp.setSuccessful(true);
+                            rsp.setRequestReference(m.getMessageId());
                         }
-                        processUnsolicitedMessage(m);
+                        boolean responseDelivered = pendingQueue.findRequest(m);
+                        if (responseDelivered) { // Was the message a response to a request that we just delivered?
+                            if (Mediator.testLoggerLevel(Level.FINE)) {
+                                Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                        "Received message delivered as response to API: {0}", summarizeMessage(m));
+                            }
+                        } else {
+                            if (Mediator.testLoggerLevel(Level.FINE)) {
+                                Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                        "Received message delivered unsolicited to API: {0}", summarizeMessage(m));
+                            }
+                            processUnsolicitedMessage(m);
+                        }
                     }
                 } else {
                     /*
@@ -656,11 +661,9 @@ public class Mediator implements IService {
                      * but the router has returned a IP address/port for the
                      * destination that is not us. Somehing is misconfigured.
                      */
-                    if (Mediator.testLoggerLevel(Level.FINE)) {
-                        Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                                "Received message destination matches our own name, but router returns IP Address:port of ''{1}'': {0}",
-                                new Object[]{summarizeMessage(m), ipAddressPort});
-                    }
+                    Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                            "Received message destination matches our own name, but router returns IP Address:port of ''{1}'': {0}",
+                            new Object[]{summarizeMessage(m), ipAddressPort});
                 }
             } else {    // If the message is not addressed to us:
                 if (ipAddressPort == null) {
@@ -669,10 +672,8 @@ public class Mediator implements IService {
                      * and the router is not giving us an IP Port/Address for it.
                      * This is a configuration error.
                      */
-                    if (Mediator.testLoggerLevel(Level.FINE)) {
-                        Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                                "IP Address:port not found for received message {0}", summarizeMessage(m));
-                    }
+                    Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
+                            "IP Address:port not found for received message {0}", summarizeMessage(m));
                 } else {
                     /*
                      * The message destination does not match our own,
@@ -708,8 +709,6 @@ public class Mediator implements IService {
                 CallbackThread c = new CallbackThread(this, myCallbackObject, m);
                 Thread t = new Thread(c);
                 t.start();
-
-
             } else {
                 /*
                  * The user has not defined a callback routine. Meanwhile, someone sent us
@@ -825,8 +824,8 @@ public class Mediator implements IService {
         if (m.getDestinationAddress() != null) {
             summary += " to " + m.getDestinationAddress();
         }
-        summary += " toBeQueued " + m.isToBeQueued()
-                + " hopCount " + m.getHopCount();
+        summary += " toBeQueued=" + m.isToBeQueued()
+                + " hopCount=" + m.getHopCount();
         if (Mediator.testLoggerLevel(Level.FINER)) {
             if (m.getXml() == null) {
                 Compresser.decompress(m);

@@ -203,22 +203,20 @@ public class Updater {
                 }
             }
             rsDetail.close();
-            //TODO: Uncoment if statement
-//            if (
-            updateTransaction(transactionType, hdssId, rowList);
-//                    ) {
+            boolean status = updateTransaction(transactionType, hdssId, rowList);
+            if (status) {
             lastReceivedTransaction = transId;
             sql = "UPDATE `destination` SET `last_received_transaction_id` = " + transId + " WHERE `name` = '" + HDSS_COMPANION_NAME + "'";
             try {
                 execute(connDetail, sql);
             } catch (Exception e) {
-                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update MPI.");
-//                break;
+                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update last_received_transaction_id.", e);
+                break;
             }
-//            } else {
-//                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update MPI.");
-//                break;
-//            }
+            } else {
+                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update MPI.");
+                break;
+            }
         }
         rsMaster.close();
     }

@@ -193,18 +193,19 @@ class XmlPacker {
             case notifyPersonChanged:
                 doc = packGenericPersonRequestMessage(m);
                 break;
+
             case createPersonAccepted: // Uses packGenericPersonResponseMessage(), below.
-            case modifyPersonAccepted: // Uses packGenericPersonResponseMessage(), below.
+            case modifyPersonAccepted:
                 doc = packGenericPersonResponseMessage(m);
                 break;
+
             case logEntry:
                 doc = packLogEntryMessage(m);
                 break;
-            /** added on 19th may, 2011
-            To handle work_message */
-            case getWork: // Uses packWorkMessage(m)
-            case workDone: // Uses packWorkMessage(m)
-            case reassignWork://Uses packWorkMessage(m)
+
+            case getWork:   // Uses packWorkMessage(), below.
+            case workDone:  // Uses packWorkMessage(), below.
+            case reassignWork:
                 doc = packWorkMessage(m);
                 break;
         }
@@ -279,9 +280,11 @@ class XmlPacker {
             PersonResponse personResponse = (PersonResponse) m.getMessageData();
             List<Person> personList = personResponse.getPersonList();
             if (personList != null && !personList.isEmpty()) { // Are we responding with person data?
-                p = personResponse.getPersonList().get(0);
-                packPerson(personNode, p);
+                p = personResponse.getPersonList().get(0);  // Yes, get the person data to return.
+            } else {
+                p = new Person();   // No, return an empty person (needed to clear the default template values.)
             }
+            packPerson(personNode, p);
         }
         return doc;
     }
@@ -1333,25 +1336,30 @@ class XmlPacker {
             case createPerson: // Uses unpackGenericPersonMessage(), below.
             case modifyPerson: // Uses unpackGenericPersonMessage(), below.
             case notifyPersonChanged:
-                unpackGenericPersonMessage(m, root);
+                unpackGenericPersonRequestMessage(m, root);
+                break;
+
+            case createPersonAccepted:  // Uses unpackGenericPersonResponseMessage(), below.
+            case modifyPersonAccepted:
+                unpackGenericPersonResponseMessage(m, root);
                 break;
 
             case logEntry:
                 unpackLogEntryMessage(m, root);
                 break;
-//@pchemutai added on 19th May 2011 to handle Work messages'
-            case getWork: //Uses unpackWorkMessage(), below.
-            case workDone://Uses unpackWorkMessage(), below.
-            case reassignWork://Uses unpackWorkMessage(), below.
+
+            case getWork:   // Uses unpackWorkMessage(), below.
+            case workDone:  // Uses unpackWorkMessage(), below.
+            case reassignWork:
                 unpackWorkMessage(m, root);
                 break;
         }
     }
 
     /**
-     * Unpacks a generic HL7 person-related message into a <code>Document</code>.
+     * Unpacks a generic HL7 person-related request message into a <code>Document</code>.
      * <p>
-     * Several of the HL7 person-related messages use the same formatting
+     * Several of the HL7 person-related request messages use the same formatting
      * rules, even though the templates differ. (The templates differ only
      * in the boilerplate parts that do not concern us directly.)
      * These messages are:
@@ -1365,7 +1373,7 @@ class XmlPacker {
      * @param m the message contents to fill in
      * @param e root node of the person message <code>Document</code> parsed from XML
      */
-    private void unpackGenericPersonMessage(Message m, Element e) {
+    private void unpackGenericPersonRequestMessage(Message m, Element e) {
         PersonRequest personRequest = new PersonRequest();
         m.setMessageData(personRequest);
         Person p = new Person();
@@ -1376,6 +1384,32 @@ class XmlPacker {
         if (unpackTagValue(e, "acceptAckCode").equals("AL")) {
             personRequest.setResponseRequested(true);
         }
+    }
+
+    /**
+     * Unpacks a generic HL7 person-related response message into a <code>Document</code>.
+     * <p>
+     * Several of the HL7 person-related response messages use the same formatting
+     * rules, even though the templates differ. (The templates differ only
+     * in the boilerplate parts that do not concern us directly.)
+     * These messages are:
+     * <p>
+     * CREATE PERSON ACCEPTED <br>
+     * MODIFY PERSON ACCEPTED <br>
+     *
+     * @param m the message contents to fill in
+     * @param e root node of the person message <code>Document</code> parsed from XML
+     */
+    private void unpackGenericPersonResponseMessage(Message m, Element e) {
+        PersonResponse personResponse = new PersonResponse();
+        m.setMessageData(personResponse);
+        List<Person> personList = new ArrayList<Person>();
+        personResponse.setPersonList(personList);
+        Person p = new Person();
+        personList.add(p);
+        unpackHl7Header(m, e);
+        Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
+        unpackPerson(p, ePerson);
     }
 
     /**
