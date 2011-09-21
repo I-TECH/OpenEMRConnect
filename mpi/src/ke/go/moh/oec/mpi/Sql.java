@@ -31,7 +31,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Person;
@@ -47,24 +49,32 @@ public class Sql {
     public static final int REGULAR_VISIT_TYPE_ID = 1;
     public static final int ONE_OFF_VISIT_TYPE_ID = 2;
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static List<Connection> connectionPool = new ArrayList<Connection>();
 
     /**
      * Creates a connection to the MPI(/LPI) database. For a query that is run while the results
      * are being fetched from another query, a separate connection is needed.
+     * <p>
+     * Connections are pooled for speed, and to avoid running out of connections.
      *
      * @return the connection.
      */
-    public static Connection connect() {
+    public static synchronized Connection connect() {
         Connection conn = null;
-        try {
-            String url = Mediator.getProperty("MPI.url");
-            String username = Mediator.getProperty("MPI.username");
-            String password = Mediator.getProperty("MPI.password");
-            conn = DriverManager.getConnection(url, username, password);
-        } catch (Exception ex) {
-            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
-                    "Can''t connect to the database -- Please check the database and try again.", ex);
-            System.exit(1);
+        if (!connectionPool.isEmpty()) {
+            conn = connectionPool.get(0);
+            connectionPool.remove(0);
+        } else {
+            try {
+                String url = Mediator.getProperty("MPI.url");
+                String username = Mediator.getProperty("MPI.username");
+                String password = Mediator.getProperty("MPI.password");
+                conn = DriverManager.getConnection(url, username, password);
+            } catch (Exception ex) {
+                Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
+                        "Can''t connect to the database -- Please check the database and try again.", ex);
+                System.exit(1);
+            }
         }
         return conn;
     }
@@ -74,12 +84,8 @@ public class Sql {
      * 
      * @param conn the connection to close
      */
-    public static void close(Connection conn) {
-        try {
-            conn.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public static synchronized void close(Connection conn) {
+        connectionPool.add(conn);   // Actually, keep the connection for later reuse.
     }
 
     /**
@@ -89,12 +95,14 @@ public class Sql {
      */
     public static void close(ResultSet rs) {
         try {
-            Statement stmt = null;
-            rs.getStatement();
-            if (stmt != null) {
-                stmt.close();
-            } else {
-                rs.close();
+            if (!rs.isClosed()) {
+                Statement stmt = null;
+                rs.getStatement();
+                if (stmt != null) {
+                    stmt.close();
+                } else {
+                    rs.close();
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
@@ -125,6 +133,9 @@ public class Sql {
     public static ResultSet query(Connection conn, String sql, Level loggerLevel) {
         Mediator.getLogger(Sql.class.getName()).log(loggerLevel, "SQL Query:\n{0}", sql);
         ResultSet rs = null;
+
+
+
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
@@ -133,6 +144,7 @@ public class Sql {
                     "Error executing SQL Query " + sql, ex);
             System.exit(1);
         }
+
         return rs;
     }
 
@@ -149,6 +161,8 @@ public class Sql {
         try {
             returnValue = rs.next();
             Sql.close(rs);
+
+
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -165,6 +179,9 @@ public class Sql {
     public static boolean execute(Connection conn, String sql) {
         Mediator.getLogger(Sql.class.getName()).log(Level.FINE, "SQL Execute:\n{0}", sql);
         boolean returnValue = false;
+
+
+
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
             returnValue = stmt.execute();
@@ -174,6 +191,7 @@ public class Sql {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Error executing SQL statement " + sql, ex);
         }
+
         return returnValue;
     }
 
@@ -221,6 +239,8 @@ public class Sql {
                 returnId = rs.getString("LAST_INSERT_ID()");
             }
             Sql.close(rs);
+
+
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Unexpected error getting LAST_INSERT_ID()", ex);
         }
@@ -249,6 +269,8 @@ public class Sql {
                     returnId = rs.getString(idColumn);
                 }
                 Sql.close(rs);
+
+
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "getLookupId() error executing query " + sql, ex);
             }
@@ -292,6 +314,8 @@ public class Sql {
                     returnId = Integer.toString(rs.getInt("village_id"));
                 }
                 Sql.close(rs);
+
+
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Error getting village ID for " + quote(villageName), ex);
             }
@@ -327,6 +351,8 @@ public class Sql {
                     returnId = Integer.toString(rs.getInt("address_id"));
                 }
                 Sql.close(rs);
+
+
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Error getting address ID for " + quote(address), ex);
             }

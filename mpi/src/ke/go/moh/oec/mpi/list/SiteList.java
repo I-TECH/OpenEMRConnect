@@ -77,7 +77,6 @@ public class SiteList {
             Logger.getLogger(SiteList.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
-        Sql.close(rs);
         double timeInterval = (System.currentTimeMillis() - startTime);
         Mediator.getLogger(SiteList.class.getName()).log(Level.INFO,
                 "Loaded {0} site entries in {1} milliseconds.",
