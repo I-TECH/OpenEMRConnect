@@ -119,7 +119,7 @@ public class HdssDataParser {
                 m = Person.MaritalStatus.single;
             } else if (mtal.compareTo("WIDOWED") == 0) {
                 m = Person.MaritalStatus.widowed;
-            } else if (mtal.compareTo("DIVORCE/SEPERATED") == 0) {
+            } else if (mtal.compareTo("DIVORCE/SEPARATED") == 0 || mtal.compareTo("DIVORCE/SEPERATED") == 0) {
                 m = Person.MaritalStatus.widowed;
             } else if (mtal.compareTo("DON'T KNOW") == 0) {
                 m = Person.MaritalStatus.widowed;
