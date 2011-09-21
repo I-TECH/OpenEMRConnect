@@ -90,16 +90,10 @@ public class PersonWrapper {
     }
 
     public void setClinicId(String clinicId) throws MalformedCliniIdException {
-        if (!OECReception.validateClinicId(clinicId)) {
+        PersonIdentifier personIdentifier = OECReception.createPersonIdentifier(clinicId);
+        if (personIdentifier == null) {
             throw new MalformedCliniIdException();
         }
-        PersonIdentifier personIdentifier = new PersonIdentifier();
-        PersonIdentifier.Type type = OECReception.deducePersonIdentifierType(clinicId);
-        if (type == PersonIdentifier.Type.cccLocalId) {
-            clinicId = OECReception.prependClinicCode(clinicId);
-        }
-        personIdentifier.setIdentifier(clinicId);
-        personIdentifier.setIdentifierType(type);
         List<PersonIdentifier> personIdentifierList = preparedPersonIdentifierList(personIdentifier);
         if (!personIdentifierList.contains(personIdentifier)) {
             personIdentifierList.add(personIdentifier);

@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -110,6 +111,7 @@ public final class PersistenceManager {
             this.close(statement);
             this.close(resultSet);
         }
+        log("User '" + user.getUsername() + "' attempted to log into reception with password '******' [success = '" + authentic + "'].");
         return authentic;
     }
 
@@ -120,6 +122,7 @@ public final class PersistenceManager {
             statement.executeUpdate("INSERT INTO " + userTable + "(username, password, admin) "
                     + "VALUES ('" + user.getUsername() + "', '" + new String(user.getPassword()) + "', "
                     + (user.isAdmin() ? 1 : 0) + ")");
+            log("User '" + user.getUsername() + "' created with password = '******' and admin = '" + user.isAdmin()+ "'");
         } catch (SQLException ex) {
             if (ex.getErrorCode() == 30000) {
                 throw new ExistingUserException();
@@ -138,6 +141,21 @@ public final class PersistenceManager {
             statement = this.getStatement();
             statement.executeUpdate("UPDATE " + userTable + " SET password = '" + new String(user.getPassword())
                     + "', admin = " + (user.isAdmin() ? 1 : 0) + " WHERE username = '" + user.getUsername() + "'");
+            log("User '" + user.getUsername() + "' modified with password = '******' and admin = '" + user.isAdmin()+ "'");
+        } catch (SQLException ex) {
+            Logger.getLogger(PersistenceManager.class.getName()).log(Level.SEVERE, null, ex);
+            throw new PersistenceManagerException();
+        } finally {
+            this.close(statement);
+        }
+    }
+
+    public void deleteUser(User user) throws PersistenceManagerException {
+        Statement statement = null;
+        try {
+            statement = this.getStatement();
+            statement.executeUpdate("DELETE FROM " + userTable + " WHERE username = '" + user.getUsername() + "'");
+           log("User '" + user.getUsername() + "' deleted with password = '******' and admin = '" + user.isAdmin()+ "'");
         } catch (SQLException ex) {
             Logger.getLogger(PersistenceManager.class.getName()).log(Level.SEVERE, null, ex);
             throw new PersistenceManagerException();
@@ -172,6 +190,7 @@ public final class PersistenceManager {
             statement = this.getStatement();
             statement.executeUpdate("INSERT INTO " + departmentTable + "(name, code) VALUES ('"
                     + department.getName() + "', '" + department.getCode() + "')");
+            log("Department '" + department.getName() + "' created with code = '" + department.getCode()+ "'");
         } catch (SQLException ex) {
             Logger.getLogger(PersistenceManager.class.getName()).log(Level.SEVERE, null, ex);
             throw new PersistenceManagerException();
@@ -184,8 +203,9 @@ public final class PersistenceManager {
         Statement statement = null;
         try {
             statement = this.getStatement();
-            statement.executeUpdate("UPDATE " + departmentTable + " SET code = '" 
+            statement.executeUpdate("UPDATE " + departmentTable + " SET code = '"
                     + department.getCode() + "' WHERE name = '" + department.getName() + "'");
+            log("Department '" + department.getName() + "' modified with code = '" + department.getCode()+ "'");
         } catch (SQLException ex) {
             Logger.getLogger(PersistenceManager.class.getName()).log(Level.SEVERE, null, ex);
             throw new PersistenceManagerException();
@@ -199,6 +219,7 @@ public final class PersistenceManager {
         try {
             statement = this.getStatement();
             statement.executeUpdate("DELETE FROM " + departmentTable + " WHERE name = '" + department.getName() + "'");
+            log("Department '" + department.getName() + "' deleted with code = '" + department.getCode()+ "'");
         } catch (SQLException ex) {
             Logger.getLogger(PersistenceManager.class.getName()).log(Level.SEVERE, null, ex);
             throw new PersistenceManagerException();
@@ -304,7 +325,7 @@ public final class PersistenceManager {
                 char[] defaultPassword = {'a', 'd', 'm', 'i', 'n'};
                 createUser(new User("admin", defaultPassword, true));
             } catch (ExistingUserException ex) {
-                Logger.getLogger(PersistenceManager.class.getName()).log(Level.INFO, null, 
+                Logger.getLogger(PersistenceManager.class.getName()).log(Level.INFO, null,
                         "Tried to create a default user when one already existed. " + ex);
             }
         }
@@ -356,5 +377,10 @@ public final class PersistenceManager {
                 Logger.getLogger(PersistenceManager.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    private void log(String message) {
+        Mediator.getLogger(PersistenceManager.class.getName()).log(Level.INFO, "{0} [Time = {1}, User = {2}]", new Object[]{message, new Date().toString(), 
+            OECReception.getUser() != null ? OECReception.getUser() : "None"});
     }
 }

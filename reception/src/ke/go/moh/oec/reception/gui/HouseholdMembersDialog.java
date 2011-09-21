@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.reception.controller.OECReception;
+import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import org.jdesktop.application.Action;
 import org.jdesktop.beansbinding.Binding;
 
@@ -49,6 +50,12 @@ public class HouseholdMembersDialog extends javax.swing.JDialog {
         initComponents();
         displayHouseholdMembers(householdMemberList);
         this.setIconImage(OECReception.applicationIcon());
+        this.getRootPane().setDefaultButton(closeButton);
+        addEscapeListener();
+    }
+
+    private void addEscapeListener() {
+        DialogEscaper.addEscapeListener(this);
     }
 
     private void displayHouseholdMembers(List<Person> householdMemberList) {

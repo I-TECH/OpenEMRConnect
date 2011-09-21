@@ -34,6 +34,7 @@ import ke.go.moh.oec.Person;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.controller.PersonWrapper;
 import ke.go.moh.oec.reception.data.DisplayableMaritalStatus;
+import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
 import org.jdesktop.application.Action;
 
 /**
@@ -41,9 +42,9 @@ import org.jdesktop.application.Action;
  * @author Gitahi Ng'ang'a
  */
 public class ConfirmationDialog extends javax.swing.JDialog {
-    
+
     private final PersonWrapper personWrapper;
-    
+
     public ConfirmationDialog(java.awt.Frame parent, boolean modal, PersonWrapper personWrapper, String title) {
         super(parent, modal);
         initComponents();
@@ -51,8 +52,14 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         populateFields();
         this.setIconImage(OECReception.applicationIcon());
         this.setTitle(title);
+        this.getRootPane().setDefaultButton(acceptButton);
+        addEscapeListener();
     }
-    
+
+    private void addEscapeListener() {
+        DialogEscaper.addEscapeListener(this);
+    }
+
     private void populateFields() {
         clinicIdTextField.setText(personWrapper.getClinicId());
         firstNameTextField.setText(personWrapper.getFirstName());
@@ -511,7 +518,7 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         personWrapper.setConfirmed(true);
         dispose();
     }
-    
+
     @Action
     public void reject() {
         personWrapper.setConfirmed(false);

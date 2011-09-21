@@ -70,7 +70,7 @@ public class NotificationSoundPlayer {
         return instance;
     }
 
-    public void play() {
+    public boolean play() {
         if (ready) {
             try //just incase the sound doesn't load correctly
             {    //we don't want it throwing errors
@@ -82,6 +82,7 @@ public class NotificationSoundPlayer {
                 Logger.getLogger(MainViewHelper.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        return ready;
     }
 
     @Override
