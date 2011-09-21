@@ -37,6 +37,7 @@ import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.RelatedPerson;
 import ke.go.moh.oec.Work;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.reception.controller.NotificationListener;
 import ke.go.moh.oec.reception.controller.NotificationManager;
 import ke.go.moh.oec.reception.controller.OECReception;
@@ -145,71 +146,96 @@ public class MainViewHelper implements NotificationManager {
                 && lpiRequestResult.isSuccessful()) {
             mpiPersonList = (List<Person>) mpiRequestResult.getData();
             lpiPersonList = (List<Person>) lpiRequestResult.getData();
-            if (checkForLinkedCandidates(lpiPersonList)) {
-                return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, removeRejectedLpiCandidates(lpiPersonList)));
-            } else {
-                if (checkForFingerprintCandidates(mpiPersonList)) {
-                    return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, removeRejectedMpiCandidates(mpiPersonList)));
+
+            if (!lastResort || (lastResort && targetServer == Server.MPI_LPI)) {
+                if (checkForLinkedCandidates(lpiPersonList)) {
+                    return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, removeRejectedLpiCandidates(lpiPersonList)));
                 } else {
-                    if (!minimumSearchFingerprintsTaken()) {
-                        return new SearchProcessResult(SearchProcessResult.Type.NEXT_FINGERPRINT, null);
+                    if (checkForFingerprintCandidates(mpiPersonList)) {
+                        return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, removeRejectedMpiCandidates(mpiPersonList)));
                     } else {
-                        if (!session.getAnyUnsentFingerprints().isEmpty()) {
-                            for (ImagedFingerprint imagedFingerprint : session.getAnyUnsentFingerprints()) {
-                                session.setActiveImagedFingerprint(imagedFingerprint);
-                                searchPersonWrapper.addFingerprint(imagedFingerprint);
-                                break;
-                            }
-                            return findPerson(Server.MPI_LPI, searchPersonWrapper);
+                        if (!minimumSearchFingerprintsTaken()) {
+                            return new SearchProcessResult(SearchProcessResult.Type.NEXT_FINGERPRINT, null);
                         } else {
-                            if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
-                                return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, lpiPersonList));
+                            if (!session.getAnyUnsentFingerprints().isEmpty()) {
+                                for (ImagedFingerprint imagedFingerprint : session.getAnyUnsentFingerprints()) {
+                                    session.setActiveImagedFingerprint(imagedFingerprint);
+                                    searchPersonWrapper.addFingerprint(imagedFingerprint);
+                                    break;
+                                }
+                                return findPerson(Server.MPI_LPI, searchPersonWrapper);
                             } else {
-                                if (!removeRejectedMpiCandidates(mpiPersonList).isEmpty()) {
-                                    return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, mpiPersonList));
+                                if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
+                                    return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, lpiPersonList));
                                 } else {
-                                    return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
+                                    if (!removeRejectedMpiCandidates(mpiPersonList).isEmpty()) {
+                                        return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, mpiPersonList));
+                                    } else {
+                                        return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-        } else {
-            if (!mpiRequestResult.isSuccessful()
-                    && !lpiRequestResult.isSuccessful()) {
-                if (mainView.showConfirmMessage("Both the Master and the Local Person Indices could not be contacted. "
-                        + "Would you like to try contacting them again?", ((MainView) mainView).getFrame())) {
-                    return findPerson(Server.MPI_LPI, searchPersonWrapper);
+            } else if (lastResort && targetServer == Server.MPI) {
+                if (!removeRejectedMpiCandidates(mpiPersonList).isEmpty()) {
+                    return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, mpiPersonList));
+                } else {
+                    return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
+                }
+            } else if (lastResort && targetServer == Server.LPI) {
+                if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
+                    return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, lpiPersonList));
+                } else {
+                    return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
                 }
             } else {
+                //this is not expected to happen
+                Mediator.getLogger(MainViewHelper.class.getName()).log(Level.SEVERE, "Illogical condition occured in findPerson() at line 195.");
+                return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
+            }
+
+        } else {
+            //only offer retry for non-last resort searches
+            if (!lastResort) {
                 if (!mpiRequestResult.isSuccessful()
-                        && lpiRequestResult.isSuccessful()) {
-                    lpiPersonList = (List<Person>) lpiRequestResult.getData();
-                    if (mainView.showConfirmMessage("The Master Person Index could not be contacted. "
-                            + "Would you like to try contacting it again?", ((MainView) mainView).getFrame())) {
-                        return findPerson(Server.MPI, searchPersonWrapper);
+                        && !lpiRequestResult.isSuccessful()) {
+                    if (mainView.showConfirmMessage("Both the Master and the Local Person Indices could not be contacted. "
+                            + "Would you like to try contacting them again?", ((MainView) mainView).getFrame())) {
+                        return findPerson(Server.MPI_LPI, searchPersonWrapper);
                     }
-                    if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
-                        return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, lpiPersonList));
-                    } else {
-                        return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
-                    }
-                } else if (!lpiRequestResult.isSuccessful()
-                        && mpiRequestResult.isSuccessful()) {
-                    mpiPersonList = (List<Person>) mpiRequestResult.getData();
-                    if (mainView.showConfirmMessage("The Local Person Index could not be contacted. "
-                            + "Would you like to try contacting it again?", ((MainView) mainView).getFrame())) {
-                        return findPerson(Server.LPI, searchPersonWrapper);
-                    }
-                    if (!removeRejectedMpiCandidates(mpiPersonList).isEmpty()) {
-                        return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, mpiPersonList));
-                    } else {
-                        return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
+                } else {
+                    if (!mpiRequestResult.isSuccessful()
+                            && lpiRequestResult.isSuccessful()) {
+                        lpiPersonList = (List<Person>) lpiRequestResult.getData();
+                        if (mainView.showConfirmMessage("The Master Person Index could not be contacted. "
+                                + "Would you like to try contacting it again?", ((MainView) mainView).getFrame())) {
+                            return findPerson(Server.MPI, searchPersonWrapper);
+                        }
+                        if (!removeRejectedLpiCandidates(lpiPersonList).isEmpty()) {
+                            return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.LPI, lpiPersonList));
+                        } else {
+                            return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
+                        }
+                    } else if (!lpiRequestResult.isSuccessful()
+                            && mpiRequestResult.isSuccessful()) {
+                        mpiPersonList = (List<Person>) mpiRequestResult.getData();
+                        if (mainView.showConfirmMessage("The Local Person Index could not be contacted. "
+                                + "Would you like to try contacting it again?", ((MainView) mainView).getFrame())) {
+                            return findPerson(Server.LPI, searchPersonWrapper);
+                        }
+                        if (!removeRejectedMpiCandidates(mpiPersonList).isEmpty()) {
+                            return new SearchProcessResult(SearchProcessResult.Type.LIST, new SearchServerResponse(Server.MPI, mpiPersonList));
+                        } else {
+                            return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
+                        }
                     }
                 }
+                return new SearchProcessResult(SearchProcessResult.Type.UNREACHABLE_SERVER, null);
+            } else {
+                return new SearchProcessResult(SearchProcessResult.Type.EXIT, null);
             }
-            return new SearchProcessResult(SearchProcessResult.Type.UNREACHABLE_SERVER, null);
         }
     }
 

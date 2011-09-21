@@ -82,67 +82,6 @@ public class OECReception {
         OECReception.user = user;
     }
 
-//    public static PersonIdentifier.Type deducePersonIdentifierType(String personIdentifier) {
-//        PersonIdentifier.Type identifierType = null;
-//        if (personIdentifier != null && !personIdentifier.isEmpty()) {
-//            if (personIdentifier.contains("-") && !personIdentifier.contains("/")) {
-//                String[] partsOfWhole = personIdentifier.split("-");
-//                if ((partsOfWhole.length == 2 && partsOfWhole[0].length() == 5)
-//                        && (partsOfWhole.length == 2 && partsOfWhole[1].length() == 5)) {
-//                    identifierType = PersonIdentifier.Type.cccUniqueId;
-//                } else if (personIdentifier.length() < 20
-//                        && partsOfWhole.length == 4) {
-//                    identifierType = PersonIdentifier.Type.kisumuHdssId;
-//                }
-//            } else if (personIdentifier.contains("/") && !personIdentifier.contains("-")) {
-//                String[] partsOfWhole = personIdentifier.split("/");
-//                if ((partsOfWhole.length == 2 && partsOfWhole[0].length() == 5)
-//                        && (partsOfWhole.length == 2 && partsOfWhole[1].length() == 4)) {
-//                    identifierType = PersonIdentifier.Type.cccLocalId;
-//                }
-//            } else if (personIdentifier.contains("/") && personIdentifier.contains("-")) {
-//                String[] partsOfWhole = personIdentifier.split("-");
-//                if ((partsOfWhole.length == 2 && partsOfWhole[0].length() == 5)) {
-//                    String partsOfClinicId[] = personIdentifier.split("/");
-//                    if (partsOfClinicId.length == 2) {
-//                        if (partsOfClinicId[0].length() == 5 && partsOfClinicId[1].length() == 4) {
-//                            identifierType = PersonIdentifier.Type.cccUniqueId;
-//                        }
-//                    }
-//                }
-//                if (containsLocaFacilityCode(personIdentifier)) {
-//                    identifierType = PersonIdentifier.Type.cccLocalId;
-//                }
-//            } else if (personIdentifier.length() == 30) {
-//                identifierType = PersonIdentifier.Type.masterPatientRegistryId;
-//            }
-//        }
-//        return identifierType;
-//    }
-    private static boolean containsLocaFacilityCode(String clinicId) {
-        boolean prepended = false;
-        String[] partsOfWhole = clinicId.split("-");
-        int m = partsOfWhole.length;
-        if (m == 2) {
-            if (partsOfWhole[0].equalsIgnoreCase(OECReception.facilityCode())) {
-                prepended = true;
-            }
-        }
-        return prepended;
-    }
-
-//    public static boolean validateClinicId(String clinicId) {
-//        return deducePersonIdentifierType(clinicId) != null;
-//    }
-//    public static String prependClinicCode(String clinicId) {
-//        if (!containsLocaFacilityCode(clinicId)) {
-//            String clinicCode = OECReception.facilityCode();
-//            if (clinicCode != null) {
-//                clinicId = clinicCode + "-" + clinicId;
-//            }
-//        }
-//        return clinicId;
-//    }
     public static String extractFacilityCode(String clinicId) {
         String facilityCode = "";
         String[] partsOfWhole = clinicId.split("-");

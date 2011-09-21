@@ -4266,18 +4266,21 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
                 searchProcessResult = mainViewHelper.findPerson(Server.MPI_LPI, mpiUpdatePersonWrapper, true);
                 if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
                     showSearchResults(new SearchServerResponse(Server.MPI_LPI, (List<Person>) searchProcessResult.getData().getPersonList()), true);
+                    return;
                 }
             } else if (mainViewHelper.noMPIMatchWasFound()
                     && !mainViewHelper.noLPIMatchWasFound()) {
                 searchProcessResult = mainViewHelper.findPerson(Server.MPI, mpiUpdatePersonWrapper, true);
                 if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
                     showSearchResults((SearchServerResponse) searchProcessResult.getData(), true);
+                    return;
                 }
             } else if (!mainViewHelper.noMPIMatchWasFound()
                     && mainViewHelper.noLPIMatchWasFound()) {
                 searchProcessResult = mainViewHelper.findPerson(Server.LPI, lpiUpdatePersonWrapper, true);
                 if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
                     showSearchResults(new SearchServerResponse(Server.LPI, searchProcessResult.getData().getPersonList()), true);
+                    return;
                 }
             }
             mainViewHelper.setLastResortSearchDone(true);
@@ -4285,18 +4288,14 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
         //update person identifiers
         if (lpiUpdatePersonWrapper.getKisumuHdssId().isEmpty()
                 || !lpiUpdatePersonWrapper.getKisumuHdssId().equalsIgnoreCase(mpiUpdatePersonWrapper.getKisumuHdssId())) {
-            lpiUpdatePersonWrapper.setKisumuHdssId(mpiUpdatePersonWrapper.getKisumuHdssId());
+            if (!mpiUpdatePersonWrapper.getKisumuHdssId().isEmpty()) {
+                lpiUpdatePersonWrapper.setKisumuHdssId(mpiUpdatePersonWrapper.getKisumuHdssId());
+            }
         }
         if (mpiUpdatePersonWrapper.getClinicId().isEmpty()
                 || !mpiUpdatePersonWrapper.getClinicId().equalsIgnoreCase(lpiUpdatePersonWrapper.getClinicId())) {
             try {
                 mpiUpdatePersonWrapper.setClinicId(mpiUpdatePersonWrapper.getClinicId());
-
-
-
-
-
-
             } catch (MalformedCliniIdException ex) {
                 Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -5170,12 +5169,6 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
 
     private void clearFingerprintImagePanel() {
         quickSearchFingerprintImagePanel.setImage(mainViewHelper.getMissingFingerprint().getImage());
-
-
-
-
-
-
     }
 
     private class QuickSearchManager {
