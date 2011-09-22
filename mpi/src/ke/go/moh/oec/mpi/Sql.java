@@ -133,12 +133,9 @@ public class Sql {
     public static ResultSet query(Connection conn, String sql, Level loggerLevel) {
         Mediator.getLogger(Sql.class.getName()).log(loggerLevel, "SQL Query:\n{0}", sql);
         ResultSet rs = null;
-
-
-
         try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
+            Statement stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Error executing SQL Query " + sql, ex);
@@ -161,8 +158,6 @@ public class Sql {
         try {
             returnValue = rs.next();
             Sql.close(rs);
-
-
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -179,9 +174,6 @@ public class Sql {
     public static boolean execute(Connection conn, String sql) {
         Mediator.getLogger(Sql.class.getName()).log(Level.FINE, "SQL Execute:\n{0}", sql);
         boolean returnValue = false;
-
-
-
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
             returnValue = stmt.execute();
@@ -191,7 +183,6 @@ public class Sql {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Error executing SQL statement " + sql, ex);
         }
-
         return returnValue;
     }
 
@@ -239,8 +230,6 @@ public class Sql {
                 returnId = rs.getString("LAST_INSERT_ID()");
             }
             Sql.close(rs);
-
-
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Unexpected error getting LAST_INSERT_ID()", ex);
         }
@@ -269,8 +258,6 @@ public class Sql {
                     returnId = rs.getString(idColumn);
                 }
                 Sql.close(rs);
-
-
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "getLookupId() error executing query " + sql, ex);
             }
@@ -314,8 +301,6 @@ public class Sql {
                     returnId = Integer.toString(rs.getInt("village_id"));
                 }
                 Sql.close(rs);
-
-
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Error getting village ID for " + quote(villageName), ex);
             }
@@ -351,8 +336,6 @@ public class Sql {
                     returnId = Integer.toString(rs.getInt("address_id"));
                 }
                 Sql.close(rs);
-
-
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Error getting address ID for " + quote(address), ex);
             }
