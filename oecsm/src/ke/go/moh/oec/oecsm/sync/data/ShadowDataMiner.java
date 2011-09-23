@@ -74,6 +74,6 @@ public class ShadowDataMiner extends DatabaseConnector {
 
     public void finish() throws SQLException {
         statement.close();
-        disconnect();
+        disconnectFromShadow();
     }
 }

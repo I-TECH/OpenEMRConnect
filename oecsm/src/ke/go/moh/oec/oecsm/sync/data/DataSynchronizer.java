@@ -216,7 +216,7 @@ public class DataSynchronizer extends DatabaseConnector {
         } catch (Exception ex) {
             Logger.getLogger(DataSynchronizer.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            disconnect();
+            disconnectFromShadow();
         }
     }
 }

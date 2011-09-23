@@ -71,7 +71,7 @@ public class SchemaSynchronizer extends DatabaseConnector {
             connection.commit();
             statement.close();
         } finally {
-            disconnect();
+            disconnectFromShadow();
         }
     }
 

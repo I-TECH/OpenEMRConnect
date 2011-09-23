@@ -51,7 +51,7 @@ public class SourceSchemaMiner extends DatabaseConnector {
             db = new Database(database);
             populateTableList(db);
         } finally {
-            disconnect();
+            disconnectFromSource();
         }
         return db;
     }
