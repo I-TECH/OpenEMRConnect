@@ -205,14 +205,14 @@ public class Updater {
             rsDetail.close();
             boolean status = updateTransaction(transactionType, hdssId, rowList);
             if (status) {
-            lastReceivedTransaction = transId;
-            sql = "UPDATE `destination` SET `last_received_transaction_id` = " + transId + " WHERE `name` = '" + HDSS_COMPANION_NAME + "'";
-            try {
-                execute(connDetail, sql);
-            } catch (Exception e) {
-                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update last_received_transaction_id.", e);
-                break;
-            }
+                lastReceivedTransaction = transId;
+                sql = "UPDATE `destination` SET `last_received_transaction_id` = " + transId + " WHERE `name` = '" + HDSS_COMPANION_NAME + "'";
+                try {
+                    execute(connDetail, sql);
+                } catch (Exception e) {
+                    Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update last_received_transaction_id.", e);
+                    break;
+                }
             } else {
                 Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update MPI.");
                 break;
@@ -376,10 +376,18 @@ public class Updater {
         } else {
             p.setFingerprintList(null); // No need to return exisiting fingerprints.
         }
-        PersonResponse pr = requestMpi(p, requestTypeId);
         boolean returnStatus = false; // Assume failure for the moment.
-        if (pr != null && pr.isSuccessful()) {
-            returnStatus = true; // We succeeded!
+        //
+        // If we are creating a new person entry, and the person has already died,
+        // don't bother putting the entry in the MPI. However if this is an update
+        // and the person has died, we want to update the person's status in the MPI.
+        if (requestTypeId == RequestTypeId.CREATE_PERSON_MPI && p.getDeathdate() != null) {
+            returnStatus = true; // Claim success; we won't insert a dead person into the MPI.
+        } else {
+            PersonResponse pr = requestMpi(p, requestTypeId);
+            if (pr != null && pr.isSuccessful()) {
+                returnStatus = true; // We succeeded!
+            }
         }
         return returnStatus;
     }
