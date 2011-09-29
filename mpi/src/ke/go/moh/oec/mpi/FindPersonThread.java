@@ -95,7 +95,11 @@ public class FindPersonThread implements Runnable {
             PersonMatch pm = personList.get(i);
             Scorecard s = searchTerms.scorePersonMatch(pm);
             List<FingerprintMatch> fMatchList = pm.getFingerprintMatchList();
-            if (fSearchList != null && fMatchList != null) {
+            if (fSearchList == null) {
+                s.addScore(Scorecard.SEARCH_TERM_MISSING_WEIGHT, 0, Scorecard.SearchTerm.MISSING);
+            } else if (fMatchList == null) {
+                s.addScore(Scorecard.MPI_VALUE_MISSING_WEIGHT, 0);
+            } else {
                 double maxScore = 0.0;
                 for (FingerprintMatch fSearch : fSearchList) {
                     for (FingerprintMatch fMatch : fMatchList) {
@@ -109,19 +113,21 @@ public class FindPersonThread implements Runnable {
                         }
                     }
                 }
-                final double FINGERPRINT_WEIGHT = 5.0;
-                s.addScore(maxScore, FINGERPRINT_WEIGHT); // Give fingerprint matches a weight of 5.
+                double weight = Scorecard.FINGERPRINT_MATCH_WEIGHT;
+                if (maxScore == 0.0) {
+                    weight = Scorecard.FINGERPRINT_MISS_WEIGHT;
+                }
+                s.addScore(weight, maxScore);
                 if (Mediator.testLoggerLevel(Level.FINEST)) {
                     Mediator.getLogger(FindPersonThread.class.getName()).log(Level.FINEST,
-                            "Score {0},{1} total {2},{3} comparing fingerprints with person GUID {4}}",
-                            new Object[]{maxScore, FINGERPRINT_WEIGHT, s.getTotalScore(), s.getTotalWeight(), pm.getPerson().getPersonGuid()});
+                            "Score {0},{1} total {2},{3},{4} comparing fingerprints with person GUID {5}}",
+                            new Object[]{maxScore, weight, s.getTotalScore(), s.getTotalWeight(), s.getSearchTermScore(), pm.getPerson().getPersonGuid()});
                 }
             }
-            if (s.getScore() > CandidateSet.MIN_SCORE || s.isFingerprintMatched()) {
+            if (s.getSearchTermScore() > CandidateSet.MIN_SCORE || s.isFingerprintMatched()) {
                 candidateSet.add(pm, s);
             }
         }
-
         if (fSearchList != null && !fSearchList.isEmpty()) {
             for (FingerprintMatch f : fSearchList) {
                 f.destroy();

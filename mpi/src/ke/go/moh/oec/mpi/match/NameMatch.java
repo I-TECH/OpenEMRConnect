@@ -168,14 +168,23 @@ public class NameMatch extends StringMatch {
      * @param other The other name to match against.
      */
     public void score(Scorecard s, NameMatch other) {
-        Double score = computeScore(this, other);
-        if (score != null) {
-            final double NAME_WEIGHT = 1.0;
-            s.addScore(score, NAME_WEIGHT);
-            if (Mediator.testLoggerLevel(Level.FINEST)) {
-                Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
-                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
-                        new Object[]{score, NAME_WEIGHT, s.getTotalScore(), s.getTotalWeight(), getOriginal(), other.getOriginal()});
+        if (getOriginal() == null) {
+            s.addScore(Scorecard.SEARCH_TERM_MISSING_WEIGHT, 0, Scorecard.SearchTerm.MISSING);
+        } else if (other.getOriginal() == null) {
+            s.addScore(Scorecard.MPI_VALUE_MISSING_WEIGHT, 0);
+        } else {
+            Double score = computeScore(this, other);
+            if (score != null) {
+                double weight = Scorecard.OTHER_MATCH_WEIGHT;
+                if (score == 0) {
+                    weight = Scorecard.OTHER_MISS_WEIGHT;
+                }
+                s.addScore(weight, score);
+                if (Mediator.testLoggerLevel(Level.FINEST)) {
+                    Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
+                            "Score {0},{1} total {2},{3},{4} comparing {5} with {6}",
+                            new Object[]{score, weight, s.getTotalScore(), s.getTotalWeight(), s.getSearchTermScore(), getOriginal(), other.getOriginal()});
+                }
             }
         }
     }
