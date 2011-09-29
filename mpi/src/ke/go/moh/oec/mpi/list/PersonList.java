@@ -400,23 +400,25 @@ public class PersonList {
                 + "NOW()"
                 + ");";
         Sql.startTransaction(conn);
-        Sql.execute(conn, sql);
-        int dbPersonId = Integer.parseInt(Sql.getLastInsertId(conn));
-        PersonIdentifierList.update(conn, dbPersonId, p.getPersonIdentifierList(), null);
-        FingerprintList.update(conn, dbPersonId, p.getFingerprintList(), null);
-        VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
-        VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
+        boolean successful = Sql.execute(conn, sql);
+        if (successful) {
+            int dbPersonId = Integer.parseInt(Sql.getLastInsertId(conn));
+            PersonIdentifierList.update(conn, dbPersonId, p.getPersonIdentifierList(), null);
+            FingerprintList.update(conn, dbPersonId, p.getFingerprintList(), null);
+            VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
+            VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
+            PersonMatch newPer = new PersonMatch(p.clone()); // Clone to protect from unit test modifications.
+            newPer.setDbPersonId(dbPersonId);
+            this.add(newPer);
+            SearchHistory.update(req, null, null); // Update search history showing that no candidate was selected.
+        }
         Sql.commit(conn);
         Sql.close(conn);
-        PersonMatch newPer = new PersonMatch(p.clone()); // Clone to protect from unit test modifications.
-        newPer.setDbPersonId(dbPersonId);
-        this.add(newPer);
-        SearchHistory.update(req, null, null); // Update search history showing that no candidate was selected.
         if (returnData != null) {
             List<Person> returnList = new ArrayList<Person>();
             returnList.add(p);
             returnData.setPersonList(returnList);
-            returnData.setSuccessful(true); // We have succeeded.
+            returnData.setSuccessful(successful); // We have succeeded.
         }
         return returnData;
     }

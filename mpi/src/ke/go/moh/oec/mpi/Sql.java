@@ -169,11 +169,11 @@ public class Sql {
      *
      * @param conn Connection to use.
      * @param sql SQL statement.
-     * @return true if first result is a ResultSet.
+     * @return true if there was no exception, otherwise false.
      */
     public static boolean execute(Connection conn, String sql) {
         Mediator.getLogger(Sql.class.getName()).log(Level.FINE, "SQL Execute:\n{0}", sql);
-        boolean returnValue = false;
+        boolean returnValue = true;
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
             returnValue = stmt.execute();
@@ -182,6 +182,7 @@ public class Sql {
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Error executing SQL statement " + sql, ex);
+            returnValue = false;
         }
         return returnValue;
     }
