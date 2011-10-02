@@ -46,12 +46,12 @@ public class Mpi implements IService {
     private static int maxThreadCount = 0;
 
     /**
-     * Start up MPI processing. Load the database into memory so it can be
+     * Starts up MPI processing. Load the database into memory so it can be
      * searched more quickly. Approximate string matching and fingerprint
      * matching require that search terms be matched against every database
      * entry.
      */
-    public Mpi() {
+    public void initialize() {
         final String driverName = Mediator.getProperty("MPI.driver");
         try {
             Class.forName(driverName).newInstance();
@@ -60,8 +60,17 @@ public class Mpi implements IService {
                     "Can''t load JDBC driver " + driverName, ex);
             System.exit(1);
         }
-        siteList.load();
+        //
+        // Load the site list in a separate thread from loding the person list.
+        // This is done to speed up loading time.
+        Thread loadSitesThread = new Thread(siteList);
+        loadSitesThread.start();
         personList.load();
+        try {
+            loadSitesThread.join();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
+        }
         personList.setSiteList(siteList); // PersonList will (also) need to know about this list.
     }
 

@@ -49,6 +49,7 @@ public class Main {
     public static void main(String[] args) {
         Thread.currentThread().setName("Mpi"); // For identification while debugging
         Mpi mpi = new Mpi();
+        mpi.initialize();
         Mediator.registerCallback(mpi);
 
         mediator = new Mediator();

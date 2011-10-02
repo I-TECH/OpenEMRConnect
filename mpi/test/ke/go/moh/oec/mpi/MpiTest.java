@@ -47,6 +47,7 @@ public class MpiTest {
         Sql.commit(conn);
         Sql.close(conn);
         mpi = new Mpi();
+        mpi.initialize();
     }
 
     @AfterClass

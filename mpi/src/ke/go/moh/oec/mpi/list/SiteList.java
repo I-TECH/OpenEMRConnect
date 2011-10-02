@@ -48,7 +48,7 @@ import ke.go.moh.oec.mpi.match.SiteMatch;
  *
  * @author Jim Grace
  */
-public class SiteList {
+public class SiteList implements Runnable {
 
     // The number of candidate sites can be large, because we may not find
     // the given identifier at most of them.
@@ -58,8 +58,10 @@ public class SiteList {
 
     /**
      * Loads the site list from the database.
+     * <p>
+     * Implements java.lang.Runnable.run().
      */
-    public void load() {
+    public void run() {
         long startTime = System.currentTimeMillis();
         Connection conn = Sql.connect();
         String sql = "SELECT facility_code, facility_name FROM facility";
