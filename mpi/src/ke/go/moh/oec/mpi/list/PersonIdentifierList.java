@@ -43,21 +43,48 @@ import ke.go.moh.oec.mpi.ValueMap;
  */
 public class PersonIdentifierList {
 
+    private Connection conn;    // Connection for loading fingerprints
+    private ResultSet rs;       // Result set for loading fingerprints
+    private boolean rsNext;     // Is there a next record in the result set?
+
     /**
-     * Loads into memory the person identifiers for a given person.
-     *
-     * @param conn Connection on which to do the query.
-     * @param dbPersonId Internal database ID for the person associated with these identifiers.
-     * @return The list of person identifiers.
+     * Starts loading person identifiers into memory.
+     * <p>
+     * For efficiency, person identifiers for all patients are loaded by a single query,
+     * in order by personId. Then a merge sort on person identifiers is done between the
+     * loaded person identifiers list and the loaded person list.
      */
-    public static List<PersonIdentifier> load(Connection conn, int dbPersonId) {
-        List<PersonIdentifier> personIdentifierList = null;
-        String sql = "SELECT pi.identifier, pi.identifier_type_id\n"
+    public void loadStart() {
+        conn = Sql.connect();
+        String sql = "SELECT pi.person_id, pi.identifier, pi.identifier_type_id\n"
                 + "FROM person_identifier pi\n"
-                + "WHERE pi.person_id = " + dbPersonId;
-        ResultSet rs = Sql.query(conn, sql, Level.FINEST);
+                + "ORDER BY pi.person_id";
+        rs = Sql.query(conn, sql, Level.FINEST);
         try {
-            while (rs.next()) {
+            rsNext = rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(PersonIdentifierList.class.getName()).log(Level.SEVERE, null, ex);
+            rsNext = false;
+        }
+    }
+
+    /**
+     * Loads the next person identifiers into memory matching the given personId.
+     * 
+     * @param dbPersonId Database person_id value for person identifiers to load.
+     * @return list of person identifiers for this person.
+     */
+    public List<PersonIdentifier> loadNext(int dbPersonId) {
+        List<PersonIdentifier> personIdentifierList = null;
+        try {
+            // If we haven't yet reached the requested personId, skip over any
+            // database records that come before that personId.
+            while (rsNext && rs.getInt("person_id") < dbPersonId) {
+                rsNext = rs.next();
+            }
+            // While we are matching the requested personId, include any
+            // person identifiers that match that Id.
+            while (rsNext && rs.getInt("person_id") == dbPersonId) {
                 if (personIdentifierList == null) {
                     personIdentifierList = new ArrayList<PersonIdentifier>();
                 }
@@ -67,13 +94,21 @@ public class PersonIdentifierList {
                 pi.setIdentifier(rs.getString("identifier"));
                 pi.setIdentifierType(pit);
                 personIdentifierList.add(pi);
+                rsNext = rs.next();
             }
-            Sql.close(rs);
         } catch (SQLException ex) {
-            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
+            Logger.getLogger(FingerprintList.class.getName()).log(Level.SEVERE, null, ex);
         }
         return personIdentifierList;
+    }
+
+    /**
+     * Ends loading fingerprints.
+     * Releases any resources used.
+     */
+    public void loadEnd() {
+        Sql.close(rs);
+        Sql.close(conn);
     }
 
     /**

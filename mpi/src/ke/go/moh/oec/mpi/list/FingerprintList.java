@@ -43,21 +43,48 @@ import ke.go.moh.oec.mpi.ValueMap;
  */
 public class FingerprintList {
 
+    private Connection conn;    // Connection for loading fingerprints
+    private ResultSet rs;       // Result set for loading fingerprints
+    private boolean rsNext;     // Is there a next record in the result set?
+
     /**
-     * Loads into memory the fingerprints for a given person.
-     *
-     * @param conn Connection on which to do the query.
-     * @param dbPersonId Internal database ID for the person associated with these fingerprints.
-     * @return The list of fingerprints.
+     * Starts loading fingerprints into memory.
+     * <p>
+     * For efficiency, fingerprints for all patients are loaded by a single query,
+     * in order by personId. Then a merge sort on fingerprintId is done between the
+     * loaded fingerprint list and the loaded person list.
      */
-    public static List<Fingerprint> load(Connection conn, int dbPersonId) {
-        List<Fingerprint> fingerprintList = null;
-        String sql = "SELECT f.fingerprint_template, f.fingerprint_type_id, f.fingerprint_technology_type_id\n"
+    public void loadStart() {
+        conn = Sql.connect();
+        String sql = "SELECT f.person_id, f.fingerprint_template, f.fingerprint_type_id, f.fingerprint_technology_type_id\n"
                 + "FROM fingerprint f\n"
-                + "WHERE f.person_id = " + dbPersonId;
-        ResultSet rs = Sql.query(conn, sql, Level.FINEST);
+                + "ORDER BY f.person_id";
+        rs = Sql.query(conn, sql, Level.FINEST);
         try {
-            while (rs.next()) {
+            rsNext = rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(FingerprintList.class.getName()).log(Level.SEVERE, null, ex);
+            rsNext = false;
+        }
+    }
+
+    /**
+     * Loads the next fingerprint into memory matching the given personId.
+     * 
+     * @param dbPersonId Database person_id value for fingerprints to load.
+     * @return list of fingerprints for this person.
+     */
+    public List<Fingerprint> loadNext(int dbPersonId) {
+        List<Fingerprint> fingerprintList = null;
+        try {
+            // If we haven't yet reached the requested personId, skip over any
+            // database records that come before that personId.
+            while (rsNext && rs.getInt("person_id") < dbPersonId) {
+                rsNext = rs.next();
+            }
+            // While we are matching the requested personId, include any
+            // fingerprints that match that Id.
+            while (rsNext && rs.getInt("person_id") == dbPersonId) {
                 if (fingerprintList == null) {
                     fingerprintList = new ArrayList<Fingerprint>();
                 }
@@ -70,13 +97,21 @@ public class FingerprintList {
                 f.setFingerprintType(fingerprintType);
                 f.setTechnologyType(technologyType);
                 fingerprintList.add(f);
+                rsNext = rs.next();
             }
-            Sql.close(rs);
         } catch (SQLException ex) {
-            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
+            Logger.getLogger(FingerprintList.class.getName()).log(Level.SEVERE, null, ex);
         }
         return fingerprintList;
+    }
+
+    /**
+     * Ends loading fingerprints.
+     * Releases any resources used.
+     */
+    public void loadEnd() {
+        Sql.close(rs);
+        Sql.close(conn);
     }
 
     /**

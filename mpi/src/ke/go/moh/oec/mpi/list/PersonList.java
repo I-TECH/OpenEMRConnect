@@ -145,14 +145,7 @@ public class PersonList {
      * any joining person relation data.
      */
     public void load() {
-        /*
-         * Create two connections to the database. One will be used for
-         * the main query to the person table. The other will be used for
-         * the queries to load a list of identifiers or fingerprints for
-         * a single person.
-         */
-        Connection personConn = Sql.connect();
-        Connection listConn = Sql.connect();
+        Connection conn = Sql.connect();
         long startTime = System.currentTimeMillis();
         /*
          * For quick debugging, set queryLimit to a limite number of rows,
@@ -183,8 +176,12 @@ public class PersonList {
         if (queryLimitString != null) {
             sql = sql + "\nLIMIT " + Integer.parseInt(queryLimitString);
         }
-        ResultSet rs = Sql.query(personConn, sql);
+        ResultSet rs = Sql.query(conn, sql);
         int recordCount = 0;
+        FingerprintList fingerprintList = new FingerprintList();
+        fingerprintList.loadStart();
+        PersonIdentifierList personIdentifierList = new PersonIdentifierList();
+        personIdentifierList.loadStart();
         try {
             while (rs.next()) {
                 Date d = rs.getDate("birthdate");
@@ -210,8 +207,8 @@ public class PersonList {
                 p.setCompoundHeadLastName(rs.getString("compoundhead_last_name"));
                 p.setVillageName(rs.getString("village_name"));
                 p.setMaritalStatus((Person.MaritalStatus) ValueMap.MARITAL_STATUS.getVal().get(rs.getString("marital_status_name")));
-                p.setPersonIdentifierList(PersonIdentifierList.load(listConn, dbPersonId));
-                p.setFingerprintList(FingerprintList.load(listConn, dbPersonId));
+                p.setPersonIdentifierList(personIdentifierList.loadNext(dbPersonId));
+                p.setFingerprintList(fingerprintList.loadNext(dbPersonId));
                 p.setConsentSigned((Person.ConsentSigned) ValueMap.CONSENT_SIGNED.getVal().get(rs.getString("consent_signed")));
                 p.setLastRegularVisit(Visit.getVisit(rs.getDate("v_reg_date"), rs.getString("v_reg_address")));
                 p.setLastOneOffVisit(Visit.getVisit(rs.getDate("v_one_date"), rs.getString("v_one_address")));
@@ -227,8 +224,10 @@ public class PersonList {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
-        Sql.close(personConn);
-        Sql.close(listConn);
+        Sql.close(conn);
+        Sql.close(conn);
+        fingerprintList.loadEnd();
+        personIdentifierList.loadEnd();
         double timeInterval = (System.currentTimeMillis() - startTime);
         Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
                 "Loaded {0} person entries in {1} milliseconds.",
