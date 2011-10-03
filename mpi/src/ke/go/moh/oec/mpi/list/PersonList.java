@@ -159,10 +159,10 @@ public class PersonList {
                 + "       p.fathers_first_name, p.fathers_middle_name, p.fathers_last_name,\n"
                 + "       p.compoundhead_first_name, p.compoundhead_middle_name, p.compoundhead_last_name,\n"
                 + "       v.village_name, m.marital_status_name, p.consent_signed,\n"
-                + "       MAX(v_reg.visit_date) AS v_reg_date,\n"
-                + "       MAX(v_one.visit_date) AS v_one_date,\n"
-                + "       MID(MAX(CONCAT(v_reg.visit_date, a_reg.address)),20) AS v_reg_address,\n"
-                + "       MID(MAX(CONCAT(v_one.visit_date, a_one.address)),20) AS v_one_address\n"
+                + "       MAX(v_reg.visit_date) AS visit_reg_date,\n"
+                + "       MAX(v_one.visit_date) AS visit_one_date,\n"
+                + "       MID(MAX(CONCAT(v_reg.visit_date, a_reg.address)),20) AS visit_reg_address,\n"
+                + "       MID(MAX(CONCAT(v_one.visit_date, a_one.address)),20) AS visit_one_address\n"
                 + "FROM person p\n"
                 + "LEFT OUTER JOIN village v ON v.village_id = p.village_id\n"
                 + "LEFT OUTER JOIN marital_status_type m ON m.marital_status_type_id = p.marital_status\n"
@@ -183,35 +183,82 @@ public class PersonList {
         PersonIdentifierList personIdentifierList = new PersonIdentifierList();
         personIdentifierList.loadStart();
         try {
+            // Define ingeger variables to hold column index numbers.
+            //
+            // When loading the MPI from the database, it is substantially faster to
+            // access the recordset by column number than by column name. This was
+            // discovered by CPU profiling of the original code which used column name.
+            //
+            // On the other hand, it would be less code just to refer to the column numbers
+            // rather than go through the trouble of defining integers and then looking
+            // up the column indices. But this would be more error prone, in the event
+            // that the list of columns is ever changed. So we define ingteger variables
+            // for all the column indices, and then load them on the first result set.
+            int colPersonId=0, colPersonGuid=0, colSex=0, colBirthdate=0, colDeathdate=0,
+                    colFirstName=0, colMiddleName=0, colLastName=0, colOtherName=0, colClanName=0,
+                    colMothersFirstName=0, colMothersMiddleName=0, colMothersLastName=0,
+                    colFathersFirstName=0, colFathersMiddleName=0, colFathersLastName=0,
+                    colCompoundheadFirstName=0, colCompoundheadMiddleName=0, colCompoundheadLastName=0,
+                    colVillageName=0, colMaritalStatusName=0, colConsentSigned=0,
+                    colVisitRegDate=0, colVisitOneDate=0, colVisitRegAddress=0, colVisitOneAddress=0;
+            boolean colsFound = false; // Have we found the column numbers yet?
             while (rs.next()) {
-                Date d = rs.getDate("birthdate");
+                if (!colsFound) {
+                    colPersonId = rs.findColumn("person_id");
+                    colPersonGuid = rs.findColumn("person_guid");
+                    colSex = rs.findColumn("sex");
+                    colBirthdate = rs.findColumn("birthdate");
+                    colDeathdate = rs.findColumn("deathdate");
+                    colFirstName = rs.findColumn("first_name");
+                    colMiddleName = rs.findColumn("middle_name");
+                    colLastName = rs.findColumn("last_name");
+                    colOtherName = rs.findColumn("other_name");
+                    colClanName = rs.findColumn("clan_name");
+                    colMothersFirstName = rs.findColumn("mothers_first_name");
+                    colMothersMiddleName = rs.findColumn("mothers_middle_name");
+                    colMothersLastName = rs.findColumn("mothers_last_name");
+                    colFathersFirstName = rs.findColumn("fathers_first_name");
+                    colFathersMiddleName = rs.findColumn("fathers_middle_name");
+                    colFathersLastName = rs.findColumn("fathers_last_name");
+                    colCompoundheadFirstName = rs.findColumn("compoundhead_first_name");
+                    colCompoundheadMiddleName = rs.findColumn("compoundhead_middle_name");
+                    colCompoundheadLastName = rs.findColumn("compoundhead_last_name");
+                    colVillageName = rs.findColumn("village_name");
+                    colMaritalStatusName = rs.findColumn("marital_status_name");
+                    colConsentSigned = rs.findColumn("consent_signed");
+                    colVisitRegDate = rs.findColumn("visit_reg_date");
+                    colVisitOneDate = rs.findColumn("visit_reg_address");
+                    colVisitRegAddress = rs.findColumn("visit_one_date");
+                    colVisitOneAddress = rs.findColumn("visit_one_address");
+                    colsFound = true;
+                }
                 Person p = new Person();
-                int dbPersonId = rs.getInt("person_id");
-                p.setPersonGuid(rs.getString("person_guid"));
-                p.setSex((Person.Sex) ValueMap.SEX.getVal().get(rs.getString("sex")));
-                p.setBirthdate(rs.getDate("birthdate", cal));
-                p.setDeathdate(rs.getDate("deathdate", cal));
-                p.setFirstName(rs.getString("first_name"));
-                p.setMiddleName(rs.getString("middle_name"));
-                p.setLastName(rs.getString("last_name"));
-                p.setOtherName(rs.getString("other_name"));
-                p.setClanName(rs.getString("clan_name"));
-                p.setMothersFirstName(rs.getString("mothers_first_name"));
-                p.setMothersMiddleName(rs.getString("mothers_middle_name"));
-                p.setMothersLastName(rs.getString("mothers_last_name"));
-                p.setFathersFirstName(rs.getString("fathers_first_name"));
-                p.setFathersMiddleName(rs.getString("fathers_middle_name"));
-                p.setFathersLastName(rs.getString("fathers_last_name"));
-                p.setCompoundHeadFirstName(rs.getString("compoundhead_first_name"));
-                p.setCompoundHeadMiddleName(rs.getString("compoundhead_middle_name"));
-                p.setCompoundHeadLastName(rs.getString("compoundhead_last_name"));
-                p.setVillageName(rs.getString("village_name"));
-                p.setMaritalStatus((Person.MaritalStatus) ValueMap.MARITAL_STATUS.getVal().get(rs.getString("marital_status_name")));
+                int dbPersonId = rs.getInt(colPersonId);
+                p.setPersonGuid(getRsString(rs, colPersonGuid));
+                p.setSex((Person.Sex) ValueMap.SEX.getVal().get(getRsString(rs, colSex)));
+                p.setBirthdate(rs.getDate(colBirthdate, cal));
+                p.setDeathdate(rs.getDate(colDeathdate, cal));
+                p.setFirstName(getRsString(rs, colFirstName));
+                p.setMiddleName(getRsString(rs, colMiddleName));
+                p.setLastName(getRsString(rs, colLastName));
+                p.setOtherName(getRsString(rs, colOtherName));
+                p.setClanName(getRsString(rs, colClanName));
+                p.setMothersFirstName(getRsString(rs, colMothersFirstName));
+                p.setMothersMiddleName(getRsString(rs, colMothersMiddleName));
+                p.setMothersLastName(getRsString(rs, colMothersLastName));
+                p.setFathersFirstName(getRsString(rs, colFathersFirstName));
+                p.setFathersMiddleName(getRsString(rs, colFathersMiddleName));
+                p.setFathersLastName(getRsString(rs, colFathersLastName));
+                p.setCompoundHeadFirstName(getRsString(rs, colCompoundheadFirstName));
+                p.setCompoundHeadMiddleName(getRsString(rs, colCompoundheadMiddleName));
+                p.setCompoundHeadLastName(getRsString(rs, colCompoundheadLastName));
+                p.setVillageName(getRsString(rs, colVillageName));
+                p.setMaritalStatus((Person.MaritalStatus) ValueMap.MARITAL_STATUS.getVal().get(getRsString(rs, colMaritalStatusName)));
                 p.setPersonIdentifierList(personIdentifierList.loadNext(dbPersonId));
                 p.setFingerprintList(fingerprintList.loadNext(dbPersonId));
-                p.setConsentSigned((Person.ConsentSigned) ValueMap.CONSENT_SIGNED.getVal().get(rs.getString("consent_signed")));
-                p.setLastRegularVisit(Visit.getVisit(rs.getDate("v_reg_date"), rs.getString("v_reg_address")));
-                p.setLastOneOffVisit(Visit.getVisit(rs.getDate("v_one_date"), rs.getString("v_one_address")));
+                p.setConsentSigned((Person.ConsentSigned) ValueMap.CONSENT_SIGNED.getVal().get(getRsString(rs, colConsentSigned)));
+                p.setLastRegularVisit(Visit.getVisit(rs.getDate(colVisitRegDate), getRsString(rs, colVisitOneDate)));
+                p.setLastOneOffVisit(Visit.getVisit(rs.getDate(colVisitRegAddress), getRsString(rs, colVisitOneAddress)));
                 PersonMatch per = new PersonMatch(p);
                 per.setDbPersonId(dbPersonId);
                 this.add(per);
@@ -232,6 +279,34 @@ public class PersonList {
         Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
                 "Loaded {0} person entries in {1} milliseconds.",
                 new Object[]{personList.size(), timeInterval});
+    }
+
+    /**
+     * Does an efficient result set get string, assuming that the byte coding
+     * in the database does not need translation into the character coding of
+     * the string. This effectively does the same job as rs.getString(), but
+     * without the overhead of doing a generalized character coding translation.
+     * <p>
+     * In CPU profiling, it was discovered that significant time was being
+     * spent translating bytes into characters inside the rs.getString() method.
+     * So this method was written to replace it for loading the MPI into memory.
+     * 
+     * @param rs ResultSet
+     * @param columnIndex index of the column to get
+     * @return string value of the column
+     * @throws SQLException 
+     */
+    private String getRsString(ResultSet rs, int columnIndex) throws SQLException {
+        String s = null;
+        byte[] bytes = rs.getBytes(columnIndex);
+        if (bytes != null) {
+            char[] chars = new char[bytes.length];
+            for (int i = 0; i < bytes.length; i++) {
+                chars[i] = (char) bytes[i];
+            }
+            s = new String(chars);
+        }
+        return s;
     }
 
     /**
