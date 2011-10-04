@@ -530,9 +530,9 @@ public class PersonList {
         //added othername on the update person statement 10/3/2011
         if (newPerson.getOtherName() != null) {
             if (newPerson.getOtherName().isEmpty()) {
-                sql += (separate(columnCount) + "last_name = NULL\n");
+                sql += (separate(columnCount) + "other_name = NULL\n");
             } else {
-                sql += (separate(columnCount) + "last_name = " + Sql.quote(newPerson.getOtherName()) + "\n");
+                sql += (separate(columnCount) + "other_name = " + Sql.quote(newPerson.getOtherName()) + "\n");
             }
             columnCount++;
         }
