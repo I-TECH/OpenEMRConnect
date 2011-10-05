@@ -209,7 +209,7 @@ public class Sql {
         boolean returnValue = true;
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
-            returnValue = stmt.execute();
+            stmt.execute();
             int updateCount = stmt.getUpdateCount();
             Mediator.getLogger(Sql.class.getName()).log(Level.FINE, "{0} rows updated.", updateCount);
         } catch (SQLException ex) {
