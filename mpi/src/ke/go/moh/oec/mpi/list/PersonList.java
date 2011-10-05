@@ -225,11 +225,16 @@ public class PersonList {
                 for (PersonMatch pm : personMatchList) {
                     add(pm);
                 }
-                double timeInterval = (System.currentTimeMillis() - startTime);
+                long finishTime = lpt.getFinishTime();
+                double timeInterval = (finishTime - startTime);
                 Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
                         "Thread {0} finished loading {1} entries in {2} milliseconds.",
                         new Object[]{i, personMatchList.size(), timeInterval});
             }
+            double timeInterval = (System.currentTimeMillis() - startTime);
+            Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
+                    "All threads finished loading {0} entries in {1} milliseconds.",
+                    new Object[]{personList.size(), timeInterval});
         }
     }
 

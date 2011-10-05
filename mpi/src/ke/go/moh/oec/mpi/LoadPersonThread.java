@@ -54,11 +54,17 @@ public class LoadPersonThread implements Runnable {
     private int minPersonId;
     /** The maximum personId we will get from the database. */
     private int maxPersonId;
+    /** Time, in milliseconds, when we finished (used for tracing.) */
+    private long finishTime;
 
     public LoadPersonThread(int threadIndex, int minPersonId, int maxPersonId) {
         this.threadIndex = threadIndex;
         this.minPersonId = minPersonId;
         this.maxPersonId = maxPersonId;
+    }
+
+    public long getFinishTime() {
+        return finishTime;
     }
 
     public List<PersonMatch> getPersonMatchList() {
@@ -197,6 +203,7 @@ public class LoadPersonThread implements Runnable {
         Sql.close(conn);
         fingerprintList.loadEnd();
         personIdentifierList.loadEnd();
+        finishTime = System.currentTimeMillis();
     }
 
     /**
