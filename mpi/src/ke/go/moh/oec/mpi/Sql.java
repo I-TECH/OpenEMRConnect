@@ -31,9 +31,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Person;
@@ -46,10 +46,16 @@ import ke.go.moh.oec.lib.Mediator;
  */
 public class Sql {
 
+    private static class CachedConnection {
+
+        protected Connection connection;
+        protected long cachedTime;
+    }
+    public static final int WAIT_TIMEOUT_SECONDS = 1800; // Connections idle for longer than this in seconds will not be reused.
     public static final int REGULAR_VISIT_TYPE_ID = 1;
     public static final int ONE_OFF_VISIT_TYPE_ID = 2;
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    private static List<Connection> connectionPool = new ArrayList<Connection>();
+    private static final Queue<CachedConnection> connectionPool = new LinkedList<CachedConnection>();
 
     /**
      * Creates a connection to the MPI(/LPI) database. For a query that is run while the results
@@ -59,22 +65,36 @@ public class Sql {
      *
      * @return the connection.
      */
-    public static synchronized Connection connect() {
+    public static Connection connect() {
+        CachedConnection cc = null;
         Connection conn = null;
-        if (!connectionPool.isEmpty()) {
-            conn = connectionPool.get(0);
-            connectionPool.remove(0);
-        } else {
-            try {
+        try {
+            // Try to get a previously-used connection from our pool. But if it was used
+            // too long ago, then close it and look for another one. This is done to
+            // avoid getting connection timeout errors from a connection that has been
+            // idle for too long and the server has timed out the connection.
+            synchronized (connectionPool) {
+                while ((cc = connectionPool.poll()) != null) {
+                    if (System.currentTimeMillis() - cc.cachedTime < WAIT_TIMEOUT_SECONDS * 1000) {
+                        conn = cc.connection;
+                        break;
+                    } else {
+                        cc.connection.close();
+                    }
+                }
+            }
+            // If we had no recent database connection in the pool that we can reuse,
+            // then create a new connection.
+            if (conn == null) {
                 String url = Mediator.getProperty("MPI.url");
                 String username = Mediator.getProperty("MPI.username");
                 String password = Mediator.getProperty("MPI.password");
                 conn = DriverManager.getConnection(url, username, password);
-            } catch (Exception ex) {
-                Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
-                        "Can''t connect to the database -- Please check the database and try again.", ex);
-                System.exit(1);
             }
+        } catch (Exception ex) {
+            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
+                    "Can''t connect to the database -- Please check the database and try again.", ex);
+            System.exit(1);
         }
         return conn;
     }
@@ -84,8 +104,15 @@ public class Sql {
      * 
      * @param conn the connection to close
      */
-    public static synchronized void close(Connection conn) {
-        connectionPool.add(conn);   // Actually, keep the connection for later reuse.
+    public static void close(Connection conn) {
+        // Load this connection and the current time into a CachedConnection object
+        CachedConnection cc = new CachedConnection();
+        cc.connection = conn;
+        cc.cachedTime = System.currentTimeMillis();
+        // Put the CachedConnection object into the pool for later reuse.
+        synchronized (connectionPool) {
+            connectionPool.add(cc);   // Actually, keep the connection for later reuse.
+        }
     }
 
     /**
