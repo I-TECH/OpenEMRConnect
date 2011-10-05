@@ -24,6 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi.match;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Level;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Scorecard;
@@ -59,6 +61,40 @@ public class NameMatch extends StringMatch {
     private String metaphone1 = null;
     /** Metaphone result 2 */
     private String metaphone2 = null;
+    /** Cache of allocated NameMatch structures, to increase creating performance. */
+    private static final Map<String, NameMatch> cache = new HashMap<String, NameMatch>();
+
+    /**
+     * Gets a NameMatch instance, first checking a cache of such instances to see
+     * if a NameMatch for this String has already been created. If it has
+     * already been created, return the one that has already been created.
+     * If it has not yet been created, create a new one and return that one.
+     * <p>
+     * The primary reason for this is to save memory and increase performance
+     * when loading the MPI. Names that are shared between different persons
+     * can share the NameMatch object as well.
+     * @param original
+     * @return 
+     */
+    public static NameMatch getNameMatch(String original) {
+        NameMatch nameMatch = null;
+        synchronized (cache) {
+            nameMatch = cache.get(original);
+        }
+        if (nameMatch == null) {
+            nameMatch = new NameMatch(original);
+            // Once we have created a new NameMatch, put it in our cache
+            // in case a subsequent name matches it. Note that it is possible
+            // though unlikely for two NameMatch objects to be created by
+            // different threads for the same name. In this case, only one
+            // of them will remain in the cache. There will be no problem,
+            // only an extremelty slight inefficiency in performance.
+            synchronized (cache) {
+                cache.put(original, nameMatch);
+            }
+        }
+        return nameMatch;
+    }
 
     /**
      * Construct a NameMatch from a name string.

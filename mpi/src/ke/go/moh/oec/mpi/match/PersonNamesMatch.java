@@ -81,7 +81,7 @@ public class PersonNamesMatch {
      */
     private void add(String name, int position) {
         if (name != null && name.trim().length() != 0) {
-            nameArray[position] = new NameMatch(name);
+            nameArray[position] = NameMatch.getNameMatch(name);
             weight++; // Count of names that are present.
         }
     }

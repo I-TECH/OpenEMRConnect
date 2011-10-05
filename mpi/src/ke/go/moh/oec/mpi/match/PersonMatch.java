@@ -90,9 +90,9 @@ public class PersonMatch {
         mother = new PersonNamesMatch(p.getMothersFirstName(), p.getMothersMiddleName(), p.getMothersLastName());
         father = new PersonNamesMatch(p.getFathersFirstName(), p.getFathersMiddleName(), p.getFathersLastName());
         compoundHead = new PersonNamesMatch(p.getCompoundHeadFirstName(), p.getCompoundHeadMiddleName(), p.getCompoundHeadLastName());
-        otherNameMatch = new NameMatch(p.getOtherName());
-        clanNameMatch = new NameMatch(p.getClanName());
-        villageNameMatch = new NameMatch(p.getVillageName());
+        otherNameMatch = NameMatch.getNameMatch(p.getOtherName());
+        clanNameMatch = NameMatch.getNameMatch(p.getClanName());
+        villageNameMatch = NameMatch.getNameMatch(p.getVillageName());
         if (p.getFingerprintList() != null) {
             fingerprintMatchList = new ArrayList<FingerprintMatch>();
             for (Fingerprint f : p.getFingerprintList()) {

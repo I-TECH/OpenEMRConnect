@@ -46,6 +46,25 @@ public class FingerprintList {
     private Connection conn;    // Connection for loading fingerprints
     private ResultSet rs;       // Result set for loading fingerprints
     private boolean rsNext;     // Is there a next record in the result set?
+    private int personId;       // Remember current person ID.
+
+    /**
+     * Positions to the next fingerprint record and gets the personId from that record.
+     * This is encapsulated mainly to insure that rs.getInt() is only called once per record
+     * for the person_id field. It turns out that this call is moderately CPU expensive
+     * since it parses the database value into an integer every time. So we do this call
+     * only once and save the integer result. We may then reference it more than once.
+     */
+    private void next() {
+        try {
+            rsNext = rs.next();
+            if (rsNext) {
+                personId = rs.getInt("person_id");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PersonIdentifierList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     /**
      * Starts loading fingerprints into memory.
@@ -54,18 +73,14 @@ public class FingerprintList {
      * in order by personId. Then a merge sort on fingerprintId is done between the
      * loaded fingerprint list and the loaded person list.
      */
-    public void loadStart() {
+    public void loadStart(int minPersonId, int maxPersonId) {
         conn = Sql.connect();
         String sql = "SELECT f.person_id, f.fingerprint_template, f.fingerprint_type_id, f.fingerprint_technology_type_id\n"
                 + "FROM fingerprint f\n"
+                + "WHERE f.person_id BETWEEN " + minPersonId + " AND " + maxPersonId + "\n"
                 + "ORDER BY f.person_id";
         rs = Sql.query(conn, sql, Level.FINEST);
-        try {
-            rsNext = rs.next();
-        } catch (SQLException ex) {
-            Logger.getLogger(FingerprintList.class.getName()).log(Level.SEVERE, null, ex);
-            rsNext = false;
-        }
+        next();     // Position at the first result record.
     }
 
     /**
@@ -79,12 +94,12 @@ public class FingerprintList {
         try {
             // If we haven't yet reached the requested personId, skip over any
             // database records that come before that personId.
-            while (rsNext && rs.getInt("person_id") < dbPersonId) {
-                rsNext = rs.next();
+            while (rsNext && personId < dbPersonId) {
+                next();
             }
             // While we are matching the requested personId, include any
             // fingerprints that match that Id.
-            while (rsNext && rs.getInt("person_id") == dbPersonId) {
+            while (rsNext && personId == dbPersonId) {
                 if (fingerprintList == null) {
                     fingerprintList = new ArrayList<Fingerprint>();
                 }
@@ -97,7 +112,7 @@ public class FingerprintList {
                 f.setFingerprintType(fingerprintType);
                 f.setTechnologyType(technologyType);
                 fingerprintList.add(f);
-                rsNext = rs.next();
+                next();
             }
         } catch (SQLException ex) {
             Logger.getLogger(FingerprintList.class.getName()).log(Level.SEVERE, null, ex);

@@ -105,6 +105,7 @@ public class SiteList implements Runnable {
     public Set<SiteCandidate> find(String siteName, String identifier) {
         List<SiteMatch> siteMatchList = null;
         TreeSet<SiteCandidate> siteCandidateSet = new TreeSet<SiteCandidate>();
+        // Note: the NameMatch cache is not used, since duplicate site names are not expected.
         NameMatch testNameMatch = new NameMatch(siteName);
         double minScore = 100;
 

@@ -134,8 +134,14 @@ public class Sql {
         Mediator.getLogger(Sql.class.getName()).log(loggerLevel, "SQL Query:\n{0}", sql);
         ResultSet rs = null;
         try {
-            Statement stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+            Statement statement = conn.createStatement();
+            // The following call sets the fetch size equal to the minimum integer value (largest negative value).
+            // This is a special value that is interpreted by the MySQL JDBC driver to fetch only one line
+            // at a time from the database into memory. Otherwise it would try to fetch the entire query
+            // result into memory. Because of the size of the MPI data, this can cause
+            // out of memory errors.
+            statement.setFetchSize(Integer.MIN_VALUE);
+            rs = statement.executeQuery(sql);
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Error executing SQL Query " + sql, ex);

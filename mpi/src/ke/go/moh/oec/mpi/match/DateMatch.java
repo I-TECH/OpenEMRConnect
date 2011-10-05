@@ -27,6 +27,8 @@ package ke.go.moh.oec.mpi.match;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.logging.Level;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Scorecard;
@@ -41,6 +43,7 @@ public class DateMatch {
     private static final SimpleDateFormat yearFormat = new SimpleDateFormat("y");
     private static final SimpleDateFormat monthFormat = new SimpleDateFormat("M");
     private static final SimpleDateFormat dayFormat = new SimpleDateFormat("d");
+    private static final Queue<Calendar> calendarCache = new LinkedList<Calendar>();
     private static long baseDate;
     private static int today = 0;
     private Date date = null;
@@ -70,12 +73,21 @@ public class DateMatch {
     public DateMatch(Date d) {
         date = d;
         if (d != null) {
-            year = Integer.parseInt(yearFormat.format(d));
-            yearMonth = year * 12 + Integer.parseInt(monthFormat.format(d));
-            Calendar calendar = Calendar.getInstance();
+            Calendar calendar;
+            synchronized (calendarCache) {
+                calendar = calendarCache.poll(); // Get a cached calendar object if there is one.
+            }
+            if (calendar == null) {
+                calendar = Calendar.getInstance(); // If not, allocate a new calendar object.
+            }
             calendar.setTime(d);
+            year = calendar.get(Calendar.YEAR);
+            yearMonth = year * 12 + calendar.get(Calendar.MONTH);
             long time = calendar.getTimeInMillis();
             yearMonthDay = (int) ((time - baseDate) / (24 * 60 * 60 * 1000));
+            synchronized (calendarCache) {
+                calendarCache.add(calendar);        // Add (or return) calendar to the cache.
+            }
         }
     }
 
