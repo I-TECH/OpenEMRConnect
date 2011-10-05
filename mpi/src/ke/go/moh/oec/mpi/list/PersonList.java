@@ -527,6 +527,16 @@ public class PersonList {
             }
             columnCount++;
         }
+        //added othername on the update person statement 10/3/2011
+        if (newPerson.getOtherName() != null) {
+            if (newPerson.getOtherName().isEmpty()) {
+                sql += (separate(columnCount) + "other_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "other_name = " + Sql.quote(newPerson.getOtherName()) + "\n");
+            }
+            columnCount++;
+        }
+
         if (newPerson.getClanName() != null) {
             if (newPerson.getClanName().isEmpty()) {
                 sql += (separate(columnCount) + "clan_name = NULL\n");
