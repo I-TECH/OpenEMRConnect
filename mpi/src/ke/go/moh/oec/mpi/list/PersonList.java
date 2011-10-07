@@ -211,6 +211,11 @@ public class PersonList {
                 loadPersonThreadArray[i] = lpt;
                 threadArray[i] = t;
                 t.start();
+                // Sleep just a little to let the thread start and print any logging messages
+                // that it may have. This sleeping will not affect performance noticably, but
+                // will give the thread the chance to start so that all threads will start
+                // Sleep 10 milliseconds.
+                waitAMoment();
             }
             for (int i = 0; i < threadCount; i++) {
                 Thread t = threadArray[i];
@@ -225,16 +230,26 @@ public class PersonList {
                 for (PersonMatch pm : personMatchList) {
                     add(pm);
                 }
-                long finishTime = lpt.getFinishTime();
-                double timeInterval = (finishTime - startTime);
-                Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
-                        "Thread {0} finished loading {1} entries in {2} milliseconds.",
-                        new Object[]{i, personMatchList.size(), timeInterval});
             }
             double timeInterval = (System.currentTimeMillis() - startTime);
             Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
                     "All threads finished loading {0} entries in {1} milliseconds.",
                     new Object[]{personList.size(), timeInterval});
+        }
+    }
+
+    /**
+     * Waits a moment. To be used right after starting a thread, to give that
+     * thread a moment to start, and start logging its progress. This is useful
+     * so that the threads can report the start of their progress in the order
+     * in which they are started. The reason this is done in a separate method
+     * is to avoid the warning message that comes with sleeping in a loop.
+     */
+    private void waitAMoment() {
+        try {
+            Thread.sleep(50); // Sleep 50 milliseconds.
+        } catch (InterruptedException ex) {
+            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

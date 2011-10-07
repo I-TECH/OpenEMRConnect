@@ -77,8 +77,10 @@ public class Sql {
                 while ((cc = connectionPool.poll()) != null) {
                     if (System.currentTimeMillis() - cc.cachedTime < WAIT_TIMEOUT_SECONDS * 1000) {
                         conn = cc.connection;
+                        Mediator.getLogger(Sql.class.getName()).log(Level.FINER, "connect() - Reusing connection.");
                         break;
                     } else {
+                        Mediator.getLogger(Sql.class.getName()).log(Level.FINER, "connect() - Timing out connection.");
                         cc.connection.close();
                     }
                 }
@@ -90,6 +92,7 @@ public class Sql {
                 String username = Mediator.getProperty("MPI.username");
                 String password = Mediator.getProperty("MPI.password");
                 conn = DriverManager.getConnection(url, username, password);
+                Mediator.getLogger(Sql.class.getName()).log(Level.FINER, "connect() - Allocating new connection.");
             }
         } catch (Exception ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
@@ -212,6 +215,7 @@ public class Sql {
             stmt.execute();
             int updateCount = stmt.getUpdateCount();
             Mediator.getLogger(Sql.class.getName()).log(Level.FINE, "{0} rows updated.", updateCount);
+            stmt.close();
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Error executing SQL statement " + sql, ex);

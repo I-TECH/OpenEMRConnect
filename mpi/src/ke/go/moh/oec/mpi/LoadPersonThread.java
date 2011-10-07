@@ -54,17 +54,11 @@ public class LoadPersonThread implements Runnable {
     private int minPersonId;
     /** The maximum personId we will get from the database. */
     private int maxPersonId;
-    /** Time, in milliseconds, when we finished (used for tracing.) */
-    private long finishTime;
 
     public LoadPersonThread(int threadIndex, int minPersonId, int maxPersonId) {
         this.threadIndex = threadIndex;
         this.minPersonId = minPersonId;
         this.maxPersonId = maxPersonId;
-    }
-
-    public long getFinishTime() {
-        return finishTime;
     }
 
     public List<PersonMatch> getPersonMatchList() {
@@ -78,6 +72,8 @@ public class LoadPersonThread implements Runnable {
      */
     public void run() {
         long startTime = System.currentTimeMillis();
+        Mediator.getLogger(LoadPersonThread.class.getName()).log(Level.FINE,
+                "LoadPersonThread {0} starting.", threadIndex);
         personMatchList = new ArrayList<PersonMatch>(); // Our output is collected here, to be retrieved later.
         Connection conn = Sql.connect();
         Calendar cal = Calendar.getInstance(); // Default Calendar, used for getting database date fields.
@@ -98,7 +94,7 @@ public class LoadPersonThread implements Runnable {
                 + "LEFT OUTER JOIN visit v_one ON v_one.person_id = p.person_id and v_one.visit_type_id = " + Sql.ONE_OFF_VISIT_TYPE_ID + "\n"
                 + "LEFT OUTER JOIN address a_reg ON a_reg.address_id = v_reg.address_id\n"
                 + "LEFT OUTER JOIN address a_one ON a_one.address_id = v_one.address_id\n"
-                + "WHERE p.person_id BETWEEN " + minPersonId + " AND " + maxPersonId + "\n"
+                + "WHERE p.person_id BETWEEN " + minPersonId + " AND " + maxPersonId + " -- Thread " + threadIndex + "\n" // Comment for logging.
                 + "GROUP BY p.person_id\n"
                 + "ORDER BY p.person_id";
         ResultSet rs = Sql.query(conn, sql);
@@ -187,23 +183,25 @@ public class LoadPersonThread implements Runnable {
                 PersonMatch per = new PersonMatch(p);
                 per.setDbPersonId(dbPersonId);
                 personMatchList.add(per);
-                if (++recordCount % 1000 == 0) {
+                if (++recordCount % 10000 == 0) {
                     double timeInterval = (System.currentTimeMillis() - startTime);
                     Mediator.getLogger(LoadPersonThread.class.getName()).log(Level.FINE,
                             "Thread {0} loaded {1} entries in {2} milliseconds.",
                             new Object[]{threadIndex, recordCount, timeInterval});
                 }
             }
-            Sql.close(rs);
         } catch (SQLException ex) {
             Logger.getLogger(LoadPersonThread.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
-        Sql.close(conn);
+        Sql.close(rs);
         Sql.close(conn);
         fingerprintList.loadEnd();
         personIdentifierList.loadEnd();
-        finishTime = System.currentTimeMillis();
+                double timeInterval = (System.currentTimeMillis() - startTime);
+                Mediator.getLogger(LoadPersonThread.class.getName()).log(Level.FINE,
+                        "Thread {0} finished loading {1} entries in {2} milliseconds.",
+                        new Object[]{threadIndex, personMatchList.size(), timeInterval});
     }
 
     /**
