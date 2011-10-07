@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.io.InputStreamReader;
@@ -102,6 +103,10 @@ class HttpService {
         } catch (ConnectException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
                     "Can''t connect to {0} at {1}",
+                    new Object[]{m.getDestinationAddress(), url});
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
+                    "Unknown host {0} at {1}",
                     new Object[]{m.getDestinationAddress(), url});
         } catch (MalformedURLException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,

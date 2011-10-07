@@ -336,7 +336,7 @@ class QueueManager implements Runnable {
                 + "("
                 + "MESSAGE_ID INTEGER NOT NULL PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
                 + "DESTINATION VARCHAR(100), "
-                + "XML_CODE VARCHAR(30000), "
+                + "XML_CODE BLOB(30000), "
                 + "HOP_COUNT INTEGER"
                 + ")";
         try {
