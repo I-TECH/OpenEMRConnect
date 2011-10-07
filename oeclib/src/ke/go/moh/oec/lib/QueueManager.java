@@ -193,6 +193,9 @@ class QueueManager implements Runnable {
                 stmt.executeUpdate();
                 stmt.close();
                 messageAdded = true;
+                // Log every incoming message (level FINE -- only one incoming log entry for each message.)
+                Mediator.getLogger(QueueManager.class.getName()).log(Level.FINE,
+                        "Queued message to {0}", m.getDestinationAddress());
             } catch (SQLException ex) {
                 Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -223,14 +226,17 @@ class QueueManager implements Runnable {
             //try to send each entry in that table
             while (resultSet.next()) {
                 //Check to see if it is on the connectionDownList
-                if (connectionDownList.contains(resultSet.getString("DESTINATION"))) {
-                    //it is on the list, so do not try to send it
-                    System.out.println("Skipping " + resultSet.getInt("MESSAGE_ID"));
+                String destination = resultSet.getString("DESTINATION");
+                int messageId = resultSet.getInt("MESSAGE_ID");
+                if (connectionDownList.contains(destination)) {
+                    // It is on the connection down list, so do not try to send it.
+                    // Log this (level FINEST -- possibly many such logs for each message.)
+                    Mediator.getLogger(QueueManager.class.getName()).log(Level.FINEST,
+                            "Skipping message ID {0} to {1}",
+                            new Object[]{messageId, destination});
                 } else {
-                    System.out.print("Entry: " + resultSet.getInt("MESSAGE_ID") + ". Sending : ");
-
                     Message m = new Message();
-                    m.setDestinationAddress(resultSet.getString("DESTINATION"));
+                    m.setDestinationAddress(destination);
                     m.setCompressedXml(resultSet.getBytes("XML_CODE"));
                     m.setHopCount(resultSet.getInt("HOP_COUNT"));
                     //initialize a boolean to hold the result of the send
@@ -242,14 +248,18 @@ class QueueManager implements Runnable {
                     } catch (IOException ex) {
                         Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
                     }
-
                     if (sent) {
-                        System.out.println("Sent.");
+                        // Log every outgoing message (level FINE -- only one outgoing log entry for each message.)
+                        Mediator.getLogger(QueueManager.class.getName()).log(Level.FINE,
+                                "Sent message ID {0} to {1}",
+                                new Object[]{messageId, destination});
                         //it was sent correctly, remove it from the list
-                        delete(resultSet.getInt("MESSAGE_ID"));
+                        delete(messageId);
                     } else {
-                        System.out.println("Failed.  Adding "
-                                + resultSet.getString("DESTINATION") + " to the connection down list.");
+                        // Log failed attempt (level FINEST -- possibly many such logs for each message.)
+                        Mediator.getLogger(QueueManager.class.getName()).log(Level.FINEST,
+                                "Failed to send message ID {0} to {1}",
+                                new Object[]{messageId, destination});
                         /* Put this destination on the connectionDownList so
                          * resources are not wasted trying to send on a
                          * connection that is down */
@@ -338,9 +348,6 @@ class QueueManager implements Runnable {
             /* If the Exception is just saying that the table already exists,
              * that is ok and the table is still safe to use.  Otherwise,
              * we want to report any other errors. */
-//System.out.println("Error code: " + ex.getErrorCode() +
-//        "\nSQL State: " + ex.getSQLState()  );
-
             if ("X0Y32".equals(ex.getSQLState())) {  //this is the "table already exists" error
                 tableOKforUse = true;
             } else {
