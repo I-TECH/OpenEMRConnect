@@ -400,11 +400,13 @@ public class Mediator implements IService {
             if (pr.getRequestReference() != null) {
                 m.setMessageId(pr.getRequestReference()); // Overwrite the auto-generated message ID.
             }
+            m.setToBeQueued(messageType.isToBeQueued());
             if (!pr.isResponseRequested()) {
                 MessageType.TemplateType templateType = messageType.getTemplateType();
-                if (templateType == MessageType.TemplateType.modifyPerson
+                if (templateType == MessageType.TemplateType.createPerson
                         || templateType == MessageType.TemplateType.modifyPerson) {
                     m.setResponseExpected(false);
+                    m.setToBeQueued(true);
                 }
             }
         }

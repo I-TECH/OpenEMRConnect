@@ -103,7 +103,7 @@ class MessageTypeRegistry {
             CREATE_PERSON_ACCEPTED_ROOT_TAG, //HL7 Patient Registry Add Request
             null, // No default destination address property
             null, // No default destination name
-            true); // Store and forward if it doesn't send immediately
+            false); // Store and forward if it doesn't send immediately
     /**
      * Create Person (MPI) request
      */
@@ -114,7 +114,7 @@ class MessageTypeRegistry {
             CREATE_PERSON_ROOT_TAG, //HL7 Patient Registry Add Request
             "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
-            true); // Store and forward if it doesn't send immediately
+            false); // Store and forward if it doesn't send immediately
     /**
      * Create Person (LPI) request
      */
@@ -125,7 +125,7 @@ class MessageTypeRegistry {
             CREATE_PERSON_ROOT_TAG, //HL7 Patient Registry Add Request
             "LPI.Address", // The Local Person List address property
             "Local Person Index", // The Local Person List
-            true); // Store and forward if it doesn't send immediately
+            false); // Store and forward if it doesn't send immediately
     /**
      * Modify Person Accepted response
      */
@@ -136,7 +136,7 @@ class MessageTypeRegistry {
             MODIFY_PERSON_ACCEPTED_ROOT_TAG, //HL7 Patient Registry Add Request
             null, // No default destination address property
             null, // No default destination name
-            true); // Store and forward if it doesn't send immediately
+            false); // Store and forward if it doesn't send immediately
     /**
      * Modify Person (MPI) request
      */
@@ -147,7 +147,7 @@ class MessageTypeRegistry {
             MODIFY_PERSON_ROOT_TAG, //HL7 Patient Registry Revise Request
             "MPI.Address", // The Master Person List address property
             "Master Person Index", // The Master Person List
-            true); // Store and forward if it doesn't send immediately
+            false); // Store and forward if it doesn't send immediately
     /**
      * Modify Person (LPI) request
      */
@@ -158,7 +158,7 @@ class MessageTypeRegistry {
             MODIFY_PERSON_ROOT_TAG, //HL7 Patient Registry Revise Request
             "LPI.Address", // The Local Person List address property
             "Local Person Index", // The Local Person List
-            true); // Store and forward if it doesn't send immediately
+            false); // Store and forward if it doesn't send immediately
     /**
      * Set Clinical Document
      */
@@ -180,7 +180,7 @@ class MessageTypeRegistry {
             FIND_PERSON_ROOT_TAG, //HL7 Patient Registry Find Candidates Query
             "HDSS.Address", // The HDSS companion address property
             "HDSS Companion", // The HDSS companion
-            true); // Store and forward if it doesn't send immediately
+            false); // Store and forward if it doesn't send immediately
     /**
      * Send Log Entry
      */
