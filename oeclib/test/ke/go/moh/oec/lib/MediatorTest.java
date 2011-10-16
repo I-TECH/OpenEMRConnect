@@ -4,6 +4,8 @@
  */
 package ke.go.moh.oec.lib;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
 import java.util.ArrayList;
 import ke.go.moh.oec.PersonIdentifier;
@@ -276,6 +278,37 @@ public class MediatorTest {
                 requestData.setRequestReference(pr.getRequestReference());
                 result = mediator.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
             }
+        }
+    }
+    /**
+     * Test of getData method, request type CREATE_PERSON_MPI
+     */
+    @Test
+    public void testModifyPerson() {
+        System.out.println("testModifyPerson");
+        PersonRequest requestData = new PersonRequest();
+        Person p;
+        List<Person> pList;
+        PersonIdentifier pi;
+        List<PersonIdentifier> piList;
+        int pCount;
+        Object result;
+        PersonResponse pr;
+
+        // Modify the person (will not exist) -- just to test QueueManager
+        p = new Person();
+        requestData.setPerson(p);
+        pi = new PersonIdentifier();
+        piList = new ArrayList<PersonIdentifier>();
+        pi.setIdentifier("33333-44444");
+        pi.setIdentifierType(PersonIdentifier.Type.patientRegistryId);
+        piList.add(pi);
+        p.setPersonIdentifierList(piList);
+        pr = (PersonResponse) mediator.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
+        try {
+            Thread.sleep(1000*1000); // Sleep 10 seconds.
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MediatorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

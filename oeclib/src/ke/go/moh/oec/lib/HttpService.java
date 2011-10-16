@@ -50,6 +50,10 @@ import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 class HttpService {
@@ -60,6 +64,8 @@ class HttpService {
      */
     private Mediator mediator = null;
     HttpServer server;
+    Map<String, Date> unreachableIpPorts = new HashMap<String, Date>();
+    private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**
      * Constructor to set {@link Mediator} callback object
@@ -78,9 +84,16 @@ class HttpService {
      */
     boolean send(Message m) throws MalformedURLException, IOException {
         boolean returnStatus = false;
-        //   throw new UnsupportedOperationException();
-        String url = "http://" + m.getIpAddressPort() + "/oecmessage?destination="
-                + m.getDestinationAddress() + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount();
+        String destinationAddress = m.getDestinationAddress();
+        String ipAddressPort = m.getIpAddressPort();
+        if (ipAddressPort == null) {
+            // If we are called from the QueueManager, we may not have the IP address and port because they are not stored in the queue database.
+            // If this is the case, then get the IP address and port now, from the destination address.
+            ipAddressPort = mediator.getIpAddressPort(destinationAddress);
+            m.setIpAddressPort(ipAddressPort);
+        }
+        String url = "http://" + ipAddressPort + "/oecmessage?destination="
+                + destinationAddress + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount();
         try {
             /*Code thats performing a task should be placed in the try catch statement especially in the try part*/
             URLConnection connection = new URL(url).openConnection();
@@ -100,20 +113,18 @@ class HttpService {
             br.close();
             inputStreamReader.close();
             returnStatus = true;
+            canReach(ipAddressPort);
         } catch (ConnectException ex) {
-            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
-                    "Can''t connect to {0} at {1}",
-                    new Object[]{m.getDestinationAddress(), url});
+            cannotReach(ipAddressPort, "Can't connect to " + ipAddressPort + " for message to " + destinationAddress);
         } catch (UnknownHostException ex) {
-            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
-                    "Unknown host {0} at {1}",
-                    new Object[]{m.getDestinationAddress(), url});
+            cannotReach(ipAddressPort, "Unknown Host " + ipAddressPort + " for message to " + destinationAddress);
         } catch (MalformedURLException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
                     "While sending to " + m.getDestinationAddress() + " at " + url, ex);
         } catch (IOException ex) {
-            if (ex.getMessage().equals("Premature EOF")
-                    || ex.getMessage().equals("Unexpected end of file from server")) {
+            String message = ex.getMessage();
+            if (message.equals("Premature EOF")
+                    || message.equals("Unexpected end of file from server")) {
                 returnStatus = true; // We expect End of File at some point
             } else {
                 Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
@@ -124,6 +135,52 @@ class HttpService {
         return returnStatus;
     }
 
+    /**
+     * Handles the case where we can't reach a given IP address / port.
+     * <p>
+     * If this is the first time we have this problem: (a) log an error message,
+     * and (b) add this IP address / port to a list of IP addresses / ports with
+     * whom we are having trouble communicating.
+     * <p>
+     * If this IP address / port is already on the list of destinations we cannot
+     * reach, do nothing. This prevents trying to send a message to the
+     * logging server every time we retry sending to this IP address / port.
+     * If we did so, this could result in a lot of traffic to the logging server.
+     * Worse yet, the message to the logging server might itself not be able to
+     * be sent. Instead, we will send a single message to the logging server
+     * at a later time when we can send to this IP address / port again.
+     * 
+     * @param ipAddressPort IP Address and Port we cannot reach
+     * @param errorMessage Error why we cannot reach this IP address / port.
+     */
+    private synchronized void cannotReach(String ipAddressPort, String errorMessage) {
+        if (!unreachableIpPorts.containsKey(ipAddressPort)) {
+            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, errorMessage);
+            unreachableIpPorts.put(ipAddressPort, new Date());
+        }
+    }
+
+    /**
+     * Handles the case where we can reach a given IP address / port.
+     * <p>
+     * If we were previously having trouble reaching the given IP address / port,
+     * it will be on a list of destinations with which we were having trouble.
+     * In this case, log an informational message that the trouble is now over.
+     * Include in this message the time when the trouble started. And remove
+     * this IP address / port combination from our trouble list.
+     * 
+     * @param ipAddressPort IP Address and port we can reach
+     */
+    private void canReach(String ipAddressPort) {
+        if (unreachableIpPorts.containsKey(ipAddressPort)) {
+            Date sinceDate = unreachableIpPorts.get(ipAddressPort);
+            Logger.getLogger(HttpService.class.getName()).log(Level.INFO,
+                    "Can reach {0} for the first time since {1}",
+                    new Object[]{ipAddressPort, SIMPLE_DATE_TIME_FORMAT.format(sinceDate)});
+            unreachableIpPorts.remove(ipAddressPort);
+        }
+    }
+    
     /**
      * Starts listening for HTTP messages.
      * <p>

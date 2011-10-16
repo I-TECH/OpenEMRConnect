@@ -23,13 +23,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/*   This file has been worked on by Scott Davis.
- * 
- * Some parts of code have been temporarily removed to allow for testing.
- * These lines of code will be indicated with the tag RESTORE_THIS_CODE.
- * Remove the comments to restore the code and reincorporate this file back
- * into the main project.
- */
 package ke.go.moh.oec.lib;
 
 import java.io.IOException;
@@ -51,6 +44,7 @@ import java.util.HashSet;
  * queued for later sending. The Queue Manager periodically tries to
  * send queued messages to their respective destinations.
  *
+ * @author Scott Davis
  * @author Jim Grace
  */
 class QueueManager implements Runnable {
@@ -106,9 +100,9 @@ class QueueManager implements Runnable {
         this.httpService = httpService;
 
         // set polling interval
-        String queueManagerPollingInterval = Mediator.getProperty("QueueManager.PollingInterval");
-        if (queueManagerPollingInterval != null) {
-            pollingInterval = Integer.parseInt(queueManagerPollingInterval);
+        String queueManagerPollingIntervalSeconds = Mediator.getProperty("QueueManager.PollingIntervalSeconds");
+        if (queueManagerPollingIntervalSeconds != null) {
+            pollingInterval = 1000 * Integer.parseInt(queueManagerPollingIntervalSeconds);
         } else {
             pollingInterval = 10 * 60 * 1000; // Default polling interval of 10 minutes.
         }
@@ -189,13 +183,17 @@ class QueueManager implements Runnable {
             Logger.getLogger(QueueManager.class.getName()).log(Level.FINER, querySQL);
             try {
                 PreparedStatement stmt = dataBaseConnection.prepareStatement(querySQL);
-                stmt.setObject(1, m.getCompressedXml());
+                int compressedXmlLenghth = m.getCompressedXmlLength();
+                byte[] blob = new byte[compressedXmlLenghth];
+                System.arraycopy(m.getCompressedXml(), 0, blob, 0, compressedXmlLenghth);
+                stmt.setObject(1, blob);
                 stmt.executeUpdate();
                 stmt.close();
                 messageAdded = true;
                 // Log every incoming message (level FINE -- only one incoming log entry for each message.)
                 Mediator.getLogger(QueueManager.class.getName()).log(Level.FINE,
                         "Queued message to {0}", m.getDestinationAddress());
+                start(); // Start sending messages (like the one we just queued.)
             } catch (SQLException ex) {
                 Logger.getLogger(QueueManager.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -232,13 +230,16 @@ class QueueManager implements Runnable {
                     // It is on the connection down list, so do not try to send it.
                     // Log this (level FINEST -- possibly many such logs for each message.)
                     Mediator.getLogger(QueueManager.class.getName()).log(Level.FINEST,
-                            "Skipping message ID {0} to {1}",
+                            "Skipping queued message ID {0} to {1}",
                             new Object[]{messageId, destination});
                 } else {
                     Message m = new Message();
                     m.setDestinationAddress(destination);
-                    m.setCompressedXml(resultSet.getBytes("XML_CODE"));
+                    byte[] bytes = resultSet.getBytes("XML_CODE");
+                    m.setCompressedXml(bytes);
+                    m.setCompressedXmlLength(bytes.length);
                     m.setHopCount(resultSet.getInt("HOP_COUNT"));
+                    m.setToBeQueued(true); // We queued it, so next hop should also queue it.
                     //initialize a boolean to hold the result of the send
                     boolean sent = false;
                     try {
@@ -251,15 +252,15 @@ class QueueManager implements Runnable {
                     if (sent) {
                         // Log every outgoing message (level FINE -- only one outgoing log entry for each message.)
                         Mediator.getLogger(QueueManager.class.getName()).log(Level.FINE,
-                                "Sent message ID {0} to {1}",
-                                new Object[]{messageId, destination});
+                                "Sent queued message ID {0} to {1} via {2}",
+                                new Object[]{messageId, destination, m.getIpAddressPort()});
                         //it was sent correctly, remove it from the list
                         delete(messageId);
                     } else {
                         // Log failed attempt (level FINEST -- possibly many such logs for each message.)
                         Mediator.getLogger(QueueManager.class.getName()).log(Level.FINEST,
-                                "Failed to send message ID {0} to {1}",
-                                new Object[]{messageId, destination});
+                                "Failed to send queued message ID {0} to {1} via {2}",
+                                new Object[]{messageId, destination, m.getIpAddressPort()});
                         /* Put this destination on the connectionDownList so
                          * resources are not wasted trying to send on a
                          * connection that is down */
@@ -276,8 +277,8 @@ class QueueManager implements Runnable {
         }
         synchronized (this) {
             try {
-                this.wait();
-            } catch (InterruptedException ex) {
+                this.wait(pollingInterval);
+            } catch (Exception ex) {
             }
         }
         synchronized (this) {

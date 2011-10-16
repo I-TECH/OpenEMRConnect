@@ -74,7 +74,7 @@ public class LoggingHandler extends Handler {
             for (int i = 2; i < stackTrace.length; i++) {
                 StackTraceElement e = stackTrace[i];
                 if (e.getClassName().equals(LoggingHandler.class.getName())) {
-                    return;
+                    return; // Return doing nothing -- don't recurse sending a message that our own message sending failed!
                 }
             }
             Formatter formatter = getFormatter();

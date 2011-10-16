@@ -372,8 +372,11 @@ public class Mediator implements IService {
          * Note that if the message type is createPerson or modifyPerson, this
          * may be overridden by the caller's desire, below.
          */
-        //TODO: Make sure this can be overriden.
-        m.setResponseExpected(messageType.getResponseMessageType() != null);
+        if (messageType.getResponseMessageType() != null) {
+            m.setResponseExpected(true);
+        } else {
+            m.setResponseExpected(false);
+        }
         /*
          * Find the destination address and name. This is usually the default
          * destination for the message type. However if our caller is passing
@@ -388,6 +391,7 @@ public class Mediator implements IService {
         m.setDestinationName(messageType.getDefaultDestinationName());
         String messageId = generateMessageId();
         m.setMessageId(messageId);
+        m.setToBeQueued(messageType.isToBeQueued());
         if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest) requestData;
             if (pr.getDestinationAddress() != null) {
@@ -400,7 +404,6 @@ public class Mediator implements IService {
             if (pr.getRequestReference() != null) {
                 m.setMessageId(pr.getRequestReference()); // Overwrite the auto-generated message ID.
             }
-            m.setToBeQueued(messageType.isToBeQueued());
             if (!pr.isResponseRequested()) {
                 MessageType.TemplateType templateType = messageType.getTemplateType();
                 if (templateType == MessageType.TemplateType.createPerson
@@ -565,7 +568,7 @@ public class Mediator implements IService {
      * Returns <code>null</code> if the destination is ourselves,
      * or the destination address cannot be translated to IP + port.
      */
-    private String getIpAddressPort(String destination) {
+    public String getIpAddressPort(String destination) {
         final String propertyPrefix = "IPAddressPort.";
         /*
          * If the destination is us, return null. This means that
@@ -683,15 +686,14 @@ public class Mediator implements IService {
                      * It is not destined for us, so we will pass it though
                      * to its destination.
                      */
-                    if (Mediator.testLoggerLevel(Level.FINE)) {
-                        Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                "Relaying received message to {0} at {1}: {2}",
-                                new Object[]{destinationAddress, ipAddressPort, summarizeMessage(m)});
-                    }
                     m.setIpAddressPort(ipAddressPort);
                     int hopCount = m.getHopCount();
                     hopCount++;
                     m.setHopCount(hopCount);
+                    if (Mediator.testLoggerLevel(Level.FINE)) {
+                        Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                "Relaying message {0}", summarizeMessage(m));
+                    }
                     sendMessage(m);
                 }
             }
@@ -825,6 +827,9 @@ public class Mediator implements IService {
         }
         if (m.getDestinationAddress() != null) {
             summary += " to " + m.getDestinationAddress();
+        }
+        if (m.getIpAddressPort() != null) {
+            summary += " via " + m.getIpAddressPort();
         }
         summary += " toBeQueued=" + m.isToBeQueued()
                 + " hopCount=" + m.getHopCount();
