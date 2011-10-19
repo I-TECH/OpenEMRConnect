@@ -25,6 +25,7 @@
 package ke.go.moh.oec.mpi.list;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Mpi;
 import ke.go.moh.oec.mpi.Sql;
 import ke.go.moh.oec.mpi.ValueMap;
@@ -162,9 +164,17 @@ public class FingerprintList {
                     String fingerprintTypeId = ValueMap.FINGERPRINT_TYPE.getDb().get(f.getFingerprintType());
                     String technologyTypeId = ValueMap.FINGERPRINT_TECHNOLOGY_TYPE.getDb().get(f.getTechnologyType());
                     sql = "INSERT INTO fingerprint (person_id, fingerprint_type_id, fingerprint_technology_type_id, fingerprint_template) VALUES (\n"
-                            + personId + ", " + fingerprintTypeId + ", " + technologyTypeId + ",\n"
-                            + Sql.quote(template) + ")";
-                    Sql.execute(conn, sql);
+                            + personId + ", " + fingerprintTypeId + ", " + technologyTypeId + ", ?)";
+                    Mediator.getLogger(FingerprintList.class.getName()).log(Level.FINE, "SQL Execute:\n{0}", sql);
+                    try {
+                        PreparedStatement stmt;
+                        stmt = conn.prepareStatement(sql);
+                        stmt.setObject(1, template);
+                        stmt.executeUpdate();
+                        stmt.close();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FingerprintList.class.getName()).log(Level.SEVERE, sql, ex);
+                    }
                 }
             }
         } else if (oldEntries) {

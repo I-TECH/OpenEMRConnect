@@ -178,8 +178,9 @@ public class MediatorTest {
         PersonResponse pr;
         List<Person> pList;
 
-        // Clan name that will not be found
-        p.setClanName("NotAClanName");
+        // Name that will not be found
+        p.setFirstName("O<NotAFirstName");
+        p.setClanName("O\"NotAClanName");
         result = mediator.getData(RequestTypeId.FIND_PERSON_MPI, requestData);
         assertNotNull(result);
         assertSame(PersonResponse.class, result.getClass());

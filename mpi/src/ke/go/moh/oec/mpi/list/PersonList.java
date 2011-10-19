@@ -379,7 +379,7 @@ public class PersonList {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "CREATE PERSON called with no person data.");
             return returnData;
         }
-        //Check to see if this person'sql hdssid, if available, already exists in the mpi. Log error if it does.
+        //Check to see if this person's hdssid, if available, already exists in the mpi. Log error if it does.
         String existingId = null;
         if (p.getPersonIdentifierList() != null
                 && !p.getPersonIdentifierList().isEmpty()) {
@@ -485,60 +485,35 @@ public class PersonList {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person data.");
             return returnData;
         }
+        // For modify, we should have either a local person GUID or a HDSSID to reference the existing (old) entry.
+        PersonMatch oldPersonMatch = null;
         String personGuid = newPerson.getPersonGuid();
-        if (personGuid == null
-                || personGuid.isEmpty()) {//True if this update is NOT the result of a 'sought and found' person i.e. 
-            //it came from kisumuhdss. We now try to find this person (using their kisumuhdssid) just to make sure 
-            //we agree with kisumu hdss that they are already known to us. 
-            if (newPerson.getPersonIdentifierList() != null
-                    && !newPerson.getPersonIdentifierList().isEmpty()) {
-                for (PersonIdentifier personIdentifier : newPerson.getPersonIdentifierList()) {
-                    if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
-                        if (personIdentifier.getIdentifier() != null
-                                && !personIdentifier.getIdentifier().isEmpty()) {
-                            List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-                            personIdentifierList.add(personIdentifier);
-                            Person find = new Person();
-                            find.setPersonIdentifierList(personIdentifierList);
-                            PersonRequest personRequest = new PersonRequest();
-                            personRequest.setPerson(find);
-                            //Find the person locally. No network communication is involved.
-                            PersonResponse personResponse = (PersonResponse) find(personRequest);
-                            if (personResponse != null
-                                    && personResponse.getPersonList() != null
-                                    && !personResponse.getPersonList().isEmpty()) {
-                                if (personResponse.getPersonList().isEmpty()) {
-                                    Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with non-existing kisumuHdssId person identifier.");
-                                    return returnData;
-                                } else if (personResponse.getPersonList().size() == 1) {
-                                    //We think this person exists once and we know their person guid. We'll use it to
-                                    //find him in the personList (this).
-                                    personGuid = personResponse.getPersonList().get(0).getPersonGuid();
-                                } else {
-                                    Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with a duplicated kisumuHdssId person identifier.");
-                                    return returnData;
-                                }
+        if (personGuid != null) {
+            oldPersonMatch = this.get(personGuid);
+            if (oldPersonMatch == null) {
+                Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON GUID {0} not found.", personGuid);
+                return returnData;
+            }
+        } else {
+            List<PersonIdentifier> piList = newPerson.getPersonIdentifierList();
+            if (piList != null && !piList.isEmpty()) {
+                for (PersonIdentifier pi : piList) {
+                    if (pi.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
+                        String hdssId = pi.getIdentifier();
+                        if (hdssId != null && !hdssId.isEmpty()) {
+                            oldPersonMatch = hdssIdMap.get(hdssId);
+                            if (oldPersonMatch != null) {
+                                break;
                             }
-                            //We only break if we find a NON-EMPTY kisumuhdssid, otherwise we keep going.
-                            break;
                         }
                     }
                 }
             }
         }
-        PersonMatch oldPersonMatch = null;
-        if (personGuid != null
-                && !personGuid.isEmpty()) {
-            oldPersonMatch = this.get(personGuid);
-            if (oldPersonMatch == null) {
-                Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person GUID.");
-                return returnData;
-            }
-        } else {
-            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON GUID {0} not found.", personGuid);
+        if (oldPersonMatch == null) {
+            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person GUID or matching HDSSID.");
             return returnData;
         }
-        newPerson.setPersonGuid(personGuid);
         SearchHistory.update(req, oldPersonMatch, newPerson); // Log the search result (if any) BEFORE modifying the person.
         int dbPersonId = oldPersonMatch.getDbPersonId();
         Person oldPerson = oldPersonMatch.getPerson();
