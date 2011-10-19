@@ -126,13 +126,11 @@ public class Sql {
     public static void close(ResultSet rs) {
         try {
             if (!rs.isClosed()) {
-                Statement stmt = null;
-                rs.getStatement();
+                Statement stmt = rs.getStatement();
                 if (stmt != null) {
                     stmt.close();
-                } else {
-                    rs.close();
                 }
+                rs.close();
             }
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
