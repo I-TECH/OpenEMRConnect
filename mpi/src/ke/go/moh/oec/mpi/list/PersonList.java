@@ -174,15 +174,31 @@ public class PersonList {
             }
         }
         if (personCount > 0) {
+            //
+            // If somehow there are fewer people in the MPI database than the number
+            // of threads we can use, then limit the number of threads so that
+            // each thread is loading only one person.
             int threadCount = Mpi.getMaxThreadCount();
             if (threadCount > personCount) {
                 threadCount = personCount;
             }
+            //
+            // Compute the number of people we will load with each thread. Divide
+            // the number of people by the number of threads. Round up.
+            //
+            // For integer division a/b rounded up to the next highest integer,
+            // use the formula (a+b-1)/b.
             int countPerThread = (personCount + threadCount - 1) / threadCount;
+            //
+            // Now we will make a pass through all the person_id values in the database
+            // for the purpose of partitioning them for all the threads. We will step through
+            // all the person_ids in order, to find out where the cutoff values
+            // are between the person_ids that each thread shall load. We put these
+            // values into the cutoffs array.
             int[] cutoffs = null;
             try {
                 Connection conn = Sql.connect();
-                String sql = "SELECT person_id from person";
+                String sql = "SELECT person_id FROM person ORDER BY person_id";
                 ResultSet rs = Sql.query(conn, sql);
                 cutoffs = new int[threadCount + 1];
                 cutoffs[0] = 0;
@@ -200,6 +216,9 @@ public class PersonList {
             } catch (SQLException ex) {
                 Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
             }
+            //
+            // Create all of the threads, and allocate each one the range of person_id
+            // values it is to load.
             long startTime = System.currentTimeMillis();
             Thread[] threadArray = new Thread[threadCount];
             LoadPersonThread[] loadPersonThreadArray = new LoadPersonThread[threadCount];
@@ -217,6 +236,8 @@ public class PersonList {
                 // Sleep 10 milliseconds.
                 waitAMoment();
             }
+            //
+            // Wait for all of the threads to complete loading their values. 
             for (int i = 0; i < threadCount; i++) {
                 Thread t = threadArray[i];
                 try {
