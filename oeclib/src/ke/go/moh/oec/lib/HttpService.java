@@ -51,8 +51,11 @@ import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -63,9 +66,20 @@ class HttpService {
      * requests.
      */
     private Mediator mediator = null;
+    private int id = 0;
+    private int port = 0;
     HttpServer server;
     Map<String, Date> unreachableIpPorts = new HashMap<String, Date>();
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+    private class PartialMessage {
+
+        private int id;
+        private int segment = 0;
+        private int length = 0;
+        private List<byte[]> messageSegments = new ArrayList<byte[]>();
+    }
+    private Map<String, PartialMessage> partialMessages = new HashMap<String, PartialMessage>();
 
     /**
      * Constructor to set {@link Mediator} callback object
@@ -83,35 +97,60 @@ class HttpService {
      * @return true if message was sent and HTTP response received, otherwise false
      */
     boolean send(Message m) throws MalformedURLException, IOException {
+        if (port == 0) {
+            port = Integer.parseInt(Mediator.getProperty("HTTPHandler.ListenPort"));
+        }
         boolean returnStatus = false;
         String destinationAddress = m.getDestinationAddress();
-        String ipAddressPort = m.getIpAddressPort();
-        if (ipAddressPort == null) {
-            // If we are called from the QueueManager, we may not have the IP address and port because they are not stored in the queue database.
+        NextHop nextHop = m.getNextHop();
+        if (nextHop == null) {
+            // If we are called from the QueueManager, we may not have the next hop information because they are not stored in the queue database.
             // If this is the case, then get the IP address and port now, from the destination address.
-            ipAddressPort = mediator.getIpAddressPort(destinationAddress);
-            m.setIpAddressPort(ipAddressPort);
+            nextHop = NextHop.getNextHop(destinationAddress);
+            m.setNextHop(nextHop);
         }
+        String ipAddressPort = nextHop.getIpAddressPort();
+        int maxSize = nextHop.getMaxSize();
         String url = "http://" + ipAddressPort + "/oecmessage?destination="
                 + destinationAddress + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount();
         try {
             /*Code thats performing a task should be placed in the try catch statement especially in the try part*/
-            URLConnection connection = new URL(url).openConnection();
-            connection.setDoOutput(true);
-            OutputStream output = connection.getOutputStream();
             byte[] compressedXml = m.getCompressedXml();
             int compressedXmlLength = m.getCompressedXmlLength();
-            output.write(compressedXml, 0, compressedXmlLength);
-            //output.write(xml);
-            output.close();
-
-            InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream());
-            BufferedReader br = new BufferedReader(inputStreamReader);
-            while (br.readLine() != null) {
-                //content not required, just acknowlegment that message was received.
+            int sent = 0;
+            int toSend = compressedXmlLength;
+            if (compressedXmlLength > maxSize) { // If we're going to split this message:
+                // Append the next message ID onto the URL.
+                url += "&port=" + port + "&id=" + ++id + "&segment=";
             }
-            br.close();
-            inputStreamReader.close();
+            int segment = 0;
+            while (sent < compressedXmlLength) {
+                String thisUrl = url;
+                if (compressedXmlLength > maxSize) {
+                    thisUrl = url + Integer.toString(++segment);
+                    if (compressedXmlLength - sent > maxSize) {
+                        toSend = maxSize;
+                    } else {
+                        toSend = compressedXmlLength - sent;
+                        thisUrl = thisUrl + "&end";
+                    }
+                }
+                URLConnection connection = new URL(thisUrl).openConnection();
+                connection.setDoOutput(true);
+                OutputStream output = connection.getOutputStream();
+
+                output.write(compressedXml, sent, toSend);
+                sent = sent + toSend;
+                output.close();
+
+                InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream());
+                BufferedReader br = new BufferedReader(inputStreamReader);
+                while (br.readLine() != null) {
+                    //content not required, just acknowlegment that message was received.
+                }
+                br.close();
+                inputStreamReader.close();
+            }
             returnStatus = true;
             canReach(ipAddressPort);
         } catch (ConnectException ex) {
@@ -180,7 +219,7 @@ class HttpService {
             unreachableIpPorts.remove(ipAddressPort);
         }
     }
-    
+
     /**
      * Starts listening for HTTP messages.
      * <p>
@@ -189,7 +228,9 @@ class HttpService {
      */
     void start() throws IOException {
         //throw new UnsupportedOperationException("Not supported yet.");
-        int port = Integer.parseInt(Mediator.getProperty("HTTPHandler.ListenPort"));
+        if (port == 0) {
+            port = Integer.parseInt(Mediator.getProperty("HTTPHandler.ListenPort"));
+        }
         InetSocketAddress addr = new InetSocketAddress(port);
         server = HttpServer.create(addr, 0);
         server.createContext("/oecmessage", (HttpHandler) new Handler(mediator));
@@ -234,6 +275,13 @@ class HttpService {
             String requestMethod = exchange.getRequestMethod();
             URI uri = exchange.getRequestURI();
             String query = uri.getQuery();
+            int port = 0;
+            int id = 0;
+            int segment = 0;
+            boolean end = false;
+            //
+            // Parse the URL arguments
+            //
             for (String param : query.split("&")) {
                 String[] pair = param.split("=");
                 if (pair[0].equals("destination")) {
@@ -242,6 +290,14 @@ class HttpService {
                     m.setHopCount(Integer.parseInt(pair[1]));
                 } else if (pair[0].equals("tobequeued")) {
                     m.setToBeQueued(Boolean.parseBoolean(pair[1]));
+                } else if (pair[0].equals("port")) {
+                    port = Integer.parseInt(pair[1]);
+                } else if (pair[0].equals("id")) {
+                    id = Integer.parseInt(pair[1]);
+                } else if (pair[0].equals("segment")) {
+                    segment = Integer.parseInt(pair[1]);
+                } else if (pair[0].equals("end")) {
+                    end = true;
                 }
             }
             if (requestMethod.equals("POST")) {
@@ -250,25 +306,78 @@ class HttpService {
                  */
                 Headers headers = exchange.getRequestHeaders();
                 InputStream input = exchange.getRequestBody();
-                byte[] compressedXml = new byte[30000];
+                byte[] compressedXml = new byte[50000];
                 int compressedXmlLength = input.read(compressedXml);
                 input.close();
-                m.setCompressedXml(compressedXml);
-                m.setCompressedXmlLength(compressedXmlLength);
-                String sendingIpAddress = exchange.getRemoteAddress().getAddress().getHostAddress();
-                m.setSendingIpAddress(sendingIpAddress);
-                /*
-                 * Process the message.
-                 */
-                mediator.processReceivedMessage(m);
-                /*
-                 * Acknoweldge to the sender that we received the message.
-                 */
-                Headers responseHeaders = exchange.getResponseHeaders();
-                responseHeaders.set("Content-Type", "text/plain");
-                exchange.sendResponseHeaders(200, 0);
-                OutputStream responseBody = exchange.getResponseBody();
-                responseBody.close();
+                InetSocketAddress remoteAddress = exchange.getRemoteAddress();
+                String sendingIpAddress = remoteAddress.getAddress().getHostAddress();
+                boolean completeMessage = true;
+                boolean outOfSequence = false;
+                m.setSegmentCount(1);
+                m.setLongestSegmentLength(compressedXmlLength);
+                if (id > 0) {
+                    completeMessage = false;
+                    String sendingIpAddressAndPort = sendingIpAddress + ":" + port;
+                    PartialMessage pm = null;
+                    if (segment == 1) {
+                        pm = new PartialMessage();
+                        pm.id = id;
+                        pm.segment = segment;
+                        byte[] a = Arrays.copyOf(compressedXml, compressedXmlLength);
+                        pm.messageSegments.add(a);
+                        pm.length += compressedXmlLength;
+                        partialMessages.put(sendingIpAddressAndPort, pm);
+                    } else {
+                        pm = partialMessages.get(sendingIpAddressAndPort);
+                        if (pm != null) {
+                            if (pm.id == id && ++pm.segment == segment) {
+                                byte[] a = Arrays.copyOf(compressedXml, compressedXmlLength);
+                                pm.messageSegments.add(a);
+                                pm.length += compressedXmlLength;
+                                if (end) {
+                                    compressedXmlLength = pm.length;
+                                    compressedXml = new byte[compressedXmlLength];
+                                    int offset = 0;
+                                    int longest = 0;
+                                    for (byte[] seg : pm.messageSegments) {
+                                        System.arraycopy(seg, 0, compressedXml, offset, seg.length);
+                                        offset += seg.length;
+                                        if (seg.length > longest) {
+                                            longest = seg.length;
+                                        }
+                                    }
+                                    m.setSegmentCount(pm.messageSegments.size());
+                                    m.setLongestSegmentLength(longest);
+                                    completeMessage = true;
+                                    partialMessages.remove(sendingIpAddressAndPort);
+                                }
+                            } else {
+                                outOfSequence = true;
+                                partialMessages.remove(sendingIpAddressAndPort);
+                            }
+                        }
+                    }
+                }
+                if (completeMessage) {
+                    m.setSendingIpAddress(sendingIpAddress);
+                    m.setCompressedXml(compressedXml);
+                    m.setCompressedXmlLength(compressedXmlLength);
+                    /*
+                     * Process the message.
+                     */
+                    mediator.processReceivedMessage(m);
+                }
+                if (!outOfSequence) {
+                    /*
+                     * Acknoweldge to the sender that we received the message.
+                     * (Don't acknowledge an out-of-sequence message).
+                     */
+                    Headers responseHeaders = exchange.getResponseHeaders();
+                    responseHeaders.set("Content-Type", "text/plain");
+                    exchange.sendResponseHeaders(200, 0);
+                    OutputStream responseBody = exchange.getResponseBody();
+                    responseBody.close();
+                }
                 exchange.close();
             }
         }

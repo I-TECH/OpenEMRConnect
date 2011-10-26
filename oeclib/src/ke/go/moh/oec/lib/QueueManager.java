@@ -253,14 +253,14 @@ class QueueManager implements Runnable {
                         // Log every outgoing message (level FINE -- only one outgoing log entry for each message.)
                         Mediator.getLogger(QueueManager.class.getName()).log(Level.FINE,
                                 "Sent queued message ID {0} to {1} via {2}",
-                                new Object[]{messageId, destination, m.getIpAddressPort()});
+                                new Object[]{messageId, destination, m.getNextHop().getIpAddressPort()});
                         //it was sent correctly, remove it from the list
                         delete(messageId);
                     } else {
                         // Log failed attempt (level FINEST -- possibly many such logs for each message.)
                         Mediator.getLogger(QueueManager.class.getName()).log(Level.FINEST,
                                 "Failed to send queued message ID {0} to {1} via {2}",
-                                new Object[]{messageId, destination, m.getIpAddressPort()});
+                                new Object[]{messageId, destination, m.getNextHop().getIpAddressPort()});
                         /* Put this destination on the connectionDownList so
                          * resources are not wasted trying to send on a
                          * connection that is down */

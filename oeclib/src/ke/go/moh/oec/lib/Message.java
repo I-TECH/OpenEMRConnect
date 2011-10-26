@@ -59,10 +59,11 @@ class Message {
      */
     private String destinationName;
     /**
-     * IP Address and port on which this message will be sent,
-     * as a String of the form "address:port".
+     * Information about the next hop where this message will be sent
+     * including the IP address and port, and any other information
+     * about how to send the message to that IP address and port.
      */
-    private String ipAddressPort;
+    private NextHop nextHop;
     /**
      * IP Address which sent this message to us.
      */
@@ -91,6 +92,14 @@ class Message {
      * Is a response expected to this message?
      */
     private boolean responseExpected;
+    /**
+     * Count of received message segments (for tracing).
+     */
+    private int segmentCount;
+    /**
+     * Longest received message segment length (for tracing.)
+     */
+    private int longestSegmentLength;
 
     public byte[] getCompressedXml() {
         return compressedXml;
@@ -132,12 +141,12 @@ class Message {
         this.hopCount = hopCount;
     }
 
-    public String getIpAddressPort() {
-        return ipAddressPort;
+    public int getLongestSegmentLength() {
+        return longestSegmentLength;
     }
 
-    public void setIpAddressPort(String ipAddressPort) {
-        this.ipAddressPort = ipAddressPort;
+    public void setLongestSegmentLength(int longestSegmentLength) {
+        this.longestSegmentLength = longestSegmentLength;
     }
 
     public Object getMessageData() {
@@ -164,6 +173,14 @@ class Message {
         this.messageType = messageType;
     }
 
+    public NextHop getNextHop() {
+        return nextHop;
+    }
+
+    public void setNextHop(NextHop nextHop) {
+        this.nextHop = nextHop;
+    }
+
     public boolean isResponseExpected() {
         return responseExpected;
     }
@@ -172,12 +189,20 @@ class Message {
         this.responseExpected = responseExpected;
     }
 
+    public int getSegmentCount() {
+        return segmentCount;
+    }
+
+    public void setSegmentCount(int segmentCount) {
+        this.segmentCount = segmentCount;
+    }
+
     public String getSendingIpAddress() {
         return sendingIpAddress;
     }
 
-    public void setSendingIpAddress(String sendingeIpAddress) {
-        this.sendingIpAddress = sendingeIpAddress;
+    public void setSendingIpAddress(String sendingIpAddress) {
+        this.sendingIpAddress = sendingIpAddress;
     }
 
     public String getSourceAddress() {

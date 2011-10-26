@@ -467,16 +467,15 @@ public class Mediator implements IService {
     Object sendData(Message m) {
         Object returnData = null;
         MessageType messageType = m.getMessageType(); // For handy reference.
-        String ipAddressPort = getIpAddressPort(m.getDestinationAddress());
-        m.setIpAddressPort(ipAddressPort);
-        if (ipAddressPort == null) {
+        NextHop nextHop = NextHop.getNextHop(m.getDestinationAddress());
+        m.setNextHop(nextHop);
+        if (nextHop == null) {
             /*
              * This is an error in our routing mechanism. We have a desination
-             * address, but we were unable to translate it into an IP address
-             * and port number combination.
+             * address, but we were unable to translate it into next hop information.
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                    "getData() - Routing address not found for ''{0}''", m.getDestinationAddress());
+                    "getData() - Next hop information not found for ''{0}''", m.getDestinationAddress());
             return null;
         }
         /*
@@ -546,66 +545,6 @@ public class Mediator implements IService {
     }
 
     /**
-     * Gets IP address and port (next hop from here) for a destination
-     * <p>
-     * The IP address and port corresponding to a destination address is found
-     * in properties for this application starting with "IPAddressPort."
-     * If the full address is not found, then we look for successively
-     * higher levels in the address name, where levels are separated by
-     * dots. Finally we look for the catch-all entry "IPAddressPort.*"
-     * to which we forward any otherwise-unresolved address.
-     * <p>
-     * For example, if the address to find is "aa.bb.cc", we will look
-     * for the following properties in this order until we find a value:
-     * <p>
-     * IpAddressPort.aa.bb.cc   <br>
-     * IpAddressPort.aa.bb      <br>
-     * IpAddressPort.aa         <br>
-     * IpAddressPort.*          <br>
-     *
-     * @param destination where the message is to be sent
-     * @return IP address:port to which to forward the message.
-     * Returns <code>null</code> if the destination is ourselves,
-     * or the destination address cannot be translated to IP + port.
-     */
-    public String getIpAddressPort(String destination) {
-        final String propertyPrefix = "IPAddressPort.";
-        /*
-         * If the destination is us, return null. This means that
-         * we don't have to go to the network to find the address;
-         * the address is our own.
-         */
-        if (destination.equals(getProperty("Instance.Address"))) {
-            return null;
-        }
-        /*
-         * Check for an explicit entry for this destination address.
-         */
-        String returnValue = getProperty(propertyPrefix + destination);
-        /*
-         * If there was no entry for the whole address, try successively
-         * shorter strings by chopping off the end from the last '.' character.
-         */
-        while (returnValue == null) {
-            int i = destination.lastIndexOf('.');
-            /*
-             * If there are no more segments to chop, try for
-             * the catch-all wildcard entry.
-             */
-            if (i < 0) {
-                returnValue = getProperty(propertyPrefix + "*");
-                break;
-            }
-            /*
-             * Chop the string and look for the next higher level.
-             */
-            destination = destination.substring(0, i);
-            returnValue = getProperty(propertyPrefix + destination);
-        }
-        return returnValue;
-    }
-
-    /**
      * Process a received HTTP message. Either this is a message that is
      * destined for us, or we are an intermediate node that should forward the
      * message on its way to the next node. If we find that we have an
@@ -621,64 +560,48 @@ public class Mediator implements IService {
                     "Message has no destination address.");
         } else {
             String ourInstanceAddress = getProperty("Instance.Address");
-            String ipAddressPort = getIpAddressPort(destinationAddress);
             if (destinationAddress.equalsIgnoreCase(ourInstanceAddress)) { // If the message is addressed to us:
-                if (ipAddressPort == null) {
-                    /*
-                     * The message destination matches our own instance address
-                     * and we do not find a different IP address/port for the
-                     * message destination. It is really destined for us. Process it.
-                     */
-                    Compresser.decompress(m);
-                    xmlPacker.unpack(m);
-                    if (m.getMessageData() == null) {
-                        Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                                "Received message did not unpack into messageData: {0}", summarizeMessage(m));
-                    } else {
-                        if (m.getMessageData().getClass() == PersonRequest.class) {
-                            PersonRequest req = (PersonRequest) m.getMessageData();
-                            req.setSourceAddress(m.getSourceAddress());
-                            req.setSourceName(m.getSourceName());
-                            req.setRequestReference(m.getMessageId());
-                            req.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
-                        } else if (m.getMessageData().getClass() == PersonResponse.class) {
-                            PersonResponse rsp = (PersonResponse) m.getMessageData();
-                            rsp.setSuccessful(true);
-                            rsp.setRequestReference(m.getMessageId());
-                        }
-                        boolean responseDelivered = pendingQueue.findRequest(m);
-                        if (responseDelivered) { // Was the message a response to a request that we just delivered?
-                            if (Mediator.testLoggerLevel(Level.FINE)) {
-                                Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                        "Received message delivered as response to API: {0}", summarizeMessage(m));
-                            }
-                        } else {
-                            if (Mediator.testLoggerLevel(Level.FINE)) {
-                                Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                        "Received message delivered unsolicited to API: {0}", summarizeMessage(m));
-                            }
-                            processUnsolicitedMessage(m);
-                        }
-                    }
-                } else {
-                    /*
-                     * The message destination matches our own instance address
-                     * but the router has returned a IP address/port for the
-                     * destination that is not us. Somehing is misconfigured.
-                     */
+                Compresser.decompress(m);
+                xmlPacker.unpack(m);
+                if (m.getMessageData() == null) {
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "Received message destination matches our own name, but router returns IP Address:port of ''{1}'': {0}",
-                            new Object[]{summarizeMessage(m), ipAddressPort});
+                            "Received message did not unpack into messageData: {0}", summarizeMessage(m));
+                } else {
+                    if (m.getMessageData().getClass() == PersonRequest.class) {
+                        PersonRequest req = (PersonRequest) m.getMessageData();
+                        req.setSourceAddress(m.getSourceAddress());
+                        req.setSourceName(m.getSourceName());
+                        req.setRequestReference(m.getMessageId());
+                        req.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
+                    } else if (m.getMessageData().getClass() == PersonResponse.class) {
+                        PersonResponse rsp = (PersonResponse) m.getMessageData();
+                        rsp.setSuccessful(true);
+                        rsp.setRequestReference(m.getMessageId());
+                    }
+                    boolean responseDelivered = pendingQueue.findRequest(m);
+                    if (responseDelivered) { // Was the message a response to a request that we just delivered?
+                        if (Mediator.testLoggerLevel(Level.FINE)) {
+                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                    "Received message delivered as response to API: {0}", summarizeMessage(m));
+                        }
+                    } else {
+                        if (Mediator.testLoggerLevel(Level.FINE)) {
+                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                    "Received message delivered unsolicited to API: {0}", summarizeMessage(m));
+                        }
+                        processUnsolicitedMessage(m);
+                    }
                 }
             } else {    // If the message is not addressed to us:
-                if (ipAddressPort == null) {
+                NextHop nextHop = NextHop.getNextHop(destinationAddress);
+                if (nextHop == null) {
                     /*
                      * The message destination does not match our own,
-                     * and the router is not giving us an IP Port/Address for it.
+                     * and the router is not giving us next hop information.
                      * This is a configuration error.
                      */
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "IP Address:port not found for received message {0}", summarizeMessage(m));
+                            "Next hop not found for received message {0}", summarizeMessage(m));
                 } else {
                     /*
                      * The message destination does not match our own,
@@ -686,7 +609,7 @@ public class Mediator implements IService {
                      * It is not destined for us, so we will pass it though
                      * to its destination.
                      */
-                    m.setIpAddressPort(ipAddressPort);
+                    m.setNextHop(nextHop);
                     int hopCount = m.getHopCount();
                     hopCount++;
                     m.setHopCount(hopCount);
@@ -769,7 +692,7 @@ public class Mediator implements IService {
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                     "sendMessage() - Hop count {0} exceeds maximum hop count {1} for destination ''{2}'', routed to ''{3}''",
-                    new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getIpAddressPort()});
+                    new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getNextHop().getIpAddressPort()});
         } else if (m.isToBeQueued()) {
             messageSent = queueManager.enqueue(m);
         } else {
@@ -828,11 +751,19 @@ public class Mediator implements IService {
         if (m.getDestinationAddress() != null) {
             summary += " to " + m.getDestinationAddress();
         }
-        if (m.getIpAddressPort() != null) {
-            summary += " via " + m.getIpAddressPort();
+        NextHop nextHop = m.getNextHop();
+        if (nextHop != null) {
+            summary += " via " + nextHop.getIpAddressPort();
         }
         summary += " toBeQueued=" + m.isToBeQueued()
-                + " hopCount=" + m.getHopCount();
+                + " hopCount=" + m.getHopCount()
+                + " length=" + m.getCompressedXmlLength();
+        if (m.getSegmentCount() != 0) {
+            summary += " segments=" + m.getSegmentCount();
+        }
+        if (m.getLongestSegmentLength() != 0) {
+            summary += ", longest=" + m.getLongestSegmentLength();
+        }
         if (Mediator.testLoggerLevel(Level.FINER)) {
             if (m.getXml() == null) {
                 Compresser.decompress(m);
