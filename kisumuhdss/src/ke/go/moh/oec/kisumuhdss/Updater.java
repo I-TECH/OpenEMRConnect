@@ -301,7 +301,7 @@ public class Updater {
                 value = "";
             } else {
                 value = value.trim(); // HDSS database values have a lot of trailing spaces.
-                value = value.replace('‘', '\'').replace('’', '\''); // Some values have "curly" quote characters -- cause problems for XML.
+                value = value.replace('\u2018', '\'').replace('\u2019', '\''); // Some values have "curly" quote characters -- cause problems for XML.
             }
             if (r.name.equals("fname")) {
                 p.setFirstName(value);
