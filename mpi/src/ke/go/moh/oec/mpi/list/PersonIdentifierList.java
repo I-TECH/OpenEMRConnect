@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.PersonIdentifier;
-import ke.go.moh.oec.mpi.Mpi;
 import ke.go.moh.oec.mpi.Sql;
 import ke.go.moh.oec.mpi.ValueMap;
 
