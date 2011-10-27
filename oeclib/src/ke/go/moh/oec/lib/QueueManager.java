@@ -219,7 +219,7 @@ class QueueManager implements Runnable {
              * successfully.  Any Message with a destination on this list will
              * not try to be sent because it is assumed that the connection is down.
              * The list is cleared after a specified period of time. */
-            HashSet connectionDownList = new HashSet();
+            HashSet connectionDownList = new HashSet<String>();
 
             //try to send each entry in that table
             while (resultSet.next()) {

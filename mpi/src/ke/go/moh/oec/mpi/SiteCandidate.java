@@ -34,7 +34,7 @@ import ke.go.moh.oec.mpi.match.SiteMatch;
  * 
  * @author Jim Grace
  */
-public class SiteCandidate implements Comparable {
+public class SiteCandidate implements Comparable<SiteCandidate> {
 
     /** Site that may match the searched for clinic name. */
     private SiteMatch siteMatch;
@@ -80,15 +80,14 @@ public class SiteCandidate implements Comparable {
      * @return less than 0 if this site is "less than" the other (this site score is higher than the other),
      * greater than 0 if this site is "greater than" the other (this site score is lower than the other).
      */
-    public int compareTo(Object other) {
-        SiteCandidate cOther = (SiteCandidate) other;
+    public int compareTo(SiteCandidate other) {
         int intThisScore = (int) (1000000000.0 * score);
-        int intOtherScore = (int) (1000000000.0 * cOther.score);
+        int intOtherScore = (int) (1000000000.0 * other.score);
         if (intThisScore != intOtherScore) {
             return intOtherScore - intThisScore;
         } else {
             int siteCode = siteMatch.getSiteCode();
-            int otherSiteCode = cOther.siteMatch.getSiteCode();
+            int otherSiteCode = other.siteMatch.getSiteCode();
             return (siteCode - otherSiteCode);
         }
     }
