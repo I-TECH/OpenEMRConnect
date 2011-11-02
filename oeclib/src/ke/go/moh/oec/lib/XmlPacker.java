@@ -1320,11 +1320,11 @@ class XmlPacker {
             doc = db.parse(is);
             is.close();
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, "Error parsing XML:\n" + xml, ex);
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, "Error parsing XML of length " + xml.length() + ":\n" + xml, ex);
         } catch (SAXException ex) {
-            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, "Error parsing XML:\n" + xml, ex);
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, "Error parsing XML of length " + xml.length() + ":\n" + xml, ex);
         } catch (IOException ex) {
-            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, "Error parsing XML:\n" + xml, ex);
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, "Error parsing XML of length " + xml.length() + ":\n" + xml, ex);
         }
         return doc;
     }
