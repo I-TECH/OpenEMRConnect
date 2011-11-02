@@ -313,6 +313,7 @@ class HttpService {
                 String sendingIpAddress = remoteAddress.getAddress().getHostAddress();
                 boolean completeMessage = true;
                 boolean outOfSequence = false;
+                m.setSendingIpAddress(sendingIpAddress);
                 m.setSegmentCount(1);
                 m.setLongestSegmentLength(compressedXmlLength);
                 if (id > 0) {

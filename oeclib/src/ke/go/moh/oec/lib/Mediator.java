@@ -475,7 +475,8 @@ public class Mediator implements IService {
              * address, but we were unable to translate it into next hop information.
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                    "getData() - Next hop information not found for ''{0}''", m.getDestinationAddress());
+                    "getData() - Next hop information not found for ''{0}'': {1}",
+                    new Object[]{m.getDestinationAddress(), summarizeMessage(m)});
             return null;
         }
         /*
@@ -643,10 +644,8 @@ public class Mediator implements IService {
                  * waiting for.
                  */
                 Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
-                        "Unsolicited message with request type {0} received from ''{1}''. No user callback is registered.",
-                        new Object[]{messageType.getRequestTypeId(), m.getSourceAddress()});
-
-
+                        "Unsolicited message with request type {0} received. No user callback is registered: {1}",
+                        new Object[]{messageType.getRequestTypeId(), summarizeMessage(m)});
             }
         } else {
             /*
@@ -660,8 +659,8 @@ public class Mediator implements IService {
              * Or this could be an error of some sort.
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
-                    "Unsolicited message with XML root ''{0}'' received from ''{1}'', but it isn''t registered as a request.",
-                    new Object[]{messageType.getRootXmlTag(), m.getSourceAddress()});
+                    "Unsolicited message with XML root ''{0}'' received, but it isn''t registered as a request: {1}",
+                    new Object[]{messageType.getRootXmlTag(), summarizeMessage(m)});
         }
     }
 
@@ -691,17 +690,17 @@ public class Mediator implements IService {
              * This may indicate a routing loop between two or more systems.
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                    "sendMessage() - Hop count {0} exceeds maximum hop count {1} for destination ''{2}'', routed to ''{3}''",
-                    new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getNextHop().getIpAddressPort()});
+                    "sendMessage() - Hop count {0} exceeds maximum hop count {1} for destination ''{2}'', routed to ''{3}'': {4}",
+                    new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getNextHop().getIpAddressPort(), summarizeMessage(m)});
         } else if (m.isToBeQueued()) {
             messageSent = queueManager.enqueue(m);
         } else {
             try {
                 messageSent = httpService.send(m); // (toBeQueued = false)
             } catch (MalformedURLException ex) {
-                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Error sending: " + summarizeMessage(m), ex);
             } catch (IOException ex) {
-                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Error sending: " + summarizeMessage(m), ex);
             }
         }
         return messageSent;
