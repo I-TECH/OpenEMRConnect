@@ -24,14 +24,6 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
-/**
- * [Gitau to provide a description.]
- *
- * @author John Gitau
- */
-/*
- * Class to send and receive HTTP messages.
- */
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -62,6 +54,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
+/**
+ * Handles HTTP requests and responses between OpenEMRConnect nodes.
+ *
+ * @author John Gitau
+ * @author Jim Grace
+ */
 class HttpService {
 
     /**
@@ -358,7 +356,6 @@ class HttpService {
                             new Object[]{bufferSize, compressedXmlLength});
                 }
                 if (responseCode == HTTP_RESPONSE_OK) {
-                    responseCode = HTTP_RESPONSE_OK;
                     InetSocketAddress remoteAddress = exchange.getRemoteAddress();
                     String sendingIpAddress = remoteAddress.getAddress().getHostAddress();
                     boolean completeMessage = true;
