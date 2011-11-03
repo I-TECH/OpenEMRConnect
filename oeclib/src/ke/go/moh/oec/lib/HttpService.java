@@ -173,7 +173,7 @@ class HttpService {
                     br.close();
                     inputStreamReader.close();
                 } else {
-                    Logger.getLogger(HttpService.class.getName()).log(Level.FINER,
+                    Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
                             "MD5 mismatch reported. Retrying sending message to {0} at {1}",
                             new Object[]{m.getDestinationAddress(), url});
                 }
@@ -348,10 +348,14 @@ class HttpService {
                     String md5Computed = computeMd5(compressedXml, 0, compressedXmlLength);
                     if (md5Reported.compareTo(md5Computed) != 0) {
                         responseCode = HTTP_RESPONSE_MD5_MISMATCH;
-                        Logger.getLogger(HttpService.class.getName()).log(Level.FINER,
+                        Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
                                 "MD5 reported as {0}, computed as {1}, length expected {2}, found {3}",
                                 new Object[]{md5Reported, md5Computed, bufferSize, compressedXmlLength});
                     }
+                } else {
+                    Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
+                            "MD5 not reported. length expected {0}, found {1}",
+                            new Object[]{bufferSize, compressedXmlLength});
                 }
                 if (responseCode == HTTP_RESPONSE_OK) {
                     responseCode = HTTP_RESPONSE_OK;
