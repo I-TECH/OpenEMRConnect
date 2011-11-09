@@ -76,13 +76,25 @@ class HttpService {
     private static final int HTTP_RESPONSE_OK = 200;
     private static final int HTTP_RESPONSE_MD5_MISMATCH = 449; // No obvious choice here, this code is Microsoft "Retry With"
 
+    /**
+     * Stores a partial message that is being received in segments from a given source.
+     */
     private class PartialMessage {
 
+        /** ID number of the partial message in progress. */
         private int id;
+        /** Most recent segment number within the partial message. */
         private int segment = 0;
+        /** Total length of all the segments received so far. */
         private int length = 0;
+        /** Array of all segments received so far. */
         private List<byte[]> messageSegments = new ArrayList<byte[]>();
     }
+    
+    /**
+     * Stores all partial messages that are in the process of being received in segments.
+     * This HashMap is keyed by the IP address and (listening) port number of the sender.
+     */
     private Map<String, PartialMessage> partialMessages = new HashMap<String, PartialMessage>();
 
     /**
