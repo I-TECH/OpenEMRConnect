@@ -399,9 +399,22 @@ class HttpService {
                                         partialMessages.remove(sendingIpAddressAndPort);
                                     }
                                 } else {
+                                    if (pm.id != id) {
+                                    Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
+                                            "Message id mismatch from {0}. Expected id {1}, found {2}, expected sequence {3}, found {4}",
+                                            new Object[]{sendingIpAddressAndPort, pm.id, id, pm.segment, segment});
+                                    } else {
+                                     Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
+                                            "Message segment out of sequence from {0}, message id {1}, expected sequence {2}, found {3}",
+                                            new Object[]{sendingIpAddressAndPort, id, pm.segment, segment});
+                                    }
                                     outOfSequence = true;
                                     partialMessages.remove(sendingIpAddressAndPort);
                                 }
+                            } else {
+                                Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
+                                        "Received segment from {0}, id {1}, segment {2} but no partial message previously stored.",
+                                        new Object[]{sendingIpAddressAndPort, id, segment});
                             }
                         }
                     }
@@ -422,7 +435,7 @@ class HttpService {
                      */
                     Headers responseHeaders = exchange.getResponseHeaders();
                     responseHeaders.set("Content-Type", "text/plain");
-                    exchange.sendResponseHeaders(200, 0);
+                    exchange.sendResponseHeaders(responseCode, 0);
                     OutputStream responseBody = exchange.getResponseBody();
                     responseBody.close();
                 }
