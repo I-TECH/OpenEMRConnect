@@ -40,11 +40,11 @@ import ke.go.moh.oec.RequestTypeId;
  * 
  * @author Jim Grace
  */
-public class LoggingHandler extends Handler {
+public class LoggingServiceHandler extends Handler {
 
     Mediator mediator;
 
-    LoggingHandler(Mediator mediator) {
+    LoggingServiceHandler(Mediator mediator) {
         this.mediator = mediator;
     }
 
@@ -73,7 +73,7 @@ public class LoggingHandler extends Handler {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             for (int i = 2; i < stackTrace.length; i++) {
                 StackTraceElement e = stackTrace[i];
-                if (e.getClassName().equals(LoggingHandler.class.getName())) {
+                if (e.getClassName().equals(LoggingServiceHandler.class.getName())) {
                     return; // Return doing nothing -- don't recurse sending a message that our own message sending failed!
                 }
             }

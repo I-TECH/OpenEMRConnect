@@ -37,6 +37,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.SimpleFormatter;
 import ke.go.moh.oec.PersonRequest;
@@ -135,7 +136,7 @@ public class Mediator implements IService {
      * properly be refactored to follow the Java singleton pattern.)
      * <p>
      * If we are to use our own distributed logging service, set up the
-     * LoggingHandler to handle all calls to the standard logger.
+     * LoggingServiceHandler to handle all calls to the standard logger.
      * <p>
      * Allocate other library class objects as needed, and start them
      * as needed. In particular, the HttpManager and QueueManager need
@@ -143,13 +144,28 @@ public class Mediator implements IService {
      */
     public Mediator() {
         setLoggerLevel();
+        LogManager man = LogManager.getLogManager();
+        Logger rootLogger = man.getLogger("");
         if (useLoggingService) {
-            LogManager man = LogManager.getLogManager();
-            Logger rootLogger = man.getLogger("");
-            Handler oecHandler = new LoggingHandler(this);
+            Handler loggingServiceHandler = new LoggingServiceHandler(this);
             Formatter formatter = new SimpleFormatter();
-            oecHandler.setFormatter(formatter);
-            rootLogger.addHandler(oecHandler);
+            loggingServiceHandler.setFormatter(formatter);
+            rootLogger.addHandler(loggingServiceHandler);
+        }
+        String loggerFile = getProperty("Logger.File");
+        if (loggerFile != null && Boolean.parseBoolean(loggerFile)) {
+            try {
+                String logFileName = runtimeDirectory + "openemrconnect%g.log";
+                Handler loggingFileHandler = new FileHandler(logFileName, 100000, 100);
+                Formatter formatter = new SimpleFormatter();
+                loggingFileHandler.setFormatter(formatter);
+                loggingFileHandler.setLevel(loggerLevel);
+                rootLogger.addHandler(loggingFileHandler);
+            } catch (IOException ex) {
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Can''t start file logger.", ex);
+            } catch (SecurityException ex) {
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Can''t start file logger.", ex);
+            }
         }
         httpService = new HttpService(this);
         queueManager = new QueueManager(httpService);

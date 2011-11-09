@@ -43,11 +43,13 @@ Thumbs.db
 ############################
 loggingserver/oec*.log
 loggingserver/oec.log.lck
+*/openemrconnect*.log
+*/*/openemrconnect*.log
 
 # Lock files #
 ##############
-*/lockfile.lck
-*/*/lockfile.lck
+*/*.lck
+*/*/*.lck
 
 # Embedded databases #
 ###################################
