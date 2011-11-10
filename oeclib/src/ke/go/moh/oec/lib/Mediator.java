@@ -492,7 +492,7 @@ public class Mediator implements IService {
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                     "getData() - Next hop information not found for ''{0}'': {1}",
-                    new Object[]{m.getDestinationAddress(), summarizeMessage(m)});
+                    new Object[]{m.getDestinationAddress(), m.summarize()});
             return null;
         }
         /*
@@ -513,7 +513,7 @@ public class Mediator implements IService {
          */
         m.setHopCount(1); // This will be the first hop.
         if (Mediator.testLoggerLevel(Level.FINE)) {
-            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Sending message {0}", summarizeMessage(m));
+            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Sending message {0}", m.summarize());
         }
         boolean messageSent = sendMessage(m);
         /*
@@ -582,7 +582,7 @@ public class Mediator implements IService {
                 xmlPacker.unpack(m);
                 if (m.getMessageData() == null) {
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "Received message did not unpack into messageData: {0}", summarizeMessage(m));
+                            "Received message did not unpack into messageData: {0}", m.summarize());
                 } else {
                     if (m.getMessageData().getClass() == PersonRequest.class) {
                         PersonRequest req = (PersonRequest) m.getMessageData();
@@ -599,12 +599,12 @@ public class Mediator implements IService {
                     if (responseDelivered) { // Was the message a response to a request that we just delivered?
                         if (Mediator.testLoggerLevel(Level.FINE)) {
                             Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                    "Received message delivered as response to API: {0}", summarizeMessage(m));
+                                    "Received message delivered as response to API: {0}", m.summarize());
                         }
                     } else {
                         if (Mediator.testLoggerLevel(Level.FINE)) {
                             Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                    "Received message delivered unsolicited to API: {0}", summarizeMessage(m));
+                                    "Received message delivered unsolicited to API: {0}", m.summarize());
                         }
                         processUnsolicitedMessage(m);
                     }
@@ -618,7 +618,7 @@ public class Mediator implements IService {
                      * This is a configuration error.
                      */
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "Next hop not found for received message {0}", summarizeMessage(m));
+                            "Next hop not found for received message {0}", m.summarize());
                 } else {
                     /*
                      * The message destination does not match our own,
@@ -632,7 +632,7 @@ public class Mediator implements IService {
                     m.setHopCount(hopCount);
                     if (Mediator.testLoggerLevel(Level.FINE)) {
                         Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                "Relaying message {0}", summarizeMessage(m));
+                                "Relaying message {0}", m.summarize());
                     }
                     sendMessage(m);
                 }
@@ -661,7 +661,7 @@ public class Mediator implements IService {
                  */
                 Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
                         "Unsolicited message with request type {0} received. No user callback is registered: {1}",
-                        new Object[]{messageType.getRequestTypeId(), summarizeMessage(m)});
+                        new Object[]{messageType.getRequestTypeId(), m.summarize()});
             }
         } else {
             /*
@@ -676,7 +676,7 @@ public class Mediator implements IService {
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
                     "Unsolicited message with XML root ''{0}'' received, but it isn''t registered as a request: {1}",
-                    new Object[]{messageType.getRootXmlTag(), summarizeMessage(m)});
+                    new Object[]{messageType.getRootXmlTag(), m.summarize()});
         }
     }
 
@@ -707,86 +707,18 @@ public class Mediator implements IService {
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                     "sendMessage() - Hop count {0} exceeds maximum hop count {1} for destination ''{2}'', routed to ''{3}'': {4}",
-                    new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getNextHop().getIpAddressPort(), summarizeMessage(m)});
+                    new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getNextHop().getIpAddressPort(), m.summarize()});
         } else if (m.isToBeQueued()) {
             messageSent = queueManager.enqueue(m);
         } else {
             try {
                 messageSent = httpService.send(m); // (toBeQueued = false)
             } catch (MalformedURLException ex) {
-                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Error sending: " + summarizeMessage(m), ex);
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Error sending: " + m.summarize(), ex);
             } catch (IOException ex) {
-                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Error sending: " + summarizeMessage(m), ex);
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Error sending: " + m.summarize(), ex);
             }
         }
         return messageSent;
-    }
-
-    /**
-     * Summarizes the message in question. Returns the message type if known,
-     * otherwise returns the root tag of the XML message. Also returns information
-     * such as from and to addresses, if known, and hop count and queuing status.
-     * If the logging level is FINER or greater, also returns the message itself.
-     * <p>
-     * Note that this routine uncompresses the message if necessary. It should
-     * only be called if the caller knows that the result will be used.
-     * For example, if the result will be used for logging a message at
-     * level FINE, the caller should test to be sure that we are logging
-     * level FINE messages before calling this method.
-     * 
-     * @param m the message to summarize.
-     * @return brief summary of the message.
-     */
-    private String summarizeMessage(Message m) {
-        String summary = "[can't decode message type]";
-        if (m.getMessageType() != null) { // If message originaed here, we know its type.
-            summary = m.getMessageType().getTemplateType().name(); // Use type as message label.
-        } else {
-            if (m.getXml() == null) {
-                Compresser.decompress(m);
-            }
-            String xml = m.getXml();
-            if (xml != null) {
-                int line2 = xml.indexOf('\n') + 1;
-                if (line2 > 0) {
-                    int endTag = xml.indexOf('>', line2);
-                    int space = xml.indexOf(' ', line2);
-                    if (space > 0 && space < endTag) {
-                        endTag = space; // Strip off any root tag attributes...
-                    }
-                    if (endTag > 0) {
-                        summary = xml.substring(line2, endTag) + " ...";
-                    }
-                }
-            }
-        }
-        if (m.getSendingIpAddress() != null) {
-            summary += " from " + m.getSendingIpAddress();
-        }
-        if (m.getDestinationAddress() != null) {
-            summary += " to " + m.getDestinationAddress();
-        }
-        NextHop nextHop = m.getNextHop();
-        if (nextHop != null) {
-            summary += " via " + nextHop.getIpAddressPort();
-        }
-        summary += " toBeQueued=" + m.isToBeQueued()
-                + " hopCount=" + m.getHopCount()
-                + " length=" + m.getCompressedXmlLength();
-        if (m.getSegmentCount() != 0) {
-            summary += " segments=" + m.getSegmentCount();
-        }
-        if (m.getLongestSegmentLength() != 0) {
-            summary += ", longest=" + m.getLongestSegmentLength();
-        }
-        if (Mediator.testLoggerLevel(Level.FINER)) {
-            if (m.getXml() == null) {
-                Compresser.decompress(m);
-            }
-            if (m.getXml() != null) {
-                summary += "\n" + m.getXml(); // Include the whole message.
-            }
-        }
-        return summary;
     }
 }

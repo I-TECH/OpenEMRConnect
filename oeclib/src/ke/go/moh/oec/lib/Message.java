@@ -24,6 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
+import java.util.logging.Level;
+
 /**
  * Description of a message to be sent, or that has been received.
  *
@@ -235,5 +237,84 @@ class Message {
 
     public void setXml(String xml) {
         this.xml = xml;
+    }
+
+    /**
+     * Summarizes the message in question. It will be decompressed if necessary
+     * to show the contents.
+     * 
+     * @return summary of the message.
+     */
+    public String summarize() {
+        return summarize(true);
+    }
+    
+    /**
+     * Summarizes the message in question. Returns the message type if known,
+     * otherwise returns the root tag of the XML message. Also returns information
+     * such as from and to addresses, if known, and hop count and queuing status.
+     * If the logging level is FINER or greater, also returns the message itself.
+     * <p>
+     * Note that this routine uncompresses the message if necessary. It should
+     * only be called if the caller knows that the result will be used.
+     * For example, if the result will be used for logging a message at
+     * level FINE, the caller should test to be sure that we are logging
+     * level FINE messages before calling this method.
+     * 
+     * @param decompressIfNeeded if true, the message will be decompressed
+     * if needed to display the contents. This should be false to report
+     * errors from the decompress method, so the method does not call itself.
+     * 
+     * @return summary of the message.
+     */
+    public String summarize(boolean decompressIfNeeded) {
+        String summary = "[can't decode message type]";
+        if (messageType != null) { // If message originaed here, we know its type.
+            summary = messageType.getTemplateType().name(); // Use type as message label.
+        } else {
+            if (xml == null && decompressIfNeeded) {
+                Compresser.decompress(this);
+            }
+            if (xml != null) {
+                int line2 = xml.indexOf('\n') + 1;
+                if (line2 > 0) {
+                    int endTag = xml.indexOf('>', line2);
+                    int space = xml.indexOf(' ', line2);
+                    if (space > 0 && space < endTag) {
+                        endTag = space; // Strip off any root tag attributes...
+                    }
+                    if (endTag > 0) {
+                        summary = xml.substring(line2, endTag) + " ...";
+                    }
+                }
+            }
+        }
+        if (sendingIpAddress != null) {
+            summary += " from " + sendingIpAddress;
+        }
+        if (destinationAddress != null) {
+            summary += " to " + destinationAddress;
+        }
+        if (nextHop != null) {
+            summary += " via " + nextHop.getIpAddressPort();
+        }
+        summary += " toBeQueued=" + toBeQueued
+                + " hopCount=" + hopCount
+                + " length=" + compressedXmlLength;
+        if (segmentCount != 0) {
+            summary += " segments=" + segmentCount;
+        }
+        if (longestSegmentLength != 0) {
+            summary += ", longest=" + longestSegmentLength;
+        }
+        if (Mediator.testLoggerLevel(Level.FINER)) {
+            if (xml == null && decompressIfNeeded) {
+                Compresser.decompress(this);
+            }
+            if (xml != null) {
+                summary += "\n" + xml; // Include the whole message.
+            }
+        }
+        return summary;
     }
 }
