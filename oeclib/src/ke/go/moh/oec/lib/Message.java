@@ -71,6 +71,10 @@ class Message {
      */
     private String sendingIpAddress;
     /**
+     * (Listening) port number from system which sent this message to us.
+     */
+    private int sendingPort;
+    /**
      * Count of how many systems have sent this message so far.
      */
     private int hopCount;
@@ -207,6 +211,14 @@ class Message {
         this.sendingIpAddress = sendingIpAddress;
     }
 
+    public int getSendingPort() {
+        return sendingPort;
+    }
+
+    public void setSendingPort(int sendingPort) {
+        this.sendingPort = sendingPort;
+    }
+
     public String getSourceAddress() {
         return sourceAddress;
     }
@@ -291,6 +303,9 @@ class Message {
         }
         if (sendingIpAddress != null) {
             summary += " from " + sendingIpAddress;
+            if (sendingPort != 0) {
+                summary += ":" + sendingPort;
+            }
         }
         if (destinationAddress != null) {
             summary += " to " + destinationAddress;

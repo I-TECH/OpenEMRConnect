@@ -74,7 +74,9 @@ class HttpService {
     Map<String, Date> unreachableIpPorts = new HashMap<String, Date>();
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     private static final int HTTP_RESPONSE_OK = 200;
+    private static final int HTTP_RESPONSE_LENGTH_REQUIRED = 411;
     private static final int HTTP_RESPONSE_MD5_MISMATCH = 449; // No obvious choice here, this code is Microsoft "Retry With"
+    private static final int HTTP_RESPONSE_MD5_REQUIRED = 455; // OEC-defined code
 
     /**
      * Stores a partial message that is being received in segments from a given source.
@@ -90,7 +92,6 @@ class HttpService {
         /** Array of all segments received so far. */
         private List<byte[]> messageSegments = new ArrayList<byte[]>();
     }
-    
     /**
      * Stores all partial messages that are in the process of being received in segments.
      * This HashMap is keyed by the IP address and (listening) port number of the sender.
@@ -127,13 +128,13 @@ class HttpService {
         if (nextHop == null) {
             // If we are called from the QueueManager, we may not have the next hop information because they are not stored in the queue database.
             // If this is the case, then get the IP address and port now, from the destination address.
-            nextHop = NextHop.getNextHop(destinationAddress);
+            nextHop = NextHop.getNextHopByAddress(destinationAddress);
             m.setNextHop(nextHop);
         }
         String ipAddressPort = nextHop.getIpAddressPort();
         int maxSize = nextHop.getMaxSize();
-        String url = "http://" + ipAddressPort + "/oecmessage?destination="
-                + destinationAddress + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount();
+        String url = "http://" + ipAddressPort + "/oecmessage?destination=" + destinationAddress
+                + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount() + "&port=" + port;
         try {
             /*Code thats performing a task should be placed in the try catch statement especially in the try part*/
             byte[] compressedXml = m.getCompressedXml();
@@ -142,7 +143,7 @@ class HttpService {
             int toSend = compressedXmlLength;
             if (compressedXmlLength > maxSize) { // If we're going to split this message:
                 // Append the next message ID onto the URL.
-                url += "&port=" + port + "&id=" + ++id + "&segment=";
+                url += "&id=" + ++id + "&segment=";
             }
             int segment = 0;
             while (sent < compressedXmlLength) {
@@ -166,14 +167,25 @@ class HttpService {
                 output.close();
                 int responseCode = connection.getResponseCode();
                 //
-                // If we get a HTTP_RESPONSE_MD5_MISMATCH from the other side,
+                // Check the response code. It may be one of the response codes that
+                // we know we generate from the other side if the message was garbled.
+                // If it is one of these messages, then we assume the message was garbled,
+                // because we know we formatted it correctly. If this is the case,
                 // then just keep retrying to send the same message over and over.
                 // As long as something is getting through, then the whole message should go through.
                 //
-                // If we get any other kind of response, account for the number of bytes
+                // If we get any other kind of response, either it was OK or the receiver
+                // was not us. In either case, account for the number of bytes
                 // sent, and continue sending (or finish if everything was sent.)
                 //
-                if (responseCode != HTTP_RESPONSE_MD5_MISMATCH) {
+                if (responseCode != HTTP_RESPONSE_LENGTH_REQUIRED
+                        && responseCode != HTTP_RESPONSE_MD5_MISMATCH
+                        && responseCode != HTTP_RESPONSE_MD5_REQUIRED) {
+                    if (responseCode != HTTP_RESPONSE_OK) {
+                        Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
+                                "HTTP response code {0}, sending message to {1} at {2}",
+                                new Object[]{responseCode, m.getDestinationAddress(), url});
+                    }
                     sent = sent + toSend;
                     InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream());
                     BufferedReader br = new BufferedReader(inputStreamReader);
@@ -184,8 +196,8 @@ class HttpService {
                     inputStreamReader.close();
                 } else {
                     Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
-                            "MD5 mismatch reported. Retrying sending message to {0} at {1}",
-                            new Object[]{m.getDestinationAddress(), url});
+                            "HTTP response code {0}. Retrying sending message to {1} at {2}",
+                            new Object[]{responseCode, m.getDestinationAddress(), url});
                 }
             }
             returnStatus = true;
@@ -309,10 +321,8 @@ class HttpService {
             /*
              * Unpack the URL.
              */
-            String requestMethod = exchange.getRequestMethod();
             URI uri = exchange.getRequestURI();
             String query = uri.getQuery();
-            int port = 0;
             int id = 0;
             int segment = 0;
             boolean end = false;
@@ -328,7 +338,7 @@ class HttpService {
                 } else if (pair[0].equals("tobequeued")) {
                     m.setToBeQueued(Boolean.parseBoolean(pair[1]));
                 } else if (pair[0].equals("port")) {
-                    port = Integer.parseInt(pair[1]);
+                    m.setSendingPort(Integer.parseInt(pair[1]));
                 } else if (pair[0].equals("id")) {
                     id = Integer.parseInt(pair[1]);
                 } else if (pair[0].equals("segment")) {
@@ -337,6 +347,14 @@ class HttpService {
                     end = true;
                 }
             }
+            InetSocketAddress remoteAddress = exchange.getRemoteAddress();
+            String sendingIpAddress = remoteAddress.getAddress().getHostAddress();
+            String sendingIpAddressAndPort = sendingIpAddress;
+            if (m.getSendingPort() != 0) {
+                sendingIpAddressAndPort += ":" + m.getSendingPort();
+            }
+            NextHop hop = NextHop.getNextHopByIpPort(sendingIpAddressAndPort);
+            String requestMethod = exchange.getRequestMethod();
             if (requestMethod.equals("POST")) {
                 /*
                  * Read the posted content
@@ -348,6 +366,8 @@ class HttpService {
                 String contentLength = headers.getFirst("Content-Length");
                 if (contentLength != null) {
                     bufferSize = Integer.parseInt(contentLength);
+                } else if (hop != null && hop.isLengthRequired()) {
+                    responseCode = HTTP_RESPONSE_LENGTH_REQUIRED;
                 }
                 InputStream input = exchange.getRequestBody();
                 byte[] compressedXml = new byte[bufferSize];
@@ -362,21 +382,16 @@ class HttpService {
                                 "MD5 reported as {0}, computed as {1}, length expected {2}, found {3}",
                                 new Object[]{md5Reported, md5Computed, bufferSize, compressedXmlLength});
                     }
-                } else {
-                    Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
-                            "MD5 not reported. length expected {0}, found {1}",
-                            new Object[]{bufferSize, compressedXmlLength});
+                } else if (hop != null && hop.isMd5Required()) {
+                    responseCode = HTTP_RESPONSE_MD5_REQUIRED;
                 }
                 if (responseCode == HTTP_RESPONSE_OK) {
-                    InetSocketAddress remoteAddress = exchange.getRemoteAddress();
-                    String sendingIpAddress = remoteAddress.getAddress().getHostAddress();
                     boolean completeMessage = true;
                     m.setSendingIpAddress(sendingIpAddress);
                     m.setSegmentCount(1);
                     m.setLongestSegmentLength(compressedXmlLength);
                     if (id > 0) {
                         completeMessage = false;
-                        String sendingIpAddressAndPort = sendingIpAddress + ":" + port;
                         PartialMessage pm = null;
                         if (segment == 1) {
                             pm = new PartialMessage();
@@ -412,13 +427,13 @@ class HttpService {
                                     }
                                 } else {
                                     if (pm.id != id) {
-                                    Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
-                                            "Message id mismatch from {0}. Expected id {1}, found {2}, expected sequence {3}, found {4}",
-                                            new Object[]{sendingIpAddressAndPort, pm.id, id, pm.segment, segment});
+                                        Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
+                                                "Message id mismatch from {0}. Expected id {1}, found {2}, expected sequence {3}, found {4}",
+                                                new Object[]{sendingIpAddressAndPort, pm.id, id, pm.segment, segment});
                                     } else {
-                                     Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
-                                            "Message segment out of sequence from {0}, message id {1}, expected sequence {2}, found {3}",
-                                            new Object[]{sendingIpAddressAndPort, id, pm.segment, segment});
+                                        Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
+                                                "Message segment out of sequence from {0}, message id {1}, expected sequence {2}, found {3}",
+                                                new Object[]{sendingIpAddressAndPort, id, pm.segment, segment});
                                     }
                                     outOfSequence = true;
                                     partialMessages.remove(sendingIpAddressAndPort);

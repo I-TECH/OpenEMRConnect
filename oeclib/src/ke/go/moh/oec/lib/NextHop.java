@@ -24,8 +24,14 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Information about the next hop to which we will send a message.
@@ -38,9 +44,12 @@ import java.util.Map;
 public class NextHop {
 
     private String ipAddressPort;
-    private int maxSize;
-    private boolean zip;
-    static private Map<String, NextHop> nextHopCache = new HashMap<String, NextHop>();
+    private int maxSize = Integer.MAX_VALUE; // Default maxSize setting;
+    private boolean zip = false;
+    private boolean md5Required = false;
+    private boolean lengthRequired = false;
+    static private Map<String, NextHop> nextHopByAddress = new HashMap<String, NextHop>();
+    static private Map<String, NextHop> nextHopByIpPort = new HashMap<String, NextHop>();
 
     public String getIpAddressPort() {
         return ipAddressPort;
@@ -48,6 +57,14 @@ public class NextHop {
 
     public void setIpAddressPort(String ipAddressPort) {
         this.ipAddressPort = ipAddressPort;
+    }
+
+    public boolean isLengthRequired() {
+        return lengthRequired;
+    }
+
+    public void setLengthRequired(boolean lengthRequired) {
+        this.lengthRequired = lengthRequired;
     }
 
     public int getMaxSize() {
@@ -58,6 +75,14 @@ public class NextHop {
         this.maxSize = maxSize;
     }
 
+    public boolean isMd5Required() {
+        return md5Required;
+    }
+
+    public void setMd5Required(boolean md5Required) {
+        this.md5Required = md5Required;
+    }
+
     public boolean isZip() {
         return zip;
     }
@@ -66,8 +91,32 @@ public class NextHop {
         this.zip = zip;
     }
 
+    private static NextHop parseHopString(String hopString) {
+        NextHop hop = new NextHop();
+        int slash = hopString.indexOf("/");
+        if (slash > 0) {
+            String options = hopString.substring(slash + 1);
+            hopString = hopString.substring(0, slash);
+            for (String opt : options.split("/")) {
+                if (opt.equalsIgnoreCase("zip")) {
+                    hop.zip = true;
+                } else if (opt.equalsIgnoreCase("length")) {
+                    hop.lengthRequired = true;
+                } else if (opt.equalsIgnoreCase("md5")) {
+                    hop.md5Required = true;
+                }
+                String[] pair = opt.split("=");
+                if (pair[0].equalsIgnoreCase("maxSize")) {
+                    hop.maxSize = Integer.parseInt(pair[1]);
+                }
+            }
+        }
+        hop.ipAddressPort = hopString;
+        return hop;
+    }
+
     /**
-     * Gets next hop information for a destination
+     * Gets next hop information for a destination address
      * <p>
      * The next hop information corresponding to a destination address is found
      * in properties for this application starting with "IPAddressPort."
@@ -89,7 +138,7 @@ public class NextHop {
      * Returns <code>null</code> if the destination is ourselves,
      * or the destination address cannot be translated to IP + port.
      */
-    public static synchronized NextHop getNextHop(String destination) {
+    public static synchronized NextHop getNextHopByAddress(String destination) {
         //
         // If the destination is us, return null. This means that
         // we don't have to go to the network to find the address;
@@ -101,11 +150,12 @@ public class NextHop {
         //
         // If we have the next hop already in our cache, return it.
         //
-        NextHop hop = nextHopCache.get(destination);
+        NextHop hop = nextHopByAddress.get(destination);
         //
         // If it wasn't in our cache, parse it from the properties.
+        // (Note that it may have been in our cache with a value of null. Check for that.)
         //
-        if (hop == null) {
+        if (hop == null && !nextHopByAddress.containsKey(destination)) {
             final String propertyPrefix = "IPAddressPort.";
             //
             // Check for an explicit entry for this destination address.
@@ -133,26 +183,83 @@ public class NextHop {
                 hopString = Mediator.getProperty(propertyPrefix + d);
             }
             if (hopString != null) {
-                hop = new NextHop();
-                hop.zip = false; // Default zip setting
-                hop.maxSize = Integer.MAX_VALUE; // Default maxSize setting
-                int slash = hopString.indexOf("/");
-                if (slash > 0) {
-                    String options = hopString.substring(slash + 1);
-                    hopString = hopString.substring(0, slash);
-                    for (String opt : options.split("/")) {
-                        if (opt.equalsIgnoreCase("zip")) {
-                            hop.zip = true;
-                        }
-                        String[] pair = opt.split("=");
-                        if (pair[0].equalsIgnoreCase("maxSize")) {
-                            hop.maxSize = Integer.parseInt(pair[1]);
+                hop = parseHopString(hopString);
+            }
+            // Put it in our cache (whether result was null or not) for the next time.
+            nextHopByAddress.put(destination, hop);
+        }
+        return hop;
+    }
+
+    /**
+     * Resolves an IP address by translating any symbolic host name
+     * to numerical form, if necessary.
+     * 
+     * @param address IP address (and port) to translate
+     * @return IP address translated to numerical form (and port, if present).
+     */
+    private static String numericIpAddress(String address) {
+        String returnValue = address;
+        String ip = address;
+        int i = address.indexOf(":");
+        if (i >= 0) {
+            ip = address.substring(0, i);
+        }
+        InetAddress ia = null;
+        try {
+            ia = InetAddress.getByName(ip);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(NextHop.class.getName()).log(Level.SEVERE, "Can't translate IP address '" + address + "'", ex);
+        }
+        if (ia != null) {
+            returnValue = ia.getHostAddress();
+            if (i >= 0) {
+                returnValue += address.substring(i);
+            }
+        }
+        return returnValue;
+    }
+
+    /**
+     * Gets next hop information for a numeric IP address and (if we have it) port number.
+     * 
+     * @param address numeric IP address and (if we have it) port number.
+     * @return next hop information.
+     */
+    public static synchronized NextHop getNextHopByIpPort(String address) {
+        //
+        // If we have the next hop already in our cache, return it.
+        //
+        NextHop hop = nextHopByIpPort.get(address);
+        //
+        // If it wasn't in our cache, parse it from the properties.
+        // (Note that it may have been in our cache with a value of null. Check for that.)
+        //
+        if (hop == null && !nextHopByIpPort.containsKey(address)) {
+            int portSeparator = address.indexOf(":");
+            Properties props = Mediator.getProperties();
+            for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
+                String propName = (String) e.nextElement();
+                if (propName.startsWith("IPAddressPort")) {
+                    String hopString = props.getProperty(propName);
+                    hop = parseHopString(hopString);
+                    String numericIp = numericIpAddress(hop.ipAddressPort);
+                    //
+                    // If we only came here with an IP address (no port),
+                    // then strip the port number off the properties entry for comparision.
+                    if (portSeparator < 0) {
+                        int i = numericIp.indexOf(":");
+                        if (i >= 0) {
+                            numericIp = numericIp.substring(0, i);
                         }
                     }
+                    if (address.equals(numericIp)) {
+                        break; // NextHop is found
+                    }
                 }
-                hop.ipAddressPort = hopString;
-                nextHopCache.put(destination, hop);
             }
+            // Put it in our cache (whether result was null or not) for the next time.
+            nextHopByIpPort.put(address, hop);
         }
         return hop;
     }

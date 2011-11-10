@@ -313,16 +313,12 @@ public class Mediator implements IService {
     }
 
     /**
-     * Gets the value of a named property from a standard properties file.
-     *
-     * @param propertyName name of the property whose value we want
-     * @return the value of the requested property,
-     * or null if the property is not found.
+     * Gets the standard properties class.
+     * @return properties.
      * <p>
      * The default property file is named openemrconnect.properties.
-     * For debugging it may be
      */
-    public static String getProperty(String propertyName) {
+    public static Properties getProperties() {
         if (properties == null) {
             properties = new Properties();
             String propFileName = runtimeDirectory + "openemrconnect.properties";
@@ -336,6 +332,20 @@ public class Mediator implements IService {
                         propFileName);
                 System.exit(1);
             }
+        }
+        return properties;
+    }
+    
+    /**
+     * Gets the value of a named property from the standard properties list.
+     *
+     * @param propertyName name of the property whose value we want
+     * @return the value of the requested property,
+     * or null if the property is not found.
+     */
+    public static String getProperty(String propertyName) {
+        if (properties == null) {
+            getProperties();
         }
         return properties.getProperty(propertyName);
     }
@@ -483,7 +493,7 @@ public class Mediator implements IService {
     Object sendData(Message m) {
         Object returnData = null;
         MessageType messageType = m.getMessageType(); // For handy reference.
-        NextHop nextHop = NextHop.getNextHop(m.getDestinationAddress());
+        NextHop nextHop = NextHop.getNextHopByAddress(m.getDestinationAddress());
         m.setNextHop(nextHop);
         if (nextHop == null) {
             /*
@@ -610,7 +620,7 @@ public class Mediator implements IService {
                     }
                 }
             } else {    // If the message is not addressed to us:
-                NextHop nextHop = NextHop.getNextHop(destinationAddress);
+                NextHop nextHop = NextHop.getNextHopByAddress(destinationAddress);
                 if (nextHop == null) {
                     /*
                      * The message destination does not match our own,
