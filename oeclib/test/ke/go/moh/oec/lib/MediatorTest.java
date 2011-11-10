@@ -327,7 +327,7 @@ public class MediatorTest {
         p.setPersonIdentifierList(piList);
         pr = (PersonResponse) mediator.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
         try {
-            Thread.sleep(1000*1000); // Sleep 10 seconds.
+            Thread.sleep(10*1000); // Sleep 10 seconds.
         } catch (InterruptedException ex) {
             Logger.getLogger(MediatorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
