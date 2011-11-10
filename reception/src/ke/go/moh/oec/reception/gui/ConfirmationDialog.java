@@ -31,6 +31,7 @@
 package ke.go.moh.oec.reception.gui;
 
 import ke.go.moh.oec.Person;
+import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.controller.PersonWrapper;
 import ke.go.moh.oec.reception.data.DisplayableMaritalStatus;
@@ -44,7 +45,7 @@ import org.jdesktop.application.Action;
 public class ConfirmationDialog extends javax.swing.JDialog {
 
     private final PersonWrapper personWrapper;
-
+   
     public ConfirmationDialog(java.awt.Frame parent, boolean modal, PersonWrapper personWrapper, String title) {
         super(parent, modal);
         initComponents();
@@ -54,6 +55,7 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         this.setTitle(title);
         this.getRootPane().setDefaultButton(acceptButton);
         addEscapeListener();
+                
     }
 
     private void addEscapeListener() {
@@ -75,6 +77,8 @@ public class ConfirmationDialog extends javax.swing.JDialog {
             maleRadioButton.setSelected(false);
             femaleRadioButton.setSelected(false);
         }
+        
+        
         maritalStatusComboBox.setSelectedItem(DisplayableMaritalStatus.getDisplayableMaritalStatus(personWrapper.getMaritalStatus()));
         otherNameTextField.setText(personWrapper.getOtherName());
         clanNameTextField.setText(personWrapper.getClanName());
@@ -88,6 +92,9 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         compoundHeadsFirstNameTextField.setText(personWrapper.getCompoundHeadFirstName());
         compoundHeadsMiddleNameTextField.setText(personWrapper.getCompoundHeadMiddleName());
         compoundHeadsLastNameTextField.setText(personWrapper.getCompoundHeadLastName());
+        Visit v = personWrapper.unwrap().getLastRegularVisit();
+        lastVisitAddress.setText(v.getAddress());
+        lastVisitDate.setDate(v.getVisitDate());
         hdssDataConsentYesRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.yes);
         hdssDataConsentNoRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.no);
         hdssDataConsentNoAnswerRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.notAnswered);
@@ -109,6 +116,9 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         sexButtonGroup = new javax.swing.ButtonGroup();
         hdssDataConsentButtonGroup = new javax.swing.ButtonGroup();
         maritalStatusList = DisplayableMaritalStatus.getList();
+        acceptButton = new javax.swing.JButton();
+        rejectButton = new javax.swing.JButton();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
         confirmationPanel = new javax.swing.JPanel();
         clinicIdLabel = new javax.swing.JLabel();
         clinicIdTextField = new javax.swing.JTextField();
@@ -138,34 +148,57 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         fathersMiddleNameTextField = new javax.swing.JTextField();
         fathersLastNameLabel = new javax.swing.JLabel();
         fathersLastNameTextField = new javax.swing.JTextField();
-        mothersFirstNameLabel = new javax.swing.JLabel();
+        confirmationPanel2 = new javax.swing.JPanel();
+        compoundHeadsFirstNameLabel4 = new javax.swing.JLabel();
+        mothersFirstNameLabel4 = new javax.swing.JLabel();
         mothersFirstNameTextField = new javax.swing.JTextField();
-        mothersMiddleNameLabel = new javax.swing.JLabel();
-        mothersMiddleNameTextField = new javax.swing.JTextField();
-        mothersLastNameLabel = new javax.swing.JLabel();
-        mothersLastNameTextField = new javax.swing.JTextField();
-        compoundHeadsFirstNameLabel = new javax.swing.JLabel();
-        compoundHeadsFirstNameTextField = new javax.swing.JTextField();
-        compoundHeadsMiddleNameLabel = new javax.swing.JLabel();
-        compoundHeadsMiddleNameTextField = new javax.swing.JTextField();
-        compoundHeadsLastNameLabel = new javax.swing.JLabel();
-        compoundHeadsLastNameTextField = new javax.swing.JTextField();
-        hdssDataConsentLabel = new javax.swing.JLabel();
-        hdssDataConsentYesRadioButton = new javax.swing.JRadioButton();
-        hdssDataConsentNoRadioButton = new javax.swing.JRadioButton();
         hdssDataConsentNoAnswerRadioButton = new javax.swing.JRadioButton();
-        acceptButton = new javax.swing.JButton();
-        rejectButton = new javax.swing.JButton();
+        mothersLastNameLabel4 = new javax.swing.JLabel();
+        hdssDataConsentNoRadioButton = new javax.swing.JRadioButton();
+        hdssDataConsentLabel4 = new javax.swing.JLabel();
+        hdssDataConsentYesRadioButton = new javax.swing.JRadioButton();
+        compoundHeadsMiddleNameTextField = new javax.swing.JTextField();
+        compoundHeadsMiddleNameLabel4 = new javax.swing.JLabel();
+        mothersMiddleNameTextField = new javax.swing.JTextField();
+        mothersLastNameTextField = new javax.swing.JTextField();
+        mothersMiddleNameLabel4 = new javax.swing.JLabel();
+        compoundHeadsFirstNameTextField = new javax.swing.JTextField();
+        compoundHeadsLastNameTextField = new javax.swing.JTextField();
+        compoundHeadsLastNameLabel4 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        lastVisitAddress = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        lastVisitDate = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setModal(true);
         setName("Form"); // NOI18N
         setResizable(false);
 
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(ConfirmationDialog.class, this);
+        acceptButton.setAction(actionMap.get("accept")); // NOI18N
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getResourceMap(ConfirmationDialog.class);
+        acceptButton.setText(resourceMap.getString("acceptButton.text")); // NOI18N
+        acceptButton.setName("acceptButton"); // NOI18N
+
+        rejectButton.setAction(actionMap.get("reject")); // NOI18N
+        rejectButton.setText(resourceMap.getString("rejectButton.text")); // NOI18N
+        rejectButton.setName("rejectButton"); // NOI18N
+
+        jTabbedPane1.setName("jTabbedPane1"); // NOI18N
+
         confirmationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Confirm"));
         confirmationPanel.setName("confirmationPanel"); // NOI18N
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getResourceMap(ConfirmationDialog.class);
         clinicIdLabel.setText(resourceMap.getString("clinicIdLabel.text")); // NOI18N
         clinicIdLabel.setName("clinicIdLabel"); // NOI18N
 
@@ -210,6 +243,7 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         birthDateChooser.setName("birthDateChooser"); // NOI18N
 
         unknownBirthdateCheckBox.setText(resourceMap.getString("unknownBirthdateCheckBox.text")); // NOI18N
+        unknownBirthdateCheckBox.setEnabled(false);
         unknownBirthdateCheckBox.setName("unknownBirthdateCheckBox"); // NOI18N
 
         maritalStatusLabel.setText(resourceMap.getString("maritalStatusLabel.text")); // NOI18N
@@ -259,60 +293,6 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         fathersLastNameTextField.setEnabled(false);
         fathersLastNameTextField.setName("fathersLastNameTextField"); // NOI18N
 
-        mothersFirstNameLabel.setText(resourceMap.getString("mothersFirstNameLabel.text")); // NOI18N
-        mothersFirstNameLabel.setName("mothersFirstNameLabel"); // NOI18N
-
-        mothersFirstNameTextField.setEnabled(false);
-        mothersFirstNameTextField.setName("mothersFirstNameTextField"); // NOI18N
-
-        mothersMiddleNameLabel.setText(resourceMap.getString("mothersMiddleNameLabel.text")); // NOI18N
-        mothersMiddleNameLabel.setName("mothersMiddleNameLabel"); // NOI18N
-
-        mothersMiddleNameTextField.setEnabled(false);
-        mothersMiddleNameTextField.setName("mothersMiddleNameTextField"); // NOI18N
-
-        mothersLastNameLabel.setText(resourceMap.getString("mothersLastNameLabel.text")); // NOI18N
-        mothersLastNameLabel.setName("mothersLastNameLabel"); // NOI18N
-
-        mothersLastNameTextField.setEnabled(false);
-        mothersLastNameTextField.setName("mothersLastNameTextField"); // NOI18N
-
-        compoundHeadsFirstNameLabel.setText(resourceMap.getString("compoundHeadsFirstNameLabel.text")); // NOI18N
-        compoundHeadsFirstNameLabel.setName("compoundHeadsFirstNameLabel"); // NOI18N
-
-        compoundHeadsFirstNameTextField.setEnabled(false);
-        compoundHeadsFirstNameTextField.setName("compoundHeadsFirstNameTextField"); // NOI18N
-
-        compoundHeadsMiddleNameLabel.setText(resourceMap.getString("compoundHeadsMiddleNameLabel.text")); // NOI18N
-        compoundHeadsMiddleNameLabel.setName("compoundHeadsMiddleNameLabel"); // NOI18N
-
-        compoundHeadsMiddleNameTextField.setEnabled(false);
-        compoundHeadsMiddleNameTextField.setName("compoundHeadsMiddleNameTextField"); // NOI18N
-
-        compoundHeadsLastNameLabel.setText(resourceMap.getString("compoundHeadsLastNameLabel.text")); // NOI18N
-        compoundHeadsLastNameLabel.setName("compoundHeadsLastNameLabel"); // NOI18N
-
-        compoundHeadsLastNameTextField.setEnabled(false);
-        compoundHeadsLastNameTextField.setName("compoundHeadsLastNameTextField"); // NOI18N
-
-        hdssDataConsentLabel.setText(resourceMap.getString("hdssDataConsentLabel.text")); // NOI18N
-        hdssDataConsentLabel.setName("hdssDataConsentLabel"); // NOI18N
-
-        hdssDataConsentButtonGroup.add(hdssDataConsentYesRadioButton);
-        hdssDataConsentYesRadioButton.setText(resourceMap.getString("hdssDataConsentYesRadioButton.text")); // NOI18N
-        hdssDataConsentYesRadioButton.setEnabled(false);
-        hdssDataConsentYesRadioButton.setName("hdssDataConsentYesRadioButton"); // NOI18N
-
-        hdssDataConsentButtonGroup.add(hdssDataConsentNoRadioButton);
-        hdssDataConsentNoRadioButton.setText(resourceMap.getString("hdssDataConsentNoRadioButton.text")); // NOI18N
-        hdssDataConsentNoRadioButton.setEnabled(false);
-        hdssDataConsentNoRadioButton.setName("hdssDataConsentNoRadioButton"); // NOI18N
-
-        hdssDataConsentButtonGroup.add(hdssDataConsentNoAnswerRadioButton);
-        hdssDataConsentNoAnswerRadioButton.setText(resourceMap.getString("hdssDataConsentNoAnswerRadioButton.text")); // NOI18N
-        hdssDataConsentNoAnswerRadioButton.setEnabled(false);
-        hdssDataConsentNoAnswerRadioButton.setName("hdssDataConsentNoAnswerRadioButton"); // NOI18N
-
         javax.swing.GroupLayout confirmationPanelLayout = new javax.swing.GroupLayout(confirmationPanel);
         confirmationPanel.setLayout(confirmationPanelLayout);
         confirmationPanelLayout.setHorizontalGroup(
@@ -320,62 +300,41 @@ public class ConfirmationDialog extends javax.swing.JDialog {
             .addGroup(confirmationPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(compoundHeadsLastNameLabel)
+                    .addComponent(fathersMiddleNameLabel)
+                    .addComponent(fathersLastNameLabel)
+                    .addComponent(villageLabel)
+                    .addComponent(fathersFirstNameLabel)
+                    .addComponent(firstNameLabel)
+                    .addComponent(clinicIdLabel)
+                    .addComponent(maritalStatusLabel)
+                    .addComponent(middleNameLabel)
+                    .addComponent(lastNameLabel)
+                    .addComponent(sexLabel)
+                    .addComponent(birthDateLabel)
+                    .addComponent(otherNameLabel)
+                    .addComponent(clanNameLabel))
+                .addGap(50, 50, 50)
+                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(maritalStatusComboBox, 0, 644, Short.MAX_VALUE)
+                    .addComponent(otherNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
                     .addGroup(confirmationPanelLayout.createSequentialGroup()
-                        .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(compoundHeadsMiddleNameLabel)
-                            .addComponent(hdssDataConsentLabel)
-                            .addComponent(compoundHeadsFirstNameLabel)
-                            .addComponent(mothersLastNameLabel)
-                            .addComponent(mothersMiddleNameLabel)
-                            .addComponent(mothersFirstNameLabel)
-                            .addComponent(fathersMiddleNameLabel)
-                            .addComponent(fathersLastNameLabel)
-                            .addComponent(villageLabel)
-                            .addComponent(fathersFirstNameLabel)
-                            .addComponent(firstNameLabel)
-                            .addComponent(clinicIdLabel)
-                            .addComponent(maritalStatusLabel)
-                            .addComponent(middleNameLabel)
-                            .addComponent(lastNameLabel)
-                            .addComponent(sexLabel)
-                            .addComponent(birthDateLabel)
-                            .addComponent(otherNameLabel)
-                            .addComponent(clanNameLabel))
+                        .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, confirmationPanelLayout.createSequentialGroup()
+                                .addComponent(maleRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(femaleRadioButton))
+                            .addComponent(birthDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(maritalStatusComboBox, 0, 562, Short.MAX_VALUE)
-                            .addComponent(otherNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addGroup(confirmationPanelLayout.createSequentialGroup()
-                                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, confirmationPanelLayout.createSequentialGroup()
-                                        .addComponent(maleRadioButton)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(femaleRadioButton))
-                                    .addComponent(birthDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(unknownBirthdateCheckBox))
-                            .addComponent(firstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(clinicIdTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(middleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(clanNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(fathersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(mothersLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addGroup(confirmationPanelLayout.createSequentialGroup()
-                                .addComponent(hdssDataConsentYesRadioButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(hdssDataConsentNoRadioButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(hdssDataConsentNoAnswerRadioButton))
-                            .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(compoundHeadsMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(villageTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(fathersMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
-                            .addComponent(fathersLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE))))
+                        .addComponent(unknownBirthdateCheckBox))
+                    .addComponent(firstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(clinicIdTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(middleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(clanNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(fathersFirstNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(villageTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(fathersMiddleNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(fathersLastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE))
                 .addContainerGap())
         );
         confirmationPanelLayout.setVerticalGroup(
@@ -439,66 +398,232 @@ public class ConfirmationDialog extends javax.swing.JDialog {
                 .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(fathersLastNameLabel)
                     .addComponent(fathersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mothersFirstNameLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mothersMiddleNameLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mothersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mothersLastNameLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(compoundHeadsFirstNameLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(compoundHeadsMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(compoundHeadsMiddleNameLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(compoundHeadsLastNameLabel)
-                    .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(confirmationPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(hdssDataConsentLabel)
-                    .addComponent(hdssDataConsentYesRadioButton)
-                    .addComponent(hdssDataConsentNoRadioButton)
-                    .addComponent(hdssDataConsentNoAnswerRadioButton)))
+                .addGap(244, 244, 244))
         );
 
-        confirmationPanelLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {clanNameTextField, clinicIdTextField, compoundHeadsFirstNameTextField, compoundHeadsLastNameTextField, compoundHeadsMiddleNameTextField, fathersFirstNameTextField, fathersLastNameTextField, fathersMiddleNameTextField, firstNameTextField, lastNameTextField, maritalStatusComboBox, middleNameTextField, mothersFirstNameTextField, mothersLastNameTextField, mothersMiddleNameTextField, otherNameTextField, villageTextField});
+        confirmationPanelLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {clanNameTextField, clinicIdTextField, fathersFirstNameTextField, fathersLastNameTextField, fathersMiddleNameTextField, firstNameTextField, lastNameTextField, maritalStatusComboBox, middleNameTextField, otherNameTextField, villageTextField});
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(ke.go.moh.oec.reception.gui.App.class).getContext().getActionMap(ConfirmationDialog.class, this);
-        acceptButton.setAction(actionMap.get("accept")); // NOI18N
-        acceptButton.setText(resourceMap.getString("acceptButton.text")); // NOI18N
-        acceptButton.setName("acceptButton"); // NOI18N
+        jTabbedPane1.addTab("Client Details", confirmationPanel);
 
-        rejectButton.setAction(actionMap.get("reject")); // NOI18N
-        rejectButton.setText(resourceMap.getString("rejectButton.text")); // NOI18N
-        rejectButton.setName("rejectButton"); // NOI18N
+        confirmationPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Confirm"));
+        confirmationPanel2.setName("confirmationPanel2"); // NOI18N
+
+        compoundHeadsFirstNameLabel4.setName("compoundHeadsFirstNameLabel4"); // NOI18N
+
+        mothersFirstNameLabel4.setName("mothersFirstNameLabel4"); // NOI18N
+
+        mothersFirstNameTextField.setEnabled(false);
+        mothersFirstNameTextField.setName("mothersFirstNameTextField"); // NOI18N
+
+        hdssDataConsentButtonGroup.add(hdssDataConsentNoAnswerRadioButton);
+        hdssDataConsentNoAnswerRadioButton.setText(resourceMap.getString("hdssDataConsentNoAnswerRadioButton.text")); // NOI18N
+        hdssDataConsentNoAnswerRadioButton.setEnabled(false);
+        hdssDataConsentNoAnswerRadioButton.setName("hdssDataConsentNoAnswerRadioButton"); // NOI18N
+
+        mothersLastNameLabel4.setName("mothersLastNameLabel4"); // NOI18N
+
+        hdssDataConsentButtonGroup.add(hdssDataConsentNoRadioButton);
+        hdssDataConsentNoRadioButton.setText(resourceMap.getString("hdssDataConsentNoRadioButton.text")); // NOI18N
+        hdssDataConsentNoRadioButton.setEnabled(false);
+        hdssDataConsentNoRadioButton.setName("hdssDataConsentNoRadioButton"); // NOI18N
+
+        hdssDataConsentLabel4.setName("hdssDataConsentLabel4"); // NOI18N
+
+        hdssDataConsentButtonGroup.add(hdssDataConsentYesRadioButton);
+        hdssDataConsentYesRadioButton.setText(resourceMap.getString("hdssDataConsentYesRadioButton.text")); // NOI18N
+        hdssDataConsentYesRadioButton.setEnabled(false);
+        hdssDataConsentYesRadioButton.setName("hdssDataConsentYesRadioButton"); // NOI18N
+
+        compoundHeadsMiddleNameTextField.setEnabled(false);
+        compoundHeadsMiddleNameTextField.setName("compoundHeadsMiddleNameTextField"); // NOI18N
+
+        compoundHeadsMiddleNameLabel4.setName("compoundHeadsMiddleNameLabel4"); // NOI18N
+
+        mothersMiddleNameTextField.setEnabled(false);
+        mothersMiddleNameTextField.setName("mothersMiddleNameTextField"); // NOI18N
+
+        mothersLastNameTextField.setEnabled(false);
+        mothersLastNameTextField.setName("mothersLastNameTextField"); // NOI18N
+
+        mothersMiddleNameLabel4.setName("mothersMiddleNameLabel4"); // NOI18N
+
+        compoundHeadsFirstNameTextField.setEnabled(false);
+        compoundHeadsFirstNameTextField.setName("compoundHeadsFirstNameTextField"); // NOI18N
+
+        compoundHeadsLastNameTextField.setEnabled(false);
+        compoundHeadsLastNameTextField.setName("compoundHeadsLastNameTextField"); // NOI18N
+
+        compoundHeadsLastNameLabel4.setName("compoundHeadsLastNameLabel4"); // NOI18N
+
+        jLabel3.setName("jLabel3"); // NOI18N
+
+        jLabel4.setName("jLabel4"); // NOI18N
+
+        lastVisitAddress.setEditable(false);
+        lastVisitAddress.setEnabled(false);
+        lastVisitAddress.setName("lastVisitAddress"); // NOI18N
+
+        jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
+        jLabel2.setName("jLabel2"); // NOI18N
+
+        jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
+        jLabel5.setName("jLabel5"); // NOI18N
+
+        jLabel6.setText(resourceMap.getString("jLabel6.text")); // NOI18N
+        jLabel6.setName("jLabel6"); // NOI18N
+
+        jLabel7.setText(resourceMap.getString("jLabel7.text")); // NOI18N
+        jLabel7.setName("jLabel7"); // NOI18N
+
+        jLabel8.setText(resourceMap.getString("jLabel8.text")); // NOI18N
+        jLabel8.setName("jLabel8"); // NOI18N
+
+        jLabel9.setText(resourceMap.getString("jLabel9.text")); // NOI18N
+        jLabel9.setName("jLabel9"); // NOI18N
+
+        jLabel10.setText(resourceMap.getString("jLabel10.text")); // NOI18N
+        jLabel10.setName("jLabel10"); // NOI18N
+
+        jLabel11.setText(resourceMap.getString("jLabel11.text")); // NOI18N
+        jLabel11.setName("jLabel11"); // NOI18N
+
+        jLabel1.setText(resourceMap.getString("jLabel1.text")); // NOI18N
+        jLabel1.setName("jLabel1"); // NOI18N
+
+        lastVisitDate.setEnabled(false);
+        lastVisitDate.setName("lastVisitDate"); // NOI18N
+
+        javax.swing.GroupLayout confirmationPanel2Layout = new javax.swing.GroupLayout(confirmationPanel2);
+        confirmationPanel2.setLayout(confirmationPanel2Layout);
+        confirmationPanel2Layout.setHorizontalGroup(
+            confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(confirmationPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(compoundHeadsLastNameLabel4)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, confirmationPanel2Layout.createSequentialGroup()
+                        .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1)
+                            .addGroup(confirmationPanel2Layout.createSequentialGroup()
+                                .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(compoundHeadsFirstNameLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(mothersLastNameLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(hdssDataConsentLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(compoundHeadsMiddleNameLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, confirmationPanel2Layout.createSequentialGroup()
+                                        .addComponent(mothersFirstNameLabel4)
+                                        .addGap(102, 102, 102)
+                                        .addComponent(mothersMiddleNameLabel4)))
+                                .addGap(10, 10, 10)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(confirmationPanel2Layout.createSequentialGroup()
+                                .addComponent(hdssDataConsentYesRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(hdssDataConsentNoRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(hdssDataConsentNoAnswerRadioButton)
+                                .addGap(484, 484, 484))
+                            .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
+                            .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
+                            .addComponent(mothersLastNameTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
+                            .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
+                            .addComponent(compoundHeadsMiddleNameTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
+                            .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
+                            .addComponent(lastVisitAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
+                            .addComponent(lastVisitDate, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE))))
+                .addContainerGap())
+        );
+        confirmationPanel2Layout.setVerticalGroup(
+            confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(confirmationPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel11)
+                        .addComponent(mothersFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(mothersFirstNameLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(mothersMiddleNameLabel4)
+                        .addComponent(jLabel2))
+                    .addComponent(mothersMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(mothersLastNameLabel4)
+                        .addComponent(jLabel5))
+                    .addComponent(mothersLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(compoundHeadsFirstNameLabel4)
+                    .addComponent(jLabel6)
+                    .addComponent(compoundHeadsFirstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(compoundHeadsMiddleNameLabel4)
+                    .addComponent(jLabel7)
+                    .addComponent(compoundHeadsMiddleNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(compoundHeadsLastNameLabel4)
+                    .addComponent(jLabel8)
+                    .addComponent(compoundHeadsLastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(confirmationPanel2Layout.createSequentialGroup()
+                        .addComponent(hdssDataConsentLabel4)
+                        .addGap(30, 30, 30)
+                        .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel9))
+                        .addGap(12, 12, 12)
+                        .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel10)))
+                    .addGroup(confirmationPanel2Layout.createSequentialGroup()
+                        .addGroup(confirmationPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(hdssDataConsentYesRadioButton)
+                            .addComponent(hdssDataConsentNoRadioButton)
+                            .addComponent(hdssDataConsentNoAnswerRadioButton))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lastVisitAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lastVisitDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(223, 223, 223))
+        );
+
+        jTabbedPane1.addTab("Client Details", confirmationPanel2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(31, 31, 31)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(confirmationPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(acceptButton, javax.swing.GroupLayout.DEFAULT_SIZE, 745, Short.MAX_VALUE)
-                    .addComponent(rejectButton, javax.swing.GroupLayout.DEFAULT_SIZE, 745, Short.MAX_VALUE))
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(acceptButton, javax.swing.GroupLayout.DEFAULT_SIZE, 832, Short.MAX_VALUE)
+                    .addComponent(rejectButton, javax.swing.GroupLayout.DEFAULT_SIZE, 832, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(confirmationPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 521, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(acceptButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -532,13 +657,14 @@ public class ConfirmationDialog extends javax.swing.JDialog {
     private javax.swing.JTextField clanNameTextField;
     private javax.swing.JLabel clinicIdLabel;
     private javax.swing.JTextField clinicIdTextField;
-    private javax.swing.JLabel compoundHeadsFirstNameLabel;
+    private javax.swing.JLabel compoundHeadsFirstNameLabel4;
     private javax.swing.JTextField compoundHeadsFirstNameTextField;
-    private javax.swing.JLabel compoundHeadsLastNameLabel;
+    private javax.swing.JLabel compoundHeadsLastNameLabel4;
     private javax.swing.JTextField compoundHeadsLastNameTextField;
-    private javax.swing.JLabel compoundHeadsMiddleNameLabel;
+    private javax.swing.JLabel compoundHeadsMiddleNameLabel4;
     private javax.swing.JTextField compoundHeadsMiddleNameTextField;
     private javax.swing.JPanel confirmationPanel;
+    private javax.swing.JPanel confirmationPanel2;
     private javax.swing.JLabel fathersFirstNameLabel;
     private javax.swing.JTextField fathersFirstNameTextField;
     private javax.swing.JLabel fathersLastNameLabel;
@@ -549,23 +675,37 @@ public class ConfirmationDialog extends javax.swing.JDialog {
     private javax.swing.JLabel firstNameLabel;
     private javax.swing.JTextField firstNameTextField;
     private javax.swing.ButtonGroup hdssDataConsentButtonGroup;
-    private javax.swing.JLabel hdssDataConsentLabel;
+    private javax.swing.JLabel hdssDataConsentLabel4;
     private javax.swing.JRadioButton hdssDataConsentNoAnswerRadioButton;
     private javax.swing.JRadioButton hdssDataConsentNoRadioButton;
     private javax.swing.JRadioButton hdssDataConsentYesRadioButton;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lastNameLabel;
     private javax.swing.JTextField lastNameTextField;
+    private javax.swing.JTextField lastVisitAddress;
+    private com.toedter.calendar.JDateChooser lastVisitDate;
     private javax.swing.JRadioButton maleRadioButton;
     private javax.swing.JComboBox maritalStatusComboBox;
     private javax.swing.JLabel maritalStatusLabel;
     private java.util.List<DisplayableMaritalStatus> maritalStatusList;
     private javax.swing.JLabel middleNameLabel;
     private javax.swing.JTextField middleNameTextField;
-    private javax.swing.JLabel mothersFirstNameLabel;
+    private javax.swing.JLabel mothersFirstNameLabel4;
     private javax.swing.JTextField mothersFirstNameTextField;
-    private javax.swing.JLabel mothersLastNameLabel;
+    private javax.swing.JLabel mothersLastNameLabel4;
     private javax.swing.JTextField mothersLastNameTextField;
-    private javax.swing.JLabel mothersMiddleNameLabel;
+    private javax.swing.JLabel mothersMiddleNameLabel4;
     private javax.swing.JTextField mothersMiddleNameTextField;
     private javax.swing.JLabel otherNameLabel;
     private javax.swing.JTextField otherNameTextField;
