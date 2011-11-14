@@ -81,5 +81,7 @@ public class Visit {
 	public void setVisitDate(Date visitDate) {
 		this.visitDate = visitDate;
 	}
+        
+        
 
 }
