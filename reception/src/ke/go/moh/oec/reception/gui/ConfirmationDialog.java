@@ -93,8 +93,13 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         compoundHeadsMiddleNameTextField.setText(personWrapper.getCompoundHeadMiddleName());
         compoundHeadsLastNameTextField.setText(personWrapper.getCompoundHeadLastName());
         Visit v = personWrapper.unwrap().getLastRegularVisit();
+        if (v == null) {
+        lastVisitAddress.setText("");
+        lastVisitDate.setDate(null);
+        }else{
         lastVisitAddress.setText(v.getAddress());
         lastVisitDate.setDate(v.getVisitDate());
+        }        
         hdssDataConsentYesRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.yes);
         hdssDataConsentNoRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.no);
         hdssDataConsentNoAnswerRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.notAnswered);
