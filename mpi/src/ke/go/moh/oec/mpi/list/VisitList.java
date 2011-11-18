@@ -47,7 +47,7 @@ public class VisitList {
      */
     public static void update(Connection conn, int visitTypeId, int personId, Visit visit) {
         if (visit != null && visit.getVisitDate() != null) {
-            String addressId = Sql.getAddressId(conn, visit.getAddress());
+            String addressId = Sql.getAddressId(conn, visit.getAddress(), visit.getFacilityName());
             Date visitDate = visit.getVisitDate();
             String sql = "SELECT * FROM visit WHERE visit_type_id = " + visitTypeId
                     + " AND person_id = " + personId + " AND visit_date = " + Sql.quote(visitDate);

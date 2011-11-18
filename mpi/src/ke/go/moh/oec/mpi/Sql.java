@@ -361,23 +361,47 @@ public class Sql {
      * @return the address ID.
      */
     public static String getAddressId(Connection conn, String address) {
+        return getAddressId(conn, address, null);
+    }
+
+    /**
+     * Gets the address_id corresponding to a network address.
+     * Inserts a new address if necessary.
+     * <p>
+     * It is assumed that this method is called as part of a transaction.
+     * This method does not start and and a transaction, so if a new address
+     * is inserted, it will need the caller to start and stop the transaction.
+     * 
+     * @param conn Connection to use.
+     * @param address address to find.
+     * @param facilityName facility name (if any) corresponding to the address.
+     * @return the address ID.
+     */
+    public static String getAddressId(Connection conn, String address, String facilityName) {
         String returnId = null;
         if (address == null) {
             returnId = "null";
         } else {
             address = address.toLowerCase(); // By convention, network addresses are all lower case.
-            ResultSet rs = query(conn, "SELECT address_id FROM address WHERE address = " + quote(address));
+            String existingFacilityName = null;
+            ResultSet rs = query(conn, "SELECT address_id, facility_name FROM address WHERE address = " + quote(address));
             try {
                 if (rs.next()) {
                     returnId = Integer.toString(rs.getInt("address_id"));
+                    existingFacilityName = rs.getString("facility_name");
                 }
                 Sql.close(rs);
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Error getting address ID for " + quote(address), ex);
             }
             if (returnId == null) {
-                execute(conn, "INSERT into address (address) VALUES (" + quote(address) + ")");
+                execute(conn, "INSERT into address (address, facility_name) VALUES ("
+                        + quote(address) + ", " + quote(facilityName) + ")");
                 returnId = getLastInsertId(conn);
+            } else if (facilityName != null
+                    && (existingFacilityName == null || (facilityName.compareTo(existingFacilityName) != 0))) {
+                execute(conn, "UPDATE address SET facility_name = " + quote(facilityName)
+                        + "WHERE address_id = " + returnId);
             }
         }
         return returnId;

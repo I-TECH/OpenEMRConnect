@@ -108,10 +108,12 @@ class XmlPacker {
     private static final String OID_CCC_UNIVERSAL_UNIQUE_ID = OID_ROOT + "5.3";
     private static final String OID_CCC_LOCAL_PATIENT_ID = OID_ROOT + "5.4";
     private static final String KISUMU_HDSS_ID = OID_ROOT + "5.5";
-    private static final String OID_REGULAR_VISIT_ADDRESS = OID_ROOT + "6.1";
-    private static final String OID_REGULAR_VISIT_DATE = OID_ROOT + "6.2";
-    private static final String OID_ONEOFF_VISIT_ADDRESS = OID_ROOT + "6.3";
-    private static final String OID_ONEOFF_VISIT_DATE = OID_ROOT + "6.4";
+    private static final String OID_REGULAR_VISIT_DATE = OID_ROOT + "6.1.1";
+    private static final String OID_REGULAR_VISIT_ADDRESS = OID_ROOT + "6.1.2";
+    private static final String OID_REGULAR_VISIT_FACILITY_NAME = OID_ROOT + "6.1.3";
+    private static final String OID_ONEOFF_VISIT_DATE = OID_ROOT + "6.2.1";
+    private static final String OID_ONEOFF_VISIT_ADDRESS = OID_ROOT + "6.2.2";
+    private static final String OID_ONEOFF_VISIT_FACILITY_NAME = OID_ROOT + "6.2.3";
     private static final String OID_FINGERPRINT_LEFT_INDEX = OID_ROOT + "7.1";
     private static final String OID_FINGERPRINT_LEFT_MIDDLE = OID_ROOT + "7.2";
     private static final String OID_FINGERPRINT_LEFT_RING = OID_ROOT + "7.3";
@@ -493,8 +495,8 @@ class XmlPacker {
         packId(e, OID_PREGNANCY_OUTCOME, packEnum(p.getPregnancyOutcome()));
         packId(e, OID_SITE_NAME, p.getSiteName());
         packId(e, OID_FINGERPRINT_MATCHED, packBoolean(p.isFingerprintMatched()));
-        packVisit(e, p.getLastRegularVisit(), OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE);
-        packVisit(e, p.getLastOneOffVisit(), OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE);
+        packVisit(e, p.getLastRegularVisit(), OID_REGULAR_VISIT_DATE, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_FACILITY_NAME);
+        packVisit(e, p.getLastOneOffVisit(), OID_ONEOFF_VISIT_DATE, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_FACILITY_NAME);
         packPersonIdentifiers(e, p, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
         packPersonIdentifiers(e, p, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
         packPersonIdentifiers(e, p, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
@@ -570,16 +572,19 @@ class XmlPacker {
      *
      * @param e head of the <code>Document</code> subtree in which this person is to be packed
      * @param v visit information to pack
-     * @param oidVisitAddress OID for the XML id tag containing the visit address
      * @param oidVisitDate OID for the XML id tag containing the visit date
+     * @param oidVisitAddress OID for the XML id tag containing the visit address
+     * @param oidVisitFacilityName OID for the XML id tag containing the facility name
      */
-    private void packVisit(Element e, Visit v, String oidVisitAddress, String oidVisitDate) {
+    private void packVisit(Element e, Visit v, String oidVisitDate, String oidVisitAddress, String oidVisitFacilityName) {
         if (v != null) {
-            packId(e, oidVisitAddress, v.getAddress());
             packId(e, oidVisitDate, packDate(v.getVisitDate()));
+            packId(e, oidVisitAddress, v.getAddress());
+            packId(e, oidVisitFacilityName, v.getFacilityName());
         } else {
-            packId(e, oidVisitAddress, null);
             packId(e, oidVisitDate, null);
+            packId(e, oidVisitAddress, null);
+            packId(e, oidVisitFacilityName, null);
         }
     }
 
@@ -1599,8 +1604,8 @@ class XmlPacker {
         p.setPregnancyOutcome((Person.PregnancyOutcome) unpackEnum(Person.PregnancyOutcome.values(), unpackId(e, OID_PREGNANCY_OUTCOME)));
         p.setSiteName(unpackId(e, OID_SITE_NAME));
         p.setFingerprintMatched(unpackBoolean(unpackId(e, OID_FINGERPRINT_MATCHED)));
-        p.setLastRegularVisit(unpackVisit(e, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE));
-        p.setLastOneOffVisit(unpackVisit(e, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE));
+        p.setLastRegularVisit(unpackVisit(e, OID_REGULAR_VISIT_DATE, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_FACILITY_NAME));
+        p.setLastOneOffVisit(unpackVisit(e, OID_ONEOFF_VISIT_DATE, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_FACILITY_NAME));
         unpackPersonIdentifiers(p, e, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
         unpackPersonIdentifiers(p, e, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
         unpackPersonIdentifiers(p, e, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
@@ -1644,18 +1649,21 @@ class XmlPacker {
      * information is present, returns <code>null</code>.
      *
      * @param e head of the <code>Document</code> subtree in which this visit is found
-     * @param oidVisitAddress OID for the XML id tag containing the visit address
      * @param oidVisitDate OID for the XML id tag containing the visit date
+     * @param oidVisitAddress OID for the XML id tag containing the visit address
+     * @param oidVisitFacilityName OID for the XML id tag containing the facility name
      * @return v unpacked visit data
      */
-    private Visit unpackVisit(Element e, String oidVisitAddress, String oidVisitDate) {
+    private Visit unpackVisit(Element e, String oidVisitDate, String oidVisitAddress, String oidVisitFacilityName) {
         Visit v = null;
-        String address = unpackId(e, oidVisitAddress);
         Date visitDate = unpackDate(unpackId(e, oidVisitDate));
-        if (address != null || visitDate != null) {
+        String address = unpackId(e, oidVisitAddress);
+        String facilityName = unpackId(e, oidVisitFacilityName);
+        if (address != null || visitDate != null || facilityName != null) {
             v = new Visit();
-            v.setAddress(address);
             v.setVisitDate(visitDate);
+            v.setAddress(address);
+            v.setFacilityName(facilityName);
         }
         return v;
     }

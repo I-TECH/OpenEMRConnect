@@ -24,6 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
+import ke.go.moh.oec.Visit;
 import java.util.ArrayList;
 import ke.go.moh.oec.PersonIdentifier;
 import java.util.logging.Logger;
@@ -59,9 +60,11 @@ public class MpiTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         Connection conn = Sql.connect();
+        String s0 = "DELETE FROM visit WHERE person_id IN (SELECT person_id FROM person WHERE first_name = 'Cain' AND middle_name = 'Human' AND last_name = 'One')";
         String s1 = "DELETE FROM person WHERE first_name = 'Cain' AND middle_name = 'Human' AND last_name = 'One';";
         String s2 = "DELETE FROM village WHERE village_name IN ('Eden', 'OutOfEden');";
         Sql.startTransaction(conn);
+        Sql.execute(conn, s0);
         Sql.execute(conn, s1);
         Sql.execute(conn, s2);
         Sql.commit(conn);
@@ -287,6 +290,13 @@ public class MpiTest {
         p.setCompoundHeadLastName("Creator");
         p.setVillageName("Eden");
         p.setClanName("Human");
+        
+        Visit v = new Visit();
+        v.setVisitDate(new Date());
+        v.setAddress("ke.go.moh.test.address");
+        v.setFacilityName("Test Facility");
+        p.setLastRegularVisit(v);
+        
         result = mpi.getData(requestTypeId, requestData);
         assertNull(result);
         pr = callFindPerson(requestData);

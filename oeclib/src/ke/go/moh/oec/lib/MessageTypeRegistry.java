@@ -54,11 +54,11 @@ class MessageTypeRegistry {
     static final String MODIFY_PERSON_ACCEPTED_ROOT_TAG = "PRPA_IN201315UV02";
     /** LOG ENTRY uses LogEntry for a root tag */
     static final String LOG_ENTRY_ROOT_TAG = "LogEntry";
-    /** GET WORK  uses getWork for a root tag*/
+    /** GET WORK uses GetWork for a root tag */
     static final String GET_WORK_ROOT_TAG = "GetWork";
-    /**WORK DONE uses Work Done for a root tag*/
+    /** WORK DONE uses WorkDone for a root tag */
     static final String WORK_DONE_ROOT_TAG = "WorkDone";
-    /**Reassign uses Reassign for a root tag*/
+    /** REASSIGN WORK uses Reassign for a root tag */
     static final String REASSIGN_ROOT_TAG = "Reassign";
     /**
      * Find Person response

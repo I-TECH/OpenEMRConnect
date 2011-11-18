@@ -48,6 +48,8 @@ public class Visit {
     private Date visitDate;
     /** The application address (reception station within a facility) where the patient was seen. */
     private String address;
+    /** The facility name where the patient was seen. */
+    private String facilityName;
 
     /**
      * Get a Visit instance, but only if the visit date is not null.
@@ -65,21 +67,29 @@ public class Visit {
         }
         return visit;
     }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getFacilityName() {
+        return facilityName;
+    }
+
+    public void setFacilityName(String facilityName) {
+        this.facilityName = facilityName;
+    }
+
+    public Date getVisitDate() {
+        return visitDate;
+    }
+
+    public void setVisitDate(Date visitDate) {
+        this.visitDate = visitDate;
+    }
     
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public Date getVisitDate() {
-		return visitDate;
-	}
-
-	public void setVisitDate(Date visitDate) {
-		this.visitDate = visitDate;
-	}
-
 }

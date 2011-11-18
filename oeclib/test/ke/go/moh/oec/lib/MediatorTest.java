@@ -24,6 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
+import ke.go.moh.oec.Visit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
@@ -325,6 +326,13 @@ public class MediatorTest {
         pi.setIdentifierType(PersonIdentifier.Type.patientRegistryId);
         piList.add(pi);
         p.setPersonIdentifierList(piList);
+        
+        Visit v = new Visit();
+        v.setVisitDate(new Date());
+        v.setAddress("ke.go.moh.test.address");
+        v.setFacilityName("Test Facility");
+        p.setLastRegularVisit(v);
+        
         pr = (PersonResponse) mediator.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
         try {
             Thread.sleep(10*1000); // Sleep 10 seconds.
