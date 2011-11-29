@@ -394,14 +394,16 @@ public class Sql {
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Error getting address ID for " + quote(address), ex);
             }
+
             if (returnId == null) {
                 execute(conn, "INSERT into address (address, facility_name) VALUES ("
                         + quote(address) + ", " + quote(facilityName) + ")");
+
                 returnId = getLastInsertId(conn);
             } else if (facilityName != null
                     && (existingFacilityName == null || (facilityName.compareTo(existingFacilityName) != 0))) {
                 execute(conn, "UPDATE address SET facility_name = " + quote(facilityName)
-                        + "WHERE address_id = " + returnId);
+                        + "WHERE address = " + quote(address));
             }
         }
         return returnId;

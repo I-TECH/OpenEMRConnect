@@ -86,14 +86,15 @@ public class LoadPersonThread implements Runnable {
                 + "       MAX(v_reg.visit_date) AS visit_reg_date,\n"
                 + "       MAX(v_one.visit_date) AS visit_one_date,\n"
                 + "       MID(MAX(CONCAT(v_reg.visit_date, a_reg.address)),20) AS visit_reg_address,\n"
-                + "       MID(MAX(CONCAT(v_one.visit_date, a_one.address)),20) AS visit_one_address\n"
+                + "       MID(MAX(CONCAT(v_one.visit_date, a_one.address)),20) AS visit_one_address,\n"
+                + "       MID(MAX(CONCAT(v_reg.visit_date, a_reg.facility_name)),20) AS visit_reg_facility\n"
                 + "FROM person p\n"
                 + "LEFT OUTER JOIN village v ON v.village_id = p.village_id\n"
                 + "LEFT OUTER JOIN marital_status_type m ON m.marital_status_type_id = p.marital_status\n"
                 + "LEFT OUTER JOIN visit v_reg ON v_reg.person_id = p.person_id and v_reg.visit_type_id = " + Sql.REGULAR_VISIT_TYPE_ID + "\n"
                 + "LEFT OUTER JOIN visit v_one ON v_one.person_id = p.person_id and v_one.visit_type_id = " + Sql.ONE_OFF_VISIT_TYPE_ID + "\n"
                 + "LEFT OUTER JOIN address a_reg ON a_reg.address_id = v_reg.address_id\n"
-                + "LEFT OUTER JOIN address a_one ON a_one.address_id = v_one.address_id\n"
+                + "LEFT OUTER JOIN address a_one ON a_one.address_id = v_one.address_id\n" //Gitau added to enable passing of facility name to Visit.getvisit
                 + "WHERE p.person_id BETWEEN " + minPersonId + " AND " + maxPersonId + " -- Thread " + threadIndex + "\n" // Comment for logging.
                 + "GROUP BY p.person_id\n"
                 + "ORDER BY p.person_id";
@@ -121,7 +122,7 @@ public class LoadPersonThread implements Runnable {
                     colFathersFirstName = 0, colFathersMiddleName = 0, colFathersLastName = 0,
                     colCompoundheadFirstName = 0, colCompoundheadMiddleName = 0, colCompoundheadLastName = 0,
                     colVillageName = 0, colMaritalStatusName = 0, colConsentSigned = 0,
-                    colVisitRegDate = 0, colVisitOneDate = 0, colVisitRegAddress = 0, colVisitOneAddress = 0;
+                    colVisitRegDate = 0, colVisitOneDate = 0, colVisitRegAddress = 0,colVisitRegFacility = 0, colVisitOneAddress = 0;
             boolean colsFound = false; // Have we found the column numbers yet?
             while (rs.next()) {
                 if (!colsFound) {
@@ -151,6 +152,7 @@ public class LoadPersonThread implements Runnable {
                     colVisitOneDate = rs.findColumn("visit_reg_address");
                     colVisitRegAddress = rs.findColumn("visit_one_date");
                     colVisitOneAddress = rs.findColumn("visit_one_address");
+                    colVisitRegFacility = rs.findColumn("visit_reg_facility");
                     colsFound = true;
                 }
                 Person p = new Person();
@@ -178,8 +180,8 @@ public class LoadPersonThread implements Runnable {
                 p.setPersonIdentifierList(personIdentifierList.loadNext(dbPersonId));
                 p.setFingerprintList(fingerprintList.loadNext(dbPersonId));
                 p.setConsentSigned((Person.ConsentSigned) ValueMap.CONSENT_SIGNED.getVal().get(getRsString(rs, colConsentSigned)));
-                p.setLastRegularVisit(Visit.getVisit(rs.getDate(colVisitRegDate), getRsString(rs, colVisitOneDate)));
-                p.setLastOneOffVisit(Visit.getVisit(rs.getDate(colVisitRegAddress), getRsString(rs, colVisitOneAddress)));
+                p.setLastRegularVisit(Visit.getVisit(rs.getDate(colVisitRegDate), getRsString(rs, colVisitOneDate),getRsString(rs, colVisitRegFacility)));
+                p.setLastOneOffVisit(Visit.getVisit(rs.getDate(colVisitRegAddress), getRsString(rs, colVisitOneAddress),getRsString(rs, colVisitRegFacility)));
                 PersonMatch per = new PersonMatch(p);
                 per.setDbPersonId(dbPersonId);
                 personMatchList.add(per);

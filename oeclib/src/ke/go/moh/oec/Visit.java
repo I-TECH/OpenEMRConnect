@@ -50,7 +50,7 @@ public class Visit {
     private String address;
     /** The facility name where the patient was seen. */
     private String facilityName;
-
+    
     /**
      * Get a Visit instance, but only if the visit date is not null.
      * 
@@ -58,12 +58,13 @@ public class Visit {
      * @param address address of the visit.
      * @return if Date is not null, then Visit filled in, otherwise null.
      */
-    static public Visit getVisit(Date visitDate, String address) {
+    static public Visit getVisit(Date visitDate, String address, String facilityName) {
         Visit visit = null;
         if (visitDate != null) {
             visit = new Visit();
             visit.visitDate = visitDate;
-            visit.address = address;
+            visit.address = address; 
+            visit.facilityName = facilityName;
         }
         return visit;
     }
@@ -77,11 +78,12 @@ public class Visit {
     }
 
     public String getFacilityName() {
-        return facilityName;
+         return facilityName;
     }
 
     public void setFacilityName(String facilityName) {
         this.facilityName = facilityName;
+        
     }
 
     public Date getVisitDate() {

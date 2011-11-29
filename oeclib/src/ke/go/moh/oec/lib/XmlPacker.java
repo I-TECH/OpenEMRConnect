@@ -468,6 +468,7 @@ class XmlPacker {
     private void packPerson(Element e, Person p) {
         if (p == null) {
             p = new Person();
+            //p.setLastOneOffVisit(null);
         }
         packPersonName(e, p, "name");
         packTagAttribute(e, "administrativeGenderCode", "code", packEnum(p.getSex()));

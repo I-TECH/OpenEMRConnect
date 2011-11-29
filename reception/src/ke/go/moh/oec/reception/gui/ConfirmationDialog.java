@@ -97,7 +97,7 @@ public class ConfirmationDialog extends javax.swing.JDialog {
         lastVisitAddress.setText("");
         lastVisitDate.setDate(null);
         }else{
-        lastVisitAddress.setText(v.getAddress());
+        lastVisitAddress.setText(v.getFacilityName());
         lastVisitDate.setDate(v.getVisitDate());
         }        
         hdssDataConsentYesRadioButton.setSelected(personWrapper.getConsentSigned() == Person.ConsentSigned.yes);

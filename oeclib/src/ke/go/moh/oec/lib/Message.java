@@ -234,7 +234,7 @@ class Message {
     public void setSourceName(String sourceName) {
         this.sourceName = sourceName;
     }
-
+    
     public boolean isToBeQueued() {
         return toBeQueued;
     }

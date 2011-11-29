@@ -377,7 +377,7 @@ public class Mediator implements IService {
         m.setMessageData(requestData);
         m.setSourceAddress(getProperty("Instance.Address"));
         m.setSourceName(getProperty("Instance.Name"));
-
+        
         /*
          * Determine the Type of message we are to send.
          */
