@@ -15,11 +15,13 @@ public class CpadDataExtract {
 	final static String OUTPUT_FILENAME = "out.csv";
 	final static String SESQUICENTENNIAL_MILLIS = "4717440000000";
 	final static String YEAR_MILLIS = "31556925994";
+	final static int FILLER_CNT = 197;
 	final static int MAX_FAMILY_PLANNING_METHODS = 5;
 	final static int MAX_NEW_OI = 5;
 	final static int MAX_OTHER_MED = 7;
 	final static int MAX_POOR_ADHERENCE_REASONS = 5;
 	final static int MAX_SIDE_EFFECTS = 5;
+	final static int MAX_SUPPORTERS = 3;
 	final static int MAX_VISIT_CNT = 12;
 	final static int OTHER_ART_REG_CODE = 36;
 	final static int OTHER_FAMILY_PLANNING_CODE = 88;
@@ -62,13 +64,13 @@ public class CpadDataExtract {
 			    "where patient_id = ?");
 			headerStmts[2] = con.prepareStatement("select ts.first_name, ts.last_name, ts.postal_address, ts.telephone, " +
 			    "ts.relationship as rel1, ts.relationship_other, sr.relationship as rel2 " +
-			    "from tbltreatment_supporter ts, tlkSupporter_relationships sr " +
-			    "where ts.relationship = sr.relationid " +
-			    "and patient_id = ?");
+			    "from tbltreatment_supporter ts " +
+			    "left join tlkSupporter_relationships sr on ts.relationship = sr.relationid " +
+			    "where ts.patient_id = ?");
 			headerStmts[3] = con.prepareStatement("select Organization, SiteCode, District, Province " +
 				"from tblOrganization");
 			
-			PreparedStatement visitStmts[] = new PreparedStatement[8];
+			PreparedStatement visitStmts[] = new PreparedStatement[9];
 			visitStmts[0] = con.prepareStatement("select count(visit_id) as visits from tblvisit_information where patient_id = ?");
 			visitStmts[1] = con.prepareStatement("select top " + MAX_VISIT_CNT + " vi.visit_id, vi.visit_date, vi.weight, vi.height, " +
 				"p.yesno as pregnancy, vi.delivery_date, t.tbstatus as tbstatus, vi.other_medication, vi.cd4_result, " +
@@ -77,7 +79,7 @@ public class CpadDataExtract {
 				"vi.art_regimen, ar.firstregimen, vi.art_other, aa.adherence, vi.ARTDose, " +
 				"vi.other_testType, vi.other_test_result, vi.other_testType2, vi.other_test_result2, " +
 				"vi.referred_to, vi.next_visit_date, vi.clinician_initial, vi.WHOstage, " +
-				"vi.BMI, vi.TBStDate, vi.VisitType, vi.tb_Tx, vi.INH, vi.RiskPopu, " +
+				"vi.BMI, vi.TBStDate, vi.VisitType, vi.DuraSART, vi.DuraCReg, vi.tb_Tx, vi.INH, vi.RiskPopu, " +
 				"vi.PwPDis, vi.PwPPaT, vi.PwPCon, vi.PwPSTI, pi.artstart_date " +
 				"from (tblpatient_information pi INNER JOIN " +
 				"(((((((tblvisit_information vi LEFT OUTER JOIN " +
@@ -94,6 +96,7 @@ public class CpadDataExtract {
 				"from tblvisit_information vi " +
 				"left join tlkregimenfirst ar on vi.art_regimen = ar.regnum " +
 				"where vi.patient_id = ? " +
+				"and vi.visit_id <> ? " +
 				"and vi.visit_date <= ? " +
 				"order by vi.visit_date desc");
 			visitStmts[3] = con.prepareStatement("select au.unsatisfactoryadherence, uc.UnsatCotriReaon, uc.UnsatCotriother " +
@@ -121,7 +124,11 @@ public class CpadDataExtract {
 				"left join tlkoi_code il on oi.newoi = il.oi_id " +
 				"where oi.patient_id = ? " +
 				"and oi.visit_id = ?");
-			
+			visitStmts[8] = con.prepareStatement("select label " +
+				"from Tbl_Values tv " +
+				"where tv.category = 'VisitType' " + 
+				"and tv.[value] = ?");
+
 			int cnt = 0;
 			while (rs.next()) {
 				int pid = rs.getInt("patient_id");
@@ -137,8 +144,13 @@ public class CpadDataExtract {
 				String finalCsv = "";
 				finalCsv += header.printHeaderDelim("\t");
 				finalCsv += "\t";
+				// Fill in currently unused fields
+				for (int i = 0; i < FILLER_CNT; i++) {
+					finalCsv += "\t";
+				}
 				for (int i = 0; i < visits.length; i++) {
 					finalCsv += visits[i].printHeaderDelim("\t");
+					if (i < visits.length - 1) finalCsv += "\t";
 				}
 				out.write(finalCsv + "\n");
 				if (++cnt % 100 == 0) System.out.println("(" + cnt + ")");
@@ -204,22 +216,24 @@ public class CpadDataExtract {
 
 		// Last of the header data fields - from tbltreatment_supporter
 		rs = stmts[2].executeQuery();
-		while (rs.next()) {
-			header.setSupGivenName(0, rs.getString("first_name"));
-			header.setSupFamName(0, rs.getString("last_name"));
-			header.setSupAddr(0, rs.getString("postal_address"));
-			header.setSupPhone(rs.getString("telephone"));
+		int i = 0;
+		while (rs.next() && i < MAX_SUPPORTERS) {
+			header.setSupGivenName(i, 0, rs.getString("first_name"));
+			header.setSupFamName(i, 0, rs.getString("last_name"));
+			header.setSupAddr(i, 0, rs.getString("postal_address"));
+			header.setSupPhone(i, rs.getString("telephone"));
 			int rel = rs.getInt("rel1");
 			if (!rs.wasNull()) {
 				if (rel == OTHER_RELATIONSHIP_CODE) {
 					String tmp = rs.getString("relationship_other");
 					if (!rs.wasNull()) {
-						header.setSupRelation("Other: " + tmp.toLowerCase());
+						header.setSupRelation(i, "Other: " + tmp.toLowerCase());
 					}
 				} else {
-					header.setSupRelation(rs.getString("rel2"));
+					header.setSupRelation(i, rs.getString("rel2"));
 				}
 			}
+			i++;
 		}
 
 		// Set facility name and then output extracted data
@@ -238,8 +252,9 @@ public class CpadDataExtract {
 		int visitCnt = 0;
 		ResultSet subRs = null;
 
-		// Fill in the prepared statement parameters (just 'pid' at this point)
-		for (int i = 0; i < stmts.length; i++) {
+		// Fill in some of the prepared statement parameters (just 'pid' at this point)
+		// Skip the last one, as that needs to be set with data retrieved at a later time
+		for (int i = 0; i < stmts.length - 1; i++) {
 			stmts[i].setInt(1, pid);
 		}
 		
@@ -252,44 +267,41 @@ public class CpadDataExtract {
 		int cnt = 0;
 		while (rs.next() && cnt < MAX_VISIT_CNT) {
 			String visId = rs.getString("visit_id");
-			for (int i = 3; i < stmts.length; i++) {
+			for (int i = 2; i < stmts.length - 1; i++) {
 				stmts[i].setInt(2, Integer.parseInt(visId));
 			}
 			visits[cnt].setVisId(visId);
-			visits[cnt].setVisType(rs.getString("VisitType"));
+			int z = rs.getInt("VisitType");
+			// Lookup visit type label from Tbl_Values, if not null
+			if (!rs.wasNull()) {
+				stmts[8].setString(1, Integer.toString(z));
+				subRs = stmts[8].executeQuery();
+				if (subRs.next()) {
+					visits[cnt].setVisType(subRs.getString("label"));
+				}
+			}
 			Date vDate = rs.getDate("visit_date");
 			if (!rs.wasNull()) {
 				visits[cnt].setVisDate(new SimpleDateFormat("yyyyMMdd").format(vDate.getTime()));
 
-				Date tmpDate = rs.getDate("artstart_date");
-				if (!rs.wasNull() && tmpDate.getTime() < vDate.getTime()) {
-					visits[cnt].setMosOnArt(Long.toString((vDate.getTime() - tmpDate.getTime()) / new Long (MONTH_MILLIS)));
-				}
-
-				// Determine length in months on current regimen
-				stmts[2].setString(2, new SimpleDateFormat("yyyy-MM-dd").format(vDate.getTime()));
+				// Determine prior regimen to be used when completing adherence elements
+				stmts[2].setString(3, new SimpleDateFormat("yyyy-MM-dd").format(vDate.getTime()));
 				subRs = stmts[2].executeQuery();
-				String monthsOnReg = null;
-				String currReg = "";
 				String prevReg = "";
-				while (subRs.next()) {
+				while (subRs.next() && "".equals(prevReg)) {
 					int regCode = subRs.getInt("art_regimen");
 					if (!subRs.wasNull()) {
 						if (regCode == OTHER_ART_REG_CODE) {
-							currReg = subRs.getString("art_other");
+							prevReg = subRs.getString("art_other");
 						} else {
-							currReg = subRs.getString("firstregimen");
+							prevReg = subRs.getString("firstregimen");
 						}
-						if (!subRs.wasNull() && !currReg.equals(prevReg) && !"".equals(prevReg)) {
-							Date currRegDt = subRs.getDate("visit_date");
-							monthsOnReg = Long.toString((vDate.getTime() - currRegDt.getTime()) / new Long (MONTH_MILLIS));
-							break;
-						} else {
-							prevReg = currReg;
+						if (subRs.wasNull()) {
+							prevReg = "";
 						}
 					}
 				}
-				visits[cnt].setMosOnRegimen(monthsOnReg);
+				visits[cnt].setPriorArvName(prevReg);
 			}
 			visits[cnt].setWt(rs.getString("weight"));
 			visits[cnt].setHt(rs.getString("height"));
@@ -306,6 +318,10 @@ public class CpadDataExtract {
 				visits[cnt].setTbStartMo(new SimpleDateFormat("MM").format(tmpDate.getTime()));
 				visits[cnt].setTbStartYr(new SimpleDateFormat("yyyy").format(tmpDate.getTime()));
 			}
+			z = rs.getInt("DuraSART");
+			visits[cnt].setMosOnArt(Integer.toString(z));
+			z = rs.getInt("DuraCReg");
+			visits[cnt].setMosOnRegimen(Integer.toString(z));
 			visits[cnt].setTbTreatNo(rs.getString("tb_Tx"));
 			visits[cnt].setWhoStage(rs.getString("WHOstage"));
 			visits[cnt].setCtxAdh(rs.getString("cotrim_adherence"));
@@ -333,7 +349,7 @@ public class CpadDataExtract {
 					visits[cnt].setArvName(rs.getString("firstregimen"));
 				}
 			}
-			visits[cnt].setArvAdh(rs.getString("adherence"));
+			visits[cnt].setPriorArvAdh(rs.getString("adherence"));
 			visits[cnt].setArvDosage(rs.getString("ARTDose"));
 			visits[cnt].setCd4Count(rs.getString("cd4_result"));
 			visits[cnt].setCd4Perc(rs.getString("cd4_results_percent"));
@@ -381,10 +397,10 @@ public class CpadDataExtract {
 					if (adhCode == OTHER_POOR_ADHERENCE_CODE) {
 						tmp = subRs.getString("UnsatARTOth");
 						if (!subRs.wasNull()) {
-							visits[cnt].setArvPoorAdh(i, "Other: " + tmp.toLowerCase());
+							visits[cnt].setPriorArvPoorAdh(i, "Other: " + tmp.toLowerCase());
 						}
 					} else {
-						visits[cnt].setArvPoorAdh(i, subRs.getString("unsatisfactoryadherence"));
+						visits[cnt].setPriorArvPoorAdh(i, subRs.getString("unsatisfactoryadherence"));
 					}
 				}
 				i++;
