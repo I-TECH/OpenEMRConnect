@@ -2,11 +2,9 @@ package ke.go.moh.oec.cpad;
 
 public class VisitData {
 
-	private String arvAdh;
 	private String arvDosage;
 	private String arvName;
 	private String arvNoDays;
-	private String arvPoorAdh[] = new String[5];
 	private String atRiskPop;
 	private String bmi;
 	private String bp;
@@ -35,6 +33,9 @@ public class VisitData {
 	private String otherMedName[] = new String[8];
 	private String partnerTested;
 	private String preg;
+	private String priorArvAdh;
+	private String priorArvName;
+	private String priorArvPoorAdh[] = new String[5];
 	private String referral;
 	private String rpr;
 	private String sideEffect[] = new String[5];
@@ -50,20 +51,12 @@ public class VisitData {
 	private String whoStage;
 	private String wt;
 
-    public String getArvAdh() {
-        return arvAdh;
-    }
-
-    public void setArvAdh(String in) {
-        this.arvAdh = in;
-    }
-
     public String getArvDosage() {
         return arvDosage;
     }
 
     public void setArvDosage(String in) {
-        this.arvDosage = in;
+        arvDosage = in;
     }
 
     public String getArvName() {
@@ -71,7 +64,7 @@ public class VisitData {
     }
 
     public void setArvName(String in) {
-        this.arvName = in;
+        arvName = in;
     }
 
     public String getArvNoDays() {
@@ -79,15 +72,7 @@ public class VisitData {
     }
 
     public void setArvNoDays(String in) {
-        this.arvNoDays = in;
-    }
-
-    public String getArvPoorAdh(int i) {
-        return arvPoorAdh[i];
-    }
-
-    public void setArvPoorAdh(int i, String in) {
-        this.arvPoorAdh[i] = in;
+        arvNoDays = in;
     }
 
     public String getAtRiskPop() {
@@ -95,7 +80,7 @@ public class VisitData {
     }
 
     public void setAtRiskPop(String in) {
-        this.atRiskPop = in;
+        atRiskPop = in;
     }
 
     public String getBmi() {
@@ -103,7 +88,7 @@ public class VisitData {
     }
 
     public void setBmi(String in) {
-        this.bmi = in;
+        bmi = in;
     }
 
     public String getBp() {
@@ -111,7 +96,7 @@ public class VisitData {
     }
 
     public void setBp(String in) {
-        this.bp = in;
+        bp = in;
     }
 
     public String getCd4Count() {
@@ -119,7 +104,7 @@ public class VisitData {
     }
 
     public void setCd4Count(String in) {
-        this.cd4Count = in;
+        cd4Count = in;
     }
 
     public String getCd4Perc() {
@@ -127,7 +112,7 @@ public class VisitData {
     }
 
     public void setCd4Perc(String in) {
-        this.cd4Perc = in;
+        cd4Perc = in;
     }
 
     public String getClinicianInit() {
@@ -135,7 +120,7 @@ public class VisitData {
     }
 
     public void setClinicianInit(String in) {
-        this.clinicianInit = in;
+        clinicianInit = in;
     }
 
     public String getCondomsDisp() {
@@ -143,7 +128,7 @@ public class VisitData {
     }
 
     public void setCondomsDisp(String in) {
-        this.condomsDisp = in;
+        condomsDisp = in;
     }
 
     public String getCtxAdh() {
@@ -151,7 +136,7 @@ public class VisitData {
     }
 
     public void setCtxAdh(String in) {
-        this.ctxAdh = in;
+        ctxAdh = in;
     }
 
     public String getCtxDisp() {
@@ -159,7 +144,7 @@ public class VisitData {
     }
 
     public void setCtxDisp(String in) {
-        this.ctxDisp = in;
+        ctxDisp = in;
     }
 
     public String getCtxPoorAdh(int i) {
@@ -167,7 +152,7 @@ public class VisitData {
     }
 
     public void setCtxPoorAdh(int i, String in) {
-        this.ctxPoorAdh[i] = in;
+        ctxPoorAdh[i] = in;
     }
 
     public String getDisclosure() {
@@ -175,7 +160,7 @@ public class VisitData {
     }
 
     public void setDisclosure(String in) {
-        this.disclosure = in;
+        disclosure = in;
     }
 
     public String getEdd() {
@@ -183,7 +168,7 @@ public class VisitData {
     }
 
     public void setEdd(String in) {
-        this.edd = in;
+        edd = in;
     }
 
     public String getFamPlanMethod(int i) {
@@ -191,7 +176,7 @@ public class VisitData {
     }
 
     public void setFamPlanMethod(int i, String in) {
-        this.famPlanMethod[i] = in;
+        famPlanMethod[i] = in;
     }
 
     public String getFamPlanStat() {
@@ -199,7 +184,7 @@ public class VisitData {
     }
 
     public void setFamPlanStat(String in) {
-        this.famPlanStat = in;
+        famPlanStat = in;
     }
 
     public String getHgb() {
@@ -207,7 +192,7 @@ public class VisitData {
     }
 
     public void setHgb(String in) {
-        this.hgb = in;
+        hgb = in;
     }
 
     public String getHt() {
@@ -215,7 +200,7 @@ public class VisitData {
     }
 
     public void setHt(String in) {
-        this.ht = in;
+        ht = in;
     }
 
     public String getInhDisp() {
@@ -223,7 +208,7 @@ public class VisitData {
     }
 
     public void setInhDisp(String in) {
-        this.inhDisp = in;
+        inhDisp = in;
     }
 
     public String getMosOnArt() {
@@ -231,7 +216,7 @@ public class VisitData {
     }
 
     public void setMosOnArt(String in) {
-        this.mosOnArt = in;
+        mosOnArt = in;
     }
 
     public String getMosOnRegimen() {
@@ -239,7 +224,7 @@ public class VisitData {
     }
 
     public void setMosOnRegimen(String in) {
-        this.mosOnRegimen = in;
+        mosOnRegimen = in;
     }
 
     public String getNextAppt() {
@@ -247,7 +232,7 @@ public class VisitData {
     }
 
     public void setNextAppt(String in) {
-        this.nextAppt = in;
+        nextAppt = in;
     }
 
     public String getOiProblem(int i) {
@@ -255,7 +240,7 @@ public class VisitData {
     }
 
     public void setOiProblem(int i, String in) {
-        this.oiProblem[i] = in;
+        oiProblem[i] = in;
     }
 
     public String getOtherLabName(int i) {
@@ -263,7 +248,7 @@ public class VisitData {
     }
 
     public void setOtherLabName(int i, String in) {
-        this.otherLabName[i] = in;
+        otherLabName[i] = in;
     }
 
     public String getOtherLabResult(int i) {
@@ -271,7 +256,7 @@ public class VisitData {
     }
 
     public void setOtherLabResult(int i, String in) {
-        this.otherLabResult[i] = in;
+        otherLabResult[i] = in;
     }
 
     public String getOtherMedDosage(int i) {
@@ -279,7 +264,7 @@ public class VisitData {
     }
 
     public void setOtherMedDosage(int i, String in) {
-        this.otherMedDosage[i] = in;
+        otherMedDosage[i] = in;
     }
 
     public String getOtherMedFreq(int i) {
@@ -287,7 +272,7 @@ public class VisitData {
     }
 
     public void setOtherMedFreq(int i, String in) {
-        this.otherMedFreq[i] = in;
+        otherMedFreq[i] = in;
     }
 
     public String getOtherMedName(int i) {
@@ -295,7 +280,7 @@ public class VisitData {
     }
 
     public void setOtherMedName(int i, String in) {
-        this.otherMedName[i] = in;
+        otherMedName[i] = in;
     }
 
     public String getPartnerTested() {
@@ -303,7 +288,7 @@ public class VisitData {
     }
 
     public void setPartnerTested(String in) {
-        this.partnerTested = in;
+        partnerTested = in;
     }
 
     public String getPreg() {
@@ -311,7 +296,31 @@ public class VisitData {
     }
 
     public void setPreg(String in) {
-        this.preg = in;
+        preg = in;
+    }
+
+    public String getPriorArvAdh() {
+        return priorArvAdh;
+    }
+
+    public void setPriorArvAdh(String in) {
+        priorArvAdh = in;
+    }
+
+    public String getPriorArvName() {
+        return priorArvName;
+    }
+
+    public void setPriorArvName(String in) {
+        priorArvName = in;
+    }
+
+    public String getPriorArvPoorAdh(int i) {
+        return priorArvPoorAdh[i];
+    }
+
+    public void setPriorArvPoorAdh(int i, String in) {
+        priorArvPoorAdh[i] = in;
     }
 
     public String getReferral() {
@@ -319,7 +328,7 @@ public class VisitData {
     }
 
     public void setReferral(String in) {
-        this.referral = in;
+        referral = in;
     }
 
     public String getRpr() {
@@ -327,7 +336,7 @@ public class VisitData {
     }
 
     public void setRpr(String in) {
-        this.rpr = in;
+        rpr = in;
     }
 
     public String getSideEffect(int i) {
@@ -335,7 +344,7 @@ public class VisitData {
     }
 
     public void setSideEffect(int i, String in) {
-        this.sideEffect[i] = in;
+        sideEffect[i] = in;
     }
 
     public String getSputum() {
@@ -343,7 +352,7 @@ public class VisitData {
     }
 
     public void setSputum(String in) {
-        this.sputum = in;
+        sputum = in;
     }
 
     public String getStiScreen() {
@@ -351,7 +360,7 @@ public class VisitData {
     }
 
     public void setStiScreen(String in) {
-        this.stiScreen = in;
+        stiScreen = in;
     }
 
     public String getTbStartMo() {
@@ -359,7 +368,7 @@ public class VisitData {
     }
 
     public void setTbStartMo(String in) {
-        this.tbStartMo = in;
+        tbStartMo = in;
     }
 
     public String getTbStartYr() {
@@ -367,7 +376,7 @@ public class VisitData {
     }
 
     public void setTbStartYr(String in) {
-        this.tbStartYr = in;
+        tbStartYr = in;
     }
 
     public String getTbStat() {
@@ -375,7 +384,7 @@ public class VisitData {
     }
 
     public void setTbStat(String in) {
-        this.tbStat = in;
+        tbStat = in;
     }
 
     public String getTbTreatNo() {
@@ -383,7 +392,7 @@ public class VisitData {
     }
 
     public void setTbTreatNo(String in) {
-        this.tbTreatNo = in;
+        tbTreatNo = in;
     }
 
     public String getVisDate() {
@@ -391,7 +400,7 @@ public class VisitData {
     }
 
     public void setVisDate(String in) {
-        this.visDate = in;
+        visDate = in;
     }
 
     public String getVisId() {
@@ -399,7 +408,7 @@ public class VisitData {
     }
 
     public void setVisId(String in) {
-        this.visId = in;
+        visId = in;
     }
 
     public String getVisType() {
@@ -407,7 +416,7 @@ public class VisitData {
     }
 
     public void setVisType(String in) {
-        this.visType = in;
+        visType = in;
     }
 
     public String getWhoStage() {
@@ -415,7 +424,7 @@ public class VisitData {
     }
 
     public void setWhoStage(String in) {
-        this.whoStage = in;
+        whoStage = in;
     }
 
     public String getWt() {
@@ -423,106 +432,107 @@ public class VisitData {
     }
 
     public void setWt(String in) {
-        this.wt = in;
+        wt = in;
     }
 
     public void reset() {
-    	this.visId = null;
-    	this.visDate = null;
-    	this.visType = null;
-    	this.mosOnArt = null;
-    	this.mosOnRegimen = null;
-    	this.wt = null;
-    	this.bp = null;
-    	this.ht = null;
-    	this.bmi = null;
-    	this.preg = null;
-    	this.edd = null;
-    	this.famPlanStat = null;
-    	this.famPlanMethod[0] = null;
-    	this.famPlanMethod[1] = null;
-    	this.famPlanMethod[2] = null;
-    	this.famPlanMethod[3] = null;
-    	this.famPlanMethod[4] = null;
-    	this.tbStat = null;
-    	this.tbStartMo = null;
-    	this.tbStartYr = null;
-    	this.tbTreatNo = null;
-    	this.sideEffect[0] = null;
-    	this.sideEffect[1] = null;
-    	this.sideEffect[2] = null;
-    	this.sideEffect[3] = null;
-    	this.sideEffect[4] = null;
-    	this.oiProblem[0] = null;
-    	this.oiProblem[1] = null;
-    	this.oiProblem[2] = null;
-    	this.oiProblem[3] = null;
-    	this.oiProblem[4] = null;
-    	this.whoStage = null;
-    	this.ctxDisp = null;
-    	this.ctxAdh = null;
-    	this.ctxPoorAdh[0] = null;
-    	this.ctxPoorAdh[1] = null;
-    	this.ctxPoorAdh[2] = null;
-    	this.ctxPoorAdh[3] = null;
-    	this.ctxPoorAdh[4] = null;
-    	this.inhDisp = null;
-    	this.otherMedName[0] = null;
-    	this.otherMedDosage[0] = null;
-    	this.otherMedFreq[0] = null;
-    	this.otherMedName[1] = null;
-    	this.otherMedDosage[1] = null;
-    	this.otherMedFreq[1] = null;
-    	this.otherMedName[2] = null;
-    	this.otherMedDosage[2] = null;
-    	this.otherMedFreq[2] = null;
-    	this.otherMedName[3] = null;
-    	this.otherMedDosage[3] = null;
-    	this.otherMedFreq[3] = null;
-    	this.otherMedName[4] = null;
-    	this.otherMedDosage[4] = null;
-    	this.otherMedFreq[4] = null;
-    	this.otherMedName[5] = null;
-    	this.otherMedDosage[5] = null;
-    	this.otherMedFreq[5] = null;
-    	this.otherMedName[6] = null;
-    	this.otherMedDosage[6] = null;
-    	this.otherMedFreq[6] = null;
-    	this.otherMedName[7] = null;
-    	this.otherMedDosage[7] = null;
-    	this.otherMedFreq[7] = null;
-    	this.arvAdh = null;
-    	this.arvPoorAdh[0] = null;
-    	this.arvPoorAdh[1] = null;
-    	this.arvPoorAdh[2] = null;
-    	this.arvPoorAdh[3] = null;
-    	this.arvPoorAdh[4] = null;
-    	this.arvName = null;
-    	this.arvDosage = null;
-    	this.arvNoDays = null;
-    	this.cd4Count = null;
-    	this.cd4Perc = null;
-    	this.hgb = null;
-    	this.rpr = null;
-    	this.sputum = null;
-    	this.otherLabName[0] = null;
-    	this.otherLabResult[0] = null;
-    	this.otherLabName[1] = null;
-    	this.otherLabResult[1] = null;
-    	this.otherLabName[2] = null;
-    	this.otherLabResult[2] = null;
-    	this.otherLabName[3] = null;
-    	this.otherLabResult[3] = null;
-    	this.otherLabName[4] = null;
-    	this.otherLabResult[4] = null;
-    	this.referral = null;
-    	this.atRiskPop = null;
-    	this.disclosure = null;
-    	this.partnerTested = null;
-    	this.condomsDisp = null;
-    	this.stiScreen = null;
-    	this.nextAppt = null;
-    	this.clinicianInit = null;
+    	visId = null;
+    	visDate = null;
+    	visType = null;
+    	mosOnArt = null;
+    	mosOnRegimen = null;
+    	wt = null;
+    	bp = null;
+    	ht = null;
+    	bmi = null;
+    	preg = null;
+    	edd = null;
+    	famPlanStat = null;
+    	famPlanMethod[0] = null;
+    	famPlanMethod[1] = null;
+    	famPlanMethod[2] = null;
+    	famPlanMethod[3] = null;
+    	famPlanMethod[4] = null;
+    	tbStat = null;
+    	tbStartMo = null;
+    	tbStartYr = null;
+    	tbTreatNo = null;
+    	sideEffect[0] = null;
+    	sideEffect[1] = null;
+    	sideEffect[2] = null;
+    	sideEffect[3] = null;
+    	sideEffect[4] = null;
+    	oiProblem[0] = null;
+    	oiProblem[1] = null;
+    	oiProblem[2] = null;
+    	oiProblem[3] = null;
+    	oiProblem[4] = null;
+    	whoStage = null;
+    	ctxDisp = null;
+    	ctxAdh = null;
+    	ctxPoorAdh[0] = null;
+    	ctxPoorAdh[1] = null;
+    	ctxPoorAdh[2] = null;
+    	ctxPoorAdh[3] = null;
+    	ctxPoorAdh[4] = null;
+    	inhDisp = null;
+    	otherMedName[0] = null;
+    	otherMedDosage[0] = null;
+    	otherMedFreq[0] = null;
+    	otherMedName[1] = null;
+    	otherMedDosage[1] = null;
+    	otherMedFreq[1] = null;
+    	otherMedName[2] = null;
+    	otherMedDosage[2] = null;
+    	otherMedFreq[2] = null;
+    	otherMedName[3] = null;
+    	otherMedDosage[3] = null;
+    	otherMedFreq[3] = null;
+    	otherMedName[4] = null;
+    	otherMedDosage[4] = null;
+    	otherMedFreq[4] = null;
+    	otherMedName[5] = null;
+    	otherMedDosage[5] = null;
+    	otherMedFreq[5] = null;
+    	otherMedName[6] = null;
+    	otherMedDosage[6] = null;
+    	otherMedFreq[6] = null;
+    	otherMedName[7] = null;
+    	otherMedDosage[7] = null;
+    	otherMedFreq[7] = null;
+    	priorArvAdh = null;
+    	priorArvName = null;
+    	priorArvPoorAdh[0] = null;
+    	priorArvPoorAdh[1] = null;
+    	priorArvPoorAdh[2] = null;
+    	priorArvPoorAdh[3] = null;
+    	priorArvPoorAdh[4] = null;
+    	arvName = null;
+    	arvDosage = null;
+    	arvNoDays = null;
+    	cd4Count = null;
+    	cd4Perc = null;
+    	hgb = null;
+    	rpr = null;
+    	sputum = null;
+    	otherLabName[0] = null;
+    	otherLabResult[0] = null;
+    	otherLabName[1] = null;
+    	otherLabResult[1] = null;
+    	otherLabName[2] = null;
+    	otherLabResult[2] = null;
+    	otherLabName[3] = null;
+    	otherLabResult[3] = null;
+    	otherLabName[4] = null;
+    	otherLabResult[4] = null;
+    	referral = null;
+    	atRiskPop = null;
+    	disclosure = null;
+    	partnerTested = null;
+    	condomsDisp = null;
+    	stiScreen = null;
+    	nextAppt = null;
+    	clinicianInit = null;
     }
 
     public String printHeaderDelim(String delim) {
@@ -590,12 +600,13 @@ public class VisitData {
     		   (getOtherMedName(7) == null ? "" : clean(getOtherMedName(7))) + delim +
     		   (getOtherMedDosage(7) == null ? "" : clean(getOtherMedDosage(7))) + delim +
     		   (getOtherMedFreq(7) == null ? "" : clean(getOtherMedFreq(7))) + delim +
-    		   (getArvAdh() == null ? "" : clean(getArvAdh())) + delim +
-    		   (getArvPoorAdh(0) == null ? "" : clean(getArvPoorAdh(0))) + delim +
-    		   (getArvPoorAdh(1) == null ? "" : clean(getArvPoorAdh(1))) + delim +
-    		   (getArvPoorAdh(2) == null ? "" : clean(getArvPoorAdh(2))) + delim +
-    		   (getArvPoorAdh(3) == null ? "" : clean(getArvPoorAdh(3))) + delim +
-    		   (getArvPoorAdh(4) == null ? "" : clean(getArvPoorAdh(4))) + delim +
+    		   (getPriorArvName() == null ? "" : clean(getPriorArvName())) + delim +
+    		   (getPriorArvAdh() == null ? "" : clean(getPriorArvAdh())) + delim +
+    		   (getPriorArvPoorAdh(0) == null ? "" : clean(getPriorArvPoorAdh(0))) + delim +
+    		   (getPriorArvPoorAdh(1) == null ? "" : clean(getPriorArvPoorAdh(1))) + delim +
+    		   (getPriorArvPoorAdh(2) == null ? "" : clean(getPriorArvPoorAdh(2))) + delim +
+    		   (getPriorArvPoorAdh(3) == null ? "" : clean(getPriorArvPoorAdh(3))) + delim +
+    		   (getPriorArvPoorAdh(4) == null ? "" : clean(getPriorArvPoorAdh(4))) + delim +
     		   (getArvName() == null ? "" : clean(getArvName())) + delim +
     		   (getArvDosage() == null ? "" : clean(getArvDosage())) + delim +
     		   (getArvNoDays() == null ? "" : clean(getArvNoDays())) + delim +
@@ -625,6 +636,6 @@ public class VisitData {
     }
     
 	private String clean(String in) {
-		return in.replaceAll("\n", " ").replaceAll("\t", " ");
+		return (in == null ? "" : in.replaceAll("\n", " ").replaceAll("\t", " "));
 	}
 }

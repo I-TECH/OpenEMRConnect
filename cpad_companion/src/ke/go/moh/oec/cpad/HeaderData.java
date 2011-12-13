@@ -1,7 +1,18 @@
 package ke.go.moh.oec.cpad;
 
-public class HeaderData {
 
+public class HeaderData {
+	final static int MAX_SUPPORTERS = 3;
+	private class SupportData {
+	    private String supAddr[] = new String[2];
+	    private String supCity;
+	    private String supCounty;
+	    private String supFamName[] = new String[2];
+	    private String supGivenName[] = new String[3];
+	    private String supPhone;
+	    private String supRelation;
+	    private String supState;
+	}
     private String addr[] = new String[2];
     private String city;
     private String county;
@@ -17,21 +28,14 @@ public class HeaderData {
     private String phone[] = new String[3];
     private String pid;
     private String state;
-    private String supAddr[] = new String[2];
-    private String supCity;
-    private String supCounty;
-    private String supFamName[] = new String[2];
-    private String supGivenName[] = new String[3];
-    private String supPhone;
-    private String supRelation;
-    private String supState;
-
+	private SupportData support[] = new SupportData[MAX_SUPPORTERS];
+	
     public String getAddr(int i) {
         return addr[i];
     }
 
     public void setAddr(int i, String in) {
-        this.addr[i] = in;
+        addr[i] = in;
     }
 
     public String getCity() {
@@ -39,7 +43,7 @@ public class HeaderData {
     }
 
     public void setCity(String in) {
-        this.city = in;
+        city = in;
     }
 
     public String getCounty() {
@@ -47,7 +51,7 @@ public class HeaderData {
     }
 
     public void setCounty(String in) {
-        this.county = in;
+        county = in;
     }
 
     public String getDob() {
@@ -55,7 +59,7 @@ public class HeaderData {
     }
 
     public void setDob(String in) {
-        this.dob = in;
+        dob = in;
     }
 
     public String getFacCode() {
@@ -63,7 +67,7 @@ public class HeaderData {
     }
 
     public void setFacCode(String in) {
-        this.facCode = in;
+        facCode = in;
     }
 
     public String getFacCounty() {
@@ -71,7 +75,7 @@ public class HeaderData {
     }
 
     public void setFacCounty(String in) {
-        this.facCounty = in;
+        facCounty = in;
     }
 
     public String getFacName() {
@@ -79,7 +83,7 @@ public class HeaderData {
     }
 
     public void setFacName(String in) {
-        this.facName = in;
+        facName = in;
     }
 
     public String getFacState() {
@@ -87,7 +91,7 @@ public class HeaderData {
     }
 
     public void setFacState(String in) {
-        this.facState = in;
+        facState = in;
     }
 
     public String getFamName(int i) {
@@ -95,7 +99,7 @@ public class HeaderData {
     }
 
     public void setFamName(int i, String in) {
-        this.famName[i] = in;
+        famName[i] = in;
     }
 
     public String getGender() {
@@ -103,7 +107,7 @@ public class HeaderData {
     }
 
     public void setGender(String in) {
-        this.gender = in;
+        gender = in;
     }
 
     public String getGivenName(int i) {
@@ -111,7 +115,7 @@ public class HeaderData {
     }
 
     public void setGivenName(int i, String in) {
-        this.givenName[i] = in;
+        givenName[i] = in;
     }
 
     public String getMarStatus() {
@@ -119,7 +123,7 @@ public class HeaderData {
     }
 
     public void setMarStatus(String in) {
-        this.marStatus = in;
+        marStatus = in;
     }
 
     public String getPhone(int i) {
@@ -127,7 +131,7 @@ public class HeaderData {
     }
 
     public void setPhone(int i, String in) {
-        this.phone[i] = in;
+        phone[i] = in;
     }
 
     public String getPid() {
@@ -135,7 +139,7 @@ public class HeaderData {
     }
 
     public void setPid(String in) {
-        this.pid = in;
+        pid = in;
     }
 
     public String getState() {
@@ -143,148 +147,157 @@ public class HeaderData {
     }
 
     public void setState(String in) {
-        this.state = in;
+        state = in;
     }
 
-    public String getSupAddr(int i) {
-        return supAddr[i];
+    public String getSupAddr(int i, int j) {
+        return support[i].supAddr[j];
     }
 
-    public void setSupAddr(int i, String in) {
-        this.supAddr[i] = in;
+    public void setSupAddr(int i, int j, String in) {
+        support[i].supAddr[j] = in;
     }
 
-    public String getSupCity() {
-        return supCity;
+    public String getSupCity(int i) {
+        return support[i].supCity;
     }
 
-    public void setSupCity(String in) {
-        this.supCity = in;
+    public void setSupCity(int i, String in) {
+        support[i].supCity = in;
     }
 
-    public String getSupCounty() {
-        return supCounty;
+    public String getSupCounty(int i) {
+        return support[i].supCounty;
     }
 
-    public void setSupCounty(String in) {
-        this.supCounty = in;
+    public void setSupCounty(int i, String in) {
+        support[i].supCounty = in;
     }
 
-    public String getSupFamName(int i) {
-        return supFamName[i];
+    public String getSupFamName(int i, int j) {
+        return support[i].supFamName[j];
     }
 
-    public void setSupFamName(int i, String in) {
-        this.supFamName[i] = in;
+    public void setSupFamName(int i, int j, String in) {
+        support[i].supFamName[j] = in;
     }
 
-    public String getSupGivenName(int i) {
-        return supGivenName[i];
+    public String getSupGivenName(int i, int j) {
+        return support[i].supGivenName[j];
     }
 
-    public void setSupGivenName(int i, String in) {
-        this.supGivenName[i] = in;
+    public void setSupGivenName(int i, int j, String in) {
+        support[i].supGivenName[j] = in;
     }
 
-    public String getSupPhone() {
-        return supPhone;
+    public String getSupPhone(int i) {
+        return support[i].supPhone;
     }
 
-    public void setSupPhone(String in) {
-        this.supPhone = in;
+    public void setSupPhone(int i, String in) {
+        support[i].supPhone = in;
     }
 
-    public String getSupRelation() {
-        return supRelation;
+    public String getSupRelation(int i) {
+        return support[i].supRelation;
     }
 
-    public void setSupRelation(String in) {
-        this.supRelation = in;
+    public void setSupRelation(int i, String in) {
+        support[i].supRelation = in;
     }
 
-    public String getSupState() {
-        return supState;
+    public String getSupState(int i) {
+        return support[i].supState;
     }
 
-    public void setSupState(String in) {
-        this.supState = in;
+    public void setSupState(int i, String in) {
+        support[i].supState = in;
     }
 
     public void reset() {
-        this.facName = null;
-        this.facCode = null;
-        this.facCounty = null;
-        this.facState = null;
-        this.pid = null;
-        this.famName[0] = null;
-        this.famName[1] = null;
-        this.givenName[0] = null;
-        this.givenName[1] = null;
-        this.givenName[2] = null;
-        this.dob = null;
-        this.gender = null;
-        this.addr[0] = null;
-        this.addr[1] = null;
-        this.city = null;
-        this.county = null;
-        this.state = null;
-        this.phone[0] = null;
-        this.phone[1] = null;
-        this.phone[2] = null;
-        this.marStatus = null;
-        this.supFamName[0] = null;
-        this.supFamName[1] = null;
-        this.supGivenName[0] = null;
-        this.supGivenName[1] = null;
-        this.supGivenName[2] = null;
-        this.supRelation = null;
-        this.supAddr[0] = null;
-        this.supAddr[1] = null;
-        this.supCity = null;
-        this.supCounty = null;
-        this.supPhone = null;
-        this.supState = null;
+        facName = null;
+        facCode = null;
+        facCounty = null;
+        facState = null;
+        pid = null;
+        famName[0] = null;
+        famName[1] = null;
+        givenName[0] = null;
+        givenName[1] = null;
+        givenName[2] = null;
+        dob = null;
+        gender = null;
+        addr[0] = null;
+        addr[1] = null;
+        city = null;
+        county = null;
+        state = null;
+        phone[0] = null;
+        phone[1] = null;
+        phone[2] = null;
+        marStatus = null;
+        for (int i = 0; i < MAX_SUPPORTERS; i++) { 
+        	support[i] = new SupportData();
+        	support[i].supFamName[0] = null;
+        	support[i].supFamName[1] = null;
+        	support[i].supGivenName[0] = null;
+        	support[i].supGivenName[1] = null;
+        	support[i].supGivenName[2] = null;
+        	support[i].supRelation = null;
+        	support[i].supAddr[0] = null;
+        	support[i].supAddr[1] = null;
+        	support[i].supCity = null;
+        	support[i].supCounty = null;
+        	support[i].supPhone = null;
+        	support[i].supState = null;
+        }
     }
 
     public String printHeaderDelim(String delim) {
-        return((getFacName() == null ? "" : clean(getFacName())) + delim +
-        	   (getFacCode() == null ? "" : clean(getFacCode())) + delim +
-        	   (getFacCounty() == null ? "" : clean(getFacCounty())) + delim +
-        	   (getFacState() == null ? "" : clean(getFacState())) + delim +
-        	   (getPid() == null ? "" : clean(getPid())) + delim +
-        	   (getFamName(0) == null ? "" : clean(getFamName(0))) + delim +
-        	   (getFamName(1) == null ? "" : clean(getFamName(1))) + delim +
-        	   (getGivenName(0) == null ? "" : clean(getGivenName(0))) + delim +
-        	   (getGivenName(1) == null ? "" : clean(getGivenName(1))) + delim +
-        	   (getGivenName(2) == null ? "" : clean(getGivenName(2))) + delim +
-        	   (getDob() == null ? "" : clean(getDob())) + delim +
-        	   (getGender() == null ? "" : clean(getGender())) + delim +
-        	   (getAddr(0) == null ? "" : clean(getAddr(0))) + delim +
-        	   (getAddr(1) == null ? "" : clean(getAddr(1))) + delim +
-        	   (getCity() == null ? "" : clean(getCity())) + delim +
-        	   (getCounty() == null ? "" : clean(getCounty())) + delim +
-        	   (getState() == null ? "" : clean(getState())) + delim +
-        	   delim + // Address landmark/directions, not used in the header
-        	   (getPhone(0) == null ? "" : clean(getPhone(0))) + delim +
-        	   (getPhone(1) == null ? "" : clean(getPhone(1))) + delim +
-        	   (getPhone(2) == null ? "" : clean(getPhone(2))) + delim +
-        	   (getMarStatus() == null ? "" : clean(getMarStatus())) + delim +
-        	   delim + // Nearest health center, not used in the header
-        	   (getSupFamName(0) == null ? "" : clean(getSupFamName(0))) + delim +
-        	   (getSupFamName(1) == null ? "" : clean(getSupFamName(1))) + delim +
-        	   (getSupGivenName(0) == null ? "" : clean(getSupGivenName(0))) + delim +
-        	   (getSupGivenName(1) == null ? "" : clean(getSupGivenName(1))) + delim +
-        	   (getSupGivenName(2) == null ? "" : clean(getSupGivenName(2))) + delim +
-        	   (getSupRelation() == null ? "" : clean(getSupRelation())) + delim +
-        	   (getSupAddr(0) == null ? "" : clean(getSupAddr(0))) + delim +
-        	   (getSupAddr(1) == null ? "" : clean(getSupAddr(1))) + delim +
-        	   (getSupCity() == null ? "" : clean(getSupCity())) + delim +
-        	   (getSupCounty() == null ? "" : clean(getSupCounty())) + delim +
-        	   (getSupState() == null ? "" : clean(getSupState())) + delim +
-        	   (getSupPhone() == null ? "" : clean(getSupPhone())));
+    	String finalStr = "";
+        finalStr += (getFacName() == null ? "" : clean(getFacName())) + delim +
+        			(getFacCode() == null ? "" : clean(getFacCode())) + delim +
+        			(getFacCounty() == null ? "" : clean(getFacCounty())) + delim +
+        			(getFacState() == null ? "" : clean(getFacState())) + delim +
+        			(getPid() == null ? "" : clean(getPid())) + delim +
+        			(getFamName(0) == null ? "" : clean(getFamName(0))) + delim +
+        			(getFamName(1) == null ? "" : clean(getFamName(1))) + delim +
+        			(getGivenName(0) == null ? "" : clean(getGivenName(0))) + delim +
+        			(getGivenName(1) == null ? "" : clean(getGivenName(1))) + delim +
+        			(getGivenName(2) == null ? "" : clean(getGivenName(2))) + delim +
+        			(getDob() == null ? "" : clean(getDob())) + delim +
+        			(getGender() == null ? "" : clean(getGender())) + delim +
+        			(getAddr(0) == null ? "" : clean(getAddr(0))) + delim +
+        			(getAddr(1) == null ? "" : clean(getAddr(1))) + delim +
+        			(getCity() == null ? "" : clean(getCity())) + delim +
+        			(getCounty() == null ? "" : clean(getCounty())) + delim +
+        			(getState() == null ? "" : clean(getState())) + delim +
+        			delim + // Address landmark/directions, not used in the header
+        			(getPhone(0) == null ? "" : clean(getPhone(0))) + delim +
+        			(getPhone(1) == null ? "" : clean(getPhone(1))) + delim +
+        			(getPhone(2) == null ? "" : clean(getPhone(2))) + delim +
+        			(getMarStatus() == null ? "" : clean(getMarStatus())) + delim +
+        			delim; // Nearest health center, not used in the header
+        
+        for (int i = 0; i < MAX_SUPPORTERS; i++) {
+        	finalStr += (getSupFamName(i, 0) == null ? "" : clean(getSupFamName(i, 0))) + delim +
+        				(getSupFamName(i, 1) == null ? "" : clean(getSupFamName(i, 1))) + delim +
+        				(getSupGivenName(i, 0) == null ? "" : clean(getSupGivenName(i, 0))) + delim +
+        				(getSupGivenName(i, 1) == null ? "" : clean(getSupGivenName(i, 1))) + delim +
+        				(getSupGivenName(i, 2) == null ? "" : clean(getSupGivenName(i, 2))) + delim +
+        				(getSupRelation(i) == null ? "" : clean(getSupRelation(i))) + delim +
+        				(getSupAddr(i, 0) == null ? "" : clean(getSupAddr(i, 0))) + delim +
+        				(getSupAddr(i, 1) == null ? "" : clean(getSupAddr(i, 1))) + delim +
+        				(getSupCity(i) == null ? "" : clean(getSupCity(i))) + delim +
+        				(getSupCounty(i) == null ? "" : clean(getSupCounty(i))) + delim +
+        				(getSupState(i) == null ? "" : clean(getSupState(i))) + delim +
+        				(getSupPhone(i) == null ? "" : clean(getSupPhone(i)));
+        	if (i < MAX_SUPPORTERS - 1) finalStr += delim;
+        }
+        return (finalStr);
     }
 
 	private String clean(String in) {
-		return in.replaceAll("\n", " ").replaceAll("\t", " ");
+		return (in == null ? "" : in.replaceAll("\n", " ").replaceAll("\t", " "));
 	}
 }
