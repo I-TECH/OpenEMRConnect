@@ -57,3 +57,8 @@ loggingserver/oec.log.lck
 */*/QUEUEMANAGER_DATABASE/*
 reception/reception_database/*
 reception/*/reception_database/*
+
+# Eclipse 
+.project
+.classpath
+.settings/
