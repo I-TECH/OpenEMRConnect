@@ -23,7 +23,6 @@
 # Logs and databases #
 ######################
 *.log
-*.sql
 *.sqlite
 
 # OS generated files #
@@ -57,3 +56,4 @@ loggingserver/oec.log.lck
 */*/QUEUEMANAGER_DATABASE/*
 reception/reception_database/*
 reception/*/reception_database/*
+/cpad_companion/.settings/
