@@ -24,7 +24,6 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi.match;
 
-import com.griaule.grfingerjava.GrFingerJava;
 import com.griaule.grfingerjava.GrFingerJavaException;
 import com.griaule.grfingerjava.MatchingContext;
 import com.griaule.grfingerjava.Template;
@@ -57,23 +56,25 @@ public class FingerprintMatch implements Cloneable {
     private Template grTemplate = null;
     private MatchingContext grMatchingContext = null;
     private boolean nonSdkMatch;
-    static boolean grInitialized = false;
-    static boolean useFingerprintSdk = false;
+    static boolean grInitialized = true;
+    static boolean useFingerprintSdk = true;
 
     private synchronized static void init() {
         if (!grInitialized) {
             useFingerprintSdk = true;
             File directory = new File(".");
             String dirName = directory.getAbsolutePath();
-            GrFingerJava.setNativeLibrariesDirectory(directory);
+//            GrFingerJava.setNativeLibrariesDirectory(directory);
             long startTime, elapsedTime;
             try {
-                GrFingerJava.setLicenseDirectory(directory);
-            } catch (GrFingerJavaException ex) {
-                Logger.getLogger(FingerprintMatch.class.getName()).log(Level.WARNING,
-                        "Griaule license not found or not valid -- fingerprinting will not be used.", ex);
-                useFingerprintSdk = false;
-            } catch (IllegalArgumentException ex) {
+//                GrFingerJava.setLicenseDirectory(directory);
+            } 
+//            catch (GrFingerJavaException ex) {
+//                Logger.getLogger(FingerprintMatch.class.getName()).log(Level.WARNING,
+//                        "Griaule license not found or not valid -- fingerprinting will not be used.", ex);
+//                useFingerprintSdk = false;
+//            } 
+            catch (IllegalArgumentException ex) {
                 Logger.getLogger(FingerprintMatch.class.getName()).log(Level.WARNING,
                         "Griaule license not found or not valid -- fingerprinting will not be used.", ex);
                 useFingerprintSdk = false;
@@ -140,7 +141,7 @@ public class FingerprintMatch implements Cloneable {
     }
 
     /**
-     * Prepares a fingerprit to be matched as a search term. Note that
+     * Prepares a fingerprint to be matched as a search term. Note that
      * the comparison between a search term fingerprint and a database
      * fingerprint is not symmetric. The search term fingerprint requires
      * extra preparation. This method does that extra preparation.
@@ -157,6 +158,22 @@ public class FingerprintMatch implements Cloneable {
             }
             try {
                 grMatchingContext.prepareForIdentification(grTemplate);
+            } catch (GrFingerJavaException ex) {
+                Logger.getLogger(FingerprintMatch.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(FingerprintMatch.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    /**
+     * Destroys this fingerprint context, releasing any resources.
+     * After a call to destroy(), this template may not be used again.
+     */
+    public void destroy() {
+        if (useFingerprintSdk) {
+            try {
+                grMatchingContext.destroy();
             } catch (GrFingerJavaException ex) {
                 Logger.getLogger(FingerprintMatch.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {
@@ -191,22 +208,24 @@ public class FingerprintMatch implements Cloneable {
     /**
      * Returns the score from the most recent match operation.
      * 
-     * @return the score from the most recent match operation.
+     * @return the score from the most recent match operation,
+     * as a double floating point value between 0 and 1, where 0 means
+     * no match and 1 means a "perfect" match.
      */
-    public int score() {
-        int score = 0;
+    public double score() {
+        int grScore = 0;
         if (useFingerprintSdk) {
             try {
-                score = grMatchingContext.getScore();
+                grScore = grMatchingContext.getScore();
             } catch (GrFingerJavaException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (score > 100) {
-                score = 100;
+            if (grScore > 100) {
+                grScore = 100;
             }
         } else if (nonSdkMatch) {
-            score = 100;
+            grScore = 100;
         }
-        return score;
+        return grScore / 100.0;
     }
 }

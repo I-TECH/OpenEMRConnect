@@ -24,160 +24,107 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.reception.controller;
 
-import ke.go.moh.oec.reception.data.RequestParameters;
 import ke.go.moh.oec.reception.data.RequestResult;
-import ke.go.moh.oec.reception.data.ExtendedRequestParameters;
-import ke.go.moh.oec.reception.data.BasicRequestParameters;
 import java.util.ArrayList;
 import java.util.List;
-import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
-import ke.go.moh.oec.PersonIdentifier;
-import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
-import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
-import ke.go.moh.oec.reception.data.ComprehensiveRequestParameters;
 
 /**
- *
+ * The RequestDispatchingThread is responsible for asynchronously forwarding 
+ * client requests to servers.
+ * <p>
+ * One instance of this class should be started for each unique client request.
+ * 
  * @author Gitahi Ng'ang'a
  */
-public class RequestDispatchingThread extends Thread {
+final class RequestDispatchingThread extends Thread {
 
+    /**
+     * The Mediator instance used to satisfy a client request
+     */
     private final Mediator mediator;
-    private final RequestParameters requestParameters;
+    /**
+     * The {@link RequestTypeId} for the request to be dispatched.
+     */
     private final int requestTypeId;
+    /**
+     * The {@link PersonWrapper} object containing data for the request to be
+     * dispatched.
+     */
+    private final Object requestData;
+    /**
+     * The {@link RequestResult} object to contain the response data for the 
+     * request to be dispatched.
+     */
     private RequestResult requestResult;
+    /**
+     * A variable signaling whether a server response should be awaited. It is
+     * always true if {@link  RequestDispatchingThread#requestResult} is not null
+     * and false otherwise.
+     */
+    private final boolean waitForResponse;
 
-    public RequestDispatchingThread(Mediator mediator, RequestParameters requestParameters,
-            int requestTypeId, RequestResult requestResult) {
+    /**
+     * This constructor is used when a synchronous server response is expected for 
+     * the request to be dispatched. 
+     * 
+     * A server response will only be awaited if the value of 
+     * {@link  RequestDispatchingThread#requestResult} is not null.
+     * 
+     * @param mediator Mediator to be used to satisfy this request
+     * @param requestTypeId {@link RequestTypeId} of the request to be dispatched
+     * @param requestData Object containing request data
+     * @param requestResult Object to contain response data
+     */
+    RequestDispatchingThread(Mediator mediator, int requestTypeId,
+            Object requestData, RequestResult requestResult) {
         this.mediator = mediator;
-        this.requestParameters = requestParameters;
         this.requestTypeId = requestTypeId;
+        this.requestData = requestData;
         this.requestResult = requestResult;
+        waitForResponse = (requestResult != null);
     }
 
+    /**
+     * This constructor is used when no server response is expected for the 
+     * request to be dispatched.  It always sets the value of 
+     * {@link RequestDispatchingThread#waitForResponse} to false.
+     * 
+     * @param mediator Mediator to be used to satisfy this request
+     * @param requestTypeId {@link RequestTypeId} of the request to be dispatched
+     * @param requestData Object containing request data
+     */
+    RequestDispatchingThread(Mediator mediator, int requestTypeId,
+            Object requestData) {
+        this.mediator = mediator;
+        this.requestTypeId = requestTypeId;
+        this.requestData = requestData;
+        waitForResponse = (requestResult != null);
+    }
+
+    /**
+     * Asynchronously forwards a request to a server. If {@link RequestDispatchingThread#requestResult}
+     * is not null, a response will be awaited. Otherwise the method will return immediately.
+     */
     @Override
     public void run() {
-        switch (requestTypeId) {
-            case RequestTypeId.FIND_PERSON_MPI:
-                findCandidates(requestParameters, requestTypeId);
-                break;
-            case RequestTypeId.FIND_PERSON_LPI:
-                findCandidates(requestParameters, requestTypeId);
-                break;
-            default:
-                //TODO: Add code to handle unspecified request types
-                throw new AssertionError();
-        }
-    }
-
-    private void findCandidates(RequestParameters searchParameters, int requestTypeId) {
-        PersonRequest personRequest = new PersonRequest();
-        Person person = new Person();
-        PersonResponse personResponse = null;
-        if (searchParameters.getClass() == BasicRequestParameters.class) {
-            BasicRequestParameters basicSearchParameters = (BasicRequestParameters) searchParameters;
-            String clinicId = basicSearchParameters.getClinicId();
-            if (clinicId != null && !clinicId.isEmpty()) {
-                PersonIdentifier personIdentifier = new PersonIdentifier();
-                List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-                PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
-                if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
-                    clinicId = Session.prependClinicCode(clinicId);
+        if (waitForResponse) {
+            PersonResponse personResponse = (PersonResponse) mediator.getData(requestTypeId, requestData);
+            if (personResponse != null) {
+                if (personResponse.isSuccessful()) {
+                    List<Person> personList = personResponse.getPersonList();
+                    if (personList != null) {
+                        requestResult.setData(personList);
+                    } else {
+                        requestResult.setData(new ArrayList<Person>());
+                    }
+                    requestResult.setSuccessful(true);
                 }
-                personIdentifier.setIdentifierType(clinicIdType);
-                personIdentifier.setIdentifier(clinicId);
-                personIdentifierList.add(personIdentifier);
-                person.setPersonIdentifierList(personIdentifierList);
-            }
-            if (basicSearchParameters.getFingerprint() != null) {
-                List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
-                fingerprintList.add(basicSearchParameters.getFingerprint());
-                person.setFingerprintList(fingerprintList);
-            }
-            person.setSiteName(basicSearchParameters.getClinicName());
-        } else if (searchParameters.getClass() == ExtendedRequestParameters.class) {
-            ExtendedRequestParameters extendedSearchParameters = (ExtendedRequestParameters) searchParameters;
-            String clinicId = extendedSearchParameters.getBasicRequestParameters().getClinicId();
-            if (clinicId != null && !clinicId.isEmpty()) {
-                PersonIdentifier personIdentifier = new PersonIdentifier();
-                List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-                PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
-                if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
-                    clinicId = Session.prependClinicCode(clinicId);
-                }
-                personIdentifier.setIdentifierType(clinicIdType);
-                personIdentifier.setIdentifier(clinicId);
-                personIdentifierList.add(personIdentifier);
-                person.setPersonIdentifierList(personIdentifierList);
-            }
-            if (extendedSearchParameters.getBasicRequestParameters().getFingerprint() != null) {
-                List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
-                fingerprintList.add(extendedSearchParameters.getBasicRequestParameters().getFingerprint());
-                person.setFingerprintList(fingerprintList);
-            }
-            person.setFirstName(extendedSearchParameters.getFirstName());
-            person.setMiddleName(extendedSearchParameters.getMiddleName());
-            person.setLastName(extendedSearchParameters.getLastName());
-            person.setSex(extendedSearchParameters.getSex());
-            person.setBirthdate(extendedSearchParameters.getBirthdate());
-            person.setVillageName(extendedSearchParameters.getVillageName());
-            person.setSiteName(extendedSearchParameters.getBasicRequestParameters().getClinicName());
-        } else if (searchParameters.getClass() == ComprehensiveRequestParameters.class) {
-            ComprehensiveRequestParameters comprehensiveRequestParameters = (ComprehensiveRequestParameters) searchParameters;
-            String clinicId = comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getClinicId();
-            if (clinicId != null && !clinicId.isEmpty()) {
-                PersonIdentifier personIdentifier = new PersonIdentifier();
-                List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-                PersonIdentifier.Type clinicIdType = Session.deducePersonIdentifierType(clinicId);
-                if (clinicIdType == PersonIdentifier.Type.cccLocalId) {
-                    clinicId = Session.prependClinicCode(clinicId);
-                }
-                personIdentifier.setIdentifierType(clinicIdType);
-                personIdentifier.setIdentifier(clinicId);
-                personIdentifierList.add(personIdentifier);
-                person.setPersonIdentifierList(personIdentifierList);
-            }
-            if (comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprint() != null) {
-                List<Fingerprint> fingerprintList = new ArrayList<Fingerprint>();
-                fingerprintList.add(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getFingerprint());
-                person.setFingerprintList(fingerprintList);
-            }
-            person.setFirstName(comprehensiveRequestParameters.getExtendedRequestParameters().getFirstName());
-            person.setMiddleName(comprehensiveRequestParameters.getExtendedRequestParameters().getMiddleName());
-            person.setLastName(comprehensiveRequestParameters.getExtendedRequestParameters().getLastName());
-            person.setSex(comprehensiveRequestParameters.getExtendedRequestParameters().getSex());
-            person.setBirthdate(comprehensiveRequestParameters.getExtendedRequestParameters().getBirthdate());
-            person.setVillageName(comprehensiveRequestParameters.getExtendedRequestParameters().getVillageName());
-            person.setMaritalStatus(comprehensiveRequestParameters.getMaritalStatus());
-            person.setFathersFirstName(comprehensiveRequestParameters.getFathersFirstName());
-            person.setFathersMiddleName(comprehensiveRequestParameters.getFathersMiddleName());
-            person.setFathersLastName(comprehensiveRequestParameters.getFathersLastName());
-            person.setMothersFirstName(comprehensiveRequestParameters.getMothersFirstName());
-            person.setMothersMiddleName(comprehensiveRequestParameters.getMothersMiddleName());
-            person.setMothersLastName(comprehensiveRequestParameters.getMothersLastName());
-            person.setCompoundHeadFirstName(comprehensiveRequestParameters.getCompoundHeadsFirstName());
-            person.setCompoundHeadMiddleName(comprehensiveRequestParameters.getCompoundHeadsMiddleName());
-            person.setCompoundHeadLastName(comprehensiveRequestParameters.getCompoundHeadsLastName());
-            person.setSiteName(comprehensiveRequestParameters.getExtendedRequestParameters().getBasicRequestParameters().getClinicName());
-        }
-        personRequest.setPerson(person);
-        personResponse = (PersonResponse) mediator.getData(requestTypeId, personRequest);
-        if (personResponse != null) {
-            if (personResponse.isSuccessful()) {
-                List<Person> personList = personResponse.getPersonList();
-                if (personList != null) {
-                    requestResult.setData(personList);
-                } else {
-                    requestResult.setData(new ArrayList<Person>());
-                }
-            } else {
-                requestResult.setSuccessful(false);
             }
         } else {
-            requestResult.setSuccessful(false);
+            mediator.getData(requestTypeId, requestData);
         }
     }
 }

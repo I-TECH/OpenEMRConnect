@@ -38,9 +38,11 @@ public class Fingerprint {
         leftIndexFinger,
         leftMiddleFinger,
         leftRingFinger,
+        leftLittleFinger, // Not allowed, but some HDSS data has it.
         rightIndexFinger,
         rightMiddleFinger,
-        rightRingFinger
+        rightRingFinger,
+        rightLittleFinger // Not allowed, but some HDSS data has it.
     }
 
     public enum TechnologyType {

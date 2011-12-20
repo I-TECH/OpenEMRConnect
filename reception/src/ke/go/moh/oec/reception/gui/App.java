@@ -1,9 +1,10 @@
 /*
  * App.java
  */
-
 package ke.go.moh.oec.reception.gui;
 
+import javax.swing.JOptionPane;
+import ke.go.moh.oec.reception.controller.OECReception;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
@@ -14,9 +15,16 @@ public class App extends SingleFrameApplication {
 
     /**
      * At startup create and show the main frame of the application.
-     */ 
-    @Override protected void startup() {
-        show(new MainView(this));
+     */
+    @Override
+    protected void startup() {
+        try {
+            show(new LoginDialog(null, true, this));
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Application malfunction! " + ex.getMessage() 
+                    + ". Please contact your administrator.", OECReception.applicationName(), JOptionPane.WARNING_MESSAGE);
+            System.exit(1);
+        }
     }
 
     /**
@@ -24,7 +32,8 @@ public class App extends SingleFrameApplication {
      * Windows shown in our application come fully initialized from the GUI
      * builder, so this additional configuration is not needed.
      */
-    @Override protected void configureWindow(java.awt.Window root) {
+    @Override
+    protected void configureWindow(java.awt.Window root) {
     }
 
     /**
@@ -41,4 +50,6 @@ public class App extends SingleFrameApplication {
     public static void main(String[] args) {
         launch(App.class, args);
     }
+    
+    
 }

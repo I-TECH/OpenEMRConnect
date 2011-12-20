@@ -68,6 +68,7 @@ public class PersonIdentifierList {
                 pi.setIdentifierType(pit);
                 personIdentifierList.add(pi);
             }
+            Sql.close(rs);
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
@@ -75,41 +76,94 @@ public class PersonIdentifierList {
         return personIdentifierList;
     }
 
-    public static List<PersonIdentifier> update(Connection conn, int personId, List<PersonIdentifier> newList, List<PersonIdentifier> oldList) {
-        boolean newEntries = (newList != null && newList.size() > 0);
-        boolean oldEntries = (oldList != null && oldList.size() > 0);
-        if (newEntries) {
+    /**
+     * Updates the list of person identifiers for a given person.
+     * <p>
+     * The agent doing the updating may be concerned with only one or more types
+     * of person identifiers. So the update that takes place depends on the type(s) of
+     * identifiers supplied. For any type of identifier supplied in the update,
+     * all existing identifiers of that type are removed, and the new identifier(s)
+     * of that type are inserted.
+     * <p>
+     * If the client wishes to remove all identifiers of a certain type, it should
+     * do an update with a null or empty identifier of that type. In this case,
+     * all existing identifiers of that type will be removed, and the new
+     * null or empty identifier will not be added.
+     * <p>
+     * If the client wishes to replace an identifier of type cccUniqueId or cccLocalId
+     * for a particular clinic, the client should specify one or more IDs of that
+     * type with the given 5-digit clinic code. Only old IDs with the same clinic id
+     * will be replaced by the new identifier(s).
+     * <p>
+     * If the client wishes to remove an identifier of type cccUniqueId or cccLocalId
+     * for a particular clinic, the client should specify an IDs of that
+     * type with the given 5-digit clinic code, but with nothing following the clinic
+     * code. Any existing identifiers of that type with that clinic code will be
+     * removed, and no new clinic IDs of that type for that clinic will be added.
+     * 
+     * @param conn database connection to use
+     * @param personId database person.person_id primary key value
+     * @param updateList list of PersonIdentifiers specified for update
+     * @param piList existing list of PersonIdentifiers for the person
+     * @return updated list of PersonIdentifiers for the person
+     */
+    public static List<PersonIdentifier> update(Connection conn, int personId, List<PersonIdentifier> updateList, List<PersonIdentifier> piList) {
+        if (updateList != null && updateList.size() > 0) { // Do we have anything to update?
+            List<PersonIdentifier> deleteList = new ArrayList<PersonIdentifier>(); // What person identifiers should we delete?
+            List<PersonIdentifier> addList = new ArrayList<PersonIdentifier>(); // What person identifiers should we add?
             String sql;
-            List<PersonIdentifier> deleteList = new ArrayList<PersonIdentifier>();
-            for (PersonIdentifier newP : newList) {
+            for (PersonIdentifier newP : updateList) { // Go through all the identifiers on the update list:
                 PersonIdentifier.Type piType = newP.getIdentifierType();
                 String id = newP.getIdentifier();
-                String dbType = ValueMap.FINGERPRINT_TYPE.getDb().get(piType);
-                for (PersonIdentifier oldP : oldList) {
-                    if (oldP.getIdentifierType() == piType) {
-                        String oldId = oldP.getIdentifier();
-                        if ((piType != PersonIdentifier.Type.cccLocalId && piType != PersonIdentifier.Type.cccLocalId)
-                                || (id.substring(0, 4).equals(oldId.substring(0, 4)))) {
-                            deleteList.add(oldP);
-                            sql = "DELETE FROM person_identifier "
-                                    + " WHERE person_id = " + personId
-                                    + " AND identifier_type = " + dbType
-                                    + " AND identifier = " + Sql.quote(oldId);
-                            Sql.execute(conn, sql);
+                String dbType = ValueMap.PERSON_IDENTIFIER_TYPE.getDb().get(piType);
+                boolean idExists = false; // Does the new ID exist in the current list?
+                if (piList != null) { // Might we have any existing identifiers to delete?
+                    for (PersonIdentifier oldP : piList) {
+                        if (oldP.getIdentifierType() == piType) {
+                            String existingId = oldP.getIdentifier();
+                            if (existingId.equals(id)) {
+                                idExists = true; // Existing ID matches new ID -- don't need to delete or add.
+                            } else if ((piType != PersonIdentifier.Type.cccLocalId && piType != PersonIdentifier.Type.cccUniqueId)
+                                    || (id != null && id.substring(0, 5).equals(existingId.substring(0, 5)))) {
+                                deleteList.add(oldP);
+                            }
                         }
                     }
                 }
-                sql = "INSERT INTO person_identifier (person_id, identifier_type, identifier) values ("
-                        + personId + ", " + dbType + ", " + Sql.quote(id) + ")";
-                Sql.execute(conn, sql);
+                if (id != null && !id.isEmpty() && !idExists) { // If have a new identifier (and not already existing), then add it.
+                    // Make sure we don't add a clinic ID of the form '12345' or '12345-'
+                    // If this form is specified, it is a spacial request to delete any IDs from this clinic
+                    // but to not add a new ID for this clinic. (See the JavaDoc for this method, above.)
+                    if (!((piType == PersonIdentifier.Type.cccLocalId || piType == PersonIdentifier.Type.cccUniqueId)
+                            && id.length() <= 6)) {
+                        addList.add(newP);
+                    }
+                }
             }
-            oldList.removeAll(deleteList);
-        } else {
-            newList = new ArrayList<PersonIdentifier>();
+            if (!deleteList.isEmpty()) { // Do we have any identifiers to delete from the database / remove from memory?
+                for (PersonIdentifier pi : deleteList) {
+                    String dbType = ValueMap.PERSON_IDENTIFIER_TYPE.getDb().get(pi.getIdentifierType());
+                    sql = "DELETE FROM person_identifier "
+                            + " WHERE person_id = " + personId
+                            + " AND identifier_type_id = " + dbType
+                            + " AND identifier = " + Sql.quote(pi.getIdentifier());
+                    Sql.execute(conn, sql);
+                }
+                piList.removeAll(deleteList);
+            }
+            if (!addList.isEmpty()) { // Do we have anything to insert into the database / add to memory?
+                for (PersonIdentifier pi : addList) {
+                    String dbType = ValueMap.PERSON_IDENTIFIER_TYPE.getDb().get(pi.getIdentifierType());
+                    sql = "INSERT INTO person_identifier (person_id, identifier_type_id, identifier) values ("
+                            + personId + ", " + dbType + ", " + Sql.quote(pi.getIdentifier()) + ")";
+                    Sql.execute(conn, sql);
+                }
+                if (piList == null) {
+                    piList = new ArrayList<PersonIdentifier>();
+                }
+                piList.addAll(addList);
+            }
         }
-        if (oldEntries) {
-            newList.addAll(oldList);
-        }
-        return newList;
+        return piList;
     }
 }

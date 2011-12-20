@@ -38,14 +38,8 @@ import com.griaule.grfingerjava.IStatusEventListener;
 import com.griaule.grfingerjava.MatchingContext;
 import com.griaule.grfingerjava.Template;
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-import javax.imageio.spi.ImageWriterSpi;
-import javax.imageio.stream.ImageOutputStream;
-import ke.go.moh.oec.reception.gui.FingerprintDialog;
 
 /**
  *
@@ -54,46 +48,12 @@ import ke.go.moh.oec.reception.gui.FingerprintDialog;
 public class ReaderManager implements IStatusEventListener, IFingerEventListener, IImageEventListener {
 
     private MatchingContext matchingContext;
-    private FingerprintDialog fingerprintDialog;
-    private boolean autoExtract = true;
-    private boolean autoIdentify = false;
-    private FingerprintImage fingerprintImage;
+    private FingerprintingComponent fingerprintingComponent;
     private Template template;
 
-    public ReaderManager(FingerprintDialog fingerprintDialog) throws ClassNotFoundException, GrFingerJavaException {
-        this.fingerprintDialog = fingerprintDialog;
+    public ReaderManager(FingerprintingComponent fingerprintingComponent) throws GrFingerJavaException {
+        this.fingerprintingComponent = fingerprintingComponent;
         initialize();
-    }
-
-    public ReaderManager(FingerprintDialog fingerprintDialog, boolean autoExtract, boolean autoIdentify) throws ClassNotFoundException, GrFingerJavaException {
-        this.fingerprintDialog = fingerprintDialog;
-        initialize();
-        this.autoExtract = autoExtract;
-        this.autoIdentify = autoIdentify;
-    }
-
-    public boolean isAutoExtract() {
-        return autoExtract;
-    }
-
-    public void setAutoExtract(boolean autoExtract) {
-        this.autoExtract = autoExtract;
-    }
-
-    public boolean isAutoIdentify() {
-        return autoIdentify;
-    }
-
-    public void setAutoIdentify(boolean autoIdentify) {
-        this.autoIdentify = autoIdentify;
-    }
-
-    public FingerprintImage getFingerprintImage() {
-        return fingerprintImage;
-    }
-
-    public void setFingerprintImage(FingerprintImage fingerprintImage) {
-        this.fingerprintImage = fingerprintImage;
     }
 
     public Template getTemplate() {
@@ -107,51 +67,51 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
     private void initialize() throws GrFingerJavaException {
         try {
             matchingContext = new MatchingContext();
+            GrFingerJava.installLicense("ZMFAG-PKWUK-CABDA-KSDJF");
+            //TODO: Investigate why this line sometimes hangs
             GrFingerJava.initializeCapture(this);
-            fingerprintDialog.log("Reader initialized!");
+            fingerprintingComponent.log("Waiting for device.");
         } catch (GrFingerJavaException ex) {
-            fingerprintDialog.log(ex.getMessage());
+            fingerprintingComponent.log(ex.getMessage());
             throw ex;
         }
     }
 
     public void destroy() throws GrFingerJavaException {
+        //TODO: Investigate why this line sometimes hangs
         GrFingerJava.finalizeCapture();
+        fingerprintingComponent.log("Disconnected from device.");
     }
 
     public void onSensorPlug(String sensorId) {
         try {
-            fingerprintDialog.log(sensorId + " plugged.");
+            fingerprintingComponent.log(sensorId + " plugged.");
             GrFingerJava.startCapture(sensorId, this, this);
         } catch (GrFingerJavaException ex) {
-            fingerprintDialog.log(ex.getMessage());
+            fingerprintingComponent.log(ex.getMessage());
         }
     }
 
     public void onSensorUnplug(String sensorId) {
         try {
-            fingerprintDialog.log(sensorId + " unplugged.");
+            fingerprintingComponent.log(sensorId + " unplugged.");
             GrFingerJava.stopCapture(sensorId);
         } catch (GrFingerJavaException ex) {
-            fingerprintDialog.log(ex.getMessage());
+            fingerprintingComponent.log(ex.getMessage());
         }
     }
 
     public void onFingerDown(String string) {
-        fingerprintDialog.log("Finger placed.");
+        fingerprintingComponent.log("Finger placed.");
     }
 
     public void onFingerUp(String string) {
-        fingerprintDialog.log("Finger removed.");
+        fingerprintingComponent.log("Finger removed.");
     }
 
     public void onImageAcquired(String sensorId, FingerprintImage fingerprintImage) {
-        fingerprintDialog.log("Image Captured!");
-        this.fingerprintImage = fingerprintImage;
-        fingerprintDialog.showImage(fingerprintImage);
-        if (autoExtract) {
-            extract();
-        }
+        fingerprintingComponent.log("Image Captured!");
+        extract(fingerprintImage);
     }
 
     public String getFingerprintSDKVersion() throws GrFingerJavaException {
@@ -159,40 +119,26 @@ public class ReaderManager implements IStatusEventListener, IFingerEventListener
                 + "License type is '" + (GrFingerJava.getLicenseType() == GrFingerJava.GRFINGER_JAVA_FULL ? "Identification" : "Verification") + "'.";
     }
 
-    public void saveImageToFile(File file, ImageWriterSpi spi) {
+    private void extract(FingerprintImage fingerprintImage) {
         try {
-            ImageWriter writer = spi.createWriterInstance();
-            ImageOutputStream output = ImageIO.createImageOutputStream(file);
-            writer.setOutput(output);
-            writer.write(fingerprintImage);
-            output.close();
-            writer.dispose();
-        } catch (IOException e) {
-            fingerprintDialog.log(e.toString());
+            template = matchingContext.extract(fingerprintImage);
+            fingerprintingComponent.showQuality(template.getQuality());
+            fingerprintingComponent.showImage(fingerprintImage);
+        } catch (GrFingerJavaException e) {
+            fingerprintingComponent.log(e.getMessage());
         }
     }
 
-    public void extract() {
-
+    public boolean identify(Template template) {
+        boolean match = false;
         try {
-            template = matchingContext.extract(fingerprintImage);
-            String message = "";
-            switch (template.getQuality()) {
-                case Template.HIGH_QUALITY:
-                    message = "High quality.";
-                    break;
-                case Template.MEDIUM_QUALITY:
-                    message = "Medium quality.";
-                    break;
-                case Template.LOW_QUALITY:
-                    message = "Low quality.";
-                    break;
-            }
-            fingerprintDialog.showQuality(message);
-            fingerprintDialog.showImage(GrFingerJava.getBiometricImage(template, fingerprintImage));
-        } catch (GrFingerJavaException e) {
-            fingerprintDialog.log(e.getMessage());
+            match = matchingContext.identify(template);
+        } catch (GrFingerJavaException ex) {
+            Logger.getLogger(ReaderManager.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalArgumentException ex) {
+            Logger.getLogger(ReaderManager.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return match;
     }
 
     public static void setFingerprintSDKNativeDirectory(String nativeDirectory) {

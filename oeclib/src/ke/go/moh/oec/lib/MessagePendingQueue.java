@@ -42,8 +42,7 @@ import java.util.List;
  */
 final class MessagePendingQueue implements Runnable {
 
-    private final int MESSAGE_TIMEOUT_SECONDS = 20;
-    // TODO: Make this an optional property.
+    private int replyTimeoutSeconds = 0;
 
     class Entry {
 
@@ -54,6 +53,17 @@ final class MessagePendingQueue implements Runnable {
     private List<Entry> queue = new ArrayList<Entry>();
     private Thread timeoutThread = null;
     private long nextTimeout = 0;
+
+    private int getReplyTimeoutSeconds() {
+        if (replyTimeoutSeconds == 0) {
+            replyTimeoutSeconds = 20; // Default message reply timeout in seconds
+            String replyTimeoutString = Mediator.getProperty("Reply.Timeout");
+            if (replyTimeoutString != null) {
+                replyTimeoutSeconds = Integer.parseInt(replyTimeoutString);
+            }
+        }
+        return replyTimeoutSeconds;
+    }
 
     /**
      * Sleeps until the timeout arrives for the first pending message in the
@@ -146,7 +156,7 @@ final class MessagePendingQueue implements Runnable {
         Entry e = new Entry();
         e.request = request;
         e.response = null;
-        e.timeout = System.currentTimeMillis() + MESSAGE_TIMEOUT_SECONDS * 1000;
+        e.timeout = System.currentTimeMillis() + getReplyTimeoutSeconds() * 1000;
         queue.add(e);
         return e;
     }

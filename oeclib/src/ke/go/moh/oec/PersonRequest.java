@@ -50,6 +50,20 @@ public class PersonRequest {
      */
     private String requestReference;
     /**
+     * Address of the source this request came from.
+     * Used when the library delivers a request to a server.
+     * Not meaningful in the context of a client giving a request to the
+     * OEC library for sending.
+     */
+    private String sourceAddress;
+    /**
+     * Name of the source this request came from.
+     * Used when the library delivers a request to a server.
+     * Not meaningful in the context of a client giving a request to the
+     * OEC library for sending.
+     */
+    private String sourceName;
+    /**
      * Address of the destination to send this request to. In most cases
      * this is null because the OEC library will determine the request
      * destination address based on the request type. However in the
@@ -78,7 +92,24 @@ public class PersonRequest {
     /**
      * Does the caller want a response to this message?
      * This applies to createPerson and modifyPerson requests,
-     * where the response is optional. Default is false.
+     * where the response is optional.
+     * <p>
+     * For example, the CREATE_PERSON_... and MODIFY_PERSON_... requests
+     * by default do not generate a response. When used by the reception
+     * program, these methods are stored and forwarded until they reach
+     * the MPI or LPI, at which time they are acted upon. The reception
+     * program does not need any response to these messages, because it
+     * would not affect the reception program workflow to receive
+     * confirmation of success or failure of the message. Since they are
+     * stored and forwarded, the reception program may have already
+     * moved on to other work (or exited) by the time the MPI or LPI
+     * operation is complete.
+     * <p>
+     * By contrast, the HDSS companion may want to CREATE or MODIFY
+     * an entry in the MPI, and wait for a response as to whether the
+     * operation has completed. Once it has completed, the HDSS companion
+     * will know that the entry has been processed, and can note this
+     * in its own data store as appropriate.
      */
     private boolean responseRequested = false;
     /**
@@ -87,6 +118,11 @@ public class PersonRequest {
      * This can be used to deliver the message to a destination in raw, XML form.
      * It may also be used to send a pre-formatted XML message to a destination.
      * Otherwise this value is not used.
+     * <p>
+     * For example, the Clinical Document Store (CDS) may wish to access a message
+     * in its original XML form and store it in a database for later use.
+     * Then it may retrieve this XML-formatted message from the database
+     * and send it to a destination.
      */
     private String xml;
 
@@ -136,6 +172,22 @@ public class PersonRequest {
 
     public void setResponseRequested(boolean responseRequested) {
         this.responseRequested = responseRequested;
+    }
+
+    public String getSourceAddress() {
+        return sourceAddress;
+    }
+
+    public void setSourceAddress(String sourceAddress) {
+        this.sourceAddress = sourceAddress;
+    }
+
+    public String getSourceName() {
+        return sourceName;
+    }
+
+    public void setSourceName(String sourceName) {
+        this.sourceName = sourceName;
     }
 
     public String getXml() {

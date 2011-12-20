@@ -46,7 +46,7 @@ class MessageType {
         modifyPersonAccepted,
         logEntry,
         getWork,
-        workDone,
+        workDone, //TODO: See if these are the same?
         reassignWork
     }
     /** RequestTypeId of the request message, or 0 if this message is only used as a response. */

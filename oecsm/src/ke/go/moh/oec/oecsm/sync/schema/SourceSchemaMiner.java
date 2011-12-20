@@ -28,7 +28,6 @@ import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import ke.go.moh.oec.oecsm.daemon.Daemon;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Database;
 import ke.go.moh.oec.oecsm.data.Table;
@@ -52,7 +51,7 @@ public class SourceSchemaMiner extends DatabaseConnector {
             db = new Database(database);
             populateTableList(db);
         } finally {
-            disconnect();
+            disconnectFromSource();
         }
         return db;
     }

@@ -21,14 +21,6 @@
                 <clean-target>clean</clean-target>
                 <id>jar</id>
             </reference>
-            <reference>
-                <foreign-project>oeclib-1</foreign-project>
-                <artifact-type>jar</artifact-type>
-                <script>build.xml</script>
-                <target>jar</target>
-                <clean-target>clean</clean-target>
-                <id>jar</id>
-            </reference>
         </references>
         <swingapp xmlns="http://www.netbeans.org/ns/form-swingapp/1">
             <application-class name="ke.go.moh.oec.reception.gui.App"/>

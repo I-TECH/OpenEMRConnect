@@ -163,7 +163,12 @@ class XmlPacker {
         } catch (TransformerException ex) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return stringWriter.toString();
+        String returnString = stringWriter.toString();
+        try {
+            stringWriter.close();
+        } catch (IOException ex) {
+        }
+        return returnString;
     }
 
     /**
@@ -183,22 +188,24 @@ class XmlPacker {
                 doc = packFindPersonResponseMessage(m);
                 break;
 
-            case createPerson: // Uses packGenericPersonMessage(), below.
-            case modifyPerson: // Uses packGenericPersonMessage(), below.
-            case createPersonAccepted: // Uses packGenericPersonMessage(), below.
-            case modifyPersonAccepted: // Uses packGenericPersonMessage(), below.
+            case createPerson: // Uses packGenericPersonRequestMessage(), below.
+            case modifyPerson: // Uses packGenericPersonRequestMessage(), below.
             case notifyPersonChanged:
-                doc = packGenericPersonMessage(m);
+                doc = packGenericPersonRequestMessage(m);
+                break;
+
+            case createPersonAccepted: // Uses packGenericPersonResponseMessage(), below.
+            case modifyPersonAccepted:
+                doc = packGenericPersonResponseMessage(m);
                 break;
 
             case logEntry:
                 doc = packLogEntryMessage(m);
                 break;
-            /** added on 19th may, 2011
-            To handle work_message */
-            case getWork: // Uses packWorkMessage(m)
-            case workDone: // Uses packWorkMessage(m)
-            case reassignWork://Uses packWorkMessage(m)
+
+            case getWork:   // Uses packWorkMessage(), below.
+            case workDone:  // Uses packWorkMessage(), below.
+            case reassignWork:
                 doc = packWorkMessage(m);
                 break;
         }
@@ -206,7 +213,7 @@ class XmlPacker {
     }
 
     /**
-     * Packs a generic HL7 person-related message into a <code>Document</code>.
+     * Packs a generic HL7 PersonRequest message into a <code>Document</code>.
      * <p>
      * Several of the HL7 person-related messages use the same formatting
      * rules, even though the templates differ. (The templates differ only
@@ -215,30 +222,69 @@ class XmlPacker {
      * <p>
      * CREATE PERSON <br>
      * MODIFY PERSON <br>
-     * CREATE PERSON ACCEPTED <br>
-     * MODIFY PERSON ACCEPTED <br>
      * NOTIFY PERSON CHANGED
      *
      * @param m notification message contents to pack
      * @return packed notification messages
      */
-    private Document packGenericPersonMessage(Message m) {
+    private Document packGenericPersonRequestMessage(Message m) {
         Document doc = packTemplate(m);
         Element root = doc.getDocumentElement();
         packHl7Header(root, m);
         Element personNode = (Element) root.getElementsByTagName("patient").item(0);
-        if (!(m.getData() instanceof PersonRequest)) {
+        if (!(m.getMessageData() instanceof PersonRequest)) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
-                    "packGenericPersonMessage() - Expected data class PersonRequest, got {0}",
-                    m.getData().getClass().getName());
+                    "packGenericPersonRequestMessage() - Expected data class PersonRequest, got {0}",
+                    m.getMessageData().getClass().getName());
+            return doc;
         }
         if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
-            PersonRequest personRequest = (PersonRequest) m.getData();
-            Person p = personRequest.getPerson();
+            Person p = null;
+            PersonRequest personRequest = (PersonRequest) m.getMessageData();
+            p = personRequest.getPerson();
             packPerson(personNode, p);
             if (personRequest.isResponseRequested()) {
                 packTagValue(root, "acceptAckCode", "AL"); // Request "ALways" acknowedge.
             }
+        }
+        return doc;
+    }
+
+    /**
+     * Packs a generic HL7 PersonResponse message into a <code>Document</code>.
+     * <p>
+     * Several of the HL7 person-related messages use the same formatting
+     * rules, even though the templates differ. (The templates differ only
+     * in the boilerplate parts that do not concern us directly.)
+     * These messages are:
+     * <p>
+     * CREATE PERSON ACCEPTED <br>
+     * MODIFY PERSON ACCEPTED
+     *
+     * @param m notification message contents to pack
+     * @return packed notification messages
+     */
+    private Document packGenericPersonResponseMessage(Message m) {
+        Document doc = packTemplate(m);
+        Element root = doc.getDocumentElement();
+        packHl7Header(root, m);
+        Element personNode = (Element) root.getElementsByTagName("patient").item(0);
+        if (!(m.getMessageData() instanceof PersonResponse)) {
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
+                    "packGenericPersonResponseMessage() - Expected data class PersonResponse, got {0}",
+                    m.getMessageData().getClass().getName());
+            return doc;
+        }
+        if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
+            Person p = null;
+            PersonResponse personResponse = (PersonResponse) m.getMessageData();
+            List<Person> personList = personResponse.getPersonList();
+            if (personList != null && !personList.isEmpty()) { // Are we responding with person data?
+                p = personResponse.getPersonList().get(0);  // Yes, get the person data to return.
+            } else {
+                p = new Person();   // No, return an empty person (needed to clear the default template values.)
+            }
+            packPerson(personNode, p);
         }
         return doc;
     }
@@ -259,7 +305,7 @@ class XmlPacker {
      */
     private Document packWorkMessage(Message m) {
 
-        Work work = (Work) m.getData();
+        Work work = (Work) m.getMessageData();
         // Create instance of DocumentBuilderFactory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         // Get the DocumentBuilder
@@ -294,13 +340,13 @@ class XmlPacker {
         packHl7Header(root, m);
         // The rest of what we want is in the subtree under <queryByParameter>
         Element q = (Element) root.getElementsByTagName("queryByParameter").item(0);
-        if (!(m.getData() instanceof PersonRequest)) {
+        if (!(m.getMessageData() instanceof PersonRequest)) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packFindPersonMessage() - Expected data class PersonRequest, got {0}",
-                    m.getData().getClass().getName());
+                    m.getMessageData().getClass().getName());
         }
         if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
-            PersonRequest personRequest = (PersonRequest) m.getData();
+            PersonRequest personRequest = (PersonRequest) m.getMessageData();
             Person p = personRequest.getPerson();
             packPersonName(q, p, "livingSubjectName");
             packTagValueAttribute(q, "livingSubjectAdministrativeGender", "code", packEnum(p.getSex()));
@@ -348,13 +394,13 @@ class XmlPacker {
         Document doc = packTemplate(m);
         Element root = doc.getDocumentElement();
         packHl7Header(root, m);
-        if (!(m.getData() instanceof PersonResponse)) {
+        if (!(m.getMessageData() instanceof PersonResponse)) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packFindPersonResponseMessage() - Expected data class PersonResponse, got {0}",
-                    m.getData().getClass().getName());
+                    m.getMessageData().getClass().getName());
         }
         if (m.getXml() == null) { // Skip the following if we have pre-formed XML:
-            PersonResponse pr = (PersonResponse) m.getData();
+            PersonResponse pr = (PersonResponse) m.getMessageData();
             List<Person> personList = pr.getPersonList();
             /*
              * Find the <subject> subtree in the template. If there are no person results returned, remove it.
@@ -373,7 +419,8 @@ class XmlPacker {
                 List<Element> elementList = new ArrayList<Element>();
                 elementList.add(subject); // Always the first element in the list.
                 for (int i = 1; i < personList.size(); i++) { // From 2nd person (index 1) onwards...
-                    elementList.add(packCloneElement(subject));
+                    subject = packCloneElement(subject);
+                    elementList.add(subject); // Add the elements in order to preserve order for debugging/testing
                 }
                 for (int i = 0; i < personList.size(); i++) { // From 1st person (index 0) ondwards...
                     packCandidate(elementList.get(i), personList.get(i));
@@ -444,6 +491,7 @@ class XmlPacker {
         packId(e, OID_EXPECTED_DELIVERY_DATE, packDate(p.getExpectedDeliveryDate()));
         packId(e, OID_PREGNANCY_END_DATE, packDate(p.getPregnancyEndDate()));
         packId(e, OID_PREGNANCY_OUTCOME, packEnum(p.getPregnancyOutcome()));
+        packId(e, OID_SITE_NAME, p.getSiteName());
         packId(e, OID_FINGERPRINT_MATCHED, packBoolean(p.isFingerprintMatched()));
         packVisit(e, p.getLastRegularVisit(), OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE);
         packVisit(e, p.getLastOneOffVisit(), OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE);
@@ -1103,12 +1151,12 @@ class XmlPacker {
      * @return DOM Document structure
      */
     private Document packLogEntryMessage(Message m) {
-        if (!(m.getData() instanceof LogEntry)) {
+        if (!(m.getMessageData() instanceof LogEntry)) {
             Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE,
                     "packLogEntryMessage() - Expected data class LogEntry, got {0}",
-                    m.getData().getClass().getName());
+                    m.getMessageData().getClass().getName());
         }
-        LogEntry logEntry = (LogEntry) m.getData();
+        LogEntry logEntry = (LogEntry) m.getMessageData();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance(); // Create instance of DocumentBuilderFactory
         DocumentBuilder db = null; 		// Get the DocumentBuilder
         try {
@@ -1203,11 +1251,11 @@ class XmlPacker {
      * @return <code>String</code> containing the packed date.
      */
     private String packDate(Date date) {
+        String dateString = null;
         if (date != null) {
-            return SIMPLE_DATE_FORMAT.format(date);
-        } else {
-            return null;
+            dateString = SIMPLE_DATE_FORMAT.format(date);
         }
+        return dateString;
     }
 
     /**
@@ -1217,11 +1265,11 @@ class XmlPacker {
      * @return <code>String</code> containing the packed date and time.
      */
     private String packDateTime(Date dateTime) {
+        String dateString = null;
         if (dateTime != null) {
-            return SIMPLE_DATE_TIME_FORMAT.format(dateTime);
-        } else {
-            return null;
+            dateString = SIMPLE_DATE_TIME_FORMAT.format(dateTime);
         }
+        return dateString;
     }
 
     /*
@@ -1288,25 +1336,30 @@ class XmlPacker {
             case createPerson: // Uses unpackGenericPersonMessage(), below.
             case modifyPerson: // Uses unpackGenericPersonMessage(), below.
             case notifyPersonChanged:
-                unpackGenericPersonMessage(m, root);
+                unpackGenericPersonRequestMessage(m, root);
+                break;
+
+            case createPersonAccepted:  // Uses unpackGenericPersonResponseMessage(), below.
+            case modifyPersonAccepted:
+                unpackGenericPersonResponseMessage(m, root);
                 break;
 
             case logEntry:
                 unpackLogEntryMessage(m, root);
                 break;
-//@pchemutai added on 19th May 2011 to handle Work messages'
-            case getWork: //Uses unpackWorkMessage(), below.
-            case workDone://Uses unpackWorkMessage(), below.
-            case reassignWork://Uses unpackWorkMessage(), below.
+
+            case getWork:   // Uses unpackWorkMessage(), below.
+            case workDone:  // Uses unpackWorkMessage(), below.
+            case reassignWork:
                 unpackWorkMessage(m, root);
                 break;
         }
     }
 
     /**
-     * Unpacks a generic HL7 person-related message into a <code>Document</code>.
+     * Unpacks a generic HL7 person-related request message into a <code>Document</code>.
      * <p>
-     * Several of the HL7 person-related messages use the same formatting
+     * Several of the HL7 person-related request messages use the same formatting
      * rules, even though the templates differ. (The templates differ only
      * in the boilerplate parts that do not concern us directly.)
      * These messages are:
@@ -1320,10 +1373,9 @@ class XmlPacker {
      * @param m the message contents to fill in
      * @param e root node of the person message <code>Document</code> parsed from XML
      */
-    private void unpackGenericPersonMessage(Message m, Element e) {
+    private void unpackGenericPersonRequestMessage(Message m, Element e) {
         PersonRequest personRequest = new PersonRequest();
-        personRequest.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
-        m.setData(personRequest);
+        m.setMessageData(personRequest);
         Person p = new Person();
         personRequest.setPerson(p);
         unpackHl7Header(m, e);
@@ -1335,6 +1387,32 @@ class XmlPacker {
     }
 
     /**
+     * Unpacks a generic HL7 person-related response message into a <code>Document</code>.
+     * <p>
+     * Several of the HL7 person-related response messages use the same formatting
+     * rules, even though the templates differ. (The templates differ only
+     * in the boilerplate parts that do not concern us directly.)
+     * These messages are:
+     * <p>
+     * CREATE PERSON ACCEPTED <br>
+     * MODIFY PERSON ACCEPTED <br>
+     *
+     * @param m the message contents to fill in
+     * @param e root node of the person message <code>Document</code> parsed from XML
+     */
+    private void unpackGenericPersonResponseMessage(Message m, Element e) {
+        PersonResponse personResponse = new PersonResponse();
+        m.setMessageData(personResponse);
+        List<Person> personList = new ArrayList<Person>();
+        personResponse.setPersonList(personList);
+        Person p = new Person();
+        personList.add(p);
+        unpackHl7Header(m, e);
+        Element ePerson = (Element) e.getElementsByTagName("patient").item(0);
+        unpackPerson(p, ePerson);
+    }
+
+    /**
      * Unpacks a find person request <code>Document</code> into message data.
      * Uses HL7 Patient Registry Find Candidates Query, PRPA_IN201305UV02.
      *
@@ -1343,13 +1421,17 @@ class XmlPacker {
      */
     private void unpackFindPersonMessage(Message m, Element e) {
         PersonRequest personRequest = new PersonRequest();
-        personRequest.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
-        m.setData(personRequest);
+        m.setMessageData(personRequest);
         Person p = new Person();
         personRequest.setPerson(p);
         unpackHl7Header(m, e);
         Element q = (Element) e.getElementsByTagName("queryByParameter").item(0);
-        unpackPersonName(p, q, "livingSubjectName");
+
+        Element el = (Element) q.getElementsByTagName("livingSubjectName").item(0);
+        if (el != null) {
+            unpackPersonName(p, el, "value");
+        }
+
         p.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagValueAttribute(e, "livingSubjectAdministrativeGender", "code")));
         p.setBirthdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectBirthTime", "value")));
         p.setDeathdate(unpackDate(unpackTagValueAttribute(e, "livingSubjectDeceasedTime", "value")));
@@ -1391,8 +1473,7 @@ class XmlPacker {
      */
     private void unpackFindPersonResponseMessage(Message m, Element e) {
         PersonResponse personResponse = new PersonResponse();
-        m.setData(personResponse);
-        personResponse.setSuccessful(true);
+        m.setMessageData(personResponse);
         unpackHl7Header(m, e);
         NodeList nodeList = e.getElementsByTagName("subject");
         if (nodeList.getLength() != 0) {
@@ -1497,6 +1578,7 @@ class XmlPacker {
         p.setExpectedDeliveryDate(unpackDate(unpackId(e, OID_EXPECTED_DELIVERY_DATE)));
         p.setPregnancyEndDate(unpackDate(unpackId(e, OID_PREGNANCY_END_DATE)));
         p.setPregnancyOutcome((Person.PregnancyOutcome) unpackEnum(Person.PregnancyOutcome.values(), unpackId(e, OID_PREGNANCY_OUTCOME)));
+        p.setSiteName(unpackId(e, OID_SITE_NAME));
         p.setFingerprintMatched(unpackBoolean(unpackId(e, OID_FINGERPRINT_MATCHED)));
         p.setLastRegularVisit(unpackVisit(e, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE));
         p.setLastOneOffVisit(unpackVisit(e, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE));
@@ -1523,22 +1605,31 @@ class XmlPacker {
      * @param tagName name of the enclosing element for the person's name
      */
     private void unpackPersonName(Person p, Element e, String tagName) {
-        Element eName = (Element) e.getElementsByTagName("name").item(0);
+        Element eName = (Element) e.getElementsByTagName(tagName).item(0);
         if (eName != null) {
             NodeList givenList = eName.getElementsByTagName("given");
             if (givenList.getLength() > 0) {
                 p.setFirstName(givenList.item(0).getTextContent());
                 if (givenList.getLength() > 1) {
                     p.setMiddleName(givenList.item(1).getTextContent());
-//                    String firstName = (givenList.item(0).getNodeValue());
-//                    p.setFirstName(firstName);
-//                    if (givenList.getLength() > 1) {
-//                        String middleName = givenList.item(1).getNodeValue();
-//                        p.setMiddleName(middleName);
-//                    }
                 }
-                p.setLastName(unpackTagValue(eName, "family"));
             }
+            p.setLastName(unpackTagValue(eName, "family"));
+        }
+    }
+
+    private void unpackPersonName2(Person p, Element e, String tagName) {
+        Element e1 = (Element) e.getElementsByTagName(tagName).item(0);
+        Element eName = (Element) e1.getElementsByTagName("value").item(0);
+        if (eName != null) {
+            NodeList givenList = eName.getElementsByTagName("given");
+            if (givenList.getLength() > 0) {
+                p.setFirstName(givenList.item(0).getTextContent());
+                if (givenList.getLength() > 1) {
+                    p.setMiddleName(givenList.item(1).getTextContent());
+                }
+            }
+            p.setLastName(unpackTagValue(eName, "family"));
         }
     }
 
@@ -1907,12 +1998,12 @@ class XmlPacker {
      */
     private void unpackLogEntryMessage(Message m, Element e) {
         LogEntry logEntry = new LogEntry();
-        m.setData(logEntry);
+        m.setMessageData(logEntry);
         logEntry.setSeverity(e.getElementsByTagName("severity").item(0).getTextContent());
         logEntry.setClassName(e.getElementsByTagName("class").item(0).getTextContent());
         logEntry.setDateTime(unpackDateTime(e.getElementsByTagName("dateTime").item(0).getTextContent()));
         logEntry.setMessage(e.getElementsByTagName("message").item(0).getTextContent());
-        logEntry.setInstance(e.getElementsByTagName("instance").item(0).getTextContent());
+        logEntry.setInstance(e.getElementsByTagName("sourceAddress").item(0).getTextContent());
     }
 
     /**
@@ -1924,10 +2015,10 @@ class XmlPacker {
      */
     private void unpackWorkMessage(Message m, Element e) {
         Work work = new Work();
-        m.setData(work);
+        m.setMessageData(work);
         work.setSourceAddress(e.getElementsByTagName("sourceAddress").item(0).getTextContent());
-        work.setSourceAddress(e.getElementsByTagName("notificationId").item(0).getTextContent());
-        work.setSourceAddress(e.getElementsByTagName("reassignAddress").item(0).getTextContent());
+        work.setNotificationId(e.getElementsByTagName("notificationId").item(0).getTextContent());
+        work.setReassignAddress(e.getElementsByTagName("reassignAddress").item(0).getTextContent());
     }
 
     /**

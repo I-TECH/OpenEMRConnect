@@ -450,4 +450,26 @@ public class Person implements Cloneable {
     public void setVillageName(String villageName) {
         this.villageName = villageName;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Person other = (Person) obj;
+        if ((this.personGuid == null) ? (other.personGuid != null) : !this.personGuid.equals(other.personGuid)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + (this.personGuid != null ? this.personGuid.hashCode() : 0);
+        return hash;
+    }
 }

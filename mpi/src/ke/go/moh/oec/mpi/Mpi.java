@@ -32,6 +32,7 @@ import ke.go.moh.oec.IService;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
+import ke.go.moh.oec.mpi.list.SiteList;
 
 /**
  * Provides Master Patient Index (or Local Patient Index) services.
@@ -40,6 +41,7 @@ import ke.go.moh.oec.lib.Mediator;
  */
 public class Mpi implements IService {
 
+    private SiteList siteList = new SiteList();
     private PersonList personList = new PersonList();
     private static int maxThreadCount = 0;
 
@@ -58,7 +60,9 @@ public class Mpi implements IService {
                     "Can''t load JDBC driver " + driverName, ex);
             System.exit(1);
         }
+        siteList.load();
         personList.load();
+        personList.setSiteList(siteList); // PersonList will (also) need to know about this list.
     }
 
     /**
@@ -76,7 +80,7 @@ public class Mpi implements IService {
             if (fingerprintLimit > 0 && fingerprintLimit < maxThreadCount) {
                 maxThreadCount = fingerprintLimit;
             }
-            Mediator.getLogger(Mpi.class.getName()).log(Level.INFO, "Maximum thead count = {0}.", maxThreadCount);
+            Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "Maximum thread count = {0}.", maxThreadCount);
         }
         return maxThreadCount;
     }
@@ -95,19 +99,16 @@ public class Mpi implements IService {
                 Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "FindPerson");
                 returnData = personList.find((PersonRequest) requestData);
                 break;
-
             case RequestTypeId.CREATE_PERSON_MPI:
             case RequestTypeId.CREATE_PERSON_LPI:
                 Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "CreatePerson");
                 returnData = personList.create((PersonRequest) requestData);
                 break;
-
             case RequestTypeId.MODIFY_PERSON_MPI:
             case RequestTypeId.MODIFY_PERSON_LPI:
                 Mediator.getLogger(Mpi.class.getName()).log(Level.FINE, "ModifyPerson");
                 returnData = personList.modify((PersonRequest) requestData);
                 break;
-
             default:
                 Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                         "getData() called with unepxected requestTypeId {0}", requestTypeId);

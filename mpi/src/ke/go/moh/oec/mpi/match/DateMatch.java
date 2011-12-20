@@ -27,6 +27,8 @@ package ke.go.moh.oec.mpi.match;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Scorecard;
 
 /**
@@ -46,6 +48,12 @@ public class DateMatch {
     private int yearMonth = 0;
     private int yearMonthDay = 0;
 
+    static { // Make sure that baseDate is always set to Jan 1, 1800.
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(1800, 1, 1);
+        baseDate = calendar.getTimeInMillis();
+    }
+
     /**
      * Construct a DateMatch from a Date.
      * <p>
@@ -63,7 +71,7 @@ public class DateMatch {
         date = d;
         if (d != null) {
             year = Integer.parseInt(yearFormat.format(d));
-            yearMonth = year * 12 + Integer.parseInt(dayFormat.format(d));
+            yearMonth = year * 12 + Integer.parseInt(monthFormat.format(d));
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(d);
             long time = calendar.getTimeInMillis();
@@ -81,8 +89,6 @@ public class DateMatch {
      */
     synchronized public static void setToday() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(1800, 1, 1);
-        baseDate = calendar.getTimeInMillis();
         calendar.setTime(new Date());
         long todayDate = calendar.getTimeInMillis();
         today = (int) ((todayDate - baseDate) / (24 * 60 * 60 * 1000));
@@ -90,15 +96,15 @@ public class DateMatch {
 
     /**
      * Compare two dates and compute the score of their relative match.
-     * An exact match scores 100. A match within the same month scores 90.
-     * A match within the same year scores 80.
+     * An exact match scores 1.0. A match within the same month scores 0.9.
+     * A match within the same year scores 0.8.
      * <p>
      * Dates that are not within the same year are scored as follows:
      * The "age" of a date is defined as the amount of time from the date
      * to today (just as the current age of a person is the amount of time
      * from their birthdate to today.) The relative difference in age is computed
      * as a fraction of the absolute difference in age divided by the
-     * large of the two ages. Then a score is computed in the scale of 0-70
+     * larger of the two ages. Then a score is computed in the scale of 0-0.7
      * according to this fraction.
      *
      * @param s Scorecard in which to add the result.
@@ -106,27 +112,34 @@ public class DateMatch {
      */
     public void score(Scorecard s, DateMatch dm) {
         if (date != null && dm.date != null) {
-            if (yearMonthDay == dm.yearMonthDay) {
-                s.addScore(100);
-            } else if (yearMonth == dm.yearMonth) {
-                s.addScore(90);
-            } else if (yearMonthDay == dm.yearMonthDay) {
-                s.addScore(80);
-            } else {
-                int maxDate = dm.yearMonthDay;
-                int minDate = yearMonthDay;
-                if (yearMonthDay > maxDate) {
-                    maxDate = yearMonthDay;
-                    minDate = dm.yearMonthDay;
-                }
-                int diff = maxDate - minDate;
-                int age = today - minDate;
-                if (age >= 0 && diff < age) {
-                    int score = 70 * (age - diff) / age;
-                    s.addScore(score);
+            double score = 1.0;     // Score if we have a perfect match.
+            if (yearMonthDay != dm.yearMonthDay) { // Buf if we don't have a perfect match...
+                if (yearMonth == dm.yearMonth) {
+                    score = 0.9;
+                } else if (year == dm.year) {
+                    score = 0.8;
                 } else {
-                    s.addScore(0);
+                    int maxDate = dm.yearMonthDay;
+                    int minDate = yearMonthDay;
+                    if (yearMonthDay > maxDate) {
+                        maxDate = yearMonthDay;
+                        minDate = dm.yearMonthDay;
+                    }
+                    int diff = maxDate - minDate;
+                    int age = today - minDate;
+                    if (age >= 0 && diff < age) {
+                        score = (0.7 * (age - diff)) / age;
+                    } else {
+                        score = 0.0;
+                    }
                 }
+            }
+            final double DATE_WEIGHT = 0.5;
+            s.addScore(score, DATE_WEIGHT);
+            if (Mediator.testLoggerLevel(Level.FINEST)) {
+                Mediator.getLogger(DateMatch.class.getName()).log(Level.FINEST,
+                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
+                        new Object[]{score, DATE_WEIGHT, s.getTotalScore(), s.getTotalWeight(), date, dm.date});
             }
         }
     }

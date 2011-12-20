@@ -25,14 +25,17 @@
 package ke.go.moh.oec.oecsm.sync.schema;
 
 import java.sql.ResultSet;
-import ke.go.moh.oec.oecsm.bridge.TransactionConverter;
-import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
-import ke.go.moh.oec.oecsm.data.SchemaTransaction;
 import java.sql.SQLException;
 import java.sql.Statement;
+import ke.go.moh.oec.oecsm.data.TransactionType;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
+import ke.go.moh.oec.oecsm.bridge.TransactionConverter;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Database;
+import ke.go.moh.oec.oecsm.data.SchemaTransaction;
 import ke.go.moh.oec.oecsm.data.Table;
 import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
@@ -46,7 +49,7 @@ public class SchemaSynchronizer extends DatabaseConnector {
 
     public void synchronize() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
         try {
-            List<SchemaTransaction> schemaTransactionList = new SchemaTransactionGenerator().generate();
+            List<SchemaTransaction> schemaTransactionList = new SchemaSynchronizer().generate();
             connectToShadow();
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
@@ -68,7 +71,84 @@ public class SchemaSynchronizer extends DatabaseConnector {
             connection.commit();
             statement.close();
         } finally {
-            disconnect();
+            disconnectFromShadow();
         }
+    }
+
+    private List<SchemaTransaction> generate() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
+        List<SchemaTransaction> schemaTransactionList = new ArrayList<SchemaTransaction>();
+        Database sourceDatabase = new SourceSchemaMiner().mine();
+        Database shadowDatabase = new ShadowSchemaMiner().mine();
+        if (shadowDatabase == null) {
+            schemaTransactionList.add(new SchemaTransaction(null, TransactionType.INITIALIZE));
+            schemaTransactionList.add(new SchemaTransaction(sourceDatabase, TransactionType.INSERT));
+        }
+        schemaTransactionList.addAll(generateTableTransactions(sourceDatabase, shadowDatabase));
+        return schemaTransactionList;
+    }
+
+    private List<SchemaTransaction> generateTableTransactions(Database sourceDatabase, Database shadowDatabase) {
+        List<SchemaTransaction> schemaTransactionList = new ArrayList<SchemaTransaction>();
+        if (shadowDatabase == null) {
+            for (Table table : sourceDatabase.getTableList()) {
+                schemaTransactionList.add(new SchemaTransaction(table, TransactionType.INSERT));
+                schemaTransactionList.addAll(generateColumnTransactions(table, null));
+            }
+        } else {
+            Collections.sort(sourceDatabase.getTableList());
+            Collections.sort(shadowDatabase.getTableList());
+            for (Table table : sourceDatabase.getTableList()) {
+                if (!shadowDatabase.getTableList().contains(table)) {
+                    table.setDatabase(shadowDatabase);
+                    schemaTransactionList.add(new SchemaTransaction(table, TransactionType.INSERT));
+                    schemaTransactionList.addAll(generateColumnTransactions(table, null));
+                } else {
+                    Table shadowTable = shadowDatabase.getTableList().get(shadowDatabase.getTableList().indexOf(table));
+                    if (!table.getPk().equals(shadowTable.getPk())) {
+                        table.setId(shadowTable.getId());
+                        schemaTransactionList.add(new SchemaTransaction(table, TransactionType.UPDATE));
+                    }
+                    schemaTransactionList.addAll(generateColumnTransactions(table, shadowTable));
+                }
+            }
+            for (Table table : shadowDatabase.getTableList()) {
+                if (!sourceDatabase.getTableList().contains(table)) {
+                    schemaTransactionList.add(new SchemaTransaction(table, TransactionType.DELETE));
+                }
+            }
+        }
+        return schemaTransactionList;
+    }
+
+    private List<SchemaTransaction> generateColumnTransactions(Table sourceTable, Table shadowTable) {
+        List<SchemaTransaction> shemaTransactionList = new ArrayList<SchemaTransaction>();
+        if (shadowTable == null) {
+            for (Column column : sourceTable.getColumnList()) {
+                shemaTransactionList.add(new SchemaTransaction(column, TransactionType.INSERT));
+            }
+        } else {
+            Collections.sort(sourceTable.getColumnList());
+            Collections.sort(shadowTable.getColumnList());
+            for (Column column : sourceTable.getColumnList()) {
+                if (!shadowTable.getColumnList().contains(column)) {
+                    column.setTable(shadowTable);
+                    shemaTransactionList.add(new SchemaTransaction(column, TransactionType.INSERT));
+                } else {
+                    Column shadowColumn = shadowTable.getColumnList().get(shadowTable.getColumnList().indexOf(column));
+                    if (column.getOrdinalPosition() != (shadowColumn.getOrdinalPosition())
+                            || !column.getDataType().equals(shadowColumn.getDataType())
+                            || column.getSize() != shadowColumn.getSize()) {
+                        column.setId(shadowColumn.getId());
+                        shemaTransactionList.add(new SchemaTransaction(column, TransactionType.UPDATE));
+                    }
+                }
+            }
+            for (Column column : shadowTable.getColumnList()) {
+                if (!sourceTable.getColumnList().contains(column)) {
+                    shemaTransactionList.add(new SchemaTransaction(column, TransactionType.DELETE));
+                }
+            }
+        }
+        return shemaTransactionList;
     }
 }

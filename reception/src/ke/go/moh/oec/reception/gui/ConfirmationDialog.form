@@ -1,0 +1,580 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.ButtonGroup" name="sexButtonGroup">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="hdssDataConsentButtonGroup">
+    </Component>
+    <Component class="java.util.List" name="maritalStatusList">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="DisplayableMaritalStatus.getList()"/>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;DisplayableMaritalStatus&gt;"/>
+      </AuxValues>
+    </Component>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="modal" type="boolean" value="true"/>
+    <Property name="name" type="java.lang.String" value="Form" noResource="true"/>
+    <Property name="resizable" type="boolean" value="false"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="2"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="confirmationPanel" alignment="1" max="32767" attributes="0"/>
+                  <Component id="acceptButton" alignment="0" pref="745" max="32767" attributes="2"/>
+                  <Component id="rejectButton" alignment="0" pref="745" max="32767" attributes="2"/>
+              </Group>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="confirmationPanel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="acceptButton" linkSize="1" min="-2" pref="32" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="rejectButton" linkSize="1" min="-2" pref="34" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="confirmationPanel">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="Confirm"/>
+          </Border>
+        </Property>
+        <Property name="name" type="java.lang.String" value="confirmationPanel" noResource="true"/>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="compoundHeadsLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="compoundHeadsMiddleNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="hdssDataConsentLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="compoundHeadsFirstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="mothersLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="mothersMiddleNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="mothersFirstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="fathersMiddleNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="fathersLastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="villageLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="fathersFirstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="firstNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="clinicIdLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="maritalStatusLabel" min="-2" max="-2" attributes="0"/>
+                              <Component id="middleNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="lastNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="sexLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="birthDateLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="otherNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="clanNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="lastNameTextField" alignment="1" pref="562" max="32767" attributes="0"/>
+                              <Component id="maritalStatusComboBox" alignment="0" pref="562" max="32767" attributes="2"/>
+                              <Component id="otherNameTextField" alignment="0" pref="562" max="32767" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="1" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="maleRadioButton" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="femaleRadioButton" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="birthDateChooser" pref="491" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="unknownBirthdateCheckBox" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="firstNameTextField" alignment="1" pref="562" max="32767" attributes="1"/>
+                              <Component id="clinicIdTextField" alignment="1" pref="562" max="32767" attributes="1"/>
+                              <Component id="middleNameTextField" alignment="1" pref="562" max="32767" attributes="3"/>
+                              <Component id="clanNameTextField" alignment="1" pref="562" max="32767" attributes="0"/>
+                              <Component id="fathersFirstNameTextField" alignment="1" pref="562" max="32767" attributes="2"/>
+                              <Component id="mothersFirstNameTextField" alignment="0" pref="562" max="32767" attributes="2"/>
+                              <Component id="mothersMiddleNameTextField" alignment="0" pref="562" max="32767" attributes="0"/>
+                              <Component id="mothersLastNameTextField" alignment="0" pref="562" max="32767" attributes="0"/>
+                              <Component id="compoundHeadsFirstNameTextField" alignment="0" pref="562" max="32767" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="hdssDataConsentYesRadioButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="hdssDataConsentNoRadioButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="hdssDataConsentNoAnswerRadioButton" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="compoundHeadsLastNameTextField" alignment="0" pref="562" max="32767" attributes="2"/>
+                              <Component id="compoundHeadsMiddleNameTextField" alignment="1" pref="562" max="32767" attributes="0"/>
+                              <Component id="villageTextField" alignment="1" pref="562" max="32767" attributes="0"/>
+                              <Component id="fathersMiddleNameTextField" alignment="1" pref="562" max="32767" attributes="2"/>
+                              <Component id="fathersLastNameTextField" alignment="1" pref="562" max="32767" attributes="2"/>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="clinicIdLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="clinicIdTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="firstNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="firstNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="middleNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="middleNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="lastNameLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="lastNameTextField" linkSize="4" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="sexLabel" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                                  <Component id="femaleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="maleRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="birthDateLabel" min="-2" max="-2" attributes="0"/>
+                              <Component id="birthDateChooser" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+                          <Component id="unknownBirthdateCheckBox" min="-2" pref="17" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="maritalStatusLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="maritalStatusComboBox" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="otherNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="otherNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="clanNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="clanNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="villageLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="villageTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="fathersFirstNameLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="fathersFirstNameTextField" linkSize="4" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="fathersMiddleNameLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="fathersMiddleNameTextField" linkSize="4" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="fathersLastNameLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="fathersLastNameTextField" linkSize="4" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="mothersFirstNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="mothersFirstNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="mothersMiddleNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="mothersMiddleNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="mothersLastNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="mothersLastNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="compoundHeadsFirstNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="compoundHeadsFirstNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="compoundHeadsMiddleNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="compoundHeadsMiddleNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="compoundHeadsLastNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="compoundHeadsLastNameTextField" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="hdssDataConsentLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="hdssDataConsentYesRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="hdssDataConsentNoRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="hdssDataConsentNoAnswerRadioButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="clinicIdLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="clinicIdLabel.text"/>
+            <Property name="name" type="java.lang.String" value="clinicIdLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="clinicIdTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="clinicIdTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="firstNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="firstNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="firstNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="firstNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="firstNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="middleNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="middleNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="middleNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="middleNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="middleNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="lastNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="lastNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="lastNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="lastNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="lastNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="sexLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="sexLabel.text"/>
+            <Property name="name" type="java.lang.String" value="sexLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="maleRadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="sexButtonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="maleRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="maleRadioButton" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="femaleRadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="sexButtonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="femaleRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="femaleRadioButton" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="birthDateLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="birthDateLabel.text"/>
+            <Property name="name" type="java.lang.String" value="birthDateLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="com.toedter.calendar.JDateChooser" name="birthDateChooser">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="birthDateChooser" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="unknownBirthdateCheckBox">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="unknownBirthdateCheckBox.text"/>
+            <Property name="name" type="java.lang.String" value="unknownBirthdateCheckBox" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="maritalStatusLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="maritalStatusLabel.text"/>
+            <Property name="name" type="java.lang.String" value="maritalStatusLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="maritalStatusComboBox">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="maritalStatusComboBox" noResource="true"/>
+          </Properties>
+          <BindingProperties>
+            <BindingProperty name="elements" source="maritalStatusList" target="maritalStatusComboBox" targetPath="elements" updateStrategy="0" immediately="false"/>
+          </BindingProperties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="otherNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="otherNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="otherNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="otherNameTextField">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="otherNameTextField.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="otherNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="clanNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="clanNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="clanNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="clanNameTextField">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="clanNameTextField.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="clanNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="villageLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="villageLabel.text"/>
+            <Property name="name" type="java.lang.String" value="villageLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="villageTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="villageTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="fathersFirstNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="fathersFirstNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="fathersFirstNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="fathersFirstNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="fathersFirstNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="fathersMiddleNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="fathersMiddleNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="fathersMiddleNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="fathersMiddleNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="fathersMiddleNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="fathersLastNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="fathersLastNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="fathersLastNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="fathersLastNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="fathersLastNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="mothersFirstNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="mothersFirstNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="mothersFirstNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="mothersFirstNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="mothersFirstNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="mothersMiddleNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="mothersMiddleNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="mothersMiddleNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="mothersMiddleNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="mothersMiddleNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="mothersLastNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="mothersLastNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="mothersLastNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="mothersLastNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="mothersLastNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="compoundHeadsFirstNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="compoundHeadsFirstNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="compoundHeadsFirstNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="compoundHeadsFirstNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="compoundHeadsFirstNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="compoundHeadsMiddleNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="compoundHeadsMiddleNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="compoundHeadsMiddleNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="compoundHeadsMiddleNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="compoundHeadsMiddleNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="compoundHeadsLastNameLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="compoundHeadsLastNameLabel.text"/>
+            <Property name="name" type="java.lang.String" value="compoundHeadsLastNameLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="compoundHeadsLastNameTextField">
+          <Properties>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="compoundHeadsLastNameTextField" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="hdssDataConsentLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentLabel.text"/>
+            <Property name="name" type="java.lang.String" value="hdssDataConsentLabel" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="hdssDataConsentYesRadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="hdssDataConsentButtonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentYesRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="hdssDataConsentYesRadioButton" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="hdssDataConsentNoRadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="hdssDataConsentButtonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentNoRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="hdssDataConsentNoRadioButton" noResource="true"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="hdssDataConsentNoAnswerRadioButton">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="hdssDataConsentButtonGroup"/>
+            </Property>
+            <Property name="text" type="java.lang.String" resourceKey="hdssDataConsentNoAnswerRadioButton.text"/>
+            <Property name="enabled" type="boolean" value="false"/>
+            <Property name="name" type="java.lang.String" value="hdssDataConsentNoAnswerRadioButton" noResource="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JButton" name="acceptButton">
+      <Properties>
+        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+          <action class="ke.go.moh.oec.reception.gui.ConfirmationDialog" id="accept" methodName="accept"/>
+        </Property>
+        <Property name="text" type="java.lang.String" resourceKey="acceptButton.text"/>
+        <Property name="name" type="java.lang.String" value="acceptButton" noResource="true"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="rejectButton">
+      <Properties>
+        <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
+          <action class="ke.go.moh.oec.reception.gui.ConfirmationDialog" id="reject" methodName="reject"/>
+        </Property>
+        <Property name="text" type="java.lang.String" resourceKey="rejectButton.text"/>
+        <Property name="name" type="java.lang.String" value="rejectButton" noResource="true"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

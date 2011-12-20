@@ -51,7 +51,7 @@ public class ShadowSchemaMiner extends DatabaseConnector {
             }
             populateTableList(db, replicable);
         } finally {
-            disconnect();
+            disconnectFromShadow();
         }
         return db;
     }

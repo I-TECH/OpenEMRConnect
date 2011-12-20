@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +56,8 @@ public class DatabaseConnector {
     protected Connection connection;
     protected String schemaPattern;
     protected String tableTypes;
+    private List<Connection> sourceConnectionPool = new ArrayList<Connection>();
+    private List<Connection> shadowConnectionPool = new ArrayList<Connection>();
 
     public void testConnection(String driver, String url, String username, String password) throws DriverNotFoundException, SQLException {
         try {
@@ -64,7 +68,31 @@ public class DatabaseConnector {
         connection = DriverManager.getConnection(url, username, password);
     }
 
-    protected void loadConnectionProperties(String propertiesFile) throws InaccessibleConfigurationFileException {
+    protected synchronized void connectToSource() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
+        if (!sourceConnectionPool.isEmpty()) {
+            connection = sourceConnectionPool.get(0);
+            sourceConnectionPool.remove(0);
+        } else {
+            connectToDatabase("source_database.properties");
+        }
+    }
+
+    protected synchronized void connectToShadow() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
+        if (!shadowConnectionPool.isEmpty()) {
+            connection = shadowConnectionPool.get(0);
+            shadowConnectionPool.remove(0);
+        } else {
+            connectToDatabase("shadow_database.properties");
+        }
+    }
+
+    private synchronized void connectToDatabase(String databasePropertiesFile) throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
+        loadConnectionProperties(databasePropertiesFile);
+        loadDriver();
+        connection = DriverManager.getConnection(url, username, password);
+    }
+
+    private void loadConnectionProperties(String propertiesFile) throws InaccessibleConfigurationFileException {
         try {
             Properties properties = new Properties();
             properties.load(new FileInputStream(propertiesFile));
@@ -85,7 +113,7 @@ public class DatabaseConnector {
 
     }
 
-    protected void loadDriver() throws DriverNotFoundException {
+    private void loadDriver() throws DriverNotFoundException {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException ex) {
@@ -94,22 +122,12 @@ public class DatabaseConnector {
         }
     }
 
-    protected void connectToSource() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
-        loadConnectionProperties("source_database.properties");
-        loadDriver();
-        connection = DriverManager.getConnection(url, username, password);
+    protected synchronized void disconnectFromSource() throws SQLException {
+        sourceConnectionPool.add(connection);
     }
 
-    protected void connectToShadow() throws SQLException, InaccessibleConfigurationFileException, DriverNotFoundException {
-        loadConnectionProperties("shadow_database.properties");
-        loadDriver();
-        connection = DriverManager.getConnection(url, username, password);
-    }
-
-    protected void disconnect() throws SQLException {
-        if (connection != null) {
-            connection.close();
-        }
+    protected synchronized void disconnectFromShadow() throws SQLException {
+        shadowConnectionPool.add(connection);
     }
 
     public QueryCustomizer getQueryCustomizer() {

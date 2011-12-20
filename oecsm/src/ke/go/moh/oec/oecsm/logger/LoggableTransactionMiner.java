@@ -63,7 +63,7 @@ public class LoggableTransactionMiner extends DatabaseConnector {
             }
 
         } finally {
-            disconnect();
+            disconnectFromShadow();
         }
         return loggableTransactionList;
     }

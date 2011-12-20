@@ -42,11 +42,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.BufferedReader;
-import java.io.Writer;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.concurrent.Executors;
@@ -80,36 +80,39 @@ class HttpService {
         //   throw new UnsupportedOperationException();
         String url = "http://" + m.getIpAddressPort() + "/oecmessage?destination="
                 + m.getDestinationAddress() + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount();
-        String xml = m.getXml();
-        Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Sending {0} to {1}",
-                new Object[]{m.getMessageType().getTemplateType().name(), url});
-        Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message:\n{0}", xml);
-
         try {
             /*Code thats performing a task should be placed in the try catch statement especially in the try part*/
             URLConnection connection = new URL(url).openConnection();
             connection.setDoOutput(true);
-            Writer output = new OutputStreamWriter(connection.getOutputStream());
-            output.write(xml);
+            OutputStream output = connection.getOutputStream();
+            byte[] compressedXml = m.getCompressedXml();
+            int compressedXmlLength = m.getCompressedXmlLength();
+            output.write(compressedXml, 0, compressedXmlLength);
+            //output.write(xml);
             output.close();
-            
-            Object o = connection.getInputStream();
-            
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream());
+            BufferedReader br = new BufferedReader(inputStreamReader);
             while (br.readLine() != null) {
                 //content not required, just acknowlegment that message was received.
             }
+            br.close();
+            inputStreamReader.close();
             returnStatus = true;
+        } catch (ConnectException ex) {
+            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
+                    "Can''t connect to {0} at {1}",
+                    new Object[]{m.getDestinationAddress(), url});
         } catch (MalformedURLException ex) {
             Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
-                    "While sending to " + m.getDestinationAddress(), ex);
+                    "While sending to " + m.getDestinationAddress() + " at " + url, ex);
         } catch (IOException ex) {
             if (ex.getMessage().equals("Premature EOF")
                     || ex.getMessage().equals("Unexpected end of file from server")) {
                 returnStatus = true; // We expect End of File at some point
             } else {
                 Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE,
-                        "While sending to " + m.getDestinationAddress(), ex);
+                        "While sending to " + m.getDestinationAddress() + " at " + url, ex);
 //            There was some transmission error we return false.
             }
         }
@@ -131,7 +134,9 @@ class HttpService {
         server.setExecutor(Executors.newCachedThreadPool());
         server.start();
         Mediator.getLogger(HttpService.class.getName()).log(Level.INFO,
-                Mediator.getProperty("Instance.Address") + " listening on port {0}", port);
+                Mediator.getProperty("Instance.Name") + " "
+                + Mediator.getProperty("Instance.Address") + " listening on port {0}",
+                Integer.toString(port)); // (Explicitly convert to string to avoid "," thousands seperator formatting.)
     }
 
     /**
@@ -177,20 +182,19 @@ class HttpService {
                     m.setToBeQueued(Boolean.parseBoolean(pair[1]));
                 }
             }
-            Mediator.getLogger(HttpService.class.getName()).log(Level.FINE, "Received {0}", query);
             if (requestMethod.equals("POST")) {
                 /*
                  * Read the posted content
                  */
-                BufferedReader br = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-                String st;
-                String request = "";
-                while ((st = br.readLine()) != null) {
-                    request = request + st + "\n";
-                }
-                br.close();
-                m.setXml(request);
-                Mediator.getLogger(HttpService.class.getName()).log(Level.FINER, "message:\n{0}", request);
+                Headers headers = exchange.getRequestHeaders();
+                InputStream input = exchange.getRequestBody();
+                byte[] compressedXml = new byte[30000];
+                int compressedXmlLength = input.read(compressedXml);
+                input.close();
+                m.setCompressedXml(compressedXml);
+                m.setCompressedXmlLength(compressedXmlLength);
+                String sendingIpAddress = exchange.getRemoteAddress().getAddress().getHostAddress();
+                m.setSendingIpAddress(sendingIpAddress);
                 /*
                  * Process the message.
                  */
@@ -203,6 +207,7 @@ class HttpService {
                 exchange.sendResponseHeaders(200, 0);
                 OutputStream responseBody = exchange.getResponseBody();
                 responseBody.close();
+                exchange.close();
             }
         }
     }

@@ -26,15 +26,17 @@ package ke.go.moh.oec.oecsm.daemon;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.List;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ke.go.moh.oec.oecsm.data.LoggableTransaction;
+import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
+import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
 import ke.go.moh.oec.oecsm.gui.DaemonFrame;
 import ke.go.moh.oec.oecsm.sync.data.DataSynchronizer;
-import ke.go.moh.oec.oecsm.logger.LoggableTransactionMiner;
-import ke.go.moh.oec.oecsm.logger.XMLTransactionGenerator;
 import ke.go.moh.oec.oecsm.sync.schema.SchemaSynchronizer;
 
 /**
@@ -44,21 +46,44 @@ import ke.go.moh.oec.oecsm.sync.schema.SchemaSynchronizer;
  */
 public class Daemon extends Thread {
 
-    private int snooze;
+    private final Method method;
+    private int interval;
+    private String timeOfDay;
     private DaemonFrame daemonFrame;
     private static Properties properties = null;
 
-    public Daemon(int snooze, DaemonFrame daemonFrame) {
-        this.snooze = snooze;
+    private enum Method {
+
+        INTERVAL,
+        TIME_OF_DAY
+    }
+
+    public Daemon(int interval, DaemonFrame daemonFrame) {
+        this.interval = interval;
         this.daemonFrame = daemonFrame;
+        this.method = Method.INTERVAL;
     }
 
-    public int getSnooze() {
-        return snooze;
+    public Daemon(String timeOfDay, DaemonFrame daemonFrame) {
+        this.timeOfDay = timeOfDay;
+        this.daemonFrame = daemonFrame;
+        this.method = Method.TIME_OF_DAY;
     }
 
-    public void setSnooze(int snooze) {
-        this.snooze = snooze;
+    public int getInterval() {
+        return interval;
+    }
+
+    public void setInterval(int snooze) {
+        this.interval = snooze;
+    }
+
+    public String getTimeOfDay() {
+        return timeOfDay;
+    }
+
+    public void setTimeOfDay(String timeOfDay) {
+        this.timeOfDay = timeOfDay;
     }
 
     public void quit() {
@@ -67,23 +92,41 @@ public class Daemon extends Thread {
 
     @Override
     public void run() {
+        int afterWorkPause = 60000;//pause to avoid redoing (potentially the same) work unnecessarily
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
         try {
-            while (true) {
-                new SchemaSynchronizer().synchronize();
-                new DataSynchronizer().Synchronize();
-                List<LoggableTransaction> transactionList = new LoggableTransactionMiner().generate();
-                String transactionXmlOutput = getProperty("transaction.xml.output");
-                if (transactionXmlOutput != null && transactionXmlOutput.equalsIgnoreCase("true")) {
-                    new XMLTransactionGenerator().generate(transactionList);
+            if (method == Method.INTERVAL) {
+                while (true) {
+                    work();
+                    Thread.sleep(interval);
                 }
-                // TODO: Implement time of day scheduler method
-                Thread.sleep(snooze);
-                System.gc();
+            } else if (method == Method.TIME_OF_DAY) {
+                while (true) {
+                    String currentTime = dateFormat.format(new Date());
+                    if (currentTime.equalsIgnoreCase(timeOfDay)) {
+                        work();
+                        Thread.sleep(afterWorkPause);
+                    }
+                }
             }
         } catch (Exception ex) {
             Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
             daemonFrame.getOutputTextArea().append(ex.getMessage() + "\n");
         }
+    }
+    /*
+     * Does the actual source and shadow database synchronization. If another synchronization
+     * process is ongoing, a second one is not started.
+     */
+
+    private void work() throws InaccessibleConfigurationFileException, DriverNotFoundException, SQLException {
+            new SchemaSynchronizer().synchronize();
+            new DataSynchronizer().synchronize();
+            try {
+                Thread.sleep(15000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }
 
     public static String getProperty(String propertyName) {

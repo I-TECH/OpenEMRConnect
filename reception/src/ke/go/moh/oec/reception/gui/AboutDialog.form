@@ -27,8 +27,8 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="imageLabel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+              <Component id="imageLabel" min="-2" pref="136" max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -44,7 +44,7 @@
                       </Group>
                   </Group>
                   <Component id="appTitleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="appDescLabel" alignment="0" pref="266" max="32767" attributes="0"/>
+                  <Component id="appDescLabel" alignment="0" pref="279" max="32767" attributes="0"/>
                   <Component id="closeButton" alignment="1" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -53,7 +53,6 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="imageLabel" min="-2" max="32767" attributes="0"/>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="appTitleLabel" min="-2" max="-2" attributes="0"/>
@@ -74,10 +73,11 @@
                   <Component id="homepageLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="appHomepageLabel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="19" max="32767" attributes="0"/>
+              <EmptySpace pref="20" max="32767" attributes="0"/>
               <Component id="closeButton" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
+          <Component id="imageLabel" alignment="0" min="-2" pref="164" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -85,7 +85,7 @@
     <Component class="javax.swing.JButton" name="closeButton">
       <Properties>
         <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
-          <action class="ke.go.moh.oec.reception.gui.AboutBox" id="closeAboutBox" methodName="closeAboutBox"/>
+          <action class="ke.go.moh.oec.reception.gui.AboutDialog" id="closeAboutBox" methodName="closeAboutBox"/>
         </Property>
         <Property name="name" type="java.lang.String" value="closeButton" noResource="true"/>
       </Properties>

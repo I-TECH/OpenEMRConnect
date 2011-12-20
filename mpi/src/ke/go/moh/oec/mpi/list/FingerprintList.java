@@ -71,6 +71,7 @@ public class FingerprintList {
                 f.setTechnologyType(technologyType);
                 fingerprintList.add(f);
             }
+            Sql.close(rs);
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
@@ -116,8 +117,7 @@ public class FingerprintList {
                     Sql.execute(conn, sql);
                 }
             }
-        }
-        else if (oldEntries) {
+        } else if (oldEntries) {
             returnList = oldList;
         }
         if (returnList.isEmpty()) {

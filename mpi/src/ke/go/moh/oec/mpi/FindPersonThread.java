@@ -29,6 +29,8 @@ import ke.go.moh.oec.mpi.match.FingerprintMatch;
 import ke.go.moh.oec.mpi.list.PersonList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
 
 /**
  * One thread that can be used for concurrent processing of a Find Person request.
@@ -94,23 +96,35 @@ public class FindPersonThread implements Runnable {
             Scorecard s = searchTerms.scorePersonMatch(pm);
             List<FingerprintMatch> fMatchList = pm.getFingerprintMatchList();
             if (fSearchList != null && fMatchList != null) {
-                int maxScore = 0;
+                double maxScore = 0.0;
                 for (FingerprintMatch fSearch : fSearchList) {
                     for (FingerprintMatch fMatch : fMatchList) {
                         boolean match = fSearch.match(fMatch);
                         if (match) {
                             s.setFingerprintMatched(true);
-                            int score = fSearch.score();
+                            double score = fSearch.score();
                             if (score > maxScore) {
                                 maxScore = score;
                             }
                         }
                     }
                 }
-                s.addScore(maxScore);
+                final double FINGERPRINT_WEIGHT = 5.0;
+                s.addScore(maxScore, FINGERPRINT_WEIGHT); // Give fingerprint matches a weight of 5.
+                if (Mediator.testLoggerLevel(Level.FINEST)) {
+                    Mediator.getLogger(FindPersonThread.class.getName()).log(Level.FINEST,
+                            "Score {0},{1} total {2},{3} comparing fingerprints with person GUID {4}}",
+                            new Object[]{maxScore, FINGERPRINT_WEIGHT, s.getTotalScore(), s.getTotalWeight(), pm.getPerson().getPersonGuid()});
+                }
             }
             if (s.getScore() > CandidateSet.MIN_SCORE || s.isFingerprintMatched()) {
                 candidateSet.add(pm, s);
+            }
+        }
+
+        if (fSearchList != null && !fSearchList.isEmpty()) {
+            for (FingerprintMatch f : fSearchList) {
+                f.destroy();
             }
         }
     }

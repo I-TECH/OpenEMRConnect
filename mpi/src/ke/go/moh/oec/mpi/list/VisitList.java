@@ -36,11 +36,20 @@ import ke.go.moh.oec.mpi.Sql;
  */
 public class VisitList {
 
+    /**
+     * Checks to see if the visit reported is already in the database.
+     * If not, inserts it.
+     * 
+     * @param conn database connection to use.
+     * @param visitTypeId type of visit that happened.
+     * @param personId database person_id to identify the person who had a visit.
+     * @param visit additional visit information.
+     */
     public static void update(Connection conn, int visitTypeId, int personId, Visit visit) {
         if (visit != null && visit.getVisitDate() != null) {
             String addressId = Sql.getAddressId(conn, visit.getAddress());
             Date visitDate = visit.getVisitDate();
-            String sql = "SELECT 1 FROM visit WHERE visit_type_id = " + visitTypeId
+            String sql = "SELECT * FROM visit WHERE visit_type_id = " + visitTypeId
                     + " AND person_id = " + personId + " AND visit_date = " + Sql.quote(visitDate);
             if (!Sql.resultExists(conn, sql)) {
                 sql = "INSERT INTO visit (visit_type_id, person_id, address_id, visit_date, date_created) values (\n"

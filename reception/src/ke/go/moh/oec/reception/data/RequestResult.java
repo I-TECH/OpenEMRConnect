@@ -30,7 +30,7 @@ package ke.go.moh.oec.reception.data;
  */
 public class RequestResult {
 
-    private boolean successful = true;
+    private boolean successful = false;
     private Object data;
 
     public Object getData() {

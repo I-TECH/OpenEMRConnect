@@ -35,16 +35,29 @@ public class ImagedFingerprint {
 
     private Fingerprint fingerprint;
     private BufferedImage image;
+    private String quality = "Unknown quality.";
     private boolean sent = false;
+    private boolean placeholder = false;
 
-    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image) {
+    public ImagedFingerprint(Fingerprint fingerprint) {
         this.fingerprint = fingerprint;
-        this.image = image;
     }
 
-    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image, boolean sent) {
+    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image, String quality) {
         this.fingerprint = fingerprint;
         this.image = image;
+        this.quality = quality;
+    }
+
+    public ImagedFingerprint(BufferedImage image, boolean placeholder) {
+        this.image = image;
+        this.placeholder = placeholder;
+    }
+
+    public ImagedFingerprint(Fingerprint fingerprint, BufferedImage image, String quality, boolean sent) {
+        this.fingerprint = fingerprint;
+        this.image = image;
+        this.quality = quality;
         this.sent = sent;
     }
 
@@ -64,12 +77,24 @@ public class ImagedFingerprint {
         this.image = image;
     }
 
+    public String getQuality() {
+        return quality;
+    }
+
+    public void setQuality(String quality) {
+        this.quality = quality;
+    }
+
     public boolean isSent() {
         return sent;
     }
 
     public void setSent(boolean sent) {
         this.sent = sent;
+    }
+
+    public boolean isPlaceholder() {
+        return placeholder;
     }
 
     @Override
@@ -81,7 +106,10 @@ public class ImagedFingerprint {
             return false;
         }
         final ImagedFingerprint other = (ImagedFingerprint) obj;
-        if (this.fingerprint != other.fingerprint && (this.fingerprint == null || !this.fingerprint.getFingerprintType().equals(other.fingerprint.getFingerprintType()))) {
+        if (this.fingerprint == null || other.fingerprint == null) {
+            return false;
+        }
+        if (this.fingerprint.getFingerprintType() != other.fingerprint.getFingerprintType()) {
             return false;
         }
         return true;

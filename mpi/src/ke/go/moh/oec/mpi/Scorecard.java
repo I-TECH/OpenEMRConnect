@@ -26,25 +26,26 @@ package ke.go.moh.oec.mpi;
 
 /**
  * Provides data for scoring a set of search terms against a single person
- * from the database. Allows various tests to add to the score so that
- * the score can be averaged in the end. Records whether there was a
- * fingerptint match or not.
+ * from the database, using weighted scores. Allows various tests to add their
+ * weighted scores to the scorecard, so that the composite score can be
+ * computed in the end.
+ * Also records whether there was a fingerprint match or not,
+ * and which site, if any, a site-specific person identifier matched against.
  * 
  * @author Jim Grace
  */
 public class Scorecard {
 
-    private int sum = 0;
-    private int count = 0;
+    /** Sum of the scores so far. */
+    private double totalScore = 0.0;
+    /** Sum of the scales so far. */
+    private double totalWeight = 0.0;
+    /** Indication whether there was a fingerprint match */
     private boolean fingerprintMatched = false;
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
+    /** Site name, if any, against which we had a site-specific person identifier match. */
+    private String siteName = null;
+    /** Scale within which to report the final score. */
+    private static final int SCORE_SCALE = 100;
 
     public boolean isFingerprintMatched() {
         return fingerprintMatched;
@@ -54,22 +55,52 @@ public class Scorecard {
         this.fingerprintMatched = fingerprintMatched;
     }
 
-    public int getSum() {
-        return sum;
+    public String getSiteName() {
+        return siteName;
     }
 
-    public void setSum(int sum) {
-        this.sum = sum;
+    public void setSiteName(String clinicName) {
+        this.siteName = clinicName;
     }
 
-    public void addScore(int score) {
-        this.sum += score;
-        count++;
+    public double getTotalScore() {
+        return totalScore;
     }
 
+    public double getTotalWeight() {
+        return totalWeight;
+    }
+
+    /**
+     * Adds a weighted score to the scorecard.
+     * <p>
+     * The weights are accomplished as follows:
+     * The score for each individual item is a double precision floating point number
+     * between 0 and 1.
+     * The weight for each individual item is a positive double precision floating point number.
+     * 
+     * @param score raw score to add (0.0 - 1.0)
+     * @param weight weight for this score - how heavily it should count.
+     */
+    public void addScore(double score, double weight) {
+        totalScore += score * weight;
+        totalWeight += weight;
+    }
+
+    /**
+     * Gets the composite score from this scorecard. The composite score
+     * is initially computed as a double precision floating point number
+     * by adding all the weighted scores and dividing by the total weights.
+     * This gives a score in the range 0.0 to 1.0.
+     * This score is then converted to an integer by multiplying it by the
+     * scale value SCORE_SCALE to return an integer in the range 0 to SCORE_SCALE.
+     * @return 
+     */
     public int getScore() {
-        if (count != 0) { // Protect against divide by zero.
-            return sum / count;
+        if (totalWeight != 0.0) { // Protect against divide by zero.
+            double doubleScore = totalScore / totalWeight;
+            int intScore = (int) (doubleScore * SCORE_SCALE);
+            return intScore;
         } else {
             return 0;
         }

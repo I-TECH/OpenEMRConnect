@@ -578,13 +578,6 @@ is divided into following sections:
         </propertyfile>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-jar.properties}"/>
-            <param location="${project.oeclib}" name="call.subproject"/>
-            <param location="${project.oeclib}/build.xml" name="call.script"/>
-            <param name="call.target" value="jar"/>
-            <param name="transfer.built-jar.properties" value="${built-jar.properties}"/>
-        </antcall>
-        <antcall target="-maybe-call-dep">
-            <param name="call.built.properties" value="${built-jar.properties}"/>
             <param location="${project.oeclib-1}" name="call.subproject"/>
             <param location="${project.oeclib-1}/build.xml" name="call.script"/>
             <param name="call.target" value="jar"/>
@@ -857,11 +850,12 @@ is divided into following sections:
             <classpath>
                 <path path="${javac.classpath}"/>
             </classpath>
-            <fileset dir="${src.dir}" excludes="${excludes}" includes="${includes}">
+            <fileset dir="${src.dir}" excludes="*.java,${excludes}" includes="${includes}">
                 <filename name="**/*.java"/>
             </fileset>
             <fileset dir="${build.generated.sources.dir}" erroronmissingdir="false">
                 <include name="**/*.java"/>
+                <exclude name="*.java"/>
             </fileset>
         </javadoc>
         <copy todir="${dist.javadoc.dir}">
@@ -1026,13 +1020,6 @@ is divided into following sections:
         <propertyfile file="${built-clean.properties}">
             <entry key="${basedir}" value=""/>
         </propertyfile>
-        <antcall target="-maybe-call-dep">
-            <param name="call.built.properties" value="${built-clean.properties}"/>
-            <param location="${project.oeclib}" name="call.subproject"/>
-            <param location="${project.oeclib}/build.xml" name="call.script"/>
-            <param name="call.target" value="clean"/>
-            <param name="transfer.built-clean.properties" value="${built-clean.properties}"/>
-        </antcall>
         <antcall target="-maybe-call-dep">
             <param name="call.built.properties" value="${built-clean.properties}"/>
             <param location="${project.oeclib-1}" name="call.subproject"/>

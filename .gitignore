@@ -34,7 +34,24 @@ Icon?
 Thumbs.db
 
 # NetBeans #
-###########
+############
 */nbproject/private/*
 */build/*
 */dist/*
+
+# OpenEMRConnect log files #
+############################
+loggingserver/oec*.log
+loggingserver/oec.log.lck
+
+# Lock files #
+##############
+*/lockfile.lck
+*/*/lockfile.lck
+
+# Embedded databases #
+###################################
+*/QUEUEMANAGER_DATABASE/*
+*/*/QUEUEMANAGER_DATABASE/*
+reception/reception_database/*
+reception/*/reception_database/*

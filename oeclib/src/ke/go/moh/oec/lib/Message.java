@@ -34,7 +34,7 @@ class Message {
     /** Type of the message - see {@link MessageTypeRegistry} */
     private MessageType messageType;
     /** User data contents of the message */
-    private Object data;
+    private Object messageData;
     /**
      * Identifier of the message.
      * In the case of a new client request, this is a newly-generated message ID.
@@ -64,6 +64,10 @@ class Message {
      */
     private String ipAddressPort;
     /**
+     * IP Address which sent this message to us.
+     */
+    private String sendingIpAddress;
+    /**
      * Count of how many systems have sent this message so far.
      */
     private int hopCount;
@@ -76,16 +80,32 @@ class Message {
      */
     private String xml;
     /**
+     * XML string, compressed for network efficiency.
+     */
+    private byte[] compressedXml;
+    /**
+     * Length of the compressed XML string.
+     */
+    private int compressedXmlLength;
+    /**
      * Is a response expected to this message?
      */
     private boolean responseExpected;
 
-    public Object getData() {
-        return data;
+    public byte[] getCompressedXml() {
+        return compressedXml;
     }
 
-    public void setData(Object data) {
-        this.data = data;
+    public void setCompressedXml(byte[] compressedXml) {
+        this.compressedXml = compressedXml;
+    }
+
+    public int getCompressedXmlLength() {
+        return compressedXmlLength;
+    }
+
+    public void setCompressedXmlLength(int compressedXmlLength) {
+        this.compressedXmlLength = compressedXmlLength;
     }
 
     public String getDestinationAddress() {
@@ -120,6 +140,14 @@ class Message {
         this.ipAddressPort = ipAddressPort;
     }
 
+    public Object getMessageData() {
+        return messageData;
+    }
+
+    public void setMessageData(Object messageData) {
+        this.messageData = messageData;
+    }
+
     public String getMessageId() {
         return messageId;
     }
@@ -142,6 +170,14 @@ class Message {
 
     public void setResponseExpected(boolean responseExpected) {
         this.responseExpected = responseExpected;
+    }
+
+    public String getSendingIpAddress() {
+        return sendingIpAddress;
+    }
+
+    public void setSendingIpAddress(String sendingeIpAddress) {
+        this.sendingIpAddress = sendingeIpAddress;
     }
 
     public String getSourceAddress() {
