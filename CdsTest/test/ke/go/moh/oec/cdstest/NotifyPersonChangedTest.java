@@ -63,13 +63,13 @@ public class NotifyPersonChangedTest {
         Person p = new Person();
         List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
         PersonIdentifier personIdentifier = new PersonIdentifier();
-        personIdentifier.setIdentifier("14080-00001/2011");
+        personIdentifier.setIdentifier("14080-05284/2007");
         personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
         personIdentifierList.add(personIdentifier);
         p.setPersonIdentifierList(personIdentifierList);
-        p.setFirstName("Betty");
-        p.setLastName("chebet");
-        p.setMiddleName("Mulwo");
+        p.setFirstName("Caroline");
+        p.setMiddleName("Nasubo");
+        p.setLastName("Nyegenye");
         p.setSex(Person.Sex.F);
 //        p.setExpectedDeliveryDate(parseDate("2011-06-02"));
 //        p.setPregnancyEndDate(parseDate("2011-06-02"));
