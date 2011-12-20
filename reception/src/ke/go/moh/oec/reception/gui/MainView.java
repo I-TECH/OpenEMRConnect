@@ -1697,6 +1697,10 @@ public class MainView extends FrameView {
 
     @Action
     public void goBack() {
+        //to check:
+        //1. session.ClientType
+        //2. session.KnownClinicID
+        //3. session.current card name
         if (!currentCardName.equalsIgnoreCase("homeCard")) {
             if (currentCardName.equalsIgnoreCase("clinicIdCard")) {
                 showCard("homeCard");
