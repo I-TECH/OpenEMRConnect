@@ -107,16 +107,8 @@ class Message {
      */
     private int longestSegmentLength;
 
-    public byte[] getCompressedXml() {
-        return compressedXml;
-    }
-
     public void setCompressedXml(byte[] compressedXml) {
         this.compressedXml = compressedXml;
-    }
-
-    public int getCompressedXmlLength() {
-        return compressedXmlLength;
     }
 
     public void setCompressedXmlLength(int compressedXmlLength) {
@@ -234,7 +226,7 @@ class Message {
     public void setSourceName(String sourceName) {
         this.sourceName = sourceName;
     }
-    
+
     public boolean isToBeQueued() {
         return toBeQueued;
     }
@@ -243,12 +235,47 @@ class Message {
         this.toBeQueued = toBeQueued;
     }
 
-    public String getXml() {
-        return xml;
-    }
-
     public void setXml(String xml) {
         this.xml = xml;
+    }
+
+    /**
+     * Gets the message contents as compressed XML.
+     * Compresses the message if necessary to do this.
+     * 
+     * @return compressed XML message
+     */
+    public byte[] getCompressedXml() {
+        if (compressedXml == null && xml != null) {
+            Compresser.compress(this);
+        }
+        return compressedXml;
+    }
+
+    /**
+     * Gets the length of the compressed XML message.
+     * Compresses the message if necessary to do this.
+     * 
+     * @return compressed XML message length
+     */
+    public int getCompressedXmlLength() {
+        if (compressedXml == null && xml != null) {
+            Compresser.compress(this);
+        }
+        return compressedXmlLength;
+    }
+
+    /**
+     * Gets the (uncompressed) XML message.
+     * Uncompresses the message if necessary to do this.
+     * 
+     * @return (uncompressed) XML message
+     */
+    public String getXml() {
+        if (xml == null && compressedXml != null) {
+            Compresser.decompress(this);
+        }
+        return xml;
     }
 
     /**
@@ -260,7 +287,7 @@ class Message {
     public String summarize() {
         return summarize(true);
     }
-    
+
     /**
      * Summarizes the message in question. Returns the message type if known,
      * otherwise returns the root tag of the XML message. Also returns information
@@ -323,7 +350,7 @@ class Message {
             summary += ", longest=" + longestSegmentLength;
         }
         if (Mediator.testLoggerLevel(Level.FINER)) {
-            if (xml == null && decompressIfNeeded) {
+            if (xml == null && compressedXml != null && decompressIfNeeded) {
                 Compresser.decompress(this);
             }
             if (xml != null) {

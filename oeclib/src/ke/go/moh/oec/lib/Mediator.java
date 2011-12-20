@@ -335,7 +335,7 @@ public class Mediator implements IService {
         }
         return properties;
     }
-    
+
     /**
      * Gets the value of a named property from the standard properties list.
      *
@@ -377,7 +377,7 @@ public class Mediator implements IService {
         m.setMessageData(requestData);
         m.setSourceAddress(getProperty("Instance.Address"));
         m.setSourceName(getProperty("Instance.Name"));
-        
+
         /*
          * Determine the Type of message we are to send.
          */
@@ -506,11 +506,10 @@ public class Mediator implements IService {
             return null;
         }
         /*
-         * Pack the data into the XML message, and compress it.
+         * Pack the data into the XML message.
          */
         String xml = xmlPacker.pack(m);
         m.setXml(xml);
-        Compresser.compress(m);
         /*
          * If we may get a response to this message, add it to the list of responses we are expecting.
          */
@@ -588,7 +587,6 @@ public class Mediator implements IService {
         } else {
             String ourInstanceAddress = getProperty("Instance.Address");
             if (destinationAddress.equalsIgnoreCase(ourInstanceAddress)) { // If the message is addressed to us:
-                Compresser.decompress(m);
                 xmlPacker.unpack(m);
                 if (m.getMessageData() == null) {
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,

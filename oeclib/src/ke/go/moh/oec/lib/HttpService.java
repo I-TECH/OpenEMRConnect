@@ -73,6 +73,8 @@ class HttpService {
     MessageDigest messageDigest;
     Map<String, Date> unreachableIpPorts = new HashMap<String, Date>();
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final String HTTP_CONTENT_XML = "application/xml";
+    private static final String HTTP_CONTENT_ZIP = "application/zip";
     private static final int HTTP_RESPONSE_OK = 200;
     private static final int HTTP_RESPONSE_LENGTH_REQUIRED = 411;
     private static final int HTTP_RESPONSE_MD5_MISMATCH = 449; // No obvious choice here, this code is Microsoft "Retry With"
@@ -137,33 +139,45 @@ class HttpService {
                 + "&tobequeued=" + m.isToBeQueued() + "&hopcount=" + m.getHopCount() + "&port=" + port;
         try {
             /*Code thats performing a task should be placed in the try catch statement especially in the try part*/
-            byte[] compressedXml = m.getCompressedXml();
-            int compressedXmlLength = m.getCompressedXmlLength();
+            byte[] messageBytes;
+            int messageLength;
+            String contentType;
+            if (nextHop.isZip()) {
+                messageBytes = m.getCompressedXml();
+                messageLength = m.getCompressedXmlLength();
+                contentType = HTTP_CONTENT_ZIP;
+            } else {
+                String xml = m.getXml();
+                messageBytes = xml.getBytes();
+                messageLength = messageBytes.length;
+                contentType = HTTP_CONTENT_XML;
+            }
             int sent = 0;
-            int toSend = compressedXmlLength;
-            if (compressedXmlLength > maxSize) { // If we're going to split this message:
+            int toSend = messageLength;
+            if (messageLength > maxSize) { // If we're going to split this message:
                 // Append the next message ID onto the URL.
                 url += "&id=" + ++id + "&segment=";
             }
             int segment = 0;
-            while (sent < compressedXmlLength) {
+            while (sent < messageLength) {
                 String thisUrl = url;
-                if (compressedXmlLength > maxSize) {
+                if (messageLength > maxSize) {
                     thisUrl = url + Integer.toString(++segment);
-                    if (compressedXmlLength - sent > maxSize) {
+                    if (messageLength - sent > maxSize) {
                         toSend = maxSize;
                     } else {
-                        toSend = compressedXmlLength - sent;
+                        toSend = messageLength - sent;
                         thisUrl = thisUrl + "&end";
                     }
                 }
                 HttpURLConnection connection = (HttpURLConnection) new URL(thisUrl).openConnection();
-                String md5 = computeMd5(compressedXml, sent, toSend);
+                String md5 = computeMd5(messageBytes, sent, toSend);
                 connection.setRequestProperty("Content-MD5", md5);
+                connection.setRequestProperty("Content-Type", contentType);
                 connection.setDoOutput(true);
                 OutputStream output = connection.getOutputStream();
 
-                output.write(compressedXml, sent, toSend);
+                output.write(messageBytes, sent, toSend);
                 output.close();
                 int responseCode = connection.getResponseCode();
                 //
@@ -326,6 +340,7 @@ class HttpService {
             int id = 0;
             int segment = 0;
             boolean end = false;
+            boolean zipped = false;
             //
             // Parse the URL arguments
             //
@@ -361,6 +376,10 @@ class HttpService {
                  */
                 Headers headers = exchange.getRequestHeaders();
                 int responseCode = HTTP_RESPONSE_OK;
+                String contentType = headers.getFirst("Content-Type");
+                if (contentType != null && contentType.compareTo(HTTP_CONTENT_ZIP) == 0) {
+                    zipped = true;
+                }
                 boolean outOfSequence = false;
                 int bufferSize = 50000; // Default buffer size if no Content-Length header is present.
                 String contentLength = headers.getFirst("Content-Length");
@@ -370,17 +389,17 @@ class HttpService {
                     responseCode = HTTP_RESPONSE_LENGTH_REQUIRED;
                 }
                 InputStream input = exchange.getRequestBody();
-                byte[] compressedXml = new byte[bufferSize];
-                int compressedXmlLength = input.read(compressedXml);
+                byte[] messageBytes = new byte[bufferSize];
+                int messageLength = input.read(messageBytes);
                 input.close();
                 String md5Reported = headers.getFirst("Content-MD5");
                 if (md5Reported != null) {
-                    String md5Computed = computeMd5(compressedXml, 0, compressedXmlLength);
+                    String md5Computed = computeMd5(messageBytes, 0, messageLength);
                     if (md5Reported.compareTo(md5Computed) != 0) {
                         responseCode = HTTP_RESPONSE_MD5_MISMATCH;
                         Logger.getLogger(HttpService.class.getName()).log(Level.FINE,
                                 "MD5 reported as {0}, computed as {1}, length expected {2}, found {3}",
-                                new Object[]{md5Reported, md5Computed, bufferSize, compressedXmlLength});
+                                new Object[]{md5Reported, md5Computed, bufferSize, messageLength});
                     }
                 } else if (hop != null && hop.isMd5Required()) {
                     responseCode = HTTP_RESPONSE_MD5_REQUIRED;
@@ -389,7 +408,7 @@ class HttpService {
                     boolean completeMessage = true;
                     m.setSendingIpAddress(sendingIpAddress);
                     m.setSegmentCount(1);
-                    m.setLongestSegmentLength(compressedXmlLength);
+                    m.setLongestSegmentLength(messageLength);
                     if (id > 0) {
                         completeMessage = false;
                         PartialMessage pm = null;
@@ -397,24 +416,24 @@ class HttpService {
                             pm = new PartialMessage();
                             pm.id = id;
                             pm.segment = segment;
-                            byte[] a = Arrays.copyOf(compressedXml, compressedXmlLength);
+                            byte[] a = Arrays.copyOf(messageBytes, messageLength);
                             pm.messageSegments.add(a);
-                            pm.length += compressedXmlLength;
+                            pm.length += messageLength;
                             partialMessages.put(sendingIpAddressAndPort, pm);
                         } else {
                             pm = partialMessages.get(sendingIpAddressAndPort);
                             if (pm != null) {
                                 if (pm.id == id && ++pm.segment == segment) {
-                                    byte[] a = Arrays.copyOf(compressedXml, compressedXmlLength);
+                                    byte[] a = Arrays.copyOf(messageBytes, messageLength);
                                     pm.messageSegments.add(a);
-                                    pm.length += compressedXmlLength;
+                                    pm.length += messageLength;
                                     if (end) {
-                                        compressedXmlLength = pm.length;
-                                        compressedXml = new byte[compressedXmlLength];
+                                        messageLength = pm.length;
+                                        messageBytes = new byte[messageLength];
                                         int offset = 0;
                                         int longest = 0;
                                         for (byte[] seg : pm.messageSegments) {
-                                            System.arraycopy(seg, 0, compressedXml, offset, seg.length);
+                                            System.arraycopy(seg, 0, messageBytes, offset, seg.length);
                                             offset += seg.length;
                                             if (seg.length > longest) {
                                                 longest = seg.length;
@@ -447,8 +466,13 @@ class HttpService {
                     }
                     if (completeMessage) {
                         m.setSendingIpAddress(sendingIpAddress);
-                        m.setCompressedXml(compressedXml);
-                        m.setCompressedXmlLength(compressedXmlLength);
+                        if (zipped) {
+                            m.setCompressedXml(messageBytes);
+                            m.setCompressedXmlLength(messageLength);
+                        } else {
+                            String xml = new String(messageBytes, 0, messageLength);
+                            m.setXml(xml);
+                        }
                         /*
                          * Process the message.
                          */
