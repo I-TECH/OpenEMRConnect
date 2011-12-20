@@ -51,9 +51,15 @@ loggingserver/oec.log.lck
 */*/*.lck
 
 # Embedded databases #
-###################################
+######################
 */QUEUEMANAGER_DATABASE/*
 */*/QUEUEMANAGER_DATABASE/*
 reception/reception_database/*
 reception/*/reception_database/*
+
+# Eclipse #
+###########
+.project
+.classpath
+.settings/
 /cpad_companion/.settings/
