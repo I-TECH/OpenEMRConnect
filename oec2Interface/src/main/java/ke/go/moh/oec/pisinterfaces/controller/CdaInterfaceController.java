@@ -1,11 +1,6 @@
 package ke.go.moh.oec.pisinterfaces.controller;
 
-import java.io.BufferedReader;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
-
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -14,6 +9,8 @@ import java.util.Properties;
 import ke.go.moh.oec.pisinterfaces.beans.PatientIdentification;
 import ke.go.moh.oec.pisinterfaces.util.JavaToXML;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,9 +30,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @RequestMapping("/*.htm")
 @SessionAttributes("patientId")
 public class CdaInterfaceController {
-	String stringUrl = null;
-	@Context
-	ServletContext context;
+	protected String stringUrl = null;
+	private Log log=LogFactory.getLog(CdaInterfaceController.class);
 
 	public CdaInterfaceController() {
 		// TODO Auto-generated constructor stub
@@ -69,7 +65,7 @@ public class CdaInterfaceController {
 	public String onSubmit(
 			@ModelAttribute("patientIdentification") PatientIdentification patientId) {
 
-//		BufferedReader rd = null;
+
 		OutputStreamWriter wr = null;
 		Properties props = new Properties();
 
@@ -80,7 +76,9 @@ public class CdaInterfaceController {
 			in.close();
 
 			String stringUrl = props.getProperty("urlMirth");
+			System.out.println(patientId.toString());
 			String s = JavaToXML.objectToXml(patientId);
+			log.info("Message to send : \n"+s);
 			System.out.println("Connecting to URL"+stringUrl);
 			URL url = new URL(stringUrl);
 			URLConnection conn = url.openConnection();
@@ -88,18 +86,7 @@ public class CdaInterfaceController {
 			wr = new OutputStreamWriter(conn.getOutputStream());
 			wr.write(s);
 			wr.flush();
-//			System.out.println(s);
-//			// Get the response
-//			rd = new BufferedReader(
-//					new InputStreamReader(conn.getInputStream()));
-//			String line;
-//			String resp = "";
-//			while ((line = rd.readLine()) != null) {
-//				System.out.println(line);
-//				resp += line;
-//			}
 			wr.close();
-//			rd.close();
 			return "redirect:sendSuccess.htm";
 		} catch (Exception e) {
 			e.printStackTrace();

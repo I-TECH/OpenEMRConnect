@@ -26,9 +26,9 @@
 
 						<form:option value="0" label="Select" />
 
-						<form:option value="ClinicalId" label="ClinicalId" />
+						<form:option value="1" label="ClinicalId" />
 
-						<form:option value="HDSS" label="HDSS" />
+						<form:option value="2" label="HDSS" />
 
 
 					</form:select>
