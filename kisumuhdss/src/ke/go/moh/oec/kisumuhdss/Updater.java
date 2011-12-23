@@ -29,6 +29,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,8 +53,8 @@ import ke.go.moh.oec.lib.Mediator;
 public class Updater {
 
     private static int lastReceivedTransaction = -1;
-    private Connection connMaster = null; // Connection for master query
-    private Connection connDetail = null; // Connection for detail query
+    private Connection connTransaction = null; // Connection for the shadow database transaction query
+    private Connection connTransactionId = null; // Connection for the shadow datatabase transaction id.
     private final static String HDSS_COMPANION_NAME = "HDSS COMPANION";
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
@@ -91,8 +92,8 @@ public class Updater {
             String url = Mediator.getProperty("Shadow.url");
             String username = Mediator.getProperty("Shadow.username");
             String password = Mediator.getProperty("Shadow.password");
-            connMaster = DriverManager.getConnection(url, username, password);
-            connDetail = DriverManager.getConnection(url, username, password);
+            connTransaction = DriverManager.getConnection(url, username, password);
+            connTransactionId = DriverManager.getConnection(url, username, password);
         } catch (Exception ex) {
             Logger.getLogger(Updater.class.getName()).log(Level.SEVERE,
                     "Can''t connect to the database -- Please check the database and try again.", ex);
@@ -111,8 +112,14 @@ public class Updater {
         Mediator.getLogger(Updater.class.getName()).log(Level.FINER, "SQL Query:\n{0}", sql);
         ResultSet rs = null;
         try {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            rs = stmt.executeQuery();
+            Statement statement = conn.createStatement();
+            // The following call sets the fetch size equal to the minimum integer value (largest negative value).
+            // This is a special value that is interpreted by the MySQL JDBC driver to fetch only one line
+            // at a time from the database into memory. Otherwise it would try to fetch the entire query
+            // result into memory. Because of the size of the MPI data, this can cause
+            // out of memory errors.
+            statement.setFetchSize(Integer.MIN_VALUE);
+            rs = statement.executeQuery(sql);
         } catch (SQLException ex) {
             Logger.getLogger(Updater.class.getName()).log(Level.SEVERE,
                     "Error executing SQL Query " + sql, ex);
@@ -135,6 +142,7 @@ public class Updater {
             PreparedStatement stmt = conn.prepareStatement(sql);
             returnValue = stmt.execute();
             int updateCount = stmt.getUpdateCount();
+            stmt.close();
             Mediator.getLogger(Updater.class.getName()).log(Level.FINE, "{0} rows updated.", updateCount);
         } catch (SQLException ex) {
             Logger.getLogger(Updater.class.getName()).log(Level.SEVERE,
@@ -155,14 +163,14 @@ public class Updater {
         if (lastReceivedTransaction < 0) {
             lastReceivedTransaction = 0;
             String sql = "SELECT last_received_transaction_id FROM destination WHERE name = '" + HDSS_COMPANION_NAME + "'";
-            ResultSet rs = query(connMaster, sql);
+            ResultSet rs = query(connTransactionId, sql);
             try {
                 if (rs.next()) {
                     lastReceivedTransaction = rs.getInt("last_received_transaction_id");
                 } else {
                     rs.close();
                     sql = "INSERT INTO destination SET name = '" + HDSS_COMPANION_NAME + "', last_received_transaction_id = 0";
-                    execute(connMaster, sql);
+                    execute(connTransactionId, sql);
                 }
                 rs.close();
             } catch (SQLException ex) {
@@ -179,46 +187,68 @@ public class Updater {
      */
     public void updateAllTransactions() throws SQLException {
         int trans = getLastReceivedTransaction();
-        String sql = "SELECT `id`, `type`, `table_id` FROM `transaction` WHERE `id` > " + trans + " ORDER BY `id`";
-        ResultSet rsMaster = query(connMaster, sql);
-        while (rsMaster.next()) {
-            int transId = rsMaster.getInt("id");
-            String transactionType = rsMaster.getString("type");
-            int tableId = rsMaster.getInt("table_id");
-            List<Row> rowList = new ArrayList<Row>();
-            sql = "select d.data, c.name as column_name\n"
-                    + "from transaction_data d\n"
-                    + "join `column` c on c.id = d.column_id\n"
-                    + "where d.transaction_id = " + transId;
-            ResultSet rsDetail = query(connDetail, sql);
-            String hdssId = null;
-            while (rsDetail.next()) {
-                String columnName = rsDetail.getString("column_name");
-                String data = rsDetail.getString("data");
-                if (columnName.equals("individid")) {
-                    hdssId = data;
-                } else {
-                    Row row = new Row(rsDetail.getString("column_name"), rsDetail.getString("data"));
-                    rowList.add(row);
+        String sql = "SELECT t.`id`, t.`type`, d.`data`, c.`name`\n"
+                + "FROM `transaction` t\n"
+                + "JOIN `transaction_data` d on d.transaction_id = t.id\n"
+                + "JOIN `column` c on c.id = d.column_id\n"
+                + "WHERE t.`id` > " + trans + "\n"
+                + "ORDER BY t.`id`";
+        ResultSet rs = query(connTransaction, sql);
+        int currentTransactionId = 0;
+        List<Row> rowList = null;
+        String transactionType = null;
+        String hdssId = null;
+        while (rs.next()) {
+            int transactionId = rs.getInt("id");
+            if (transactionId != currentTransactionId) {
+                if (currentTransactionId != 0) {
+                    boolean status = updateTransactionAndId(transactionType, hdssId, rowList, currentTransactionId);
+                    if (!status) {
+                        currentTransactionId = 0;
+                        break;
+                    }
                 }
+                currentTransactionId = transactionId;
+                transactionType = rs.getString("type");
+                rowList = new ArrayList<Row>();
             }
-            rsDetail.close();
-            boolean status = updateTransaction(transactionType, hdssId, rowList);
-            if (status) {
-            lastReceivedTransaction = transId;
-            sql = "UPDATE `destination` SET `last_received_transaction_id` = " + transId + " WHERE `name` = '" + HDSS_COMPANION_NAME + "'";
-            try {
-                execute(connDetail, sql);
-            } catch (Exception e) {
-                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update last_received_transaction_id.", e);
-                break;
-            }
+            String columnName = rs.getString("name");
+            String data = rs.getString("data");
+            if (columnName.equals("individid")) {
+                hdssId = data;
             } else {
-                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update MPI.");
-                break;
+                Row row = new Row(columnName, data);
+                rowList.add(row);
             }
         }
-        rsMaster.close();
+        if (currentTransactionId != 0) {
+            boolean status = updateTransactionAndId(transactionType, hdssId, rowList, currentTransactionId);
+        }
+    }
+
+    /**
+     * Processes a single transaction and, if successful,
+     * updates the last_received_transaction_id in the database.
+     * 
+     * @param transactionType Type of the transaction, "INSERT", "UPDATE", or "DELETE".
+     * @param hdssId HDSS ID of the person this transaction is for.
+     * @param rowList List of transaction row details (column name/value pairs).
+     * @param transactionId ID of the transaction we are processing.
+     * @return true if transaction processing succeeded, otherwise false.
+     */
+    private boolean updateTransactionAndId(String transactionType, String hdssId, List<Row> rowList, int transactionId) {
+        boolean status = updateTransaction(transactionType, hdssId, rowList);
+        if (status) {
+            lastReceivedTransaction = transactionId;
+            String sql = "UPDATE `destination` SET `last_received_transaction_id` = " + transactionId + " WHERE `name` = '" + HDSS_COMPANION_NAME + "'";
+            try {
+                execute(connTransactionId, sql);
+            } catch (Exception e) {
+                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Couldn't update last_received_transaction_id.", e);
+                status = false;
+            }
+        }
+        return status;
     }
 
     /**
@@ -271,6 +301,7 @@ public class Updater {
                 value = "";
             } else {
                 value = value.trim(); // HDSS database values have a lot of trailing spaces.
+                value = value.replace('\u2018', '\'').replace('\u2019', '\''); // Some values have "curly" quote characters -- cause problems for XML.
             }
             if (r.name.equals("fname")) {
                 p.setFirstName(value);
@@ -376,10 +407,18 @@ public class Updater {
         } else {
             p.setFingerprintList(null); // No need to return exisiting fingerprints.
         }
-        PersonResponse pr = requestMpi(p, requestTypeId);
         boolean returnStatus = false; // Assume failure for the moment.
-        if (pr != null && pr.isSuccessful()) {
-            returnStatus = true; // We succeeded!
+        //
+        // If we are creating a new person entry, and the person has already died,
+        // don't bother putting the entry in the MPI. However if this is an update
+        // and the person has died, we want to update the person's status in the MPI.
+        if (requestTypeId == RequestTypeId.CREATE_PERSON_MPI && p.getDeathdate() != null) {
+            returnStatus = true; // Claim success; we won't insert a dead person into the MPI.
+        } else {
+            PersonResponse pr = requestMpi(p, requestTypeId);
+            if (pr != null && pr.isSuccessful()) {
+                returnStatus = true; // We succeeded!
+            }
         }
         return returnStatus;
     }

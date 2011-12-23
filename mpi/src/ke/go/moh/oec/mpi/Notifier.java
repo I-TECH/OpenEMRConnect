@@ -40,7 +40,8 @@ public class Notifier {
 
     /**
      * Notifies clinics of certain changes in person status for those
-     * who are regular clients at those clinics.
+     * who are regular clients at those clinics. Notification is sent only
+     * if the consent form has been signed.
      * <p>
      * The notification is sent to the Clinical Document Store at the same
      * facility as the reception system where the person was last seen.
@@ -55,53 +56,55 @@ public class Notifier {
      * @param p updated person
      */
     public static void notify(Person p) {
-        Visit v = p.getLastRegularVisit();
-        if (v != null) {
-            String address = v.getAddress();
-            if (address != null) {
-                if (p.getLastMoveDate() != null) {
-                    Person per = p.clone();
-                    // Remove any other possible alert data, so this alert is for one purpose only:
-                    per.setExpectedDeliveryDate(null);
-                    per.setPregnancyEndDate(null);
-                    per.setDeathdate(null);
-                    // Send the alert (notification):
-                    sendNotify(per, address);
-                    // Remove this data from our in-memory person, so we don't keep sending the same alert next time.
-                    p.setLastMoveDate(null);
-                }
-                if (p.getExpectedDeliveryDate() != null) {
-                    Person per = p.clone();
-                    // Remove any other possible alert data, so this alert is for one purpose only:
-                    per.setLastMoveDate(null);
-                    per.setPregnancyEndDate(null);
-                    per.setDeathdate(null);
-                    // Send the alert (notification):
-                    sendNotify(per, address);
-                    // Remove this data from our in-memory person, so we don't keep sending the same alert next time.
-                    p.setExpectedDeliveryDate(null);
-                }
-                if (p.getPregnancyEndDate() != null) {
-                    Person per = p.clone();
-                    // Remove any other possible alert data, so this alert is for one purpose only:
-                    per.setLastMoveDate(null);
-                    per.setExpectedDeliveryDate(null);
-                    per.setDeathdate(null);
-                    // Send the alert (notification):
-                    sendNotify(per, address);
-                    // Remove this data from our in-memory person, so we don't keep sending the same alert next time.
-                    p.setPregnancyEndDate(null);
-                }
-                if (p.getDeathdate() != null) {
-                    Person per = p.clone();
-                    // Remove any other possible alert data, so this alert is for one purpose only:
-                    per.setLastMoveDate(null);
-                    per.setExpectedDeliveryDate(null);
-                    per.setPregnancyEndDate(null);
-                    // Send the alert (notification):
-                    sendNotify(per, address);
-                    // Remove this data from our in-memory person, so we don't keep sending the same alert next time.
-                    p.setDeathdate(null);
+        if (p.getConsentSigned() == Person.ConsentSigned.yes) {
+            Visit v = p.getLastRegularVisit();
+            if (v != null) {
+                String address = v.getAddress();
+                if (address != null) {
+                    if (p.getLastMoveDate() != null) {
+                        Person per = p.clone();
+                        // Remove any other possible alert data, so this alert is for one purpose only:
+                        per.setExpectedDeliveryDate(null);
+                        per.setPregnancyEndDate(null);
+                        per.setDeathdate(null);
+                        // Send the alert (notification):
+                        sendNotify(per, address);
+                        // Remove this data from our in-memory person, so we don't keep sending the same alert next time.
+                        p.setLastMoveDate(null);
+                    }
+                    if (p.getExpectedDeliveryDate() != null) {
+                        Person per = p.clone();
+                        // Remove any other possible alert data, so this alert is for one purpose only:
+                        per.setLastMoveDate(null);
+                        per.setPregnancyEndDate(null);
+                        per.setDeathdate(null);
+                        // Send the alert (notification):
+                        sendNotify(per, address);
+                        // Remove this data from our in-memory person, so we don't keep sending the same alert next time.
+                        p.setExpectedDeliveryDate(null);
+                    }
+                    if (p.getPregnancyEndDate() != null) {
+                        Person per = p.clone();
+                        // Remove any other possible alert data, so this alert is for one purpose only:
+                        per.setLastMoveDate(null);
+                        per.setExpectedDeliveryDate(null);
+                        per.setDeathdate(null);
+                        // Send the alert (notification):
+                        sendNotify(per, address);
+                        // Remove this data from our in-memory person, so we don't keep sending the same alert next time.
+                        p.setPregnancyEndDate(null);
+                    }
+                    if (p.getDeathdate() != null) {
+                        Person per = p.clone();
+                        // Remove any other possible alert data, so this alert is for one purpose only:
+                        per.setLastMoveDate(null);
+                        per.setExpectedDeliveryDate(null);
+                        per.setPregnancyEndDate(null);
+                        // Send the alert (notification):
+                        sendNotify(per, address);
+                        // Remove this data from our in-memory person, so we don't keep sending the same alert next time.
+                        p.setDeathdate(null);
+                    }
                 }
             }
         }

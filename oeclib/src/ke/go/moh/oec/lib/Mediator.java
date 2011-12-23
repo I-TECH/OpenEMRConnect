@@ -37,6 +37,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.SimpleFormatter;
 import ke.go.moh.oec.PersonRequest;
@@ -135,7 +136,7 @@ public class Mediator implements IService {
      * properly be refactored to follow the Java singleton pattern.)
      * <p>
      * If we are to use our own distributed logging service, set up the
-     * LoggingHandler to handle all calls to the standard logger.
+     * LoggingServiceHandler to handle all calls to the standard logger.
      * <p>
      * Allocate other library class objects as needed, and start them
      * as needed. In particular, the HttpManager and QueueManager need
@@ -143,13 +144,28 @@ public class Mediator implements IService {
      */
     public Mediator() {
         setLoggerLevel();
+        LogManager man = LogManager.getLogManager();
+        Logger rootLogger = man.getLogger("");
         if (useLoggingService) {
-            LogManager man = LogManager.getLogManager();
-            Logger rootLogger = man.getLogger("");
-            Handler oecHandler = new LoggingHandler(this);
+            Handler loggingServiceHandler = new LoggingServiceHandler(this);
             Formatter formatter = new SimpleFormatter();
-            oecHandler.setFormatter(formatter);
-            rootLogger.addHandler(oecHandler);
+            loggingServiceHandler.setFormatter(formatter);
+            rootLogger.addHandler(loggingServiceHandler);
+        }
+        String loggerFile = getProperty("Logger.File");
+        if (loggerFile != null && Boolean.parseBoolean(loggerFile)) {
+            try {
+                String logFileName = runtimeDirectory + "openemrconnect%g.log";
+                Handler loggingFileHandler = new FileHandler(logFileName, 100000, 100);
+                Formatter formatter = new SimpleFormatter();
+                loggingFileHandler.setFormatter(formatter);
+                loggingFileHandler.setLevel(loggerLevel);
+                rootLogger.addHandler(loggingFileHandler);
+            } catch (IOException ex) {
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Can''t start file logger.", ex);
+            } catch (SecurityException ex) {
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Can''t start file logger.", ex);
+            }
         }
         httpService = new HttpService(this);
         queueManager = new QueueManager(httpService);
@@ -297,16 +313,12 @@ public class Mediator implements IService {
     }
 
     /**
-     * Gets the value of a named property from a standard properties file.
-     *
-     * @param propertyName name of the property whose value we want
-     * @return the value of the requested property,
-     * or null if the property is not found.
+     * Gets the standard properties class.
+     * @return properties.
      * <p>
      * The default property file is named openemrconnect.properties.
-     * For debugging it may be
      */
-    public static String getProperty(String propertyName) {
+    public static Properties getProperties() {
         if (properties == null) {
             properties = new Properties();
             String propFileName = runtimeDirectory + "openemrconnect.properties";
@@ -320,6 +332,20 @@ public class Mediator implements IService {
                         propFileName);
                 System.exit(1);
             }
+        }
+        return properties;
+    }
+
+    /**
+     * Gets the value of a named property from the standard properties list.
+     *
+     * @param propertyName name of the property whose value we want
+     * @return the value of the requested property,
+     * or null if the property is not found.
+     */
+    public static String getProperty(String propertyName) {
+        if (properties == null) {
+            getProperties();
         }
         return properties.getProperty(propertyName);
     }
@@ -372,8 +398,11 @@ public class Mediator implements IService {
          * Note that if the message type is createPerson or modifyPerson, this
          * may be overridden by the caller's desire, below.
          */
-        //TODO: Make sure this can be overriden.
-        m.setResponseExpected(messageType.getResponseMessageType() != null);
+        if (messageType.getResponseMessageType() != null) {
+            m.setResponseExpected(true);
+        } else {
+            m.setResponseExpected(false);
+        }
         /*
          * Find the destination address and name. This is usually the default
          * destination for the message type. However if our caller is passing
@@ -388,6 +417,7 @@ public class Mediator implements IService {
         m.setDestinationName(messageType.getDefaultDestinationName());
         String messageId = generateMessageId();
         m.setMessageId(messageId);
+        m.setToBeQueued(messageType.isToBeQueued());
         if (requestData instanceof PersonRequest) {
             PersonRequest pr = (PersonRequest) requestData;
             if (pr.getDestinationAddress() != null) {
@@ -402,9 +432,10 @@ public class Mediator implements IService {
             }
             if (!pr.isResponseRequested()) {
                 MessageType.TemplateType templateType = messageType.getTemplateType();
-                if (templateType == MessageType.TemplateType.modifyPerson
+                if (templateType == MessageType.TemplateType.createPerson
                         || templateType == MessageType.TemplateType.modifyPerson) {
                     m.setResponseExpected(false);
+                    m.setToBeQueued(true);
                 }
             }
         }
@@ -462,24 +493,23 @@ public class Mediator implements IService {
     Object sendData(Message m) {
         Object returnData = null;
         MessageType messageType = m.getMessageType(); // For handy reference.
-        String ipAddressPort = getIpAddressPort(m.getDestinationAddress());
-        m.setIpAddressPort(ipAddressPort);
-        if (ipAddressPort == null) {
+        NextHop nextHop = NextHop.getNextHopByAddress(m.getDestinationAddress());
+        m.setNextHop(nextHop);
+        if (nextHop == null) {
             /*
              * This is an error in our routing mechanism. We have a desination
-             * address, but we were unable to translate it into an IP address
-             * and port number combination.
+             * address, but we were unable to translate it into next hop information.
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                    "getData() - Routing address not found for ''{0}''", m.getDestinationAddress());
+                    "getData() - Next hop information not found for ''{0}'': {1}",
+                    new Object[]{m.getDestinationAddress(), m.summarize()});
             return null;
         }
         /*
-         * Pack the data into the XML message, and compress it.
+         * Pack the data into the XML message.
          */
         String xml = xmlPacker.pack(m);
         m.setXml(xml);
-        Compresser.compress(m);
         /*
          * If we may get a response to this message, add it to the list of responses we are expecting.
          */
@@ -492,7 +522,7 @@ public class Mediator implements IService {
          */
         m.setHopCount(1); // This will be the first hop.
         if (Mediator.testLoggerLevel(Level.FINE)) {
-            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Sending message {0}", summarizeMessage(m));
+            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE, "Sending message {0}", m.summarize());
         }
         boolean messageSent = sendMessage(m);
         /*
@@ -541,66 +571,6 @@ public class Mediator implements IService {
     }
 
     /**
-     * Gets IP address and port (next hop from here) for a destination
-     * <p>
-     * The IP address and port corresponding to a destination address is found
-     * in properties for this application starting with "IPAddressPort."
-     * If the full address is not found, then we look for successively
-     * higher levels in the address name, where levels are separated by
-     * dots. Finally we look for the catch-all entry "IPAddressPort.*"
-     * to which we forward any otherwise-unresolved address.
-     * <p>
-     * For example, if the address to find is "aa.bb.cc", we will look
-     * for the following properties in this order until we find a value:
-     * <p>
-     * IpAddressPort.aa.bb.cc   <br>
-     * IpAddressPort.aa.bb      <br>
-     * IpAddressPort.aa         <br>
-     * IpAddressPort.*          <br>
-     *
-     * @param destination where the message is to be sent
-     * @return IP address:port to which to forward the message.
-     * Returns <code>null</code> if the destination is ourselves,
-     * or the destination address cannot be translated to IP + port.
-     */
-    private String getIpAddressPort(String destination) {
-        final String propertyPrefix = "IPAddressPort.";
-        /*
-         * If the destination is us, return null. This means that
-         * we don't have to go to the network to find the address;
-         * the address is our own.
-         */
-        if (destination.equals(getProperty("Instance.Address"))) {
-            return null;
-        }
-        /*
-         * Check for an explicit entry for this destination address.
-         */
-        String returnValue = getProperty(propertyPrefix + destination);
-        /*
-         * If there was no entry for the whole address, try successively
-         * shorter strings by chopping off the end from the last '.' character.
-         */
-        while (returnValue == null) {
-            int i = destination.lastIndexOf('.');
-            /*
-             * If there are no more segments to chop, try for
-             * the catch-all wildcard entry.
-             */
-            if (i < 0) {
-                returnValue = getProperty(propertyPrefix + "*");
-                break;
-            }
-            /*
-             * Chop the string and look for the next higher level.
-             */
-            destination = destination.substring(0, i);
-            returnValue = getProperty(propertyPrefix + destination);
-        }
-        return returnValue;
-    }
-
-    /**
      * Process a received HTTP message. Either this is a message that is
      * destined for us, or we are an intermediate node that should forward the
      * message on its way to the next node. If we find that we have an
@@ -616,64 +586,47 @@ public class Mediator implements IService {
                     "Message has no destination address.");
         } else {
             String ourInstanceAddress = getProperty("Instance.Address");
-            String ipAddressPort = getIpAddressPort(destinationAddress);
             if (destinationAddress.equalsIgnoreCase(ourInstanceAddress)) { // If the message is addressed to us:
-                if (ipAddressPort == null) {
-                    /*
-                     * The message destination matches our own instance address
-                     * and we do not find a different IP address/port for the
-                     * message destination. It is really destined for us. Process it.
-                     */
-                    Compresser.decompress(m);
-                    xmlPacker.unpack(m);
-                    if (m.getMessageData() == null) {
-                        Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                                "Received message did not unpack into messageData: {0}", summarizeMessage(m));
-                    } else {
-                        if (m.getMessageData().getClass() == PersonRequest.class) {
-                            PersonRequest req = (PersonRequest) m.getMessageData();
-                            req.setSourceAddress(m.getSourceAddress());
-                            req.setSourceName(m.getSourceName());
-                            req.setRequestReference(m.getMessageId());
-                            req.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
-                        } else if (m.getMessageData().getClass() == PersonResponse.class) {
-                            PersonResponse rsp = (PersonResponse) m.getMessageData();
-                            rsp.setSuccessful(true);
-                            rsp.setRequestReference(m.getMessageId());
-                        }
-                        boolean responseDelivered = pendingQueue.findRequest(m);
-                        if (responseDelivered) { // Was the message a response to a request that we just delivered?
-                            if (Mediator.testLoggerLevel(Level.FINE)) {
-                                Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                        "Received message delivered as response to API: {0}", summarizeMessage(m));
-                            }
-                        } else {
-                            if (Mediator.testLoggerLevel(Level.FINE)) {
-                                Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                        "Received message delivered unsolicited to API: {0}", summarizeMessage(m));
-                            }
-                            processUnsolicitedMessage(m);
-                        }
-                    }
-                } else {
-                    /*
-                     * The message destination matches our own instance address
-                     * but the router has returned a IP address/port for the
-                     * destination that is not us. Somehing is misconfigured.
-                     */
+                xmlPacker.unpack(m);
+                if (m.getMessageData() == null) {
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "Received message destination matches our own name, but router returns IP Address:port of ''{1}'': {0}",
-                            new Object[]{summarizeMessage(m), ipAddressPort});
+                            "Received message did not unpack into messageData: {0}", m.summarize());
+                } else {
+                    if (m.getMessageData().getClass() == PersonRequest.class) {
+                        PersonRequest req = (PersonRequest) m.getMessageData();
+                        req.setSourceAddress(m.getSourceAddress());
+                        req.setSourceName(m.getSourceName());
+                        req.setRequestReference(m.getMessageId());
+                        req.setXml(m.getXml()); // Return raw XML through the API in case it is wanted.
+                    } else if (m.getMessageData().getClass() == PersonResponse.class) {
+                        PersonResponse rsp = (PersonResponse) m.getMessageData();
+                        rsp.setSuccessful(true);
+                        rsp.setRequestReference(m.getMessageId());
+                    }
+                    boolean responseDelivered = pendingQueue.findRequest(m);
+                    if (responseDelivered) { // Was the message a response to a request that we just delivered?
+                        if (Mediator.testLoggerLevel(Level.FINE)) {
+                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                    "Received message delivered as response to API: {0}", m.summarize());
+                        }
+                    } else {
+                        if (Mediator.testLoggerLevel(Level.FINE)) {
+                            Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                    "Received message delivered unsolicited to API: {0}", m.summarize());
+                        }
+                        processUnsolicitedMessage(m);
+                    }
                 }
             } else {    // If the message is not addressed to us:
-                if (ipAddressPort == null) {
+                NextHop nextHop = NextHop.getNextHopByAddress(destinationAddress);
+                if (nextHop == null) {
                     /*
                      * The message destination does not match our own,
-                     * and the router is not giving us an IP Port/Address for it.
+                     * and the router is not giving us next hop information.
                      * This is a configuration error.
                      */
                     Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                            "IP Address:port not found for received message {0}", summarizeMessage(m));
+                            "Next hop not found for received message {0}", m.summarize());
                 } else {
                     /*
                      * The message destination does not match our own,
@@ -681,15 +634,14 @@ public class Mediator implements IService {
                      * It is not destined for us, so we will pass it though
                      * to its destination.
                      */
-                    if (Mediator.testLoggerLevel(Level.FINE)) {
-                        Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
-                                "Relaying received message to {0} at {1}: {2}",
-                                new Object[]{destinationAddress, ipAddressPort, summarizeMessage(m)});
-                    }
-                    m.setIpAddressPort(ipAddressPort);
+                    m.setNextHop(nextHop);
                     int hopCount = m.getHopCount();
                     hopCount++;
                     m.setHopCount(hopCount);
+                    if (Mediator.testLoggerLevel(Level.FINE)) {
+                        Mediator.getLogger(Mediator.class.getName()).log(Level.FINE,
+                                "Relaying message {0}", m.summarize());
+                    }
                     sendMessage(m);
                 }
             }
@@ -716,10 +668,8 @@ public class Mediator implements IService {
                  * waiting for.
                  */
                 Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
-                        "Unsolicited message with request type {0} received from ''{1}''. No user callback is registered.",
-                        new Object[]{messageType.getRequestTypeId(), m.getSourceAddress()});
-
-
+                        "Unsolicited message with request type {0} received. No user callback is registered: {1}",
+                        new Object[]{messageType.getRequestTypeId(), m.summarize()});
             }
         } else {
             /*
@@ -733,8 +683,8 @@ public class Mediator implements IService {
              * Or this could be an error of some sort.
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.WARNING,
-                    "Unsolicited message with XML root ''{0}'' received from ''{1}'', but it isn''t registered as a request.",
-                    new Object[]{messageType.getRootXmlTag(), m.getSourceAddress()});
+                    "Unsolicited message with XML root ''{0}'' received, but it isn''t registered as a request: {1}",
+                    new Object[]{messageType.getRootXmlTag(), m.summarize()});
         }
     }
 
@@ -764,76 +714,19 @@ public class Mediator implements IService {
              * This may indicate a routing loop between two or more systems.
              */
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
-                    "sendMessage() - Hop count {0} exceeds maximum hop count {1} for destination ''{2}'', routed to ''{3}''",
-                    new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getIpAddressPort()});
+                    "sendMessage() - Hop count {0} exceeds maximum hop count {1} for destination ''{2}'', routed to ''{3}'': {4}",
+                    new Object[]{m.getHopCount(), MAX_HOP_COUNT, m.getDestinationAddress(), m.getNextHop().getIpAddressPort(), m.summarize()});
         } else if (m.isToBeQueued()) {
             messageSent = queueManager.enqueue(m);
         } else {
             try {
                 messageSent = httpService.send(m); // (toBeQueued = false)
             } catch (MalformedURLException ex) {
-                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Error sending: " + m.summarize(), ex);
             } catch (IOException ex) {
-                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, "Error sending: " + m.summarize(), ex);
             }
         }
         return messageSent;
-    }
-
-    /**
-     * Summarizes the message in question. Returns the message type if known,
-     * otherwise returns the root tag of the XML message. Also returns information
-     * such as from and to addresses, if known, and hop count and queuing status.
-     * If the logging level is FINER or greater, also returns the message itself.
-     * <p>
-     * Note that this routine uncompresses the message if necessary. It should
-     * only be called if the caller knows that the result will be used.
-     * For example, if the result will be used for logging a message at
-     * level FINE, the caller should test to be sure that we are logging
-     * level FINE messages before calling this method.
-     * 
-     * @param m the message to summarize.
-     * @return brief summary of the message.
-     */
-    private String summarizeMessage(Message m) {
-        String summary = "[can't decode message type]";
-        if (m.getMessageType() != null) { // If message originaed here, we know its type.
-            summary = m.getMessageType().getTemplateType().name(); // Use type as message label.
-        } else {
-            if (m.getXml() == null) {
-                Compresser.decompress(m);
-            }
-            String xml = m.getXml();
-            if (xml != null) {
-                int line2 = xml.indexOf('\n') + 1;
-                if (line2 > 0) {
-                    int endTag = xml.indexOf('>', line2);
-                    int space = xml.indexOf(' ', line2);
-                    if (space > 0 && space < endTag) {
-                        endTag = space; // Strip off any root tag attributes...
-                    }
-                    if (endTag > 0) {
-                        summary = xml.substring(line2, endTag) + " ...";
-                    }
-                }
-            }
-        }
-        if (m.getSendingIpAddress() != null) {
-            summary += " from " + m.getSendingIpAddress();
-        }
-        if (m.getDestinationAddress() != null) {
-            summary += " to " + m.getDestinationAddress();
-        }
-        summary += " toBeQueued=" + m.isToBeQueued()
-                + " hopCount=" + m.getHopCount();
-        if (Mediator.testLoggerLevel(Level.FINER)) {
-            if (m.getXml() == null) {
-                Compresser.decompress(m);
-            }
-            if (m.getXml() != null) {
-                summary += "\n" + m.getXml(); // Include the whole message.
-            }
-        }
-        return summary;
     }
 }

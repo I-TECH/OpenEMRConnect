@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.PersonIdentifier;
-import ke.go.moh.oec.mpi.Mpi;
 import ke.go.moh.oec.mpi.Sql;
 import ke.go.moh.oec.mpi.ValueMap;
 
@@ -43,21 +42,63 @@ import ke.go.moh.oec.mpi.ValueMap;
  */
 public class PersonIdentifierList {
 
+    private Connection conn;    // Connection for loading fingerprints
+    private ResultSet rs;       // Result set for loading fingerprints
+    private boolean rsNext;     // Is there a next record in the result set?
+    private int personId;       // Remember current person ID.
+
     /**
-     * Loads into memory the person identifiers for a given person.
-     *
-     * @param conn Connection on which to do the query.
-     * @param dbPersonId Internal database ID for the person associated with these identifiers.
-     * @return The list of person identifiers.
+     * Positions to the next person identifier record and gets the personId from that record.
+     * This is encapsulated mainly to insure that rs.getInt() is only called once per record
+     * for the person_id field. It turns out that this call is moderately CPU expensive
+     * since it parses the database value into an integer every time. So we do this call
+     * only once and save the integer result. We may then reference it more than once.
      */
-    public static List<PersonIdentifier> load(Connection conn, int dbPersonId) {
-        List<PersonIdentifier> personIdentifierList = null;
-        String sql = "SELECT pi.identifier, pi.identifier_type_id\n"
-                + "FROM person_identifier pi\n"
-                + "WHERE pi.person_id = " + dbPersonId;
-        ResultSet rs = Sql.query(conn, sql, Level.FINEST);
+    private void next() {
         try {
-            while (rs.next()) {
+            rsNext = rs.next();
+            if (rsNext) {
+                personId = rs.getInt("person_id");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PersonIdentifierList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Starts loading person identifiers into memory.
+     * <p>
+     * For efficiency, person identifiers for all patients are loaded by a single query,
+     * in order by personId. Then a merge sort on person identifiers is done between the
+     * loaded person identifiers list and the loaded person list.
+     */
+    public void loadStart(int minPersonId, int maxPersonId) {
+        conn = Sql.connect();
+        String sql = "SELECT pi.person_id, pi.identifier, pi.identifier_type_id\n"
+                + "FROM person_identifier pi\n"
+                + "WHERE pi.person_id BETWEEN " + minPersonId + " AND " + maxPersonId + "\n"
+                + "ORDER BY pi.person_id";
+        rs = Sql.query(conn, sql, Level.FINEST);
+        next();     // Position at the first result record.
+    }
+
+    /**
+     * Loads the next person identifiers into memory matching the given personId.
+     * 
+     * @param dbPersonId Database person_id value for person identifiers to load.
+     * @return list of person identifiers for this person.
+     */
+    public List<PersonIdentifier> loadNext(int dbPersonId) {
+        List<PersonIdentifier> personIdentifierList = null;
+        try {
+            // If we haven't yet reached the requested personId, skip over any
+            // database records that come before that personId.
+            while (rsNext && personId < dbPersonId) {
+                next();
+            }
+            // While we are matching the requested personId, include any
+            // person identifiers that match that Id.
+            while (rsNext && personId == dbPersonId) {
                 if (personIdentifierList == null) {
                     personIdentifierList = new ArrayList<PersonIdentifier>();
                 }
@@ -67,13 +108,21 @@ public class PersonIdentifierList {
                 pi.setIdentifier(rs.getString("identifier"));
                 pi.setIdentifierType(pit);
                 personIdentifierList.add(pi);
+                next();
             }
-            Sql.close(rs);
         } catch (SQLException ex) {
-            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
+            Logger.getLogger(FingerprintList.class.getName()).log(Level.SEVERE, null, ex);
         }
         return personIdentifierList;
+    }
+
+    /**
+     * Ends loading fingerprints.
+     * Releases any resources used.
+     */
+    public void loadEnd() {
+        Sql.close(rs);
+        Sql.close(conn);
     }
 
     /**

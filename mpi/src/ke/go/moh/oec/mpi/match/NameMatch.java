@@ -24,6 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi.match;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Level;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Scorecard;
@@ -59,6 +61,40 @@ public class NameMatch extends StringMatch {
     private String metaphone1 = null;
     /** Metaphone result 2 */
     private String metaphone2 = null;
+    /** Cache of allocated NameMatch structures, to increase creating performance. */
+    private static final Map<String, NameMatch> cache = new HashMap<String, NameMatch>();
+
+    /**
+     * Gets a NameMatch instance, first checking a cache of such instances to see
+     * if a NameMatch for this String has already been created. If it has
+     * already been created, return the one that has already been created.
+     * If it has not yet been created, create a new one and return that one.
+     * <p>
+     * The primary reason for this is to save memory and increase performance
+     * when loading the MPI. Names that are shared between different persons
+     * can share the NameMatch object as well.
+     * @param original
+     * @return 
+     */
+    public static NameMatch getNameMatch(String original) {
+        NameMatch nameMatch = null;
+        synchronized (cache) {
+            nameMatch = cache.get(original);
+        }
+        if (nameMatch == null) {
+            nameMatch = new NameMatch(original);
+            // Once we have created a new NameMatch, put it in our cache
+            // in case a subsequent name matches it. Note that it is possible
+            // though unlikely for two NameMatch objects to be created by
+            // different threads for the same name. In this case, only one
+            // of them will remain in the cache. There will be no problem,
+            // only an extremelty slight inefficiency in performance.
+            synchronized (cache) {
+                cache.put(original, nameMatch);
+            }
+        }
+        return nameMatch;
+    }
 
     /**
      * Construct a NameMatch from a name string.
@@ -168,14 +204,23 @@ public class NameMatch extends StringMatch {
      * @param other The other name to match against.
      */
     public void score(Scorecard s, NameMatch other) {
-        Double score = computeScore(this, other);
-        if (score != null) {
-            final double NAME_WEIGHT = 1.0;
-            s.addScore(score, NAME_WEIGHT);
-            if (Mediator.testLoggerLevel(Level.FINEST)) {
-                Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
-                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
-                        new Object[]{score, NAME_WEIGHT, s.getTotalScore(), s.getTotalWeight(), getOriginal(), other.getOriginal()});
+        if (getOriginal() == null) {
+            s.addScore(Scorecard.SEARCH_TERM_MISSING_WEIGHT, 0, Scorecard.SearchTerm.MISSING);
+        } else if (other.getOriginal() == null) {
+            s.addScore(Scorecard.MPI_VALUE_MISSING_WEIGHT, 0);
+        } else {
+            Double score = computeScore(this, other);
+            if (score != null) {
+                double weight = Scorecard.OTHER_MATCH_WEIGHT;
+                if (score == 0) {
+                    weight = Scorecard.OTHER_MISS_WEIGHT;
+                }
+                s.addScore(weight, score);
+                if (Mediator.testLoggerLevel(Level.FINEST)) {
+                    Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
+                            "Score {0},{1} total {2},{3},{4} comparing {5} with {6}",
+                            new Object[]{score, weight, s.getTotalScore(), s.getTotalWeight(), s.getSearchTermScore(), getOriginal(), other.getOriginal()});
+                }
             }
         }
     }

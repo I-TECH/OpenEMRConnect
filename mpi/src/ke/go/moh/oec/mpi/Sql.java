@@ -31,9 +31,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Person;
@@ -46,10 +46,16 @@ import ke.go.moh.oec.lib.Mediator;
  */
 public class Sql {
 
+    private static class CachedConnection {
+
+        protected Connection connection;
+        protected long cachedTime;
+    }
+    public static final int WAIT_TIMEOUT_SECONDS = 1800; // Connections idle for longer than this in seconds will not be reused.
     public static final int REGULAR_VISIT_TYPE_ID = 1;
     public static final int ONE_OFF_VISIT_TYPE_ID = 2;
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    private static List<Connection> connectionPool = new ArrayList<Connection>();
+    private static final Queue<CachedConnection> connectionPool = new LinkedList<CachedConnection>();
 
     /**
      * Creates a connection to the MPI(/LPI) database. For a query that is run while the results
@@ -59,22 +65,39 @@ public class Sql {
      *
      * @return the connection.
      */
-    public static synchronized Connection connect() {
+    public static Connection connect() {
+        CachedConnection cc = null;
         Connection conn = null;
-        if (!connectionPool.isEmpty()) {
-            conn = connectionPool.get(0);
-            connectionPool.remove(0);
-        } else {
-            try {
+        try {
+            // Try to get a previously-used connection from our pool. But if it was used
+            // too long ago, then close it and look for another one. This is done to
+            // avoid getting connection timeout errors from a connection that has been
+            // idle for too long and the server has timed out the connection.
+            synchronized (connectionPool) {
+                while ((cc = connectionPool.poll()) != null) {
+                    if (System.currentTimeMillis() - cc.cachedTime < WAIT_TIMEOUT_SECONDS * 1000) {
+                        conn = cc.connection;
+                        Mediator.getLogger(Sql.class.getName()).log(Level.FINER, "connect() - Reusing connection.");
+                        break;
+                    } else {
+                        Mediator.getLogger(Sql.class.getName()).log(Level.FINER, "connect() - Timing out connection.");
+                        cc.connection.close();
+                    }
+                }
+            }
+            // If we had no recent database connection in the pool that we can reuse,
+            // then create a new connection.
+            if (conn == null) {
                 String url = Mediator.getProperty("MPI.url");
                 String username = Mediator.getProperty("MPI.username");
                 String password = Mediator.getProperty("MPI.password");
                 conn = DriverManager.getConnection(url, username, password);
-            } catch (Exception ex) {
-                Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
-                        "Can''t connect to the database -- Please check the database and try again.", ex);
-                System.exit(1);
+                Mediator.getLogger(Sql.class.getName()).log(Level.FINER, "connect() - Allocating new connection.");
             }
+        } catch (Exception ex) {
+            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
+                    "Can''t connect to the database -- Please check the database and try again.", ex);
+            System.exit(1);
         }
         return conn;
     }
@@ -84,8 +107,15 @@ public class Sql {
      * 
      * @param conn the connection to close
      */
-    public static synchronized void close(Connection conn) {
-        connectionPool.add(conn);   // Actually, keep the connection for later reuse.
+    public static void close(Connection conn) {
+        // Load this connection and the current time into a CachedConnection object
+        CachedConnection cc = new CachedConnection();
+        cc.connection = conn;
+        cc.cachedTime = System.currentTimeMillis();
+        // Put the CachedConnection object into the pool for later reuse.
+        synchronized (connectionPool) {
+            connectionPool.add(cc);   // Actually, keep the connection for later reuse.
+        }
     }
 
     /**
@@ -96,13 +126,11 @@ public class Sql {
     public static void close(ResultSet rs) {
         try {
             if (!rs.isClosed()) {
-                Statement stmt = null;
-                rs.getStatement();
+                Statement stmt = rs.getStatement();
                 if (stmt != null) {
                     stmt.close();
-                } else {
-                    rs.close();
                 }
+                rs.close();
             }
         } catch (SQLException ex) {
             Logger.getLogger(Sql.class.getName()).log(Level.SEVERE, null, ex);
@@ -134,8 +162,14 @@ public class Sql {
         Mediator.getLogger(Sql.class.getName()).log(loggerLevel, "SQL Query:\n{0}", sql);
         ResultSet rs = null;
         try {
-            Statement stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+            Statement statement = conn.createStatement();
+            // The following call sets the fetch size equal to the minimum integer value (largest negative value).
+            // This is a special value that is interpreted by the MySQL JDBC driver to fetch only one line
+            // at a time from the database into memory. Otherwise it would try to fetch the entire query
+            // result into memory. Because of the size of the MPI data, this can cause
+            // out of memory errors.
+            statement.setFetchSize(Integer.MIN_VALUE);
+            rs = statement.executeQuery(sql);
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Error executing SQL Query " + sql, ex);
@@ -169,19 +203,21 @@ public class Sql {
      *
      * @param conn Connection to use.
      * @param sql SQL statement.
-     * @return true if first result is a ResultSet.
+     * @return true if there was no exception, otherwise false.
      */
     public static boolean execute(Connection conn, String sql) {
         Mediator.getLogger(Sql.class.getName()).log(Level.FINE, "SQL Execute:\n{0}", sql);
-        boolean returnValue = false;
+        boolean returnValue = true;
         try {
             PreparedStatement stmt = conn.prepareStatement(sql);
-            returnValue = stmt.execute();
+            stmt.execute();
             int updateCount = stmt.getUpdateCount();
             Mediator.getLogger(Sql.class.getName()).log(Level.FINE, "{0} rows updated.", updateCount);
+            stmt.close();
         } catch (SQLException ex) {
             Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE,
                     "Error executing SQL statement " + sql, ex);
+            returnValue = false;
         }
         return returnValue;
     }
@@ -325,23 +361,49 @@ public class Sql {
      * @return the address ID.
      */
     public static String getAddressId(Connection conn, String address) {
+        return getAddressId(conn, address, null);
+    }
+
+    /**
+     * Gets the address_id corresponding to a network address.
+     * Inserts a new address if necessary.
+     * <p>
+     * It is assumed that this method is called as part of a transaction.
+     * This method does not start and and a transaction, so if a new address
+     * is inserted, it will need the caller to start and stop the transaction.
+     * 
+     * @param conn Connection to use.
+     * @param address address to find.
+     * @param facilityName facility name (if any) corresponding to the address.
+     * @return the address ID.
+     */
+    public static String getAddressId(Connection conn, String address, String facilityName) {
         String returnId = null;
         if (address == null) {
             returnId = "null";
         } else {
             address = address.toLowerCase(); // By convention, network addresses are all lower case.
-            ResultSet rs = query(conn, "SELECT address_id FROM address WHERE address = " + quote(address));
+            String existingFacilityName = null;
+            ResultSet rs = query(conn, "SELECT address_id, facility_name FROM address WHERE address = " + quote(address));
             try {
                 if (rs.next()) {
                     returnId = Integer.toString(rs.getInt("address_id"));
+                    existingFacilityName = rs.getString("facility_name");
                 }
                 Sql.close(rs);
             } catch (SQLException ex) {
                 Logger.getLogger(Sql.class.getName()).log(Level.WARNING, "Error getting address ID for " + quote(address), ex);
             }
+
             if (returnId == null) {
-                execute(conn, "INSERT into address (address) VALUES (" + quote(address) + ")");
+                execute(conn, "INSERT into address (address, facility_name) VALUES ("
+                        + quote(address) + ", " + quote(facilityName) + ")");
+
                 returnId = getLastInsertId(conn);
+            } else if (facilityName != null
+                    && (existingFacilityName == null || (facilityName.compareTo(existingFacilityName) != 0))) {
+                execute(conn, "UPDATE address SET facility_name = " + quote(facilityName)
+                        + "WHERE address = " + quote(address));
             }
         }
         return returnId;

@@ -47,11 +47,13 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        mediator = new Mediator();
+
         Thread.currentThread().setName("Mpi"); // For identification while debugging
         Mpi mpi = new Mpi();
+        mpi.initialize();
         Mediator.registerCallback(mpi);
 
-        mediator = new Mediator();
         while (true) {
             try {
                 Thread.sleep(Long.MAX_VALUE);

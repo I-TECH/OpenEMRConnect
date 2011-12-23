@@ -57,7 +57,7 @@ public class GetWorkTest {
         Work work = new Work();
         work.setSourceAddress(Mediator.getProperty("Instance.Address"));
         work.setNotificationId("7");
-        work.setReassignAddress("xyz");
+        work.setReassignAddress("mch");
         mediator.getData(requestTypeId, work);
 
     }

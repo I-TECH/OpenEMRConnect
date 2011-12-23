@@ -66,14 +66,14 @@ public class Compresser {
         try {
             resultLength = decompresser.inflate(inflatedBytes);
         } catch (DataFormatException ex) {
-            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HttpService.class.getName()).log(Level.SEVERE, "Error decompressing message: " + m.summarize(false), ex);
         }
         decompresser.end();
         String xml = null;
         try {
             xml = new String(inflatedBytes, 0, resultLength, "UTF-8");
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Compresser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Compresser.class.getName()).log(Level.SEVERE, "Error decompressing message: " + m.summarize(false), ex);
         }
         m.setXml(xml);
     }

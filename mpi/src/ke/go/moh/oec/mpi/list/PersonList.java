@@ -29,8 +29,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +40,11 @@ import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.PersonRequest;
 import ke.go.moh.oec.PersonResponse;
-import ke.go.moh.oec.Visit;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.CandidateSet;
 import ke.go.moh.oec.mpi.match.DateMatch;
 import ke.go.moh.oec.mpi.FindPersonThread;
+import ke.go.moh.oec.mpi.LoadPersonThread;
 import ke.go.moh.oec.mpi.Mpi;
 import ke.go.moh.oec.mpi.Notifier;
 import ke.go.moh.oec.mpi.match.PersonMatch;
@@ -91,7 +89,8 @@ public class PersonList {
      */
     private void add(PersonMatch personMatch) {
         personList.add(personMatch);
-        personMap.put(personMatch.getPerson().getPersonGuid(), personMatch);
+        String personGuid = personMatch.getPerson().getPersonGuid();
+        personMap.put(personGuid, personMatch);
         List<PersonIdentifier> pil = personMatch.getPerson().getPersonIdentifierList();
         if (pil != null) {
             for (PersonIdentifier pi : pil) {
@@ -142,97 +141,162 @@ public class PersonList {
 
     /**
      * Loads into the PersonList the entire person table from the MPI, along with
-     * any joining person relation data.
+     * any joining person relation data. Uses multiple threads to do this, to
+     * minimize loading time.
      */
     public void load() {
-        /*
-         * Create two connections to the database. One will be used for
-         * the main query to the person table. The other will be used for
-         * the queries to load a list of identifiers or fingerprints for
-         * a single person.
-         */
-        Connection personConn = Sql.connect();
-        Connection listConn = Sql.connect();
-        long startTime = System.currentTimeMillis();
-        /*
-         * For quick debugging, set queryLimit to a limite number of rows,
-         * to avoide loading the entire database. For production uses, set
-         * queryLimit to zero.
-         */
-        Calendar cal = Calendar.getInstance(); // Default Calendar, used for getting database date fields.
-        String sql = "SELECT p.person_id, p.person_guid, p.sex, p.birthdate, p.deathdate,\n"
-                + "       p.first_name, p.middle_name, p.last_name, p.other_name, p.clan_name,\n"
-                + "       p.mothers_first_name, p.mothers_middle_name, p.mothers_last_name,\n"
-                + "       p.fathers_first_name, p.fathers_middle_name, p.fathers_last_name,\n"
-                + "       p.compoundhead_first_name, p.compoundhead_middle_name, p.compoundhead_last_name,\n"
-                + "       v.village_name, m.marital_status_name, p.consent_signed,\n"
-                + "       MAX(v_reg.visit_date) AS v_reg_date,\n"
-                + "       MAX(v_one.visit_date) AS v_one_date,\n"
-                + "       MID(MAX(CONCAT(v_reg.visit_date, a_reg.address)),20) AS v_reg_address,\n"
-                + "       MID(MAX(CONCAT(v_one.visit_date, a_one.address)),20) AS v_one_address\n"
-                + "FROM person p\n"
-                + "LEFT OUTER JOIN village v ON v.village_id = p.village_id\n"
-                + "LEFT OUTER JOIN marital_status_type m ON m.marital_status_type_id = p.marital_status\n"
-                + "LEFT OUTER JOIN visit v_reg ON v_reg.person_id = p.person_id and v_reg.visit_type_id = " + Sql.REGULAR_VISIT_TYPE_ID + "\n"
-                + "LEFT OUTER JOIN visit v_one ON v_one.person_id = p.person_id and v_one.visit_type_id = " + Sql.ONE_OFF_VISIT_TYPE_ID + "\n"
-                + "LEFT OUTER JOIN address a_reg ON a_reg.address_id = v_reg.address_id\n"
-                + "LEFT OUTER JOIN address a_one ON a_one.address_id = v_one.address_id\n"
-                + "GROUP BY p.person_id\n"
-                + "ORDER BY p.person_id";
-        String queryLimitString = Mediator.getProperty("Query.Limit");
-        if (queryLimitString != null) {
-            sql = sql + "\nLIMIT " + Integer.parseInt(queryLimitString);
-        }
-        ResultSet rs = Sql.query(personConn, sql);
-        int recordCount = 0;
+        int personCount = 0;
         try {
-            while (rs.next()) {
-                Date d = rs.getDate("birthdate");
-                Person p = new Person();
-                int dbPersonId = rs.getInt("person_id");
-                p.setPersonGuid(rs.getString("person_guid"));
-                p.setSex((Person.Sex) ValueMap.SEX.getVal().get(rs.getString("sex")));
-                p.setBirthdate(rs.getDate("birthdate", cal));
-                p.setDeathdate(rs.getDate("deathdate", cal));
-                p.setFirstName(rs.getString("first_name"));
-                p.setMiddleName(rs.getString("middle_name"));
-                p.setLastName(rs.getString("last_name"));
-                p.setOtherName(rs.getString("other_name"));
-                p.setClanName(rs.getString("clan_name"));
-                p.setMothersFirstName(rs.getString("mothers_first_name"));
-                p.setMothersMiddleName(rs.getString("mothers_middle_name"));
-                p.setMothersLastName(rs.getString("mothers_last_name"));
-                p.setFathersFirstName(rs.getString("fathers_first_name"));
-                p.setFathersMiddleName(rs.getString("fathers_middle_name"));
-                p.setFathersLastName(rs.getString("fathers_last_name"));
-                p.setCompoundHeadFirstName(rs.getString("compoundhead_first_name"));
-                p.setCompoundHeadMiddleName(rs.getString("compoundhead_middle_name"));
-                p.setCompoundHeadLastName(rs.getString("compoundhead_last_name"));
-                p.setVillageName(rs.getString("village_name"));
-                p.setMaritalStatus((Person.MaritalStatus) ValueMap.MARITAL_STATUS.getVal().get(rs.getString("marital_status_name")));
-                p.setPersonIdentifierList(PersonIdentifierList.load(listConn, dbPersonId));
-                p.setFingerprintList(FingerprintList.load(listConn, dbPersonId));
-                p.setConsentSigned((Person.ConsentSigned) ValueMap.CONSENT_SIGNED.getVal().get(rs.getString("consent_signed")));
-                p.setLastRegularVisit(Visit.getVisit(rs.getDate("v_reg_date"), rs.getString("v_reg_address")));
-                p.setLastOneOffVisit(Visit.getVisit(rs.getDate("v_one_date"), rs.getString("v_one_address")));
-                PersonMatch per = new PersonMatch(p);
-                per.setDbPersonId(dbPersonId);
-                this.add(per);
-                if (++recordCount % 1000 == 0) {
-                    Mediator.getLogger(PersonList.class.getName()).log(Level.FINE, "Loaded {0}.", recordCount);
-                }
-            }
+            Connection conn = Sql.connect();
+            String sql = "SELECT count(*) as person_count from person";
+            ResultSet rs = Sql.query(conn, sql);
+            List<Integer> personIds = new ArrayList<Integer>();
+            rs.next();
+            personCount = rs.getInt("person_count");
             Sql.close(rs);
+            Sql.close(conn);
         } catch (SQLException ex) {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
         }
-        Sql.close(personConn);
-        Sql.close(listConn);
-        double timeInterval = (System.currentTimeMillis() - startTime);
-        Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
-                "Loaded {0} person entries in {1} milliseconds.",
-                new Object[]{personList.size(), timeInterval});
+        //
+        // For quick debugging, set queryLimit to a limite number of rows,
+        // to avoide loading the entire database. For production uses, set
+        // queryLimit to zero.
+        //
+        String queryLimitString = Mediator.getProperty("Query.Limit");
+        if (queryLimitString != null) {
+            int limit = Integer.parseInt(queryLimitString);
+            if (limit < personCount) {
+                personCount = limit;
+            }
+        }
+        if (personCount > 0) {
+            //
+            // If somehow there are fewer people in the MPI database than the number
+            // of threads we can use, then limit the number of threads so that
+            // each thread is loading only one person.
+            int threadCount = Mpi.getMaxThreadCount();
+            if (threadCount > personCount) {
+                threadCount = personCount;
+            }
+            //
+            // Compute the number of people we will load with each thread. Divide
+            // the number of people by the number of threads. Round up.
+            //
+            // For integer division a/b rounded up to the next highest integer,
+            // use the formula (a+b-1)/b.
+            int countPerThread = (personCount + threadCount - 1) / threadCount;
+            //
+            // Now we will make a pass through all the person_id values in the database
+            // for the purpose of partitioning them for all the threads. We will step through
+            // all the person_ids in order, to find out where the cutoff values
+            // are between the person_ids that each thread shall load. We put these
+            // values into the cutoffs array.
+            int[] cutoffs = null;
+            try {
+                Connection conn = Sql.connect();
+                String sql = "SELECT person_id FROM person ORDER BY person_id";
+                ResultSet rs = Sql.query(conn, sql);
+                cutoffs = new int[threadCount + 1];
+                cutoffs[0] = 0;
+                int row = 0;
+                int nextCutoff = countPerThread;
+                int iCutoff = 1;
+                while (rs.next() && row++ < personCount) {
+                    if (row == nextCutoff || row == personCount) {
+                        cutoffs[iCutoff++] = rs.getInt("person_id");
+                        nextCutoff += countPerThread;
+                    }
+                }
+                Sql.close(rs);
+                Sql.close(conn);
+            } catch (SQLException ex) {
+                Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            //
+            // Create all of the threads, and allocate each one the range of person_id
+            // values it is to load.
+            long startTime = System.currentTimeMillis();
+            Thread[] threadArray = new Thread[threadCount];
+            LoadPersonThread[] loadPersonThreadArray = new LoadPersonThread[threadCount];
+            for (int i = 0; i < threadCount; i++) {
+                int minPersonId = cutoffs[i] + 1;
+                int maxPersonId = cutoffs[i + 1];
+                LoadPersonThread lpt = new LoadPersonThread(i, minPersonId, maxPersonId);
+                Thread t = new Thread(lpt);
+                loadPersonThreadArray[i] = lpt;
+                threadArray[i] = t;
+                t.start();
+                // Sleep just a little to let the thread start and print any logging messages
+                // that it may have. This sleeping will not affect performance noticably, but
+                // will give the thread the chance to start so that all threads will start
+                // Sleep 10 milliseconds.
+                waitAMoment();
+            }
+            //
+            // Wait for all of the threads to complete loading their values. 
+            for (int i = 0; i < threadCount; i++) {
+                Thread t = threadArray[i];
+                try {
+                    t.join();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "Error joining FindPersonThread", ex);
+                }
+                LoadPersonThread lpt = loadPersonThreadArray[i];
+                loadPersonThreadArray[i] = null; // Release object memory when we loop, most notably personMatchList
+                List<PersonMatch> personMatchList = lpt.getPersonMatchList();
+                for (PersonMatch pm : personMatchList) {
+                    add(pm);
+                }
+            }
+            double timeInterval = (System.currentTimeMillis() - startTime);
+            Mediator.getLogger(PersonList.class.getName()).log(Level.FINE,
+                    "All threads finished loading {0} entries in {1} milliseconds.",
+                    new Object[]{personList.size(), timeInterval});
+        }
+    }
+
+    /**
+     * Waits a moment. To be used right after starting a thread, to give that
+     * thread a moment to start, and start logging its progress. This is useful
+     * so that the threads can report the start of their progress in the order
+     * in which they are started. The reason this is done in a separate method
+     * is to avoid the warning message that comes with sleeping in a loop.
+     */
+    private void waitAMoment() {
+        try {
+            Thread.sleep(50); // Sleep 50 milliseconds.
+        } catch (InterruptedException ex) {
+            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Does an efficient result set get string, assuming that the byte coding
+     * in the database does not need translation into the character coding of
+     * the string. This effectively does the same job as rs.getString(), but
+     * without the overhead of doing a generalized character coding translation.
+     * <p>
+     * In CPU profiling, it was discovered that significant time was being
+     * spent translating bytes into characters inside the rs.getString() method.
+     * So this method was written to replace it for loading the MPI into memory.
+     * 
+     * @param rs ResultSet
+     * @param columnIndex index of the column to get
+     * @return string value of the column
+     * @throws SQLException 
+     */
+    private String getRsString(ResultSet rs, int columnIndex) throws SQLException {
+        String s = null;
+        byte[] bytes = rs.getBytes(columnIndex);
+        if (bytes != null) {
+            char[] chars = new char[bytes.length];
+            for (int i = 0; i < bytes.length; i++) {
+                chars[i] = (char) bytes[i];
+            }
+            s = new String(chars);
+        }
+        return s;
     }
 
     /**
@@ -333,7 +397,7 @@ public class PersonList {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "CREATE PERSON called with no person data.");
             return returnData;
         }
-        //Check to see if this person'sql hdssid, if available, already exists in the mpi. Log error if it does.
+        //Check to see if this person's hdssid, if available, already exists in the mpi. Log error if it does.
         String existingId = null;
         if (p.getPersonIdentifierList() != null
                 && !p.getPersonIdentifierList().isEmpty()) {
@@ -400,23 +464,25 @@ public class PersonList {
                 + "NOW()"
                 + ");";
         Sql.startTransaction(conn);
-        Sql.execute(conn, sql);
-        int dbPersonId = Integer.parseInt(Sql.getLastInsertId(conn));
-        PersonIdentifierList.update(conn, dbPersonId, p.getPersonIdentifierList(), null);
-        FingerprintList.update(conn, dbPersonId, p.getFingerprintList(), null);
-        VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
-        VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
+        boolean successful = Sql.execute(conn, sql);
+        if (successful) {
+            int dbPersonId = Integer.parseInt(Sql.getLastInsertId(conn));
+            PersonIdentifierList.update(conn, dbPersonId, p.getPersonIdentifierList(), null);
+            FingerprintList.update(conn, dbPersonId, p.getFingerprintList(), null);
+            VisitList.update(conn, Sql.REGULAR_VISIT_TYPE_ID, dbPersonId, p.getLastRegularVisit());
+            VisitList.update(conn, Sql.ONE_OFF_VISIT_TYPE_ID, dbPersonId, p.getLastOneOffVisit());
+            PersonMatch newPer = new PersonMatch(p.clone()); // Clone to protect from unit test modifications.
+            newPer.setDbPersonId(dbPersonId);
+            this.add(newPer);
+            SearchHistory.update(req, null, null); // Update search history showing that no candidate was selected.
+        }
         Sql.commit(conn);
         Sql.close(conn);
-        PersonMatch newPer = new PersonMatch(p.clone()); // Clone to protect from unit test modifications.
-        newPer.setDbPersonId(dbPersonId);
-        this.add(newPer);
-        SearchHistory.update(req, null, null); // Update search history showing that no candidate was selected.
         if (returnData != null) {
             List<Person> returnList = new ArrayList<Person>();
             returnList.add(p);
             returnData.setPersonList(returnList);
-            returnData.setSuccessful(true); // We have succeeded.
+            returnData.setSuccessful(successful); // We have succeeded.
         }
         return returnData;
     }
@@ -437,60 +503,35 @@ public class PersonList {
             Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person data.");
             return returnData;
         }
+        // For modify, we should have either a local person GUID or a HDSSID to reference the existing (old) entry.
+        PersonMatch oldPersonMatch = null;
         String personGuid = newPerson.getPersonGuid();
-        if (personGuid == null
-                || personGuid.isEmpty()) {//True if this update is NOT the result of a 'sought and found' person i.e. 
-            //it came from kisumuhdss. We now try to find this person (using their kisumuhdssid) just to make sure 
-            //we agree with kisumu hdss that they are already known to us. 
-            if (newPerson.getPersonIdentifierList() != null
-                    && !newPerson.getPersonIdentifierList().isEmpty()) {
-                for (PersonIdentifier personIdentifier : newPerson.getPersonIdentifierList()) {
-                    if (personIdentifier.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
-                        if (personIdentifier.getIdentifier() != null
-                                && !personIdentifier.getIdentifier().isEmpty()) {
-                            List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-                            personIdentifierList.add(personIdentifier);
-                            Person find = new Person();
-                            find.setPersonIdentifierList(personIdentifierList);
-                            PersonRequest personRequest = new PersonRequest();
-                            personRequest.setPerson(find);
-                            //Find the person locally. No network communication is involved.
-                            PersonResponse personResponse = (PersonResponse) find(personRequest);
-                            if (personResponse != null
-                                    && personResponse.getPersonList() != null
-                                    && !personResponse.getPersonList().isEmpty()) {
-                                if (personResponse.getPersonList().isEmpty()) {
-                                    Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with non-existing kisumuHdssId person identifier.");
-                                    return returnData;
-                                } else if (personResponse.getPersonList().size() == 1) {
-                                    //We think this person exists once and we know their person guid. We'll use it to
-                                    //find him in the personList (this).
-                                    personGuid = personResponse.getPersonList().get(0).getPersonGuid();
-                                } else {
-                                    Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with a duplicated kisumuHdssId person identifier.");
-                                    return returnData;
-                                }
+        if (personGuid != null) {
+            oldPersonMatch = this.get(personGuid);
+            if (oldPersonMatch == null) {
+                Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON GUID {0} not found.", personGuid);
+                return returnData;
+            }
+        } else {
+            List<PersonIdentifier> piList = newPerson.getPersonIdentifierList();
+            if (piList != null && !piList.isEmpty()) {
+                for (PersonIdentifier pi : piList) {
+                    if (pi.getIdentifierType() == PersonIdentifier.Type.kisumuHdssId) {
+                        String hdssId = pi.getIdentifier();
+                        if (hdssId != null && !hdssId.isEmpty()) {
+                            oldPersonMatch = hdssIdMap.get(hdssId);
+                            if (oldPersonMatch != null) {
+                                break;
                             }
-                            //We only break if we find a NON-EMPTY kisumuhdssid, otherwise we keep going.
-                            break;
                         }
                     }
                 }
             }
         }
-        PersonMatch oldPersonMatch = null;
-        if (personGuid != null
-                && !personGuid.isEmpty()) {
-            oldPersonMatch = this.get(personGuid);
-            if (oldPersonMatch == null) {
-                Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person GUID.");
-                return returnData;
-            }
-        } else {
-            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON GUID {0} not found.", personGuid);
+        if (oldPersonMatch == null) {
+            Logger.getLogger(PersonList.class.getName()).log(Level.SEVERE, "MODIFY PERSON called with no person GUID or matching HDSSID.");
             return returnData;
         }
-        newPerson.setPersonGuid(personGuid);
         SearchHistory.update(req, oldPersonMatch, newPerson); // Log the search result (if any) BEFORE modifying the person.
         int dbPersonId = oldPersonMatch.getDbPersonId();
         Person oldPerson = oldPersonMatch.getPerson();
@@ -522,6 +563,14 @@ public class PersonList {
                 sql += (separate(columnCount) + "last_name = NULL\n");
             } else {
                 sql += (separate(columnCount) + "last_name = " + Sql.quote(newPerson.getLastName()) + "\n");
+            }
+            columnCount++;
+        }
+        if (newPerson.getOtherName() != null) {
+            if (newPerson.getOtherName().isEmpty()) {
+                sql += (separate(columnCount) + "other_name = NULL\n");
+            } else {
+                sql += (separate(columnCount) + "other_name = " + Sql.quote(newPerson.getOtherName()) + "\n");
             }
             columnCount++;
         }

@@ -1,9 +1,30 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is OpenEMRConnect.
+ *
+ * The Initial Developer of the Original Code is International Training &
+ * Education Center for Health (I-TECH) <http://www.go2itech.org/>
+ *
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.mpi;
 
+import ke.go.moh.oec.Visit;
 import java.util.ArrayList;
 import ke.go.moh.oec.PersonIdentifier;
 import java.util.logging.Logger;
@@ -39,14 +60,17 @@ public class MpiTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         Connection conn = Sql.connect();
+        String s0 = "DELETE FROM visit WHERE person_id IN (SELECT person_id FROM person WHERE first_name = 'Cain' AND middle_name = 'Human' AND last_name = 'One')";
         String s1 = "DELETE FROM person WHERE first_name = 'Cain' AND middle_name = 'Human' AND last_name = 'One';";
         String s2 = "DELETE FROM village WHERE village_name IN ('Eden', 'OutOfEden');";
         Sql.startTransaction(conn);
+        Sql.execute(conn, s0);
         Sql.execute(conn, s1);
         Sql.execute(conn, s2);
         Sql.commit(conn);
         Sql.close(conn);
         mpi = new Mpi();
+        mpi.initialize();
     }
 
     @AfterClass
@@ -266,6 +290,13 @@ public class MpiTest {
         p.setCompoundHeadLastName("Creator");
         p.setVillageName("Eden");
         p.setClanName("Human");
+        
+        Visit v = new Visit();
+        v.setVisitDate(new Date());
+        v.setAddress("ke.go.moh.test.address");
+        v.setFacilityName("Test Facility");
+        p.setLastRegularVisit(v);
+        
         result = mpi.getData(requestTypeId, requestData);
         assertNull(result);
         pr = callFindPerson(requestData);

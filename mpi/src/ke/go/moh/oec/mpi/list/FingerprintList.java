@@ -25,6 +25,7 @@
 package ke.go.moh.oec.mpi.list;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.mpi.Mpi;
 import ke.go.moh.oec.mpi.Sql;
 import ke.go.moh.oec.mpi.ValueMap;
@@ -43,21 +45,63 @@ import ke.go.moh.oec.mpi.ValueMap;
  */
 public class FingerprintList {
 
+    private Connection conn;    // Connection for loading fingerprints
+    private ResultSet rs;       // Result set for loading fingerprints
+    private boolean rsNext;     // Is there a next record in the result set?
+    private int personId;       // Remember current person ID.
+
     /**
-     * Loads into memory the fingerprints for a given person.
-     *
-     * @param conn Connection on which to do the query.
-     * @param dbPersonId Internal database ID for the person associated with these fingerprints.
-     * @return The list of fingerprints.
+     * Positions to the next fingerprint record and gets the personId from that record.
+     * This is encapsulated mainly to insure that rs.getInt() is only called once per record
+     * for the person_id field. It turns out that this call is moderately CPU expensive
+     * since it parses the database value into an integer every time. So we do this call
+     * only once and save the integer result. We may then reference it more than once.
      */
-    public static List<Fingerprint> load(Connection conn, int dbPersonId) {
-        List<Fingerprint> fingerprintList = null;
-        String sql = "SELECT f.fingerprint_template, f.fingerprint_type_id, f.fingerprint_technology_type_id\n"
-                + "FROM fingerprint f\n"
-                + "WHERE f.person_id = " + dbPersonId;
-        ResultSet rs = Sql.query(conn, sql, Level.FINEST);
+    private void next() {
         try {
-            while (rs.next()) {
+            rsNext = rs.next();
+            if (rsNext) {
+                personId = rs.getInt("person_id");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PersonIdentifierList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Starts loading fingerprints into memory.
+     * <p>
+     * For efficiency, fingerprints for all patients are loaded by a single query,
+     * in order by personId. Then a merge sort on fingerprintId is done between the
+     * loaded fingerprint list and the loaded person list.
+     */
+    public void loadStart(int minPersonId, int maxPersonId) {
+        conn = Sql.connect();
+        String sql = "SELECT f.person_id, f.fingerprint_template, f.fingerprint_type_id, f.fingerprint_technology_type_id\n"
+                + "FROM fingerprint f\n"
+                + "WHERE f.person_id BETWEEN " + minPersonId + " AND " + maxPersonId + "\n"
+                + "ORDER BY f.person_id";
+        rs = Sql.query(conn, sql, Level.FINEST);
+        next();     // Position at the first result record.
+    }
+
+    /**
+     * Loads the next fingerprint into memory matching the given personId.
+     * 
+     * @param dbPersonId Database person_id value for fingerprints to load.
+     * @return list of fingerprints for this person.
+     */
+    public List<Fingerprint> loadNext(int dbPersonId) {
+        List<Fingerprint> fingerprintList = null;
+        try {
+            // If we haven't yet reached the requested personId, skip over any
+            // database records that come before that personId.
+            while (rsNext && personId < dbPersonId) {
+                next();
+            }
+            // While we are matching the requested personId, include any
+            // fingerprints that match that Id.
+            while (rsNext && personId == dbPersonId) {
                 if (fingerprintList == null) {
                     fingerprintList = new ArrayList<Fingerprint>();
                 }
@@ -70,13 +114,21 @@ public class FingerprintList {
                 f.setFingerprintType(fingerprintType);
                 f.setTechnologyType(technologyType);
                 fingerprintList.add(f);
+                next();
             }
-            Sql.close(rs);
         } catch (SQLException ex) {
-            Logger.getLogger(Mpi.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
+            Logger.getLogger(FingerprintList.class.getName()).log(Level.SEVERE, null, ex);
         }
         return fingerprintList;
+    }
+
+    /**
+     * Ends loading fingerprints.
+     * Releases any resources used.
+     */
+    public void loadEnd() {
+        Sql.close(rs);
+        Sql.close(conn);
     }
 
     /**
@@ -112,9 +164,17 @@ public class FingerprintList {
                     String fingerprintTypeId = ValueMap.FINGERPRINT_TYPE.getDb().get(f.getFingerprintType());
                     String technologyTypeId = ValueMap.FINGERPRINT_TECHNOLOGY_TYPE.getDb().get(f.getTechnologyType());
                     sql = "INSERT INTO fingerprint (person_id, fingerprint_type_id, fingerprint_technology_type_id, fingerprint_template) VALUES (\n"
-                            + personId + ", " + fingerprintTypeId + ", " + technologyTypeId + ",\n"
-                            + Sql.quote(template) + ")";
-                    Sql.execute(conn, sql);
+                            + personId + ", " + fingerprintTypeId + ", " + technologyTypeId + ", ?)";
+                    Mediator.getLogger(FingerprintList.class.getName()).log(Level.FINE, "SQL Execute:\n{0}", sql);
+                    try {
+                        PreparedStatement stmt;
+                        stmt = conn.prepareStatement(sql);
+                        stmt.setObject(1, template);
+                        stmt.executeUpdate();
+                        stmt.close();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(FingerprintList.class.getName()).log(Level.SEVERE, sql, ex);
+                    }
                 }
             }
         } else if (oldEntries) {

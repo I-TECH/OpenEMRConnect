@@ -31,7 +31,7 @@ import ke.go.moh.oec.mpi.match.PersonMatch;
  *
  * @author Jim Grace
  */
-public class Candidate implements Comparable {
+public class Candidate implements Comparable<Candidate> {
 
     /** Data about the person to be returned. */
     private PersonMatch personMatch;
@@ -94,13 +94,12 @@ public class Candidate implements Comparable {
      * (higher score), or greater than 0 if this candidate should be
      * later in the list (lower score.)
      */
-    public int compareTo(Object other) {
-        Candidate cOther = (Candidate) other;
-        if (cOther.score != score) {
-            return cOther.score - score;
+    public int compareTo(Candidate other) {
+        if (other.score != score) {
+            return other.score - score;
         } else {
             int dbId = getPersonMatch().getDbPersonId();
-            int otherDbId = cOther.getPersonMatch().getDbPersonId();
+            int otherDbId = other.getPersonMatch().getDbPersonId();
             return (dbId - otherDbId);
         }
     }

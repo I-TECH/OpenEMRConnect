@@ -108,10 +108,12 @@ class XmlPacker {
     private static final String OID_CCC_UNIVERSAL_UNIQUE_ID = OID_ROOT + "5.3";
     private static final String OID_CCC_LOCAL_PATIENT_ID = OID_ROOT + "5.4";
     private static final String KISUMU_HDSS_ID = OID_ROOT + "5.5";
-    private static final String OID_REGULAR_VISIT_ADDRESS = OID_ROOT + "6.1";
-    private static final String OID_REGULAR_VISIT_DATE = OID_ROOT + "6.2";
-    private static final String OID_ONEOFF_VISIT_ADDRESS = OID_ROOT + "6.3";
-    private static final String OID_ONEOFF_VISIT_DATE = OID_ROOT + "6.4";
+    private static final String OID_REGULAR_VISIT_DATE = OID_ROOT + "6.1.1";
+    private static final String OID_REGULAR_VISIT_ADDRESS = OID_ROOT + "6.1.2";
+    private static final String OID_REGULAR_VISIT_FACILITY_NAME = OID_ROOT + "6.1.3";
+    private static final String OID_ONEOFF_VISIT_DATE = OID_ROOT + "6.2.1";
+    private static final String OID_ONEOFF_VISIT_ADDRESS = OID_ROOT + "6.2.2";
+    private static final String OID_ONEOFF_VISIT_FACILITY_NAME = OID_ROOT + "6.2.3";
     private static final String OID_FINGERPRINT_LEFT_INDEX = OID_ROOT + "7.1";
     private static final String OID_FINGERPRINT_LEFT_MIDDLE = OID_ROOT + "7.2";
     private static final String OID_FINGERPRINT_LEFT_RING = OID_ROOT + "7.3";
@@ -466,6 +468,7 @@ class XmlPacker {
     private void packPerson(Element e, Person p) {
         if (p == null) {
             p = new Person();
+            //p.setLastOneOffVisit(null);
         }
         packPersonName(e, p, "name");
         packTagAttribute(e, "administrativeGenderCode", "code", packEnum(p.getSex()));
@@ -493,8 +496,8 @@ class XmlPacker {
         packId(e, OID_PREGNANCY_OUTCOME, packEnum(p.getPregnancyOutcome()));
         packId(e, OID_SITE_NAME, p.getSiteName());
         packId(e, OID_FINGERPRINT_MATCHED, packBoolean(p.isFingerprintMatched()));
-        packVisit(e, p.getLastRegularVisit(), OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE);
-        packVisit(e, p.getLastOneOffVisit(), OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE);
+        packVisit(e, p.getLastRegularVisit(), OID_REGULAR_VISIT_DATE, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_FACILITY_NAME);
+        packVisit(e, p.getLastOneOffVisit(), OID_ONEOFF_VISIT_DATE, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_FACILITY_NAME);
         packPersonIdentifiers(e, p, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
         packPersonIdentifiers(e, p, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
         packPersonIdentifiers(e, p, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
@@ -570,16 +573,19 @@ class XmlPacker {
      *
      * @param e head of the <code>Document</code> subtree in which this person is to be packed
      * @param v visit information to pack
-     * @param oidVisitAddress OID for the XML id tag containing the visit address
      * @param oidVisitDate OID for the XML id tag containing the visit date
+     * @param oidVisitAddress OID for the XML id tag containing the visit address
+     * @param oidVisitFacilityName OID for the XML id tag containing the facility name
      */
-    private void packVisit(Element e, Visit v, String oidVisitAddress, String oidVisitDate) {
+    private void packVisit(Element e, Visit v, String oidVisitDate, String oidVisitAddress, String oidVisitFacilityName) {
         if (v != null) {
-            packId(e, oidVisitAddress, v.getAddress());
             packId(e, oidVisitDate, packDate(v.getVisitDate()));
+            packId(e, oidVisitAddress, v.getAddress());
+            packId(e, oidVisitFacilityName, v.getFacilityName());
         } else {
-            packId(e, oidVisitAddress, null);
             packId(e, oidVisitDate, null);
+            packId(e, oidVisitAddress, null);
+            packId(e, oidVisitFacilityName, null);
         }
     }
 
@@ -1202,14 +1208,30 @@ class XmlPacker {
      * @return the array of bytes encoded as a hexadecimal string
      */
     private String packByteArray(byte[] byteArray) {
+        String result = null;
         if (byteArray != null) {
-            StringBuilder hex = new StringBuilder(byteArray.length * 2);
+            char[] c = new char[byteArray.length * 2];
+            int j = 0;
             for (byte b : byteArray) {
-                hex.append(String.format("%02X", b));
+                c[j++] = packHexDigit((b & 0xF0) >>> 4);
+                c[j++] = packHexDigit(b & 0x0F);
             }
-            return hex.toString();
+            result = new String(c);
+        }
+        return result;
+    }
+
+    /**
+     * Packs an integer value 0-15 into a single hex digit 0-F.
+     * 
+     * @param val integer value 0-15 to pack
+     * @return hex digit 0-F
+     */
+    private static char packHexDigit(int val) {
+        if (val < 10) {
+            return (char) ('0' + val);
         } else {
-            return null;
+            return (char) ('A' + val - 10);
         }
     }
 
@@ -1302,12 +1324,13 @@ class XmlPacker {
             DocumentBuilder db = dbf.newDocumentBuilder();
             InputStream is = new ByteArrayInputStream(xml.getBytes());
             doc = db.parse(is);
+            is.close();
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, "Error parsing XML of length " + xml.length() + ":\n" + xml, ex);
         } catch (SAXException ex) {
-            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, "Error parsing XML of length " + xml.length() + ":\n" + xml, ex);
         } catch (IOException ex) {
-            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, "Error parsing XML of length " + xml.length() + ":\n" + xml, ex);
         }
         return doc;
     }
@@ -1476,10 +1499,11 @@ class XmlPacker {
         m.setMessageData(personResponse);
         unpackHl7Header(m, e);
         NodeList nodeList = e.getElementsByTagName("subject");
-        if (nodeList.getLength() != 0) {
-            List<Person> personList = new ArrayList<Person>();
+        int personCount = nodeList.getLength();
+        if (personCount != 0) {
+            List<Person> personList = new ArrayList<Person>(personCount);
             personResponse.setPersonList(personList);
-            for (int i = 0; i < nodeList.getLength(); i++) {
+            for (int i = 0; i < personCount; i++) {
                 Person p = new Person();
                 Element el = (Element) nodeList.item(i);
                 unpackCandidate(p, el);
@@ -1508,10 +1532,11 @@ class XmlPacker {
      */
     private void unpackRelatedPersons(Person p, Element e) {
         NodeList nodeList = e.getElementsByTagName("personalRelationship");
-        if (nodeList.getLength() != 0) {
-            List<RelatedPerson> relatedPersonList = new ArrayList<RelatedPerson>();
+        int relatedPersonCount = nodeList.getLength();
+        if (relatedPersonCount != 0) {
+            List<RelatedPerson> relatedPersonList = new ArrayList<RelatedPerson>(relatedPersonCount);
             p.setHouseholdMembers(relatedPersonList);
-            for (int i = 0; i < nodeList.getLength(); i++) {
+            for (int i = 0; i < relatedPersonCount; i++) {
                 RelatedPerson rp = new RelatedPerson();
                 relatedPersonList.add(rp);
                 Element el = (Element) nodeList.item(i);
@@ -1580,8 +1605,8 @@ class XmlPacker {
         p.setPregnancyOutcome((Person.PregnancyOutcome) unpackEnum(Person.PregnancyOutcome.values(), unpackId(e, OID_PREGNANCY_OUTCOME)));
         p.setSiteName(unpackId(e, OID_SITE_NAME));
         p.setFingerprintMatched(unpackBoolean(unpackId(e, OID_FINGERPRINT_MATCHED)));
-        p.setLastRegularVisit(unpackVisit(e, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_DATE));
-        p.setLastOneOffVisit(unpackVisit(e, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_DATE));
+        p.setLastRegularVisit(unpackVisit(e, OID_REGULAR_VISIT_DATE, OID_REGULAR_VISIT_ADDRESS, OID_REGULAR_VISIT_FACILITY_NAME));
+        p.setLastOneOffVisit(unpackVisit(e, OID_ONEOFF_VISIT_DATE, OID_ONEOFF_VISIT_ADDRESS, OID_ONEOFF_VISIT_FACILITY_NAME));
         unpackPersonIdentifiers(p, e, OID_PATIENT_REGISTRY_ID, PersonIdentifier.Type.patientRegistryId);
         unpackPersonIdentifiers(p, e, OID_MASTER_PATIENT_REGISTRY_ID, PersonIdentifier.Type.masterPatientRegistryId);
         unpackPersonIdentifiers(p, e, OID_CCC_UNIVERSAL_UNIQUE_ID, PersonIdentifier.Type.cccUniqueId);
@@ -1608,24 +1633,9 @@ class XmlPacker {
         Element eName = (Element) e.getElementsByTagName(tagName).item(0);
         if (eName != null) {
             NodeList givenList = eName.getElementsByTagName("given");
-            if (givenList.getLength() > 0) {
+            if (givenList.item(0) != null) {
                 p.setFirstName(givenList.item(0).getTextContent());
-                if (givenList.getLength() > 1) {
-                    p.setMiddleName(givenList.item(1).getTextContent());
-                }
-            }
-            p.setLastName(unpackTagValue(eName, "family"));
-        }
-    }
-
-    private void unpackPersonName2(Person p, Element e, String tagName) {
-        Element e1 = (Element) e.getElementsByTagName(tagName).item(0);
-        Element eName = (Element) e1.getElementsByTagName("value").item(0);
-        if (eName != null) {
-            NodeList givenList = eName.getElementsByTagName("given");
-            if (givenList.getLength() > 0) {
-                p.setFirstName(givenList.item(0).getTextContent());
-                if (givenList.getLength() > 1) {
+                if (givenList.item(1) != null) {
                     p.setMiddleName(givenList.item(1).getTextContent());
                 }
             }
@@ -1640,18 +1650,21 @@ class XmlPacker {
      * information is present, returns <code>null</code>.
      *
      * @param e head of the <code>Document</code> subtree in which this visit is found
-     * @param oidVisitAddress OID for the XML id tag containing the visit address
      * @param oidVisitDate OID for the XML id tag containing the visit date
+     * @param oidVisitAddress OID for the XML id tag containing the visit address
+     * @param oidVisitFacilityName OID for the XML id tag containing the facility name
      * @return v unpacked visit data
      */
-    private Visit unpackVisit(Element e, String oidVisitAddress, String oidVisitDate) {
+    private Visit unpackVisit(Element e, String oidVisitDate, String oidVisitAddress, String oidVisitFacilityName) {
         Visit v = null;
-        String address = unpackId(e, oidVisitAddress);
         Date visitDate = unpackDate(unpackId(e, oidVisitDate));
-        if (address != null || visitDate != null) {
+        String address = unpackId(e, oidVisitAddress);
+        String facilityName = unpackId(e, oidVisitFacilityName);
+        if (address != null || visitDate != null || facilityName != null) {
             v = new Visit();
-            v.setAddress(address);
             v.setVisitDate(visitDate);
+            v.setAddress(address);
+            v.setFacilityName(facilityName);
         }
         return v;
     }
@@ -2142,9 +2155,19 @@ class XmlPacker {
      * @return the element if found, otherwise null
      */
     private Element commonGetId(Element subtree, String oid) {
+        // Coding note: In the current DOM implementation, the NodeList.getLength()
+        // method is a relatively costly way to loop, if the loop may be terminated
+        // before all the nodes are accessed. This is because getLength()
+        // causes the internal code to loop through all the nodes just to return
+        // the count that exist as the getLength() result.
+        //
+        // Instead, it is more efficient to loop through the nodes
+        // in a NodeList to find the one we are looking for, or until we reach
+        // a null value signifying the end of the list. This saves time if we find
+        // the node we are looking for before we reach the end of the list.
         NodeList idList = subtree.getElementsByTagName("id");
-        for (int i = 0; i < idList.getLength(); i++) {
-            Element id = (Element) idList.item(i);
+        Element id;
+        for (int i = 0; (id = (Element)idList.item(i)) != null; i++) {
             Node aRoot = id.getAttributeNode("root");
             if (aRoot != null && aRoot.getNodeValue().equals(oid)) {
                 return id;
@@ -2169,8 +2192,8 @@ class XmlPacker {
      */
     private Element commonGetLivingSubjectId(Element subtree, String oid) {
         NodeList idList = subtree.getElementsByTagName("livingSubjectId");
-        for (int i = 0; i < idList.getLength(); i++) {
-            Element id = (Element) idList.item(i);
+        Element id;
+        for (int i = 0; (id = (Element)idList.item(i)) != null; i++) {
             Element eVal = (Element) id.getElementsByTagName("value").item(0);
             if (eVal != null) {
                 Node aRoot = eVal.getAttributeNode("root");

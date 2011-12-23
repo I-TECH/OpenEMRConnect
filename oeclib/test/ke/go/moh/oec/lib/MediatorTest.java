@@ -1,9 +1,32 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is OpenEMRConnect.
+ *
+ * The Initial Developer of the Original Code is International Training &
+ * Education Center for Health (I-TECH) <http://www.go2itech.org/>
+ *
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.lib;
 
+import ke.go.moh.oec.Visit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
 import java.util.ArrayList;
 import ke.go.moh.oec.PersonIdentifier;
@@ -176,8 +199,9 @@ public class MediatorTest {
         PersonResponse pr;
         List<Person> pList;
 
-        // Clan name that will not be found
-        p.setClanName("NotAClanName");
+        // Name that will not be found
+        p.setFirstName("O<NotAFirstName");
+        p.setClanName("O\"NotAClanName");
         result = mediator.getData(RequestTypeId.FIND_PERSON_MPI, requestData);
         assertNotNull(result);
         assertSame(PersonResponse.class, result.getClass());
@@ -276,6 +300,44 @@ public class MediatorTest {
                 requestData.setRequestReference(pr.getRequestReference());
                 result = mediator.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
             }
+        }
+    }
+    /**
+     * Test of getData method, request type CREATE_PERSON_MPI
+     */
+    @Test
+    public void testModifyPerson() {
+        System.out.println("testModifyPerson");
+        PersonRequest requestData = new PersonRequest();
+        Person p;
+        List<Person> pList;
+        PersonIdentifier pi;
+        List<PersonIdentifier> piList;
+        int pCount;
+        Object result;
+        PersonResponse pr;
+
+        // Modify the person (will not exist) -- just to test QueueManager
+        p = new Person();
+        requestData.setPerson(p);
+        pi = new PersonIdentifier();
+        piList = new ArrayList<PersonIdentifier>();
+        pi.setIdentifier("33333-44444");
+        pi.setIdentifierType(PersonIdentifier.Type.patientRegistryId);
+        piList.add(pi);
+        p.setPersonIdentifierList(piList);
+        
+        Visit v = new Visit();
+        v.setVisitDate(new Date());
+        v.setAddress("ke.go.moh.test.address");
+        v.setFacilityName("Test Facility");
+        p.setLastRegularVisit(v);
+        
+        pr = (PersonResponse) mediator.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
+        try {
+            Thread.sleep(10*1000); // Sleep 10 seconds.
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MediatorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

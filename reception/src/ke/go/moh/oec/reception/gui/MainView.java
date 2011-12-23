@@ -4504,6 +4504,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
         Visit visit = new Visit();
         visit.setAddress(OECReception.applicationAddress());
         visit.setVisitDate(new Date());
+        visit.setFacilityName(OECReception.facilityName());
         if (mainViewHelper.getSession().getClientType() == Session.ClientType.ENROLLED
                 || mainViewHelper.getSession().getClientType() == Session.ClientType.NEW
                 || mainViewHelper.getSession().getClientType() == Session.ClientType.TRANSFER_IN) {

@@ -90,9 +90,9 @@ public class PersonMatch {
         mother = new PersonNamesMatch(p.getMothersFirstName(), p.getMothersMiddleName(), p.getMothersLastName());
         father = new PersonNamesMatch(p.getFathersFirstName(), p.getFathersMiddleName(), p.getFathersLastName());
         compoundHead = new PersonNamesMatch(p.getCompoundHeadFirstName(), p.getCompoundHeadMiddleName(), p.getCompoundHeadLastName());
-        otherNameMatch = new NameMatch(p.getOtherName());
-        clanNameMatch = new NameMatch(p.getClanName());
-        villageNameMatch = new NameMatch(p.getVillageName());
+        otherNameMatch = NameMatch.getNameMatch(p.getOtherName());
+        clanNameMatch = NameMatch.getNameMatch(p.getClanName());
+        villageNameMatch = NameMatch.getNameMatch(p.getVillageName());
         if (p.getFingerprintList() != null) {
             fingerprintMatchList = new ArrayList<FingerprintMatch>();
             for (Fingerprint f : p.getFingerprintList()) {
@@ -235,18 +235,22 @@ public class PersonMatch {
      * @param sex2 The other gender to compare.
      */
     private void scoreSex(Scorecard s, Person.Sex sex1, Person.Sex sex2) {
-        if (sex1 != null && sex2 != null) {
+        if (sex1 == null) {
+            s.addScore(Scorecard.SEARCH_TERM_MISSING_WEIGHT, 0, Scorecard.SearchTerm.MISSING);
+        } else if (sex2 == null) {
+            s.addScore(Scorecard.MPI_VALUE_MISSING_WEIGHT, 0);
+        } else {
             double score = 0.0; // Score if sex doesn't match.
-            double weight = 1.0; // Weight if sex doesn't match.
+            double weight = Scorecard.SEX_MISS_WEIGHT; // Weight if sex doesn't match.
             if (sex1.ordinal() == sex2.ordinal()) {
                 score = 1.0; // Score if sex matches.
-                weight = 0.25; // Weignt if sex matches.
+                weight = Scorecard.SEX_MATCH_WEIGHT; // Weignt if sex matches.
             }
             s.addScore(score, weight);
             if (Mediator.testLoggerLevel(Level.FINEST)) {
                 Mediator.getLogger(DateMatch.class.getName()).log(Level.FINEST,
-                        "Score {0},{1} total {2},{3} comparing {4} with {5}",
-                        new Object[]{score, weight, s.getTotalScore(), s.getTotalWeight(), sex1.name(), sex2.name()});
+                        "Score {0},{1} total {2},{3},{4} comparing {5} with {6}",
+                        new Object[]{score, weight, s.getTotalScore(), s.getTotalWeight(), s.getSearchTermScore(), sex1.name(), sex2.name()});
             }
         }
     }
@@ -267,7 +271,11 @@ public class PersonMatch {
         Person pSearch = this.getPerson();
         List<PersonIdentifier> list1 = pSearch.getPersonIdentifierList();
         List<PersonIdentifier> list2 = p.getPersonIdentifierList();
-        if (list1 != null && list2 != null) {
+        if (list1 == null) {
+            s.addScore(Scorecard.SEARCH_TERM_MISSING_WEIGHT, 0, Scorecard.SearchTerm.MISSING);
+        } else if (list2 == null) {
+            s.addScore(Scorecard.MPI_VALUE_MISSING_WEIGHT, 0);
+        } else {
             for (PersonIdentifier pi1 : list1) {
                 for (PersonIdentifier pi2 : list2) {
                     if (pi1.getIdentifierType() == pi2.getIdentifierType()) {
@@ -277,16 +285,24 @@ public class PersonMatch {
                                 if (identifier.equals(pi2.getIdentifier())) {
                                     recordIdentifierMatchScore(s, identifier);
                                     s.setSiteName(sc.getSiteMatch().getSiteName());
-                                    return; // EARLY RETURN, no more looping needed.
+                                    return; // EARLY RETURN, match found, no more looping needed.
                                 }
                             }
                         }
                         if (pi1.getIdentifier().equals(pi2.getIdentifier())) {
                             recordIdentifierMatchScore(s, pi1.getIdentifier());
-                            return; // EARLY RETURN, no more looping needed.
+                            return; // EARLY RETURN, match found, no more looping needed.
                         }
                     }
                 }
+            }
+            // If we fall through the end of the loop, it means there was no identifier match.
+            s.addScore(0.0, Scorecard.ID_MISS_WEIGHT);
+            if (Mediator.testLoggerLevel(Level.FINEST)) {
+                Mediator.getLogger(PersonMatch.class.getName()).log(Level.FINEST,
+                        "Score {0},{1} total {2},{3},{4} no identifier matched with person {5}",
+                        new Object[]{0.0, Scorecard.ID_MISS_WEIGHT, s.getTotalScore(),
+                            s.getSearchTermScore(), s.getTotalWeight(), p.getPersonGuid()});
             }
         }
     }
@@ -299,12 +315,12 @@ public class PersonMatch {
      */
     private void recordIdentifierMatchScore(Scorecard s, String matchingIdentifier) {
         final double PERSON_IDENTIFIER_SCORE = 1.0;
-        final double PERSON_IDENTIFIER_WEIGHT = 1.0;
-        s.addScore(PERSON_IDENTIFIER_SCORE, PERSON_IDENTIFIER_WEIGHT);
+        s.addScore(PERSON_IDENTIFIER_SCORE, Scorecard.ID_MATCH_WEIGHT);
         if (Mediator.testLoggerLevel(Level.FINEST)) {
             Mediator.getLogger(PersonMatch.class.getName()).log(Level.FINEST,
-                    "Score {0},{1} total {2},{3} matching identifier {4}",
-                    new Object[]{PERSON_IDENTIFIER_SCORE, PERSON_IDENTIFIER_WEIGHT, s.getTotalScore(), s.getTotalWeight(), matchingIdentifier});
+                    "Score {0},{1} total {2},{3},{4} matching identifier {5}",
+                    new Object[]{PERSON_IDENTIFIER_SCORE, Scorecard.ID_MATCH_WEIGHT, s.getTotalScore(),
+                        s.getSearchTermScore(), s.getTotalWeight(), matchingIdentifier});
         }
     }
 

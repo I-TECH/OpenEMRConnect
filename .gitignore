@@ -23,7 +23,6 @@
 # Logs and databases #
 ######################
 *.log
-*.sql
 *.sqlite
 
 # OS generated files #
@@ -43,15 +42,24 @@ Thumbs.db
 ############################
 loggingserver/oec*.log
 loggingserver/oec.log.lck
+*/openemrconnect*.log
+*/*/openemrconnect*.log
 
 # Lock files #
 ##############
-*/lockfile.lck
-*/*/lockfile.lck
+*/*.lck
+*/*/*.lck
 
 # Embedded databases #
-###################################
+######################
 */QUEUEMANAGER_DATABASE/*
 */*/QUEUEMANAGER_DATABASE/*
 reception/reception_database/*
 reception/*/reception_database/*
+
+# Eclipse #
+###########
+.project
+.classpath
+.settings/
+/cpad_companion/.settings/

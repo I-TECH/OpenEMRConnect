@@ -44,6 +44,7 @@ public class SiteMatch {
     public SiteMatch(int siteCode, String siteName) {
         this.siteCode = siteCode;
         this.siteName = siteName.trim(); // Just in case.
+        // Note: the NameMatch cache is not used, since duplicate site names are not expected.
         this.siteNameMatch = new NameMatch(siteName);
     }
 
