@@ -32,7 +32,6 @@ import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.reception.data.User;
 
-
 /**
  *
  * @author Gitahi Ng'ang'a
@@ -70,15 +69,23 @@ public class OECReception {
         }
         return instanceName;
     }
-    
-    public static String facilityName(){
+
+    public static String facilityName() {
         String instanceName = Mediator.getProperty("Instance.FacilityName");
-        if (instanceName == null){
+        if (instanceName == null) {
             instanceName = "OEC Reception";
         }
-    return instanceName;
+        return instanceName;
     }
-    
+
+    public static String fingerprintManager() {
+        String instanceName = Mediator.getProperty("Instance.FingerprintManager");
+        if (instanceName == null) {
+            instanceName = "";
+        }
+        return instanceName;
+    }
+
     public static String generateSessionReference() {
         return Mediator.generateMessageId();
     }
@@ -141,6 +148,10 @@ public class OECReception {
      * it is. If it can recognize the pattern, it uses the String passed to create
      * a fully qualified clinic id of that type. If it cannot deduce the clinic type
      * represented by the passed String, it returns null.
+     * 
+     * @param clinicId
+     * 
+     * @return  
      */
     public static PersonIdentifier createPersonIdentifier(String clinicId) {
         if (clinicId != null && !clinicId.isEmpty()) {
@@ -184,7 +195,7 @@ public class OECReception {
                             personIdentifier.setIdentifierType(PersonIdentifier.Type.cccUniqueId);
                             return personIdentifier;
                         }
-                    } else if (patientPart.contains("/")&& patientPart.split("/").length == 2) {
+                    } else if (patientPart.contains("/") && patientPart.split("/").length == 2) {
                         String parts[] = patientPart.split("/");
                         String patientNumber = parts[0];
                         String year = parts[1];
@@ -208,5 +219,8 @@ public class OECReception {
             }
         }
         return null;
+    }
+
+    private OECReception() {
     }
 }

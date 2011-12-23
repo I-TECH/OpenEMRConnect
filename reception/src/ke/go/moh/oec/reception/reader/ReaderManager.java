@@ -22,134 +22,21 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-/*
- * FingerprintDialog.java
- *
- * Created on May 26, 2011, 9:30:59 AM
- */
 package ke.go.moh.oec.reception.reader;
-
-import com.griaule.grfingerjava.FingerprintImage;
-import com.griaule.grfingerjava.GrFingerJava;
-import com.griaule.grfingerjava.GrFingerJavaException;
-import com.griaule.grfingerjava.IFingerEventListener;
-import com.griaule.grfingerjava.IImageEventListener;
-import com.griaule.grfingerjava.IStatusEventListener;
-import com.griaule.grfingerjava.MatchingContext;
-import com.griaule.grfingerjava.Template;
-import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import ke.go.moh.oec.fingerprintmanager.FingerprintManager;
+import ke.go.moh.oec.fingerprintmanager.FingerprintManagerLoader;
+import ke.go.moh.oec.fingerprintmanager.MissingFingerprintManagerImpException;
 
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class ReaderManager implements IStatusEventListener, IFingerEventListener, IImageEventListener {
+public class ReaderManager {
 
-    private MatchingContext matchingContext;
-    private FingerprintingComponent fingerprintingComponent;
-    private Template template;
-
-    public ReaderManager(FingerprintingComponent fingerprintingComponent) throws GrFingerJavaException {
-        this.fingerprintingComponent = fingerprintingComponent;
-        initialize();
+    public static FingerprintManager getFingerprintManager(String className) throws MissingFingerprintManagerImpException  {
+        return FingerprintManagerLoader.getFingerprintManager(className);
     }
 
-    public Template getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(Template template) {
-        this.template = template;
-    }
-
-    private void initialize() throws GrFingerJavaException {
-        try {
-            matchingContext = new MatchingContext();
-            GrFingerJava.installLicense("ZMFAG-PKWUK-CABDA-KSDJF");
-            //TODO: Investigate why this line sometimes hangs
-            GrFingerJava.initializeCapture(this);
-            fingerprintingComponent.log("Waiting for device.");
-        } catch (GrFingerJavaException ex) {
-            fingerprintingComponent.log(ex.getMessage());
-            throw ex;
-        }
-    }
-
-    public void destroy() throws GrFingerJavaException {
-        //TODO: Investigate why this line sometimes hangs
-        GrFingerJava.finalizeCapture();
-        fingerprintingComponent.log("Disconnected from device.");
-    }
-
-    public void onSensorPlug(String sensorId) {
-        try {
-            fingerprintingComponent.log(sensorId + " plugged.");
-            GrFingerJava.startCapture(sensorId, this, this);
-        } catch (GrFingerJavaException ex) {
-            fingerprintingComponent.log(ex.getMessage());
-        }
-    }
-
-    public void onSensorUnplug(String sensorId) {
-        try {
-            fingerprintingComponent.log(sensorId + " unplugged.");
-            GrFingerJava.stopCapture(sensorId);
-        } catch (GrFingerJavaException ex) {
-            fingerprintingComponent.log(ex.getMessage());
-        }
-    }
-
-    public void onFingerDown(String string) {
-        fingerprintingComponent.log("Finger placed.");
-    }
-
-    public void onFingerUp(String string) {
-        fingerprintingComponent.log("Finger removed.");
-    }
-
-    public void onImageAcquired(String sensorId, FingerprintImage fingerprintImage) {
-        fingerprintingComponent.log("Image Captured!");
-        extract(fingerprintImage);
-    }
-
-    public String getFingerprintSDKVersion() throws GrFingerJavaException {
-        return "Fingerprint SDK version " + GrFingerJava.getMajorVersion() + "." + GrFingerJava.getMinorVersion() + "\n"
-                + "License type is '" + (GrFingerJava.getLicenseType() == GrFingerJava.GRFINGER_JAVA_FULL ? "Identification" : "Verification") + "'.";
-    }
-
-    private void extract(FingerprintImage fingerprintImage) {
-        try {
-            template = matchingContext.extract(fingerprintImage);
-            fingerprintingComponent.showQuality(template.getQuality());
-            fingerprintingComponent.showImage(fingerprintImage);
-        } catch (GrFingerJavaException e) {
-            fingerprintingComponent.log(e.getMessage());
-        }
-    }
-
-    public boolean identify(Template template) {
-        boolean match = false;
-        try {
-            match = matchingContext.identify(template);
-        } catch (GrFingerJavaException ex) {
-            Logger.getLogger(ReaderManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ReaderManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return match;
-    }
-
-    public static void setFingerprintSDKNativeDirectory(String nativeDirectory) {
-        try {
-            File directory = new File(nativeDirectory);
-            GrFingerJava.setNativeLibrariesDirectory(directory);
-            GrFingerJava.setLicenseDirectory(directory);
-        } catch (GrFingerJavaException ex) {
-            Logger.getLogger(ReaderManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(ReaderManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private ReaderManager() {
     }
 }
