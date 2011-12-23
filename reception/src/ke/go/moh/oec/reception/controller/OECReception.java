@@ -32,6 +32,7 @@ import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.reception.data.User;
 
+
 /**
  *
  * @author Gitahi Ng'ang'a
@@ -69,6 +70,7 @@ public class OECReception {
         }
         return instanceName;
     }
+<<<<<<< HEAD
 
     public static String facilityName() {
         String instanceName = Mediator.getProperty("Instance.FacilityName");
@@ -86,6 +88,17 @@ public class OECReception {
         return instanceName;
     }
 
+=======
+    
+    public static String facilityName(){
+        String instanceName = Mediator.getProperty("Instance.FacilityName");
+        if (instanceName == null){
+            instanceName = "OEC Reception";
+        }
+    return instanceName;
+    }
+    
+>>>>>>> gitahi86/master
     public static String generateSessionReference() {
         return Mediator.generateMessageId();
     }
