@@ -22,21 +22,27 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.reception.reader;
-import ke.go.moh.oec.fingerprintmanager.FingerprintManager;
-import ke.go.moh.oec.fingerprintmanager.FingerprintManagerLoader;
-import ke.go.moh.oec.fingerprintmanager.MissingFingerprintManagerImpException;
+package ke.go.moh.oec.fingerprintmanager;
 
 /**
  *
  * @author Gitahi Ng'ang'a
  */
-public class ReaderManager {
+public class MissingFingerprintManagerImpException extends Exception {
 
-    public static FingerprintManager getFingerprintManager(String className) throws MissingFingerprintManagerImpException  {
-        return FingerprintManagerLoader.getFingerprintManager(className);
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Creates a new instance of <code>MissingFingerprintManagerImpException</code> without detail message.
+     */
+    public MissingFingerprintManagerImpException() {
     }
 
-    private ReaderManager() {
+    /**
+     * Constructs an instance of <code>MissingFingerprintManagerImpException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public MissingFingerprintManagerImpException(String msg) {
+        super(msg);
     }
 }

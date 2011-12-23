@@ -22,21 +22,38 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.reception.reader;
-import ke.go.moh.oec.fingerprintmanager.FingerprintManager;
-import ke.go.moh.oec.fingerprintmanager.FingerprintManagerLoader;
-import ke.go.moh.oec.fingerprintmanager.MissingFingerprintManagerImpException;
+package ke.go.moh.oec.fingerprintmanager;
+
+import java.awt.image.BufferedImage;
 
 /**
- *
+ * Defines any GUI component used to display fingerprint images taken using
+ * an implementation of this api.
+ * 
  * @author Gitahi Ng'ang'a
  */
-public class ReaderManager {
+public interface FingerprintingComponent {
 
-    public static FingerprintManager getFingerprintManager(String className) throws MissingFingerprintManagerImpException  {
-        return FingerprintManagerLoader.getFingerprintManager(className);
-    }
+    /**
+     * Shows any messages from the fingerprinting api on the user interface.
+     * 
+     * @param message the message to display
+     */
+    void showMessage(String message);
 
-    private ReaderManager() {
-    }
+        /**
+     * Shows fingerprint image quality ratings from the fingerprinting api on the
+     * user interface.
+     * 
+     * @param quality the quality rating to display
+     */
+    void showQuality(int quality);
+
+    
+        /**
+     * Shows fingerprint images from the fingerprinting api on the user interface.
+     * 
+     * @param fingerprintImage the fingerprint image to display
+     */
+    void showImage(BufferedImage fingerprintImage);
 }

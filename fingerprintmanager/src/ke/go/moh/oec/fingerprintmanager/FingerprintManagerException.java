@@ -22,19 +22,32 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.reception.reader;
-
-import java.awt.image.BufferedImage;
+package ke.go.moh.oec.fingerprintmanager;
 
 /**
- *
+ * Wraps all exceptions thrown by implementations of this api.
+ * 
  * @author Gitahi Ng'ang'a
  */
-public interface FingerprintingComponent {
+public class FingerprintManagerException extends Exception {
 
-    void log(String message);
+    private static final long serialVersionUID = 1L;
 
-    void showQuality(int quality);
+    /**
+     * Creates a new instance of <code>FingerprintManagerException</code> without detail message.
+     */
+    public FingerprintManagerException() {
+    }
 
-    void showImage(BufferedImage fingerprintImage);
+    /**
+     * Constructs an instance of <code>FingerprintManagerException</code> with the specified detail message.
+     * @param msg the detail message.
+     */
+    public FingerprintManagerException(String msg) {
+        super(msg);
+    }
+
+    public FingerprintManagerException(Throwable cause) {
+        super(cause);
+    }
 }

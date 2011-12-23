@@ -29,8 +29,6 @@
  */
 package ke.go.moh.oec.reception.gui;
 
-import com.griaule.grfingerjava.GrFingerJavaException;
-import com.griaule.grfingerjava.Template;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -42,11 +40,14 @@ import javax.swing.JOptionPane;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Fingerprint.TechnologyType;
 import ke.go.moh.oec.Fingerprint.Type;
+import ke.go.moh.oec.fingerprintmanager.FingerprintManager;
+import ke.go.moh.oec.fingerprintmanager.FingerprintManagerException;
+import ke.go.moh.oec.fingerprintmanager.FingerprintingComponent;
+import ke.go.moh.oec.fingerprintmanager.MissingFingerprintManagerImpException;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
 import ke.go.moh.oec.reception.data.Session;
 import ke.go.moh.oec.reception.gui.helper.DialogEscaper;
-import ke.go.moh.oec.reception.reader.FingerprintingComponent;
 import ke.go.moh.oec.reception.reader.ReaderManager;
 import org.jdesktop.application.Action;
 
@@ -56,7 +57,8 @@ import org.jdesktop.application.Action;
  */
 public class FingerprintDialog extends javax.swing.JDialog implements FingerprintingComponent {
 
-    private ReaderManager readerManager;
+    private static final long serialVersionUID = 1L;
+    private FingerprintManager fingerprintManager;
     private Session session;
     private final ImagedFingerprint missingFingerprint;
     private final static List<ImagedFingerprint> imagedFingerprintCache = new ArrayList<ImagedFingerprint>();
@@ -90,9 +92,13 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         showTakenFingerprint();
     }
 
-    /** Creates new form FingerprintDialog */
+    /** Creates new form FingerprintDialog
+     * @param parent
+     * @param modal 
+     * @param missingFingerprint  
+     */
     public FingerprintDialog(java.awt.Frame parent, boolean modal,
-            ImagedFingerprint missingFingerprint) throws GrFingerJavaException {
+            ImagedFingerprint missingFingerprint) {
         super(parent, modal);
         initComponents();
         this.setIconImage(OECReception.applicationIcon());
@@ -314,7 +320,7 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     private javax.swing.JLabel statusLabel;
     // End of variables declaration//GEN-END:variables
 
-    public void log(String message) {
+    public void showMessage(String message) {
         if (statusLabel != null) {
             statusLabel.setText(message);
         }
@@ -337,13 +343,13 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     public void showQuality(int quality) {
         String message = "Unknown quality.";
         switch (quality) {
-            case Template.HIGH_QUALITY:
+            case FingerprintManager.HIGH_QUALITY:
                 message = "High quality.";
                 break;
-            case Template.MEDIUM_QUALITY:
+            case FingerprintManager.MEDIUM_QUALITY:
                 message = "Medium quality.";
                 break;
-            case Template.LOW_QUALITY:
+            case FingerprintManager.LOW_QUALITY:
                 message = "Low quality.";
                 break;
         }
@@ -446,8 +452,8 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         }
         fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
         ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, fingerprintImagePanel.getImage(), qualityTextField.getText(), false);
-        if (readerManager != null && readerManager.getTemplate() != null) {
-            fingerPrint.setTemplate(readerManager.getTemplate().getData());
+        if (fingerprintManager != null && fingerprintManager.getData() != null) {
+            fingerPrint.setTemplate(fingerprintManager.getData());
         } else {
             return;
         }
@@ -515,13 +521,15 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         Runnable readerInitializer = new Runnable() {
 
             public void run() {
-                log("Preparing fingerprinting software");
+                showMessage("Preparing fingerprinting software");
                 try {
-                    readerManager = new ReaderManager(fingerprintingComponent);
+                    fingerprintManager = ReaderManager.getFingerprintManager(OECReception.fingerprintManager());
+                    fingerprintManager.setFingerprintingComponent(fingerprintingComponent);
                     readerAvailable = true;
-                    log("Waiting for device");
-                } catch (GrFingerJavaException ex) {
+                    showMessage("Waiting for device");
+                } catch (MissingFingerprintManagerImpException ex) {
                     Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                    showMessage("Fingerprinting is not available. See log for details.");
                 }
             }
         };
@@ -533,16 +541,16 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         Runnable readerDestroyer = new Runnable() {
 
             public void run() {
-                log("Disconneting from device");
+                showMessage("Disconneting from device");
                 try {
-                    if (readerManager != null) {
-                        readerManager.destroy();
-                        log("Disconneted from device");
+                    if (fingerprintManager != null) {
+                        fingerprintManager.destroy();
+                        showMessage("Disconneted from device");
                     }
-                } catch (GrFingerJavaException ex) {
+                } catch (FingerprintManagerException ex) {
                     Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                readerManager = null;
+                fingerprintManager = null;
                 readerAvailable = false;
             }
         };

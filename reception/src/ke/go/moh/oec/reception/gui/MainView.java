@@ -2,9 +2,6 @@
  * MainView.java
  */
 package ke.go.moh.oec.reception.gui;
-
-import com.griaule.grfingerjava.GrFingerJavaException;
-import com.griaule.grfingerjava.Template;
 import com.toedter.calendar.JDateChooser;
 import java.text.ParseException;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -33,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.Timer;
 import javax.swing.Icon;
@@ -58,6 +56,10 @@ import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
 import ke.go.moh.oec.Visit;
+import ke.go.moh.oec.fingerprintmanager.FingerprintManager;
+import ke.go.moh.oec.fingerprintmanager.FingerprintManagerException;
+import ke.go.moh.oec.fingerprintmanager.FingerprintingComponent;
+import ke.go.moh.oec.fingerprintmanager.MissingFingerprintManagerImpException;
 import ke.go.moh.oec.reception.controller.OECReception;
 import ke.go.moh.oec.reception.data.Session;
 import ke.go.moh.oec.reception.controller.PersonWrapper;
@@ -66,7 +68,6 @@ import ke.go.moh.oec.reception.controller.exceptions.MalformedCliniIdException;
 import ke.go.moh.oec.reception.data.DisplayableMaritalStatus;
 import ke.go.moh.oec.reception.data.ImagedFingerprint;
 import ke.go.moh.oec.reception.data.Notification;
-import ke.go.moh.oec.reception.reader.FingerprintingComponent;
 import ke.go.moh.oec.reception.gui.custom.ImagePanel;
 import ke.go.moh.oec.reception.gui.helper.MainViewHelper;
 import ke.go.moh.oec.reception.gui.helper.NotificationSoundPlayer;
@@ -84,7 +85,7 @@ public class MainView extends FrameView implements FingerprintingComponent {
     private MainViewHelper mainViewHelper;
     private String currentCardName = "homeCard";
     private List<String> visitedCardList = new ArrayList<String>();
-    private ReaderManager readerManager;
+    private FingerprintManager fingerprintManager;
     private QuickSearchManager quickSearchManager = null;
     private final SearchStatus searchStatus = new SearchStatus(false);
     private boolean readerAvailable = false;
@@ -2941,7 +2942,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
 
     private void finalizeCard(String cardName) {
         if (cardName.equalsIgnoreCase("homeCard")) {
-            log("");
+            showMessage("");
             showQuickSearchStatus("");
             destroyReaderManager(false);
         }
@@ -3165,7 +3166,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
     public void flash(final JLabel label, final Color flashColor, final int flashFont, final int noOfTimes) {
         Runnable flasher = new Runnable() {
 
-            int loopMax = (noOfTimes * 2);
+            private int loopMax = (noOfTimes * 2);
 
             public void run() {
                 Color original = new Color(0, 0, 0);
@@ -3334,7 +3335,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
         protected void succeeded(Object result) {
             SearchProcessResult searchProcessResult = (SearchProcessResult) result;
             if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
-                showSearchResults((SearchServerResponse) searchProcessResult.getData());
+                showSearchResults(searchProcessResult.getData());
             } else if (searchProcessResult.getType() == SearchProcessResult.Type.NEXT_FINGERPRINT) {
                 showFingerprintDialogBasic();
             } else if (searchProcessResult.getType() == SearchProcessResult.Type.EXIT) {
@@ -3353,15 +3354,17 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
         Runnable readerInitializer = new Runnable() {
 
             public void run() {
-                log("Preparing fingerprinting software");
+                showMessage("Preparing fingerprinting software");
                 try {
                     System.out.println("Inititializing Griaule");
-                    readerManager = new ReaderManager(mainView);
+                    fingerprintManager = ReaderManager.getFingerprintManager(OECReception.fingerprintManager());
+                    fingerprintManager.setFingerprintingComponent(mainView);
                     readerAvailable = true;
-                    log("Waiting for device");
+                    showMessage("Waiting for device");
                     System.out.println("Griaule initialized");
-                } catch (GrFingerJavaException ex) {
+                } catch (MissingFingerprintManagerImpException ex) {
                     Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                    showMessage("Fingerprinting is not available. See log for details.");
                 }
             }
         };
@@ -3369,21 +3372,21 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
     }
 
     private void destroyReaderManager() {
-        log("Disconneting from device");
+        showMessage("Disconneting from device");
         try {
             System.out.println("Destroying Griaule");
-            if (readerManager != null) {
+            if (fingerprintManager != null) {
                 System.out.println("Griaule is not null");
-                readerManager.destroy();
+                fingerprintManager.destroy();
                 System.out.println("Griaule destroyed");
-                log("Disconneted from device");
+                showMessage("Disconneted from device");
             } else {
                 System.out.println("Griaule is null");
             }
-        } catch (GrFingerJavaException ex) {
+        } catch (FingerprintManagerException ex) {
             Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        readerManager = null;
+        fingerprintManager = null;
         readerAvailable = false;
     }
 
@@ -3402,7 +3405,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
         }
     }
 
-    public void log(String message) {
+    public void showMessage(String message) {
         //do nothing if another search is in progress
         if (!searchStatus.isOn()) {
             if (readerStatusLabel != null) {
@@ -3437,13 +3440,13 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
         if (!searchStatus.isOn()) {
             String message = "Unknown quality.";
             switch (quality) {
-                case Template.HIGH_QUALITY:
+                case FingerprintManager.HIGH_QUALITY:
                     message = "High quality.";
                     break;
-                case Template.MEDIUM_QUALITY:
+                case FingerprintManager.MEDIUM_QUALITY:
                     message = "Medium quality.";
                     break;
-                case Template.LOW_QUALITY:
+                case FingerprintManager.LOW_QUALITY:
                     message = "Low quality.";
                     break;
             }
@@ -3453,13 +3456,13 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
     }
 
     private void judgeTemplateQuality(int quality) {
-        if (quality == Template.HIGH_QUALITY) {
-        } else if (quality == Template.MEDIUM_QUALITY) {
+        if (quality == FingerprintManager.HIGH_QUALITY) {
+        } else if (quality == FingerprintManager.MEDIUM_QUALITY) {
             if (showConfirmMessage("You captured a medium quality fingerprint. Would you like to try"
                     + " for High Quality? Choose 'Yes' to try for High Quality and 'No' to search using Medium Quality.")) {
                 return;
             }
-        } else if (quality == Template.LOW_QUALITY) {
+        } else if (quality == FingerprintManager.LOW_QUALITY) {
             showWarningMessage("Low Quality fingerprint captured. Please try for higher quality.", quickSearchFingerprintImagePanel);
             return;
         } else {
@@ -3707,7 +3710,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
 
     public void acceptMPIMatch(PersonWrapper personWrapper) {
         mainViewHelper.acceptMatch(Server.MPI, personWrapper);
-        List<Person> lpiPersonList = (List<Person>) mainViewHelper.getLpiResultList();
+        List<Person> lpiPersonList = mainViewHelper.getLpiResultList();
         if (!mainViewHelper.isLpiResultDisplayed() && lpiPersonList != null
                 && !lpiPersonList.isEmpty()) {
             showSearchResults(new SearchServerResponse(Server.LPI, lpiPersonList));
@@ -3733,7 +3736,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
         PersonWrapper lpiMatchPersonWrapper = mainViewHelper.getSession().getLpiMatchPersonWrapper();
         List<Person> mpiPersonList = (List<Person>) mainViewHelper.getSession().getMpiRequestResult().getData();
         String mpiIdentifier = lpiMatchPersonWrapper.getMPIIdentifier();
-        if (!mpiIdentifier.equals("")) {
+        if (mpiIdentifier.length() != 0) {
             if (mpiPersonList != null && !mpiPersonList.isEmpty()) {
                 for (Person person : mpiPersonList) {
                     if (person.getPersonGuid().equalsIgnoreCase(mpiIdentifier)) {
@@ -3757,7 +3760,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
                     SearchProcessResult searchProcessResult = mainViewHelper.findPerson(Server.MPI, p);
                     mainViewHelper.getSession().setMpiIdentifierSearchDone(true);
                     if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
-                        showSearchResults((SearchServerResponse) searchProcessResult.getData());
+                        showSearchResults(searchProcessResult.getData());
                     } else {
                         showCard("reviewCard1");
                     }
@@ -4265,14 +4268,14 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
                     && mainViewHelper.noLPIMatchWasFound()) {
                 searchProcessResult = mainViewHelper.findPerson(Server.MPI_LPI, mpiUpdatePersonWrapper, true);
                 if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
-                    showSearchResults(new SearchServerResponse(Server.MPI_LPI, (List<Person>) searchProcessResult.getData().getPersonList()), true);
+                    showSearchResults(new SearchServerResponse(Server.MPI_LPI, searchProcessResult.getData().getPersonList()), true);
                     return;
                 }
             } else if (mainViewHelper.noMPIMatchWasFound()
                     && !mainViewHelper.noLPIMatchWasFound()) {
                 searchProcessResult = mainViewHelper.findPerson(Server.MPI, mpiUpdatePersonWrapper, true);
                 if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
-                    showSearchResults((SearchServerResponse) searchProcessResult.getData(), true);
+                    showSearchResults(searchProcessResult.getData(), true);
                     return;
                 }
             } else if (!mainViewHelper.noMPIMatchWasFound()
@@ -4450,7 +4453,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
     }
 
     private boolean hasSelectedButton(ButtonGroup buttonGroup) {
-        for (Enumeration enumeration = buttonGroup.getElements(); enumeration.hasMoreElements();) {
+        for (Enumeration<AbstractButton> enumeration = buttonGroup.getElements(); enumeration.hasMoreElements();) {
             JRadioButton radioButton = (JRadioButton) enumeration.nextElement();
             //check if radio button is available for selection (visible) in the first place
             if (!radioButton.isVisible()) {
@@ -4623,7 +4626,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
     @Action
     public void noLPIMatchFound() {
         mainViewHelper.noMatchFound(Server.LPI);
-        List<Person> mpiPersonList = (List<Person>) mainViewHelper.getMpiResultList();
+        List<Person> mpiPersonList = mainViewHelper.getMpiResultList();
         if (!mainViewHelper.isMpiResultDisplayed() && mpiPersonList != null && !mpiPersonList.isEmpty()) {
             showSearchResults(new SearchServerResponse(Server.MPI, mpiPersonList));
         } else {
@@ -4987,7 +4990,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
         personWrapper.setKisumuHdssId(kisumuHdssId);
         SearchProcessResult searchProcessResult = mainViewHelper.findHouseholdMembers(personWrapper);
         if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
-            HouseholdMembersDialog hmd = new HouseholdMembersDialog(this.getFrame(), true, (List<Person>) searchProcessResult.getData().getPersonList());
+            HouseholdMembersDialog hmd = new HouseholdMembersDialog(this.getFrame(), true, searchProcessResult.getData().getPersonList());
             hmd.setTitle("Household members of " + mpiMatchPersonWrapper.getLongName());
             hmd.setLocationRelativeTo(this.getFrame());
             hmd.setVisible(true);
@@ -5069,7 +5072,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
                             if (searchStatus.isOn()) {
                                 showQuickSearchStatus(searchMessage + dots);
                             }
-                            dots = dots + ".";
+                            dots += ".";
                             try {
                                 Thread.sleep(500);
                             } catch (InterruptedException ex) {
@@ -5107,13 +5110,12 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
                 }
             }
             try {
-                ifp.getFingerprint().setTemplate(readerManager.getTemplate().getData());
+                ifp.getFingerprint().setTemplate(fingerprintManager.getData());
                 ifp.setImage(quickSearchFingerprintImagePanel.getImage());
                 ifp.setQuality(quickSearchQualityTextField.getText());
             } catch (Exception ex) {
                 return new SearchProcessResult(SearchProcessResult.Type.ABORT, null);
             }
-
             mainViewHelper.getSession().getImagedFingerprintList().add(ifp);
             mainViewHelper.getSession().setActiveImagedFingerprint(ifp);
             quickSearchPersonWrapper.addFingerprint(mainViewHelper.getSession().getActiveImagedFingerprint());
@@ -5127,7 +5129,7 @@ private void clinicIdTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-
             SearchProcessResult searchProcessResult = (SearchProcessResult) result;
             if (searchProcessResult.getType() == SearchProcessResult.Type.LIST) {
                 showQuickSearchStatus("Candidates found.");
-                showSearchResults((SearchServerResponse) searchProcessResult.getData());
+                showSearchResults(searchProcessResult.getData());
             } else if (searchProcessResult.getType() == SearchProcessResult.Type.MAX) {
                 showQuickSearchStatus("Meximum quick search fingerprints taken.");
             } else if (searchProcessResult.getType() == SearchProcessResult.Type.ABORT) {
