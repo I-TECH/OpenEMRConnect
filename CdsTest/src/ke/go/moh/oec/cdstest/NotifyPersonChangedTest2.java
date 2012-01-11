@@ -18,16 +18,16 @@ import ke.go.moh.oec.RequestTypeId;
  *
  * @author DevWakhutu
  */
-public class NotifyPersonChangedTest {
+public class NotifyPersonChangedTest2 {
     
     private static Mediator mediator;
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     
-    public NotifyPersonChangedTest() {
+    public NotifyPersonChangedTest2() {
     }
     
     public static void main(String[] args){
-        NotifyPersonChangedTest n = new NotifyPersonChangedTest();
+        NotifyPersonChangedTest2 n = new NotifyPersonChangedTest2();
         mediator = new Mediator();
         n.testNotifyPersonChanged();
     }
@@ -73,7 +73,7 @@ public class NotifyPersonChangedTest {
             try {
                 returnDate = SIMPLE_DATE_FORMAT.parse(sDate);
             } catch (ParseException ex) {
-                Logger.getLogger(NotifyPersonChangedTest.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(NotifyPersonChangedTest2.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return returnDate;
