@@ -1546,8 +1546,8 @@ class XmlPacker {
                 Person per = new Person();
                 rp.setPerson(per);
                 unpackPersonName(per, el, "name");
-                per.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagAttribute(e, "administrativeGenderCode", "code")));
-                per.setBirthdate(unpackDate(unpackTagAttribute(e, "birthTime", "value")));
+                per.setSex((Person.Sex) unpackEnum(Person.Sex.values(), unpackTagAttribute(el, "administrativeGenderCode", "code")));
+                per.setBirthdate(unpackDate(unpackTagAttribute(el, "birthTime", "value")));
             }
         }
     }
