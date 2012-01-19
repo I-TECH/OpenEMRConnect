@@ -136,8 +136,8 @@ public class GriauleFingerprintManager implements IFingerEventListener,
         try {
             template = matchingContext.extract(fingerprintImage);
             if (fingerprintingComponent != null) {
-                fingerprintingComponent.showQuality(template.getQuality());
                 fingerprintingComponent.showImage(fingerprintImage);
+                fingerprintingComponent.showQuality(template.getQuality());
             }
         } catch (GrFingerJavaException e) {
             showMessage(e.getMessage());
@@ -170,7 +170,7 @@ public class GriauleFingerprintManager implements IFingerEventListener,
 
     private void showMessage(String message) {
         if (fingerprintingComponent != null) {
-            showMessage(message);
+            fingerprintingComponent.showMessage(message);
         }
     }
 
