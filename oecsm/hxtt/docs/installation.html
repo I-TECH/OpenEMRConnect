@@ -1,0 +1,255 @@
+<html><head><TITLE>installation.html - HXTT Access JDBC Drivers for Microsoft Access (MS Access) 95/97/2000/XP/2002/2003/2007/2010 v5.1</TITLE><meta name="keywords"  content="Access, JDBC, driver, pure Java, type 4, jdbc drivers, jdbc driver, Java, sql, protocol, database, engine, embedded, remote access, Personal Java, HXTT"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body> 
+<p><font size="+1"><b>Chapter 2. Installation</b></font></p>
+<p><b>Index</b>: </p>
+<ol>
+  <li><a href="#requirement">System Requirements</a></li>
+  <li><a href="#install">Setting the CLASSPATH </a></li>
+  <li><a href="#load">Loading the Driver</a></li>
+  <li><a href="#url">Connecting to the Database</a></li>
+</ol>
+<p><A name=requirement>System Requirements</a></p>
+<p>HXTT Access packages include a Type 4 JDBC driver. Type 4 indicates that the driver 
+  is written in Pure Java, and communicates in the database system's own network 
+  protocol. Because of this, the driver is platform independent; once compiled, 
+  the driver can be used on any system. HXTT Access can run on any platforms with 
+  Java VM, which includes Microsoft Windows, Novell Netware, OS2, UNIX, and LINUX. 
+  HXTT Access supports Personal Java, JDK1.0.X, JDK1.1.X, JDK1.2.X, JDK1.3.X, JDK1.4.X, JDK1.5.X, JDK1.6.X, and JDK1.7.X. HXTT Access includes a database engine which 
+  can support multi-user access. It supports { UNION | INTERSECT | EXCEPT | MINUS 
+  } [ ALL ] query , INNER JOIN, FULL JOIN, LEFT JOIN, RIGHT JOIN, NATURAL JOIN, 
+  CROSS JOIN, and subquery which includes single-row subquery, multirow subquery, 
+  multiple-column subquery, inline views, and correlated subquery.</p>
+<p><A name=install>Setting the CLASSPATH </a></p>
+<p> When java loads any class, it searches a list known as the classpath. This 
+  is a list of directories where classes are placed, or a list of jar files (archives 
+  containing classes and other resources) or both. HXTT Access driver is a Type 
+  4 driver. You can do this in many different methods, but the most command are:</p>
+<ol>
+  <li>Setting the CLASSPATH environment variable.</li>
+  <li>putting it on the command line using the -cp parameter. </li>
+  <li>placing it in the JVM's lib/ext directory.</li>
+  <li>extract all files in jar file into the directory of your application. </li>
+</ol>
+<p> You can know detailed information about &quot;Setting the Classpath&quot; 
+  from your JDK Tools and Utilities. Let's use JDBC3.0 package as a simple sample. 
+  To put Access_JDBC30.jar into your class path, you should use &quot;export 
+  CLASSPATH=/usr/share/lib/Access_JDBC30.jar:$CLASSPATH&quot; on Solaris 
+  and Linux, and &quot;SET CLASSPATH=\javalib\Access_JDBC30.jar;%classpath%&quot; 
+  on Windows.</p>
+<p></p>
+<p> <A name=load>Loading the Driver</a></p>
+<p>Any source that uses JDBC needs to import the java.sql package by using &quot; 
+  import java.sql.*;&quot;.<br>
+</p>
+<p>HXTT Access driver' name is <b>com.hxtt.sql.access.AccessDriver</b>, and you can uses it without 
+  involving hard coding the driver into your code. You do this by setting the 
+  jdbc.drivers system property. For example, for command line apps you can use:<br>
+  java -Djdbc.drivers=com.hxtt.sql.access.AccessDriver yourApp<br>
+  Then, the JVM upon startup will load the drivers automatically. Some applications 
+  (JBoss, Tomcat etc) support a .properties file which they use to save putting 
+  this on the command line.</p>
+<p>The second method is the most common and involves you loading the driver yourself. 
+  It's simple:<br>Class.forName(&quot;com.hxtt.sql.access.AccessDriver&quot;);<br>From then on you can get connections from DriverManager.<br>Note: If Class.forName() throws ClassNotFoundException, you should check your classpath.</p>
+<p> <A name=url>Connecting to the Database</a> </p>
+<p>After the driver has been registered with the DriverManager, you can obtain 
+  a Connection instance that is connected to a particular database by calling 
+  DriverManager.getConnection(). With JDBC, a database is represented by a URL 
+  (Uniform Resource Locator). </p>
+<pre>
+        Embedded:
+                jdbc:access:[//]/[DatabasePath][?prop1=value1[;prop2=value2]] (You can omit that "//" characters sometimes)
+                        For example:
+                                "jdbc:access:/."
+                                "jdbc:access:/c:/data" for Windows driver
+                                "jdbc:access:///c:/data" for Windows driver
+                                "jdbc:access:////usr/data" for unix or linux
+                                "jdbc:access://///192.168.10.2/sharedir" for UNC path
+                                "jdbc:access:/./data"
+                                "jdbc:access:/./data/mydata.mdb"
+                                "jdbc:access:/./data/testabc.accdb"
+        Remote Access (client/server mode):
+                jdbc:access://host:port/[DatabasePath]
+                        For example: "jdbc:access://domain.com:3099/c:/data" if one AccessServer is run on the 3099 port of domain.com
+                                     "jdbc:access://domain.com:3099/c:/data/mydata.mdb"
+                                     "jdbc:access://domain.com:3099/c:/data/test.accdb"
+        Compressed Database:(.ZIP, .JAR, .GZ, .TAR, .BZ2, .TGZ, .TAR.GZ, .TAR.BZ2) 
+                jdbc url format is the same as embedded url and remote url.
+                        For example:
+                                "jdbc:access:/c:/test/testaccess.zip
+        Memory-only Database:
+                jdbc:access:/_memory_/
+        URL Database:(http protocol, https protocol, ftp protocol)
+                jdbc:access:http://httpURL
+                jdbc:access:https://httpsURL
+                jdbc:access:ftp://ftpURL
+                        For example:
+                                "jdbc:access:http://www.hxtt.com/test" //Note: FTP site's user/password should be set in ftpURL, and cannot be set in JDBC connection property because user/password JDBC connection property belongs to server/client connection.
+        SAMBA Database:(smb protocol)
+                                jdbc:access:smb://[[[domain;]username[:password]@]server[:port]/[[share/[dir/]file]]][?[param=value]]
+                        For example:
+                                "jdbc:access:smb://test1:123@100.100.13.94/accessfiles/zone" //Note: SAMBA user/password should be set in SMB url, and cannot be set in JDBC connection property because user/password JDBC connection property belongs to server/client connection.
+	UNC path JDBC url:
+                jdbc:access:/uncpath
+                jdbc:access:///uncpath
+                        For example:
+                                "jdbc:access:/\\PC17\c$\values" 
+                                "jdbc:access:/\\PC17\val"
+	Free JDBC url:(Warning: only use it for special project)
+                jdbc:access:/" or "jdbc:access:///". Then you can use some full UNC path names in SQL to visit anywhere where your Java VM has right to access.
+                        For instance:
+                                select * from \\amd2500\e$\accessfiles\test;
+                                elect * from "\\amd2500\d$\accessiles".test;
+                                select * from ".".test;
+
+         HXTT Access supports seamlessly data mining on memory-only table, physical table, url table, compressed table, SAMBA table in a sql. More details
+         is in Advanced Programming chapter.
+
+</pre>
+<p>To connect, you need to get a Connection instance from JDBC. To do this, you 
+  use the DriverManager.getConnection() method:</p>
+<blockquote>
+  <p>Connection con = DriverManager.getConnection(url, properties);</p>
+</blockquote>
+<p>There are a few different signatures for the getConnection() method. You should 
+  see the API documentation that comes with your JDK for more specific information 
+  on how to use them. You can specify additional properties to the JDBC driver 
+  by placing them in a java.util.Properties instance and passing that instance 
+  to the DriverManager when you connect.</p>
+<table border="1">
+  <tr> 
+    <td width="167"> 
+      <div align="center"><b>Property Name</b></div>
+    </td>
+    <td width="501"> 
+      <div align="center"><b>Definition</b></div>
+    </td>
+    <td width="74"> 
+      <div align="center"><b>Default Value</b></div>
+    </td>
+  </tr>
+  <tr> 
+    <td width="167">host</td>
+    <td width="501">The remote host on which one AccessServer is running </td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">port</td>
+    <td width="501">The port on which one AccessServer is listening</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">serverType</td>
+    <td width="501">The type of AccessServer on the remote host</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">user</td>
+    <td width="501">The user to connect as</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">password</td>
+    <td width="501">The password to use when connecting</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">charSet</td>
+    <td width="501">To specify a Character Encoding Scheme other than the client 
+      default. You can find a Supported Encodings list of file:///c|/jdk1.2/docs/guide/internat/encoding.doc.html. 
+      Cp895(Czech MS - DOS 895), Cp620(Polish MS - DOS 620) and Mazovia are extra 
+      supported although JVM doesn't support those.</td>
+    <td width="74">null</td>
+  </tr>
+  <tr>
+    <td width="167">lockType</td>
+    <td width="501">To specify a compatible lock for other applications of Access. You can use ACCESS.</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">lockTimeout</td>
+    <td width="501">To specify Access driver's timeout in milliseconds to wait 
+      until other processes or Access applications released record lock or table 
+      lock. 0 means a default value, and &lt;0 means no wait.</td>
+    <td width="74">1000</td>
+  </tr>
+  <tr> 
+    <td width="167">cryptType</td>
+    <td width="501">To specify a crypt type for Table Encryption and Column Level 
+      Encryption. All new created table in this connection will become crypted 
+      table. You can use DES, TRIDES, and BLOWFISH now. It is not compatiable with MS Access.</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">cryptKey</td>
+    <td width="501">To specify a crypt key. Without encrypt key, CREATE TABLE 
+      won't create crypted table.</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">storeCryptKey</td>
+    <td width="501">Indicates whether crypt key is stored in crypted table. If 
+      stored, crypted table can be opened automatically in any connection without 
+      predefined crypt properites. If not stored, cryptd table can only be opened 
+      with correct key, and none include us can help you in cracking your data 
+      without the correct key.</td>
+    <td width="74">false</td>
+  </tr>
+  <tr> 
+    <td width="167">tmpdir</td>
+    <td width="501">Indicates whether set a temp directory, Default: the value 
+      of JVM's &quot;java.io.tmpdir&quot; property. If that value is incorrect, 
+      uing the directory of JDBC url. _memory_ means large data in memory.</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">delayedClose</td>
+    <td width="501">Indicates the delayed seconds for close transaction. 
+    That option is used to avoid frequent close/open table operations for following sqls. 
+    You can use 0~120 seconds. Default: 3.</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">maxIdleTime</td>
+    <td width="501">Indicates the max idle time in minute for remote connection. That option is mainly used to avoid closing automatically idle remote connection for connection pool. Embedded idle connectoin won't be closed automatically except for garbage collection. You can use 1~1440 minutes. Default: 30.</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">maxCacheSize</td>
+    <td width="501">Indicates the max memory utilization for per table on automatic temporary index or matched result cache. 
+    You can use 16~65536 kilo bytes. Default: 1024.</td>
+    <td width="74">null</td>
+  </tr>
+  <tr> 
+    <td width="167">versionNumber</td>
+    <td width="501">Access JET Version Number. You can use null, &quot;JET3&quot;(JET version 3.0), &quot;JET4&quot; (JET version 4.0), &quot;JET5&quot; (JET version 5.0), &quot;JET2010&quot; (MS Access version 2010).
+      This parameter is only used for CREATE DATABASE . 
+    </td>
+    <td width="74">JET4</td>
+  </tr>  
+  <tr> 
+    <td width="167">ODBCTrimBehavior</td>
+    <td width="501">Indicates whether works like MS Access ODBC driver to ignore tail space characters in condition expression. You can use null, true, false
+    </td>
+    <td width="74">true</td>
+  </tr>
+  <tr> 
+    <td width="167">caseInsensitive</td>
+    <td width="501">Indicates whether works like MS Access ODBC driver to be case insensitve for string comparison. You can use null, true, false
+    </td>
+    <td width="74">false</td>
+  </tr>
+  <tr> 
+    <td width="167">otherExtension</td>
+    <td width="501">Indicates whether Access driver supports other extension beside 'mdb', 'mde', 'accdb', 'accde', and 'accdr'. You can use comma to assign more than one extension, for instance, otherExtension=DB,ACR .</td>
+    <td width="74">null</td>
+  </tr>  
+</table> 
+<p>When your code then tries to open a Connection, and you get a No driver available 
+  SQLException being thrown, this is probably caused by the driver not being in 
+  the class path, or the JDBC url not being correct.</p>
+<p>To close the database connection, simply call the close() method to the Connection: 
+</p>
+<blockquote>
+  <p>con.close();</p>
+</blockquote>
+<p>&nbsp; </p>
+<div align="center"><font color="#A042FF">Copyright &copy; 1999-2011 Hongxin Technology & Trade Ltd. | All Rights Reserved. |</font> </div></body></html>
