@@ -137,7 +137,7 @@ public class DatabaseConnector {
             return new MSSQQueryCustomizer();
         } else if (url.contains("postgresql")) {
             return new MSSQQueryCustomizer();
-        } else if (url.contains("Access")) {
+        } else if (url.contains("odbc")) {
             return new MSAccessQueryCustomizer();
         } else {
             return null;
