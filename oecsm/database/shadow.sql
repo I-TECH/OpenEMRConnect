@@ -41,7 +41,7 @@ DROP TABLE IF EXISTS `cell`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cell` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `primary_key_value` varchar(100) NOT NULL DEFAULT '',
+  `primary_key_value` varchar(500) NOT NULL DEFAULT '',
   `data` varchar(60000) DEFAULT '',
   `column_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
