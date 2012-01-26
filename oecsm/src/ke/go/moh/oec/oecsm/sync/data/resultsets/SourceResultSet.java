@@ -33,13 +33,13 @@ import java.sql.SQLException;
  * @author Jim Grace
  */
 public class SourceResultSet {
-
+    
     ResultSet rs; // The "real" ResultSet.
 
     public SourceResultSet(ResultSet rs) {
         this.rs = rs;
     }
-
+    
     public String getString(Column column) throws SQLException {
         String returnString = null;
         if (column.isBinaryType()) { // Convert any binary type field to hexadecimal digit string.
@@ -51,21 +51,21 @@ public class SourceResultSet {
                 }
                 returnString = hex.toString();
             }
-        }
-        else {
+        } else {
             returnString = rs.getString("C" + column.getId());
         }
         return returnString;
     }
-
+    
     public String getString(String columnLabel) throws SQLException {
-        return rs.getString(columnLabel);
+        return rs.getString(columnLabel);        
+        
     }
-
+    
     public boolean next() throws SQLException {
         return rs.next();
     }
-
+    
     public void close() throws SQLException {
         rs.close();
     }

@@ -64,30 +64,39 @@ public class DataSynchronizer extends DatabaseConnector {
         sourceDataMiner.start();
         shadowDataMiner.start();
         Database shadowDb = new ShadowSchemaMiner().mine(true);
+
         for (Table table : shadowDb.getTableList()) {
             SourceResultSet sourceRs = sourceDataMiner.mine(table);
             ShadowResultSet shadowRs = shadowDataMiner.mine(table);
+
+
+
             sourceRsHasRecords = sourceRs.next(); // Advance to the first sourceRs row of the table if available.
             shadowRsHasRecords = shadowRs.next(); // Advance to the first shadowRs row of the table if available.
+
+
             while (sourceRsHasRecords || shadowRsHasRecords) {
                 //We filter by which ResultSet contains any rows just so we are not trying to read
                 //out of an empty ResultSet
                 if (sourceRsHasRecords && !shadowRsHasRecords) {
                     //This IS an insert
-                    insert(table, sourceRs);
+                    String sourcePk = sourceRs.getString("PK");
+                    insert(table, sourcePk, sourceRs);
                 } else if (!sourceRsHasRecords && shadowRsHasRecords) {
                     //This IS a delete
                     delete(table, shadowRs);
                 } else if (sourceRsHasRecords && shadowRsHasRecords) {
                     //  This MAY BE  an insert, a delete or an update so we do a merge comparison between the two ResultSets
                     String sourcePk = sourceRs.getString("PK");
+
+
                     String shadowPk = shadowRs.getCell("PK").getData();
                     if (sourcePk.compareTo(shadowPk) < 0) {
-                        insert(table, sourceRs);
+                        insert(table, sourcePk, sourceRs);
                     } else if (sourcePk.compareTo(shadowPk) > 0) {
                         delete(table, shadowRs);
                     } else if (sourcePk.compareTo(shadowPk) == 0) {
-                        update(table, sourceRs, shadowRs);
+                        update(table, sourcePk, sourceRs, shadowRs);
                     }
                 }
             }
@@ -98,12 +107,16 @@ public class DataSynchronizer extends DatabaseConnector {
         shadowDataMiner.finish();
     }
 
-    private void insert(Table table, SourceResultSet sourceRs) throws SQLException {
+    private void insert(Table table, String sourcePk, SourceResultSet sourceRs) throws SQLException {
         List<Transaction> transactionList = new ArrayList<Transaction>();
         LoggableTransaction loggableTransaction = new LoggableTransaction(table, TransactionType.INSERT);
         List<LoggableTransactionDatum> loggableTransactionDatumList = new ArrayList<LoggableTransactionDatum>();
+        String pk = null;
         for (Column column : table.getColumnList()) {
-            Cell cell = new Cell(sourceRs.getString("PK"), sourceRs.getString(column));
+//            if (pk == null) {
+//                pk = sourceRs.getString("PK");
+//            }
+            Cell cell = new Cell(sourcePk, sourceRs.getString(column));
             cell.setColumn(column);
             transactionList.add(new DataTransaction(cell, TransactionType.INSERT));
             loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));
@@ -130,14 +143,18 @@ public class DataSynchronizer extends DatabaseConnector {
         shadowRsHasRecords = shadowRs.next();
     }
 
-    private void update(Table table, SourceResultSet sourceRs, ShadowResultSet shadowRs) throws SQLException {
+    private void update(Table table, String sourcePk, SourceResultSet sourceRs, ShadowResultSet shadowRs) throws SQLException {
         List<Transaction> transactionList = new ArrayList<Transaction>();
         LoggableTransaction loggableTransaction = new LoggableTransaction(table, TransactionType.UPDATE);
         List<LoggableTransactionDatum> loggableTransactionDatumList = new ArrayList<LoggableTransactionDatum>();
+//        String pk = null;
         for (Column column : table.getColumnList()) {
             /*
              * Ensure cells associated with new columns are created
              */
+//            if (pk == null) {
+//                pk = sourceRs.getString("PK");               
+//            }
             Cell shadowCell = shadowRs.getCell(column);
             String sourceColumnValue = sourceRs.getString(column);
             if (shadowCell == null) {
@@ -172,9 +189,11 @@ public class DataSynchronizer extends DatabaseConnector {
             }
         }
         if (!loggableTransactionDatumList.isEmpty()) {
-
+            // String pk = null;
             Cell cell = shadowRs.getCell("PK");
-            cell.setData(sourceRs.getString("PK"));
+//            cell.setData(sourceRs.getString("PK"));
+            cell.setData(sourcePk);
+
             //TODO: Accommodate cases where the pk is not the first column of the table
             cell.setColumn(table.getColumnList().get(0));
             loggableTransactionDatumList.add(new LoggableTransactionDatum(cell, loggableTransaction));

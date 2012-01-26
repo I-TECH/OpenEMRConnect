@@ -45,7 +45,7 @@ public class MSAccessQueryCustomizer implements QueryCustomizer {
         if (pks.length == 1) { // Make sure PK values always sort as a string.
             compositePK = "CStr(" + compositePK + ")";
         }
-        System.out.println(compositePK);
+//        System.out.println(compositePK);
         return compositePK;
     }
 

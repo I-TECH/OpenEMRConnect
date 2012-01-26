@@ -1,0 +1,1420 @@
+<html><head><TITLE>sqlsyntax.html - HXTT Access JDBC Drivers for Microsoft Access (MS Access) 95/97/2000/XP/2002/2003/2007/2010 v5.1</TITLE><meta name="keywords"  content="Access, JDBC, TRANSACTION, jdbc drivers, sql, transaction, database, engine, rollback, HXTT"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><p><font size="+1"><b>Chapter 6. SQL Syntax</b></font></p>
+<p><b>Index</b>: </p>
+<ol>
+  <li><a href="#select">Select</a></li>
+  <li><a href="#insert">Insert</a></li>
+  <li><a href="#update">Update</a></li>
+  <li><a href="#delete">Delete</a></li>
+  <li><a href="#createcatalog">CREATE CATALOG</a></li>
+  <li><a href="#createdatabase">CREATE DATABASE</a></li>
+  <li><a href="#dropdatabase">DROP DATABASE</a></li>
+  <li><a href="#truncatedatabase">TRUNCATE DATABASE</a></li>
+  <li><a href="#packdatabase">PACK DATABASE</a></li>
+  <li><a href="#createtable">CREATE TABLE</a></li>
+  <li><a href="#droptable">DROP TABLE</a></li>
+  <li><a href="#altertable">ALTER TABLE</a></li>
+  <li><a href="#truncatetable">TRUNCATE TABLE</a></li>
+  <li><a href="#packtable">PACK TABLE</a></li>
+  <li><a href="#renametable">RENAME TABLE</a></li>
+  <li><a href="#locktable">LOCK TABLE</a></li>
+  <li><a href="#unlocktable">UNLOCK TABLE</a></li>
+  <li><a href="#createindex">CREATE INDEX</a></li>
+  <li><a href="#dropindex">DROP INDEX</a></li>
+  <li><a href="#reindex">REINDEX</a></li>
+  <li><a href="#createview">CREATE VIEW</a></li>
+  <li><a href="#dropview">DROP VIEW</a></li>
+  <li><a href="#createsequence">CREATE SEQUENCE</a></li>
+  <li><a href="#dropsequence">DROP SEQUENCE</a></li>
+  <li><a href="#altersequence">ALTER SEQUENCE</a></li>
+  <li><a href="#settransaction">SET TRANSACTION</a></li>
+  <li><a href="#starttransaction">START TRANSACTION</a></li>
+  <li><a href="#commit">COMMIT</a></li>
+  <li><a href="#rollback">ROLLBACK</a></li>
+  <li><a href="#savepoint">SAVEPOINT</a></li>
+  <li><a href="#releasesavepoint">RELEASE SAVEPOINT</a></li>
+  <li><a href="#procedure">Call Procedure</a></li>    
+  <li><a href="#pseudocolumns">Pseudo Columns</a></li>    
+  <li><a href="#declarevariable">Declare Variable</a></li>    
+  <li><a href="#setvariable">SET Variable</a></li>    
+  <li><a href="#comment">Comment Syntax</a></li>
+  <li><a href="#sqlstate">SQL States</a></li>    
+</ol>
+<p>Use ";" to separate multi sql statements. For instance, &quot;insert into test 
+  (int1) values(1);insert into test (int1) values(2);&quot;. &quot;reserved word&quot;, 
+  [reserved word] or {v 'reserved word'} is used to quote a column with reserved 
+  word name in SQL statement, for instance, 'select {v 'RIGHT'},'other' from states 
+  where {v 'RIGHT'}=32. The HXTT Access supports using DATE, TIME, TIMESTAMP, GROUP, 
+  ORDER, KEY, DESC, SEQUENCE, INCREMENT, MINVALUE, MAXVALUE, CACHE, CHECK, CYCLE, OTHER, SET, INT, UNIQUE, LEVEL, RELEASE, INDEX, TOP, PACK, CALL, CONNECT, START, PRIMARY, and 
+  UPDATE directly in SQL, although they're reserved words too.</p>
+<p><A name=select>SELECT [ALL | DISTINCT [ ON ( expression [, ...] ) ] ] | DISTINCTROW [TOP 
+  n [PERCENT]] select_list [INTO variable [, ...] ] FROM table_reference_list [WHERE condition_expression] [[START WITH initial-condition] CONNECT BY [NOCYCLE] recurse-condition]
+  [group_by_clause] [HAVING condition_expression] [union_clause] [order_by_clause] [FOR UPDATE]</a></p>
+<p>select_list: { expression [ [AS] columnAlias] | table.* | * } [,...]</p>
+<p>table_reference_list: {table_reference | table_join} [,...]</p>
+<p>table_reference: { { table_name | subquery | (table_join) | (VALUES expression[, ...] ) AS tableName(columnName[,...])} [ [AS] tableAlias] 
+  } [pivot_clause] [unpivot_clause]</p>
+<p>table_name: { [catalog.]tableName} | {UNC path}</p>
+<p>table_join: table_reference join_clause [join_clause,...]</p>
+<p>join_clause: [NATURAL] { INNER | { [ LEFT | RIGHT | FULL] [OUTER] } } JOIN 
+  table_reference [ ON condition_expression | USING(column1,column2,...) ]<br>
+</p>
+<p>condition_expression: an expression which should return a boolean value.</p>
+<p>pivot_clause: PIVOT ( aggregate_function(value_column) FOR pivot_expr IN (column_list) )  [AS] tableAlias</p>
+<p>unpivot_clause: UNPIVOT ( value_column FOR pivot_column IN (column_list) )  [AS] tableAlias</p>
+<p>group_by_clause: GROUP BY expression [,...] [WITH ROLLUP | CUBE]</p>
+<p>union_clause: { UNION | INTERSECT | EXCEPT | MINUS } [ ALL ] select_statement  
+  [ union_clause ...]</p>
+<p>order_by_clause: ORDER BY expression [ASC|DESC] [,...]</p>
+<P>DISTINCT specifies that duplicate rows are discarded. A duplicate row is when 
+  each corresponding select_list column has the same value. DISTINCT has no effect 
+  on constant, and _rowid_. For instance, &quot;select distinct 'First Name',name,age 
+  from users&quot;. 'First Name' will be ignored since it's a constant.</P>
+<p>expression: a complicated expression which can include parentheses, logical 
+  operator(NOT, AND, OR), positives/minus sign(+, -), arithmetical operator(+,-,*,/,%), 
+  string operator(|| (left string concat right string), +(left string concat right string), -(trim left string then concat rightstring), 
+   $(check whether left string is contained in right string), condition operator(&gt;, &gt;=, =, ==, &lt;=, &lt;, !=, &lt;&gt;),  bitwise logical operator(&, |, ~, ^, &lt;&lt;, &gt;&gt;), 
+  [NOT] LIKE pattern {escape 'escape_character'},[NOT] ILIKE pattern {escape 'escape_character'}, IS [NOT] NULL, BETWEEN ... AND 
+  ..., [NOT] IN, [NOT] EXISTS, [ALL|ANY|SOME] (subquery), [NOT] CASE WHEN expr 
+  THEN result [WHEN expr THEN result ...] [ELSE expr] END, CASE expr WHEN compare_expr 
+  THEN result [WHEN compare_expr THEN result ...] [ELSE result] END, SQL Escape 
+  Syntax({d 'yyyy-mm-dd'}, {t 'hh:mm:ss'}, {ts 'yyyy-mm-dd hh:mm:ss.f...'},{v 
+  'reserved_word'}, {fn functionExpression}, {escape 'oneEcapeCharacter'}, {"varbinary" 
+  'string'}), function(more than 200), aggregate function(MAX, MIN, AVG, COUNT, 
+  SUM, STD, STDDEV), constant(null, true, false, CURRENT_DATE, CURRENT_TIME, CURRENT_TIMESTAMP, 
+  date, time, timestamp, number, string), column, parameter(?), subquery(single-row 
+  subquery, multirow subquery, multiple-column subquery, inline views, correlated 
+  subquery) and so on.</p>  
+<p>&quot;SELECT select_list&quot; can be used to get some calculated values through 
+  an one-row ResultSet. Column can be used in all sql except for &quot;SELECT select_list&quot;. 
+  Parameter(?) can only be used in PreparedStatement.</p>
+<p>For instance:</p>
+<blockquote> select val('123.222')<br>
+  select CONVERT('123',SQL_INTEGER) as a,TTOC({d '1999-10-10'},1) as b, IFNULL(1,33) as c, 123 in(456,123,789,'abc') as d, EXTRACT(DECADE FROM '2001-02-16 20:38:40'), '88'+IIF(3<6,'1','0')<br>
+  select encode('adsdfsdf');<br>
+  select decode(encode('adsdfsdf'))+'';<br>
+  SELECT top 8 percent * FROM data.sz9010;<br>
+   SELECT * FROM "data"."testtable";
+   SELECT * FROM "datadir\data"."testtable";
+  select distinct top 10 * from test where not deleted() order by int1,char1 desc;<br>
+  select int1,float1 from test where int1&gt;0 group by int1,double1;<br>
+  select distinct on (int1) int1,double1 from test;<br>
+  select sum(int1),max(dec1),min(double1) from test;<br>
+  SELECT SUM(apmast.fnamount), SUM(glcshi.fnadjamt),SUM(glcshi.fncashamt),SUM(glcshi.fndiscount) 
+  FROM apmast, glcshi WHERE apmast.fcinvoice +apmast.fvendno = glcshi.fcinvoice 
+  + glcshi.fcnameid AND apmast.fduedate between {d '1999-01-01'} AND {d '1999-11-30'} 
+  AND apmast.finvdate &lt;= {d '1999-11-30'};<br>
+  SELECT cellID, columnID, reference, function, parameter FROM repLayout WHERE 
+  reportID = '1' AND rowID = 0 ORDER BY columnID;<br>
+  select distinct int1,double1 from test group by int1,double1,float1;<br>
+  select distinct * from test where int1>0<br>
+  select distinct int1,count(*),sum(int1) from brain.user group by int1<br>
+  SELECT date1,time1,int1 FROM test where TIMESTAMPdIFF(SQL_TSI_YEAR,time1,{ts 
+  '3999-03-24 00:59:23.22222'})<-2000 and date1>{d '1900-01-01'} and date1>{d 
+  '1960-01-01'} and date1<{d '2000-01-02'}+20;<br>
+  select int1 as a,c+23 as b,a+b as c from test where a=1;<br>
+  SELECT INT1,FLOAT1,A.* FROM TEST A WHERE {fn abs(-TEST.INT1)}>0 or a.float1<0 
+  order by int1 asc,currency1,double1*5+int1 desc;<br>
+  select int1,count(*),sum(int1+count(*)),sum(int1)+int1 from test group by int1 
+  having int1>10;<br>
+  SELECT SCHOOLNUM, STULINK,CHGNUMBER, {v 'ABSEN$0101'}, {v 'ABSEN$0102'}, USERSTAMP, 
+  DATESTAMP, {v 'TIMESTAMP'},SEQUENCE FROM AATD2019 where {v 'ABSEN$0101'}='1234' 
+  ORDER BY SCHOOLNUM, STULINK, SEQUENCE;<br>
+  select char1,char1 like 'Z%',char1 in('ZZAA','Z'),char1 between 'A' and 'ZZZ',char1 
+  in('ZZAA','Z') or char1 between 'A' and 'Z',* from test where char1='Z';<br>
+  select int1 from test where int1=(select distinct top 1 int1 from test 
+  where int1>0);<br>
+  select int1 from test where int1 in(select int1 from test where 
+  not deleted());<br>
+  select recno(),int1 from test where (recno(),int1) in(select top 2 recno(),int1 
+  from test where int1>0);<br>
+  select subquery.int1,recno('subquery') from (select top 2 recno(),int1 from 
+  test where int1>0) as subquery;<br>
+  select subquery.int1,recno('test'),test.int1,recno('subquery') from (select 
+  top 2 recno(),int1 from test where int1>0) as subquery, test where test.int1=subquery.int1;<br>
+  ELECT INT1 FROM test as a WHERE EXISTS(SELECT 1 FROM test WHERE int1 >0);<br>
+  SELECT INT1 FROM test as a WHERE int1>=all(SELECT int1 FROM test);<br>
+  SELECT INT1 FROM test as a WHERE int1>=any(SELECT int1 FROM test);<br>
+  SELECT INT1 FROM test as a WHERE int1>=some(SELECT int1 FROM test);<br>
+  select int1,recno() from test where (int1,recno())>(3,5);<br>
+  select int1,recno() from test where (recno(),int1)=(6,222);<br>
+  SELECT * FROM (SELECT * FROM test WHERE int1 = 222 ) as a WHERE EXISTS(SELECT 
+  1 FROM test WHERE int1 >0);<br>
+  select recno('a'),recno('b'),a.int1,a.char1,b.int1,b.char1 from test a, test 
+  as b where recno('a')=recno('b');<Br>
+  select a.int1,a.char1,b.int1,b.char1 from test a inner join test as b on a.int1=b.int1;<br>
+  select a.int1,a.char1,b.int1,b.char1 from test a NATURAL inner join test as 
+  b on a.int1=b.int1;<br>
+  select recno('a'),recno('b'),a.int1,a.char1,b.int1,b.char1 from test a left 
+  join test as b on a.int1=b.int1;<br>
+  select a.int1,a.char1,b.int1,b.char1 from test a right join test as b on a.int1=b.int1;<br>
+  select a.int1,a.char1,b.int1,b.char1 from test a full join test as b on a.int1=b.int1;<br>
+  select recno('a'),recno('b'),a.int1,a.char1,b.int1,b.char1 from test a full 
+  join test as b on a.int1==b.int1 and recno('a')!=recno('b');<br>
+  SELECT * FROM test a LEFT JOIN (test b JOIN test c ON (b.int1 = c.int1)) as 
+  d ON (a.int1 = d.int1);<br>
+  SELECT * FROM test a,test b,test c WHERE a.int1 = b.int1 AND b.int1 = c.int1;<br>
+  SELECT * FROM test a NATURAL CROSS JOIN test b CROSS JOIN test c WHERE a.int1 
+  = b.int1 AND b.int1 = c.int1;<br>
+  SELECT * FROM test a LEFT JOIN (test b JOIN test c ON (b.int1 = c.int1)) on 
+  recno('a')=recno(2);<br>
+  SELECT int1 FROM test where int1>0 UNION ALL select int1 from test where int1>3000 
+  order by int1 desc<br>
+  SELECT int1,* FROM test where int1>0 UNION select int1,* from test where int1>3000 
+  order by int1<br>
+  ELECT int1,* FROM test where int1>0 INTERSECT all select int1,* from test where 
+  int1>3000 order by int1;<br>
+  SELECT int1,* FROM test where int1>0 EXCEPT select int1,* from test where int1>3000 
+  order by int1 descl<br>
+  SELECT int1,* FROM test where int1>0 MINUS select int1,* from test where int1>3000 
+  order by int1,double1 desc;<br>
+  select double1,sum(double1),int1 from test where int1>0 group by int1 having 
+  sum(double1)>0 and double1>0;<br>
+  select distinct 1,a.int1,sum(a.int1) from test as a,test as b group by a.int1,B.int1<br>
+  select a.int1,a.char1,b.int1,b.char1 from test a NATURAL inner join test as 
+  b<br>
+  select * from (select 'ab5' as a) where a like '%[a-c][^ac][12345]'<br>
+  select lpad(' ',2*(level-1)) || str(child) s   from test_connect_by   start with parent=0  connect by prior child = parent;<br>
+</blockquote>
+
+<p><A name=insert>INSERT INTO table_name  [ [AS] tableAlias]  [ ( column_identifier  [,...] ) ] { VALUES 
+  ( expression [, ...] ) | VALUES expression [, ...] | VALUES ( expression [, ...] ),... | SELECT query | ? }</a></p>
+<p>column_identifier  = columnName | &quot;reserved_word&quot; | {v 'reserved_word'} 
+</p>
+<p></p>
+<p>Adds one or more new rows of data into a table. SQL does't permit that table1 
+  is the same table as table2 when INSERT INTO table1 select * from table2, but 
+  the HXTT Access support such an unadvisable operation, for example, INSERT INTO 
+  test (INT1,DATE1) select distinct int1,date1 from test.</p>
+<p>For instance:</p>
+<blockquote> INSERT INTO test (INT1,dec1,time1) VALUES(-1999,-222.33333,{ts '1333-11-30 
+  22:22:22.999999999'});<br>
+  INSERT INTO test ("INT1","DATE1") VALUES(1999.0111,{d '1996-10-21'});<br>
+  INSERT INTO test ("INT1","DATE1") VALUES(1999.0111,{d '1996-10-21'}),(333,{d '2006-10-21'});<br>
+  INSERT INTO test ("INT1") VALUES 1999.0111,333;<br>
+  insert into ecode values('Maciej', 'Kowalski');<br>
+  insert into test values (reccount()+1,'abc',date(),{ts '2003-12-18 19:42:17.88'});<br>
+  INSERT INTO AATD2019 ({v 'ABSEN$0101'}) values('1234');<br>
+  insert into test select * from test order by int1 asc;<br>
+  insert into test select * from test order by int1 asc;<br>
+</blockquote>
+<p><A name=update>UPDATE table_name  [ [AS] tableAlias] SET column_identifier  = expression [,...] 
+  [WHERE condition_expression]</a></p>
+<p>For instance:</p>
+<blockquote>
+        update order set buyer=(SELECT name FROM user WHERE user.id = order.buyerid);<BR>	
+	update test set int1=null where SequenceID=26;<BR>
+	update test set INT1=323232,DEC1=-DEC1 where FLOAT1=3.00 and INT1=222 and DEC1=3.00 and DOUBLE1=34.0 and TIME1 is NULL and CHAR1='ZZAA' and CURRENCY1=0 and BOOLEAN1 is NULL<BR>
+	update AATD2019 set {v 'ABSEN$0101'}='1234' where SequenceID=1;<BR>
+  update test set int1=3333555 where exists(SELECT 1 FROM test WHERE int1 = 222 
+  ) and SequenceID=3;<BR>	
+</blockquote>
+<p><A name=delete>DELETE FROM table_name  [ [AS] tableAlias] [WHERE condition_expression]</a></p>
+<p>Removes rows in a table according to condition_expression.
+ </p>
+<p>For instance:</p>
+<blockquote>
+	delete from test where SequenceID=4;
+</blockquote>
+<p><A name=createcatalog>CREATE CATALOG [IF NOT EXISTS] catalogName</a></p>
+<p>Create a subdirectory to contain database files.</p>
+<p>For instance:</p>
+<blockquote>
+	create catalog if not exists data222;
+</blockquote>
+<p><A name=createdatabase>CREATE DATABASE [IF NOT EXISTS] databaseName</a></p>
+<p>Create a new MS ACCESS MDB(ACCDB) database, you can assign which JET engine(JET3, JET4, or JET5) database would be created by assign the 
+   versionNumber property when build connection, it wil create JET4 engine database by default; 
+   the URL format must be assigned as a directory, for example, "jdbc:access:////usr/data"   
+<blockquote>
+	create database if not exists testmdb;
+</blockquote>
+ </p>
+
+<p><A name=dropdatabase>DROP DATABASE [IF EXISTS] databaseName</a></p>
+<p>The DROP DATABASE statement is used to delete a database. IF that database doesn't exist 
+  without using IF EXIST, an SQLException will be thrown.</p>
+
+<p><a name=truncatedatabase>TRUNCATE DATABASE [IF EXISTS] databaseName</a></p>
+<p>Remove all data rows of common tables to get an blank database.</p>
+<p>For instance:</p>
+<blockquote> truncate DATABASE db1; </blockquote>  
+<p><a name=packdatabase>PACK DATABASE [IF EXISTS] databaseName</a></p>
+<p>pack the database to reduce file size.</p>
+<p>For instance:</p>
+<blockquote> pack DATABASE db1; </blockquote>
+
+
+
+<p><A name=createtable>CREATE TABLE [IF NOT EXISTS] table_name [(column_identifier  
+  data_type [constraint] [,...] [, constraint_clause [,...] ] )] [ [AS] 
+  SELECT query | ? ]</a></p>
+<p>data_type: CHAR(n) | CHARACTER(n) | VARCHAR(n) | BINARY (n) | VARBINARY (n) 
+  | NUMERIC(n1[,n2]) | DEC[IMAL](n1[,n2]) | INT[EGER] [ AUTO_INCREMENT] | SMALLINT | FLOAT [(n)] 
+  | REAL | DOUBLE | BIT | BOOLEAN | DATE [(dateFormat)] | TIME [(dateFormat)] 
+  | TIMESTAMP [(dateFormat)] | LONGVARCHAR [(n)] | LONGVARBINARY [(n)] | JAVA_OBJECT 
+  [(n)] | CLOB | BLOB| OTHER(type_name [,n]) </p>
+<p>n, n1,n2: positive integer, n2 can be 0</p>
+<p>constraint: [NULL| NOT NULL] [UNIQUE] [DEFAULT expression] [PRIMARY KEY] [COMMENT 'string']</p>
+<P>constraint_clause: [ CONSTRAINT constraint_name ] PRIMARY KEY
+  (column1, column2, . column_n) | CONSTRAINT constraint_name  FOREIGN KEY
+  (column1, column2, ... column_n) REFERENCES parent_table (column1,
+  column2, ... column_n) [ON DELETE CASCADE] [ON UPDATE CASCADE] | CONSTRAINT constraint_name UNIQUE (column1,
+  column2, . column_n) | CONSTRAINT constraint_name CHECK (column_name condition)</p>
+<p>The HXTT Access will ignore (dateFormat) for MS Access's 
+  compatibility. Column can store null values, so that constraint NOT NULL is 
+  ignored. Although CREATE INDEX can create UNIQUE and PRIMARY KEY for existent 
+  table, the preferable way is using UNIQUE and PRIMARY KEY in CREATE TABLE.</p>
+  
+<table border=1 >
+  <caption> 
+  <p><font size=+3>SQL Data Types for Create Table</font></p>
+  </caption>
+  <tr> 
+    <th width="108"> 
+      <center>
+        <p>SQL Type&nbsp; </p>
+      </center>
+    </th>
+    <td width="234"> 
+      <center>
+        <p><b>Access Data Type</b> </p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center"><b>Size in table</b></div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p><b>SQL Syntax</b> </p>
+      </center>
+    </td>
+    <th width="170"> 
+      <center>
+        <p>Java Type&nbsp; </p>
+      </center>
+    </th>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>CHARACTER</p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Unavailing</p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">1~2</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>CHAR[ACTER]</p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>char</p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>CHAR&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Text field of max width n  </p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">1~255</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>CHAR[ACTER](n) </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>String</p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>VARCHAR&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Text field of max width n  </p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">1~255</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>VARCHAR (n) </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>String</p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>LONGVARCHAR </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Memo BLOB</p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">&nbsp;</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>LONGVARCHAR  
+        </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>String, char[], java.sql.CLOB&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>NUMERIC&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"><center>NUMERIC</center></td>
+    <td width="93"> 
+      <div align="center">1~255</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>NUMERIC [(n[,d])] </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>java.math.BigDecimal&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>DECIMAL&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"><center>DECIMAL</center></td>
+    <td width="93"> 
+      <div align="center">1~255</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>DEC[IMAL] [(n[,d])] </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>java.math.BigDecimal&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>BIT&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Logical </p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">1</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>BIT </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>boolean&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>TINYINT</p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Unavailing, map TINYINT into SMALLINT</p>
+      </center>
+    </td>
+    <td width="93"> 
+        <p>&nbsp;</p>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>TINYINT</p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>byte&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>SMALLINT</p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        Short integer 
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">2</div>
+    </td>
+    <td width="125"><center>SMALLINT</center></td>
+    <td width="170"> 
+      <center>
+        <p>short&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>INTEGER&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Long integer </p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">4</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>INT[EGER] </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>int&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>BIGINT&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Unavailing, map BIGINT into NUMERIC(20,0) </p>
+      </center>
+    </td>
+    <td width="93"> 
+        <p>&nbsp; </p>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>BIGINT</p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>long&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>REAL&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>float</p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">4</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>REAL</p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>float&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>FLOAT&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Unavailing, map FLOAT into DOUBLE
+</p>
+      </center>
+    </td>
+    <td width="93"> 
+        <p>&nbsp; </p>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>FLOAT</p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>double&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108" height="40"> 
+      <center>
+        <p>DOUBLE&nbsp; </p>
+      </center>
+    </td>
+    <td width="234" height="40"> 
+      <center>
+        <p>double </p>
+      </center>
+    </td>
+    <td width="93" height="40"> 
+      <div align="center">8</div>
+    </td>
+    <td width="125" height="40"> 
+      <center>
+        <p>DOUBLE </p>
+      </center>
+    </td>
+    <td width="170" height="40"> 
+      <center>
+        <p>double&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108" height="42"> 
+      <center>
+        <p>BINARY&nbsp; </p>
+      </center>
+    </td>
+    <td width="234" height="42"> 
+      <center>
+        <p>Unavailing, map BINARY into VARBINARY</p>
+      </center>
+    </td>
+    <td width="93" height="42"> 
+        <p>&nbsp;</p>
+    </td>
+    <td width="125" height="42"> 
+      <center>
+        <p>BINARY (n) </p>
+      </center>
+    </td>
+    <td width="170" height="42"> 
+      <center>
+        <p>byte[]&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>VARBINARY&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>VARBINARY</p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">&nbsp;</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>VARBINARY (n) </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>byte[]</p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>LONGVARBINARY&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Unavailing, map LONGVARBINARY into OLE</p>
+      </center>
+    </td>
+    <td width="93"> 
+        <p>&nbsp; </p>
+    </td>
+    <td width="125"> 
+      <center>LONGVARBINARY (n)</center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>byte[], java.sql.BLOB&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>DATE&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>Unavailing, map DATE  into TIMESTAMP
+</center>
+    </td>
+    <td width="93"> 
+        <p>&nbsp; </p>
+    </td>
+    <td width="125"> 
+      <center>DATE</center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>java.sql.Date&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>TIME&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Unavailing, map TIME  into TIMESTAMP</p>
+      </center>
+    </td>
+    <td width="93"> 
+        <p>&nbsp; </p>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>TIME </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>java.sql.Time&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>TIMESTAMP&nbsp; </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Timestamp</p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">8</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>TIMESTAMP </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>java.sql.Timestamp&nbsp; </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>BOOLEAN </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Logical </p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center">1</div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>BOOLEAN </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>boolean </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>BLOB </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Unavailing, map BLOB into OLE</p>
+      </center>
+    </td>
+    <td width="93"> 
+        <p>&nbsp; </p>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>BLOB </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>byte[], java.sql.BLOB, Object </p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>CLOB </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Unavailing, map CLOB into LONGVARCHAR</p>
+      </center>
+    </td>
+    <td width="93"> 
+        <p>&nbsp; </p>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>CLOB </p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>String, char[], java.sql.CLOB</p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"> 
+      <center>
+        <p>OTHER </p>
+      </center>
+    </td>
+    <td width="234"> 
+      <center>
+        <p>Currency </p>
+        <p>OLE</p>
+      </center>
+    </td>
+    <td width="93"> 
+      <div align="center"> 
+        <p>8</p>
+        <p>&nbsp;</p>
+      </div>
+    </td>
+    <td width="125"> 
+      <center>
+        <p>OTHER (Currency)</p>
+        <p>OTHER (OLE)</p>
+      </center>
+    </td>
+    <td width="170"> 
+      <center>
+        <p>java.math.BigDecimal</p>
+        <p>byte[]</p>
+      </center>
+    </td>
+  </tr>
+  <tr> 
+    <td width="108"><center><p>JAVA_OBJECT </p></center> </td>
+    <td width="234"><center><p>Unavailing, map JAVA_OBJECT into OLE</p></center></td>
+    <td width="93">        <p>&nbsp; </p>
+    </td>
+    <td width="125"><center><p>JAVA_OBJECT </p></center></td>
+    <td width="170"><center><p>byte[] or Object </p></center></td>
+  </tr>
+</table>
+<p>For instance:</p>
+<blockquote>
+   create table if not exists test(TAlpha varchar(25),TMoney other (currency),TShort smallint,TLongInt int,TBCD numeric(20,4),TCalc double,TDate 
+  date,TTime time, TMemo longvarchar, TOle OTHER (OLE), TLogical boolean
+  );<BR>	
+</blockquote>
+<p><A name=droptable>DROP TABLE [IF EXISTS] table_name</a></p>
+<p>Removes a table, and its indexes from the database. IF that table doesn't exist 
+  without using IF EXIST, an SQLException will be thrown.</p>
+<p>For instance:</p>
+<blockquote> drop table if exists states; </blockquote>
+<p><a name=altertable>ALTER TABLE table_name alter_specification [,...]</a></p>
+<p>alter_specification: {{ADD|MODIFY} column_identifier  data_type [constraint]}| 
+  DROP column_identifier  | RENAME column_identifier 1 TO column_identifier 2 | RENAME 
+  TO table_name2 | ADD constraint_clause</p>
+<p>When some alter operations are in one ALTER sql, the HXTT Access will complete 
+  all RENAME column operations first, then do all ADD, MODIFY, AND DROP column 
+  operations at one time, and RENAME table is the last operation.</p>
+<p>For instance:</p>
+<blockquote>
+	alter table test rename int11 to int1;<br>
+	alter table test rename int1 to int2, rename to test22;<br>
+	alter table test22  rename to test;<br>
+	alter table test add column1 int DEFAULT 3 NULL, drop clob1, modify double1 int;<br> 
+</blockquote>  
+<p><a name=truncatetable>TRUNCATE TABLE [IF EXISTS] table_name </a></p>
+<p>Remove all table rows.</p>
+<p>For instance:</p>
+<blockquote> truncate table test; </blockquote>  
+<p><a name=packtable>PACK TABLE [IF EXISTS] table_name </a></p>
+<p>pack the table.</p>
+<p>For instance:</p>
+<blockquote> pack table test; </blockquote>
+<p><a name=renametable>RENAME TABLE table_name TO table_name2</a></p>
+<p>Rename the table.</p>
+<p>For instance:</p>
+<blockquote>RENAME table test to test1; </blockquote>  
+  
+<p><a name=locktable>LOCK TABLE table_name </a></p>
+<p>lock the table. Returns 1 if sucess, 0 if failed to lock a table.</p>
+<p>For instance:</p>
+<blockquote> lock table test; </blockquote>
+<p><a name=unlocktable>UNLOCK TABLE table_name </a></p>
+<p>unlock the table. Returns 1 if sucess, 0 if failed to unlock a table.</p>
+<p>For instance:</p>
+<blockquote> unlock table test; </blockquote>
+
+<p><A name=createindex>CREATE [UNIQUE] INDEX [IF NOT EXISTS] indexName[(keylength)][,...] 
+  [OF indexFileName] ON tableName (expression [UNIQUE] [PRIMARY KEY] [ASC|DESC] 
+  [FOR expression][,...])</a></p>
+<p>Create an index file which can contains one or more index expressions for a 
+  table. The HXTT Access will utilize index when condition_expression contains indexed 
+  expression.</p>
+<p>For instance:</p>
+<blockquote>
+</blockquote>
+<p><A name=dropindex>DROP INDEX [IF EXISTS] {ALL | indexName[,...]} [of indexFileName] 
+  ON table_name</a></p>
+<p>Removes the specified index from the database.</p>
+<p>For instance:</p>
+<blockquote> drop index all on test;<br>
+</blockquote>  
+<p><A name=reindex>REINDEX {ALL | indexName[,...]} ON table_name</a></p>
+<p>Rebuild the specified index.</p>
+<p>For instance:</p>
+<blockquote> reindex all on test;<br>
+</blockquote> 
+
+<p><A name=createview>CREATE [OR REPLACE] [ TEMP | TEMPORARY ] VIEW table [ ( column_identifier [,...] ) ]  [AS ] SELECT query</a></p>
+<p>Creates a virtual table whose contents (columns and rows) are defined by a query. Temporary view is only visible in the current connection.</p>
+<p>For instance:</p>
+<blockquote>create or replace temporary view abcv (aaa) select FEC_ANAL FROM ANALISIS;<br>
+
+<p><A name=dropview>DROP VIEW [IF EXISTS] table</a></p>
+<p>Drop a virtual table.</p>
+<p>For instance:</p>
+<blockquote>drop view if exists abcv;<br>
+
+
+<p><A name=createsequence>CREATE SEQUENCE [IF NOT EXISTS] sequence_name [AS {INT|SMALLINT|TINYINT|BIGINT}] 
+  [START [WITH] n]</a> [INCREMENT [BY] n] [MINVALUE n | NO MINVALUE] [ MAXVALUE 
+  n | NO MAXVALUE ] [ CACHE n | NO CACHE] [ [ NO ] CYCLE ]</p>
+<p>sequence_name: [catalog.]sequenceName </p>
+<p>The optional clause START WITH n allows the sequence to begin anywhere. The 
+  default starting value is minvalue for ascending sequences and maxvalue for 
+  descending ones. The optional clause INCREMENT BY n specifies which value is 
+  added to the current sequence value to create a new value. A positive value 
+  will make an ascending sequence, a negative one a descending sequence. The default 
+  value is 1. The optional clause MINVALUE n determines the minimum value a sequence 
+  can generate. If this clause is not supplied or NO MINVALUE is specified, then 
+  defaults will be used. The defaults are 1 and -128(-32768,0x80000000,0x8000000000000000L) 
+  for ascending and descending sequences, respectively. The optional clause MAXVALUE 
+  n determines the maximum value for the sequence. If this clause is not supplied 
+  or NO MAXVALUE is specified, then default values will be used. The defaults 
+  are 127(32767,0x7fffffff,0x7fffffffffffffffL)and -1 for ascending and descending 
+  sequences, respectively. The optional clause CACHE cache specifies how many 
+  sequence numbers are to be preallocated and stored in memory for faster access. 
+  The minimum value is 1 (only one value can be generated at a time, i.e., no 
+  cache), and this is also the default. The maximum value for cache is 65535. 
+  The CYCLE option allows the sequence to wrap around when the maxvalue or minvalue 
+  has been reached by an ascending or descending sequence respectively. If the 
+  limit is reached, the next number generated will be the minvalue or maxvalue, 
+  respectively. If NO CYCLE is specified, any calls to nextval after the sequence 
+  has reached its maximum value will throw an exception. If neither CYCLE or NO 
+  CYCLE are specified, NO CYCLE is the default.</p>
+<p>For instance:</p>
+<blockquote> create sequence if not exists userID start WITH 100 increment by 
+  2 maxvalue 2000 cache 5 cycle;<br>
+</blockquote>
+<p><A name=dropsequence>DROP SEQUENCE [IF EXISTS] sequence_name</a></p>
+<p>Removes a sequence from the database. IF that sequence doesn't exist without 
+  using IF EXIST, an SQLException will be thrown.</p>
+<p></p>
+<p>For instance:</p>
+<blockquote> drop sequence if exists userID;<br>
+</blockquote> 
+<p><A name=altersequence>ALTER SEQUENCE sequence_name [AS {INT|SMALLINT|TINYINT|BIGINT}] 
+  [RESTART [WITH] n]</a> [INCREMENT [BY] n] [MINVALUE n | NO MINVALUE] [ MAXVALUE 
+  n | NO MAXVALUE ] [ CACHE n | NO CACHE] [ [ NO ] CYCLE ]</p>
+<p>ALTER SEQUENCE changes the parameters of an existing sequence generator. Any 
+  parameter not specifically set in the ALTER SEQUENCE command retains its prior 
+  setting.</p>
+<p>For instance:</p>
+<blockquote>alter sequence userID restart WITH 100 increment by 1 maxvalue 5000;<br>
+</blockquote> 
+<p><A name=settransaction>SET TRANSACTION transaction_mode [, ...]</a></p>
+<p>transaction_mode: { ISOLATION LEVEL {READ UNCOMMITTED | READ COMMITTED | REPEATABLE READ | SERIALIZABLE } | { READ WRITE | READ ONLY }</p>
+<p>Sets the transaction characteristics of the current transaction. It effects any subsequent transactions in the same connection. java.sql.Connection.setTransactionIsolation(int level)   and java.sql.Connection.setReadOnly(boolean readOnly) can do the same task.</p>
+<p></p>
+<p>For instance:</p>
+<blockquote>SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;<br></blockquote>
+<p><A name=starttransaction>START TRANSACTION [ transaction_mode [, ...] ]</a></p>
+<p>Begins a new transaction block. java.sql.Connection.setAutoCommit(false), java.sql.Connection.setTransactionIsolation(int level), and java.sql.Connection.setReadOnly(boolean readOnly) can do the same task.</p>
+<p></p>
+<p>For instance:</p>
+<blockquote> START TRANSACTION;<br></blockquote>
+<p><A name=commit>COMMIT [WORK]</a></p>
+<p>Terminates the current transaction and makes all changes under the transaction persistent.  It commits the changes to the database. java.sql.Connection.commit() can do the same task.</p>
+<p></p>
+<p>For instance:</p>
+<blockquote> commit;<br></blockquote> 
+<p><A name=rollback>ROLLBACK [WORK] [ TO [ SAVEPOINT ] savepoint_name]</a></p>
+<p>Without savepoint_name, terminates the current transaction and rescinds all changes made under the transaction. It rolls back the changes to the database. With savepoint_name, rolls back all commands that were executed after the savepoint was established. java.sql.Connection.rollback() can do the same task of ROLLBACK [WORK] sql.</p>
+<p>
+</p>
+<p></p>
+<p>For instance:</p>
+<blockquote> rollback;<br> </blockquote> 
+<p><A name=savepoint>SAVEPOINT savepoint_name</a></p>
+<p>SAVEPOINT establishes a new savepoint within the current transaction. java.sql.Connection.setSavepoint(String name)
+ and java.sql.Connection.setSavepoint() can do the same task.</p>
+<p></p>
+<p>For instance:</p>
+<blockquote> savepoint t1;<br> </blockquote>
+<p><A name=releasesavepoint>RELEASE SAVEPOINT savepoint_name</a></p>
+<p>Destroys a savepoint previously defined in the current transaction. java.sql.Connection.releaseSavepoint(Savepoint savepoint) can do the same task.</p>
+<p></p>
+<p>For instance:</p>
+<blockquote> release savepoint t1;<br> </blockquote>
+
+<p><A name=procedure>{ [ ? = ] call procedure_name [ ( ? [, ? [ , ... ]] ) ] }</a></p>
+<p>java.sql.CallableStatement can be used to call stored procedure.</p>
+<p></p>
+<p>For instance:</p>
+<blockquote> {call myview(?)};<br> </blockquote>
+
+<p><A name=pseudocolumns>Pseudo Columns</a></p>
+<P>_rowid_, is a pseudo column as primary key. A _rowid_ identifies a row in a table.</P>
+<p>level is a pseudo column that can be used in hierarchical queries (start with .. connect by). For records that appear in the root, level is 1, for their (direct) children, level is 2 and so on. </p>
+<p>CURRENT_DATE is a pseudo variable which returns the current date.</p>
+<p>CURRENT_TIME is a pseudo variable which returns the current time.</p>
+<p>CURRENT_TIMESTAMP is a pseudo variable which returns the current timestamp.</p>
+
+<p></p>
+
+
+
+<p><A name=declarevariable>DECLARE variable_name[,...] type [DEFAULT expression]</a></p>
+<p>Variable is visiable only in the same connection.</p>
+<p></p>
+<p>For instance:</p>
+<blockquote>DECLARE abc CHAR(20) DEFAULT 'Hello';<br>
+DECLARE x, y INT;<br> </blockquote>
+
+
+<p><A name=setvariable>SET variable_name = expression [,...]</a></p>
+<p>expression can be a complicated expresion. BTW, INTO variable[,...] clause of SELECT syntax can set selected columns directly into variables.
+
+SELECT id,data INTO x,y FROM test.t1 LIMIT 1;</p>
+<p></p>
+<p>For instance:</p>
+<blockquote>SET x = 1+int(55.5),y=2;<br>
+SELECT name,id INTO x,y FROM table1 WHERE id=33;<br>
+SELECT date(),pi() INTO x,y;<br>
+ </blockquote>
+
+
+
+
+<p><A name=comment>Comment Syntax</a></p>
+<p>#one-line comment<br>
+--one-line comment<br>
+/*multiline comment*/</p>
+<p>For instance:</p>
+<blockquote>select * /* column list */ from test;#This is a select sql.<br> </blockquote>
+<p><A name=sqlstate>SQL States</a></p>
+<table width="75%" border="1">
+  <tr> 
+    <td width="18%"> 
+      <div align="center">SQL State</div>
+    </td>
+    <td width="82%"> 
+      <div align="center">Description</div>
+    </td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">01001</div>
+    </td>
+    <td width="82%">Cursor operation conflict</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">01427</div>
+    </td>
+    <td width="82%">single-row subquery returns more than one row</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">01428</div>
+    </td>
+    <td width="82%">single-column subquery returns more than one column</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">01429</div>
+    </td>
+    <td width="82%">subquery returns mismatch column number</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">01436</div>
+    </td>
+    <td width="82%">CONNECT BY loop in user data</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">01430</div>
+    </td>
+    <td width="82%">single-row subquery returns none row</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">07006</div>
+    </td>
+    <td width="82%">Restricted data type attribute violation</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">08000</div>
+    </td>
+    <td width="82%">Connection exception</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">08003</div>
+    </td>
+    <td width="82%">Connection not open</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">08007</div>
+    </td>
+    <td width="82%">Connection failure during transaction</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">08S01</div>
+    </td>
+    <td width="82%">Remote database access failure</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">0A000</div>
+    </td>
+    <td width="82%">Feature not supported</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">0A001</div>
+    </td>
+    <td width="82%">Multiple server transactions</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">21S01</div>
+    </td>
+    <td width="82%">Insert value list does not match column list</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">22000</div>
+    </td>
+    <td width="82%">Data exception</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">22019</div>
+    </td>
+    <td width="82%">Invalid escape character</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">22023</div>
+    </td>
+    <td width="82%">Invalid parameter value</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">23000</div>
+    </td>
+    <td width="82%">Integrity constraint violation</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">24000</div>
+    </td>
+    <td width="82%">Invalid cursor state</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">25000</div>
+    </td>
+    <td width="82%">Invalid transaction state</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">26000</div>
+    </td>
+    <td width="82%">Invalid SQL statement name</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">2A000</div>
+    </td>
+    <td width="82%">Direct SQL syntax error or access rule violation</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">2D000</div>
+    </td>
+    <td width="82%">Invalid transaction termination</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">2E000</div>
+    </td>
+    <td width="82%">Invalid connection name</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">34000</div>
+    </td>
+    <td width="82%">Invalid cursor name</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">34102</div>
+    </td>
+    <td width="82%">Invalid variable name</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">34103</div>
+    </td>
+    <td width="82%">Invalid funciton name</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">34104</div>
+    </td>
+    <td width="82%">Invalid index file name</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">3C000</div>
+    </td>
+    <td width="82%">Duplicate cursor name</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">3D000</div>
+    </td>
+    <td width="82%">Invalid catalog name</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">3F000</div>
+    </td>
+    <td width="82%">Invalid schema name</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">40000</div>
+    </td>
+    <td width="82%">Transaction rollback</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">42000</div>
+    </td>
+    <td width="82%">Syntax error or access violation</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">42001</div>
+    </td>
+    <td width="82%">Syntax error</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">42002</div>
+    </td>
+    <td width="82%">Access violation</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">42003</div>
+    </td>
+    <td width="82%">Statement has been closed</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">60000</div>
+    </td>
+    <td width="82%">System errors</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">99999</div>
+    </td>
+    <td width="82%">Catch all others</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">C0100</div>
+    </td>
+    <td width="82%">Unknown CodePageID</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">C0101</div>
+    </td>
+    <td width="82%">Unknown File Format</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">C0102</div>
+    </td>
+    <td width="82%">Unknown Table Version</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">C0103</div>
+    </td>
+    <td width="82%">Unknown Index Version</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">C0104</div>
+    </td>
+    <td width="82%">Corrupt Index File</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">C0105</div>
+    </td>
+    <td width="82%">Invalid Record Number</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">C0106</div>
+    </td>
+    <td width="82%">Convert dirty data into null value</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">S0001</div>
+    </td>
+    <td width="82%">Base table or view already exists</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">S0021</div>
+    </td>
+    <td width="82%">Index already exists</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">S0022</div>
+    </td>
+    <td width="82%">Column not found</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">S1002</div>
+    </td>
+    <td width="82%">Invalid column number</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">S1009</div>
+    </td>
+    <td width="82%">Invalid Argument value</td>
+  </tr>
+  <tr> 
+    <td width="18%"> 
+      <div align="center">S1T00</div>
+    </td>
+    <td width="82%">Timeout expired</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<div align="center"><font color="#A042FF">Copyright &copy; 1999-2011 Hongxin Technology & Trade Ltd. | All Rights Reserved. |</font> </div></body></html>

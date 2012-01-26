@@ -1,0 +1,115 @@
+<html><head><TITLE>transaction.html - HXTT Access JDBC Drivers for Microsoft Access (MS Access) 95/97/2000/XP/2002/2003/2007/2010 v5.1</TITLE><meta name="keywords"  content="Access, JDBC, TRANSACTION, jdbc drivers, sql, transaction, ResultSet, commit, rollback, HXTT"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body> 
+<p><font size="+1"><b>Transaction Processing</b></font></p>
+<p><b>Index</b>: </p>
+<ol>
+<li><a href="#commitmode">Commit Mode</a></li>
+<li><a href="#isolationlevels">Isolation Levels</a></li>
+<li><a href="#performance">Performance Hints</a></li>
+</ol>
+<p><A name=commitmode>Commit Mode</a></p>
+<p>There are two modes for managing transactions within JDBC:</p>
+<ul>
+<li>auto-commit
+<li>manual-commit
+</ul>
+<p>java.sql.Connection.setAutoCommit(boolean autoCommit)  is used to switch between the two modes. If a connection is in auto-commit mode, then all its SQL statements will be executed and committed as individual transactions. Otherwise, its SQL statements are grouped into transactions that are terminated by a call to either the method java.sql.Connection.commit or the method java.sql.Connection.rollback. By default, new connections are in auto-commit mode. After an application turns auto-commit off, a transaction is started. The transaction continues until either the java.sql.Connection.commit meothod, COMMIT [WORK] sql, the java.sql.Connection.rollback method, or ROLLBACK [WORK] sql is called; after that a new transaction is automatically started. </p>
+<p>Calling the commit method ends the transaction. At that stage, HXTT Access checks whether the transaction is valid and raises an exception if a conflict is identified. If a conflict is encountered, your application should determine how to continue, for example whether to automatically retry the transaction or inform the user of the failure. A request to rollback a transaction causes HXTT Access  to discard any changes made since the start of the transaction and to end the transaction. 
+</p>
+<pre>
+    connection.setAutoCommit(false); // Explicit transaction handling
+ 
+    Statement stmt = connection.createStatement();
+ 
+    // Loop until transaction successful (or max retry exceeded)
+    for(int count=0;; count++) {
+        stmt.executeUpdate(yourSQL); 
+        try{
+            connection.commit(); // Commit transaction 
+            break; 
+        }catch(SQLException sqe) {
+            // Check commit error
+            if(sqe.getSQLState().equals("40000")) {
+                //You can use sqle.getNextException() to know more information
+
+                // Check number of times the transaction has been attempted
+                if (count<3) {
+                    continue;
+                }
+            }
+            throw sqle;
+        }
+    }
+</pre>
+<p><A name=isolationlevels>Isolation Levels</a></p>
+<p>An isolation level represents a particular locking strategy employed in the HXTT Access to improve data consistency. The higher the isolation level, the more locking or snapshot involved, and the more time users may spend waiting for data to be freed by another user. The isolation level provided by the HXTT Access determines whether a transaction will encounter the following behaviors in data consistency:</p>
+<ul>
+<li>dirty read: A row changed by one transaction can be read by another transaction before any changes in that row have been committed. For instance, User 1 modifies a row. User 2 reads the same row before User 1 commits. User 1 performs a rollback. User 2 has read a row that has never really existed in the database. User 2 may base decisions on false data.
+<li>non-repeatable read: Where one transaction reads a row, a second transaction alters the row, and the first transaction rereads the row, getting different values the second time (a "non-repeatable read"). For instance, User 1 reads a row but does not commit. User 2 modifies or deletes the same row and then commits. User 1 rereads the row and finds it has changed (or has been deleted). 
+<li>phantom read: When one transaction reads all rows that satisfy a WHERE condition, a second transaction inserts a row that satisfies that WHERE condition, and the first transaction rereads for the same condition, retrieving the additional "phantom" row in the second read. For instance, User 1 uses a search condition to read a set of rows but does not commit. User 2 inserts one or more rows that satisfy this search condition, then commits. User 1 rereads the rows using the search condition and discovers rows that were not present before.
+</ul>
+<TABLE border=1>
+  <CAPTION><B>Isolation Levels and Data Consistency Definition</CAPTION></B>
+  <TBODY>
+  <TR vAlign=top>
+    <TD>
+      <P><B>Isolation Level</B></P></TD>
+    <TD>
+      <P><B>Dirty Read</B></P></TD>
+    <TD>
+      <P><B>Non-repeatable Read</B></P></TD>
+    <TD>
+      <P><B>Phantom Read</B></P></TD></TR>
+  <TR vAlign=top>
+    <TD>
+      <P>None</P></TD>
+    <TD>
+      <P>Yes</P></TD>
+    <TD>
+      <P>Yes</P></TD>
+    <TD>
+      <P>Yes </P></TD></TR>
+  <TR vAlign=top>
+    <TD>
+      <P>Read uncommitted</P></TD>
+    <TD>
+      <P>Yes</P></TD>
+    <TD>
+      <P>Yes</P></TD>
+    <TD>
+      <P>Yes </P></TD></TR>
+  <TR vAlign=top>
+    <TD>
+      <P>Read committed</P></TD>
+    <TD>
+      <P>No</P></TD>
+    <TD>
+      <P>Yes</P></TD>
+    <TD>
+      <P>Yes</P></TD></TR>
+  <TR vAlign=top>
+    <TD>
+      <P>Repeatable read</P></TD>
+    <TD>
+      <P>No</P></TD>
+    <TD>
+      <P>No</P></TD>
+    <TD>
+      <P>Yes</P></TD></TR>
+  <TR vAlign=top>
+    <TD>
+      <P>Serializable</P></TD>
+    <TD>
+      <P>No</P></TD>
+    <TD>
+      <P>No</P></TD>
+    <TD>
+      <P>No</P></TD>
+</TR></TBODY></TABLE>
+<P>HXTT Access supports all isolation levels.</>
+<p><A name=performance>Performance Hints</a></p>
+<ul>
+<li>With auto-commit mode, all operations will be done in TRANSACTION NONE level with concurrent support. 
+<li>READ UNCOMMITTED level is always faster than three other transaction levels if you don't do many roolback operations.
+<li>Under REPEATABLE READ or SERIALIZABLE mode, the default CLOSE_CURSORS_AT_COMMIT for ResultSet holdability is faster than HOLD_CURSORS_OVER_COMMIT.
+</ul>
+<div align="center"><font color="#A042FF">Copyright &copy; 1999-2011 Hongxin Technology & Trade Ltd. | All Rights Reserved. |</font> </div></body></html>
