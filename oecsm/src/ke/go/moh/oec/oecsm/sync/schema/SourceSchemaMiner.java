@@ -59,30 +59,32 @@ public class SourceSchemaMiner extends DatabaseConnector {
     private void populateTableList(Database database) throws SQLException {
         String[] tableTypeArray = tableTypes.split(",");
         ResultSet tableRs = databaseMetaData.getTables(null, schemaPattern, "%", tableTypeArray);
-        while (tableRs.next()) {
-            Table ts = new Table(tableRs.getString("TABLE_NAME"));
-//            String pks = extractPrimaryKeys(ts);
-            String pks;
-            if (url.contains("odbc")) {
-                pks = extractAccessPrimaryKeys(ts);
-            } else {
-                pks = extractPrimaryKeys(ts);
+        //look for a property in the source_database.properties file for a custom list of tables to scan
+        if (!table_list.isEmpty()) {
+            while (tableRs.next()) {
+                setupTable(database, tableRs.getString("TABLE_NAME"), tableRs.getString("TABLE_TYPE"));
             }
-//            System.out.println("Name " + tableRs.getString("TABLE_NAME")
-//                    + ", Cat " + tableRs.getString("TABLE_CAT")
-//                    + ", Schema " + tableRs.getString("TABLE_SCHEM")
-//                    + ", Type " + tableRs.getString("TABLE_TYPE"));
+        } 
+    }
 
-            // If it's a table, insist that it has a primary key.
-            // If it's a view, we will assume the first column is the primary key.
-            if (!pks.equals("") || tableRs.getString("TABLE_TYPE").equals("VIEW")) {
-                ts.setPk(pks);
-                ts.setDatabase(database);
-                populateColumnList(ts);
-                database.getTableList().add(ts);
-            }
+    
+    private void setupTable(Database database, String tableName, String tableType) throws SQLException {
+        Table ts = new Table(tableName);
+        String pks;
+        if (url.contains("odbc")) {
+            pks = extractAccessPrimaryKeys(ts);
+        } else {
+            pks = extractPrimaryKeys(ts);
         }
-        tableRs.close();
+
+        // If it's a table, insist that it has a primary key.
+        // If it's a view, we will assume the first column is the primary key.
+        if (!pks.equals("") || tableType.equals("VIEW")) {
+            ts.setPk(pks);
+            ts.setDatabase(database);
+            populateColumnList(ts);
+            database.getTableList().add(ts);
+        }
     }
 
     private void populateColumnList(Table table) throws SQLException {
@@ -107,17 +109,17 @@ public class SourceSchemaMiner extends DatabaseConnector {
         pkRs.close();
         return primaryKeys;
     }
-    
+
     //This method is specifically for Ms Access databases. Extracting Primary keys from an access database;
     private String extractAccessPrimaryKeys(Table tableStructure) throws SQLException {
         String primaryKeys = "";
 //        String multiplePks = "";
-        ResultSet pkRs = databaseMetaData.getIndexInfo(null, null,tableStructure.getName(), true, true);
+        ResultSet pkRs = databaseMetaData.getIndexInfo(null, null, tableStructure.getName(), true, true);
         while (pkRs.next()) {
             String idx = pkRs.getString(6);
             if (idx != null) {
                 if (idx.equalsIgnoreCase("PrimaryKey")) {
-                    primaryKeys = primaryKeys +  pkRs.getString("COLUMN_NAME") + "," ;
+                    primaryKeys = primaryKeys + pkRs.getString("COLUMN_NAME") + ",";
 //                    multiplePks = primaryKeys + pkRs.getString(9);
                 }
             }
