@@ -53,7 +53,7 @@ public class DatabaseConnector {
     protected String driver;
     protected String username;
     protected String password;
-    protected String table_list;
+    protected String tableList;
     protected Connection connection;
     protected String schemaPattern;
     protected String tableTypes;
@@ -102,7 +102,7 @@ public class DatabaseConnector {
             driver = properties.getProperty("driver");
             username = properties.getProperty("username");
             password = properties.getProperty("password");
-            table_list = properties.getProperty("table_list");
+            tableList = properties.getProperty("tableList");
             schemaPattern = properties.getProperty("schemaPattern");
             tableTypes = properties.getProperty("tableTypes");
             if (tableTypes == null) {

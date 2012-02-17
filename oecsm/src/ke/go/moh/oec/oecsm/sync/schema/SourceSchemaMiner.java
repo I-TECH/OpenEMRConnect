@@ -27,6 +27,7 @@ package ke.go.moh.oec.oecsm.sync.schema;
 import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.sql.SQLException;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Database;
@@ -57,17 +58,42 @@ public class SourceSchemaMiner extends DatabaseConnector {
     }
 
     private void populateTableList(Database database) throws SQLException {
-        String[] tableTypeArray = tableTypes.split(",");
-        ResultSet tableRs = databaseMetaData.getTables(null, schemaPattern, "%", tableTypeArray);
-        //look for a property in the source_database.properties file for a custom list of tables to scan
-        if (!table_list.isEmpty()) {
+        // If we have a list of tables from the properties file, then load those tables.
+        if (tableList != null) {
+            //String tablename;
+            String[] tableListArray = tableList.split(",");
+            for (int i = 0; i < tableListArray.length; i++) {
+                //if (tableListArray[i].indexOf(tableList)>-1) {
+                //System.out.println("table " + tableListArray[i].toString());
+                setupTable(database, tableListArray[i].toString(), "TABLE");
+                //i = i + 1;
+            }
+
+        } else {
+            // If there was no list of tables in the properties file, then load every table
+            // that matches one of the table types.
+
+            String[] tableTypeArray = tableTypes.split(",");
+            ResultSet tableRs = databaseMetaData.getTables(null, schemaPattern, "%", tableTypeArray);
             while (tableRs.next()) {
                 setupTable(database, tableRs.getString("TABLE_NAME"), tableRs.getString("TABLE_TYPE"));
             }
-        } 
+            tableRs.close();
+        }
     }
+//    private void populateTableList(Database database) throws SQLException {
+//        String[] tableTypeArray = tableTypes.split(",");
+//        ResultSet tableRs = databaseMetaData.getTables(null, schemaPattern, "%", tableTypeArray);
+//        //look for a property in the source_database.properties file for a custom list of tables to scan
+//        if (tableList != null) {
+//            String[] tableListArray = tableList.split(",");
+//            
+//            while (tableRs.next()) {
+//                setupTable(database, tableRs.getString("TABLE_NAME"), tableRs.getString("TABLE_TYPE"));
+//            }
+//        }
+//    }
 
-    
     private void setupTable(Database database, String tableName, String tableType) throws SQLException {
         Table ts = new Table(tableName);
         String pks;
