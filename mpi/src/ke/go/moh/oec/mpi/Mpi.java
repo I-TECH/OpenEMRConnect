@@ -42,7 +42,7 @@ import ke.go.moh.oec.mpi.list.SiteList;
 public class Mpi implements IService {
 
     private SiteList siteList = new SiteList();
-    private PersonList personList = new PersonList();
+    private PersonList personList = null;
     private static int maxThreadCount = 0;
 
     /**
@@ -65,6 +65,7 @@ public class Mpi implements IService {
         // This is done to speed up loading time.
         Thread loadSitesThread = new Thread(siteList);
         loadSitesThread.start();
+        personList = new PersonList();
         personList.load();
         try {
             loadSitesThread.join();
