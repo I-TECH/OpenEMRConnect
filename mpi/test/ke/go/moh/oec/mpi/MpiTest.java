@@ -71,8 +71,7 @@ public class MpiTest {
     public static void tearDownClass() throws Exception {
     }
 
-    @Before
-    public void setUp() {
+    private void removeTestData(){
         // Remove test data, potentially in place from last run
         Connection conn = Sql.connect();
         String s0 = "DELETE FROM visit WHERE person_id IN (SELECT person_id FROM person WHERE first_name = 'Cain' AND middle_name = 'Human' AND last_name = 'One')";
@@ -83,8 +82,17 @@ public class MpiTest {
         Sql.execute(conn, s1);
         Sql.execute(conn, s2);
         Sql.commit(conn);
-        Sql.close(conn);
+        Sql.close(conn);        
 
+        // The mpi keeps in memory lists - purge.
+        mpi.initialize();
+
+    }
+    
+    @Before
+    public void setUp() {
+        removeTestData();
+        
         // Create test person - used in subsequent tests
         int requestTypeId = RequestTypeId.CREATE_PERSON_MPI;
         //PersonRequest requestData = new PersonRequest();
@@ -108,6 +116,7 @@ public class MpiTest {
         p.setVillageName("Eden");
         p.setClanName("Human");
         p.setBirthdate(parseDate("1986-06-15"));
+        p.setSex(Person.Sex.M);
 
         Visit v = new Visit();
         v.setVisitDate(new Date());
@@ -121,6 +130,7 @@ public class MpiTest {
 
     @After
     public void tearDown() {
+        removeTestData();
     }
 
     private String n(String s) { // Protect against nulls for printing.
@@ -248,9 +258,12 @@ public class MpiTest {
         int score = p0.getMatchScore();
         assertTrue(score >= 80);
 
-        MpiTest.logger.fine("testFindPerson - Search by birthdate");
+        // Birthdate alone (.4) or sex (.25) don't count as match
+        // together they should meet the threshold
+        MpiTest.logger.fine("testFindPerson - Search by sex & birthdate");
         p = new Person(); // Start fresh
         p.setBirthdate(parseDate("1986-06-15"));
+        p.setSex(Person.Sex.M);
         String birthdate = p.getBirthdate().toString();
         requestData.setPerson(p);
         pr = callFindPerson(requestData);
@@ -304,6 +317,7 @@ public class MpiTest {
     public void testCreatePerson() {
         MpiTest.logger.fine("testCreatePerson");
 
+        Person p = new Person();
         pr = callFindPerson(requestData);
         List<Person> pList = pr.getPersonList();
         assertNotNull(pList);
