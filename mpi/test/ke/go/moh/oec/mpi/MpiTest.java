@@ -54,12 +54,25 @@ public class MpiTest {
     static Mpi mpi; // Make it static so it won't reinitialize between tests.
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private static final Logger logger = Logger.getLogger(MpiTest.class.getName());
-
+    private PersonRequest requestData = new PersonRequest();
+    private PersonResponse pr;
+    private Person p;
+    
     public MpiTest() {
     }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        mpi = new Mpi();
+        mpi.initialize();
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    private void removeTestData(){
+        // Remove test data, potentially in place from last run
         Connection conn = Sql.connect();
         String s0 = "DELETE FROM visit WHERE person_id IN (SELECT person_id FROM person WHERE first_name = 'Cain' AND middle_name = 'Human' AND last_name = 'One')";
         String s1 = "DELETE FROM person WHERE first_name = 'Cain' AND middle_name = 'Human' AND last_name = 'One';";
@@ -69,21 +82,55 @@ public class MpiTest {
         Sql.execute(conn, s1);
         Sql.execute(conn, s2);
         Sql.commit(conn);
-        Sql.close(conn);
-        mpi = new Mpi();
+        Sql.close(conn);        
+
+        // The mpi keeps in memory lists - purge.
         mpi.initialize();
-    }
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
     }
-
+    
     @Before
     public void setUp() {
+        removeTestData();
+        
+        // Create test person - used in subsequent tests
+        int requestTypeId = RequestTypeId.CREATE_PERSON_MPI;
+        //PersonRequest requestData = new PersonRequest();
+        Person p = new Person();
+        requestData.setPerson(p);
+        Object result;
+        PersonResponse pr;
+
+        p.setFirstName("Cain");
+        p.setMiddleName("Human");
+        p.setLastName("One");
+        p.setMothersFirstName("Eve");
+        p.setMothersMiddleName("Human");
+        p.setMothersLastName("One");
+        p.setFathersFirstName("Adam");
+        p.setFathersMiddleName("Human");
+        p.setFathersLastName("One");
+        p.setCompoundHeadFirstName("God");
+        p.setCompoundHeadMiddleName("The");
+        p.setCompoundHeadLastName("Creator");
+        p.setVillageName("Eden");
+        p.setClanName("Human");
+        p.setBirthdate(parseDate("1986-06-15"));
+        p.setSex(Person.Sex.M);
+
+        Visit v = new Visit();
+        v.setVisitDate(new Date());
+        v.setAddress("ke.go.moh.test.address");
+        v.setFacilityName("Test Facility");
+        p.setLastRegularVisit(v);
+        
+        result = mpi.getData(requestTypeId, requestData);
+        assertNull(result);
     }
 
     @After
     public void tearDown() {
+        removeTestData();
     }
 
     private String n(String s) { // Protect against nulls for printing.
@@ -199,21 +246,24 @@ public class MpiTest {
         pr = callFindPerson(requestData);
         assertNull(pr.getPersonList());
 
-        // Clan name having 8 matches in the first 100 people
-        MpiTest.logger.fine("testFindPerson - Clan name returning 8 matches");
-        p.setClanName("KONYANGO");
+        // Clan name from test person
+        MpiTest.logger.fine("testFindPerson - Clan name returning 1 match");
+        p.setClanName("Human");
         pr = callFindPerson(requestData);
         List<Person> pList = pr.getPersonList();
         assertNotNull(pList);
         int pCount = pList.size();
-        assertEquals(8, pCount);
+        assertEquals(1, pCount);
         Person p0 = pList.get(0);
         int score = p0.getMatchScore();
-        assertEquals(100, score);
+        assertTrue(score >= 80);
 
-        MpiTest.logger.fine("testFindPerson - Search by birthdate");
+        // Birthdate alone (.4) or sex (.25) don't count as match
+        // together they should meet the threshold
+        MpiTest.logger.fine("testFindPerson - Search by sex & birthdate");
         p = new Person(); // Start fresh
         p.setBirthdate(parseDate("1986-06-15"));
+        p.setSex(Person.Sex.M);
         String birthdate = p.getBirthdate().toString();
         requestData.setPerson(p);
         pr = callFindPerson(requestData);
@@ -267,36 +317,7 @@ public class MpiTest {
     public void testCreatePerson() {
         MpiTest.logger.fine("testCreatePerson");
 
-        int requestTypeId = RequestTypeId.CREATE_PERSON_MPI;
-        PersonRequest requestData = new PersonRequest();
         Person p = new Person();
-        requestData.setPerson(p);
-        Object result;
-        PersonResponse pr;
-
-        p.setFirstName("Cain");
-        p.setMiddleName("Human");
-        p.setLastName("One");
-        p.setMothersFirstName("Eve");
-        p.setMothersMiddleName("Human");
-        p.setMothersLastName("One");
-        p.setFathersFirstName("Adam");
-        p.setFathersMiddleName("Human");
-        p.setFathersLastName("One");
-        p.setCompoundHeadFirstName("God");
-        p.setCompoundHeadMiddleName("The");
-        p.setCompoundHeadLastName("Creator");
-        p.setVillageName("Eden");
-        p.setClanName("Human");
-        
-        Visit v = new Visit();
-        v.setVisitDate(new Date());
-        v.setAddress("ke.go.moh.test.address");
-        v.setFacilityName("Test Facility");
-        p.setLastRegularVisit(v);
-        
-        result = mpi.getData(requestTypeId, requestData);
-        assertNull(result);
         pr = callFindPerson(requestData);
         List<Person> pList = pr.getPersonList();
         assertNotNull(pList);
@@ -383,7 +404,7 @@ public class MpiTest {
         assertNotNull(pList);
         pCount = 0;
         for (Person per : pList) {
-            if (per.getMatchScore() == 100) {
+            if (per.getMatchScore() >= 80) {
                 pCount++;
             }
         }
