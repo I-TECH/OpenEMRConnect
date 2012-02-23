@@ -53,6 +53,7 @@ public class MpiTest {
 
     static Mpi mpi; // Make it static so it won't reinitialize between tests.
     private static final SimpleDateFormat SIMPLE_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final Logger logger = Logger.getLogger(MpiTest.class.getName());
 
     public MpiTest() {
     }
@@ -144,7 +145,7 @@ public class MpiTest {
                 log += " pi(" + pi.getIdentifierType().name() + "): " + pi.getIdentifier();
             }
         }
-        System.out.println(log);
+        MpiTest.logger.fine(log);
         Object result = mpi.getData(RequestTypeId.FIND_PERSON_MPI, personRequest);
         assertNotNull(result);
         assertSame(PersonResponse.class, result.getClass());
@@ -152,7 +153,7 @@ public class MpiTest {
         assertTrue(personResponse.isSuccessful());
         List<Person> pList = personResponse.getPersonList();
         if (pList == null || pList.isEmpty()) {
-            System.out.println("No persons returned.");
+            MpiTest.logger.fine("No persons returned.");
         } else {
             for (Person person : pList) {
                 log = "guid: " + person.getPersonGuid()
@@ -173,12 +174,9 @@ public class MpiTest {
                         log += " pi(" + pi.getIdentifierType().name() + "): " + pi.getIdentifier();
                     }
                 }
-                System.out.println(log);
+                MpiTest.logger.fine(log);
             }
         }
-
-        System.out.flush(); // (So debugging printing isn't interspersed with subsequent printing.)
-
         return personResponse;
     }
 
@@ -187,7 +185,7 @@ public class MpiTest {
      */
     @Test
     public void testFindPerson() {
-        System.out.println("testFindPerson");
+        MpiTest.logger.fine("testFindPerson");
 
         PersonRequest requestData = new PersonRequest();
         Person p = new Person();
@@ -196,13 +194,13 @@ public class MpiTest {
         PersonResponse pr;
 
         // Clan name that will not be found
-        System.out.println("testFindPerson - Clan name that will not be found");
+        MpiTest.logger.fine("testFindPerson - Clan name that will not be found");
         p.setClanName("ThisClanNameWillNotBeFound");
         pr = callFindPerson(requestData);
         assertNull(pr.getPersonList());
 
         // Clan name having 8 matches in the first 100 people
-        System.out.println("testFindPerson - Clan name returning 8 matches");
+        MpiTest.logger.fine("testFindPerson - Clan name returning 8 matches");
         p.setClanName("KONYANGO");
         pr = callFindPerson(requestData);
         List<Person> pList = pr.getPersonList();
@@ -213,7 +211,7 @@ public class MpiTest {
         int score = p0.getMatchScore();
         assertEquals(100, score);
 
-        System.out.println("testFindPerson - Search by birthdate");
+        MpiTest.logger.fine("testFindPerson - Search by birthdate");
         p = new Person(); // Start fresh
         p.setBirthdate(parseDate("1986-06-15"));
         String birthdate = p.getBirthdate().toString();
@@ -241,7 +239,7 @@ public class MpiTest {
      */
     @Test
     public void testFindSomePeople() {
-        System.out.println("testFindSomePeople");
+        MpiTest.logger.fine("testFindSomePeople");
 
         PersonRequest requestData = new PersonRequest();
         Person p = new Person();
@@ -267,7 +265,7 @@ public class MpiTest {
      */
     @Test
     public void testCreatePerson() {
-        System.out.println("testCreatePerson");
+        MpiTest.logger.fine("testCreatePerson");
 
         int requestTypeId = RequestTypeId.CREATE_PERSON_MPI;
         PersonRequest requestData = new PersonRequest();
@@ -305,23 +303,23 @@ public class MpiTest {
         int pCount = pList.size();
         assertEquals(1, pCount);
 
-        System.out.println("Exepect a high score: Edit distance = 1 and SOUNDEX Match.");
+        MpiTest.logger.fine("Exepect a high score: Edit distance = 1 and SOUNDEX Match.");
         p.setMiddleName("Hunan");
         pr = callFindPerson(requestData);
 
-        System.out.println("Slightly lower score: Edit distance = 1 but no SOUNDEX Match.");
+        MpiTest.logger.fine("Slightly lower score: Edit distance = 1 but no SOUNDEX Match.");
         p.setMiddleName("Huxan"); // Slightly lower score: SOUN
         pr = callFindPerson(requestData);
 
-        System.out.println("Somewhat lower score: Edit distance = 3");
+        MpiTest.logger.fine("Somewhat lower score: Edit distance = 3");
         p.setMiddleName("Humanism");
         pr = callFindPerson(requestData);
 
-        System.out.println("Still lower score: Edit distance = 5");
+        MpiTest.logger.fine("Still lower score: Edit distance = 5");
         p.setMiddleName("Hmuanities");
         pr = callFindPerson(requestData);
 
-        System.out.println("Lower score, string completely different (but still other strings matching.)");
+        MpiTest.logger.fine("Lower score, string completely different (but still other strings matching.)");
         p.setMiddleName("XXXXXXXXX");
         pr = callFindPerson(requestData);
 
@@ -332,7 +330,7 @@ public class MpiTest {
      */
     @Test
     public void testModifyPerson() {
-        System.out.println("testModifyPerson");
+        MpiTest.logger.fine("testModifyPerson");
 
         int requestTypeId;
         PersonRequest requestData = new PersonRequest();
@@ -357,14 +355,14 @@ public class MpiTest {
         assertEquals("Human", p0.getMiddleName());
         assertEquals("One", p0.getLastName());
 
-        System.out.println("Modify the village name.");
+        MpiTest.logger.fine("Modify the village name.");
         requestTypeId = RequestTypeId.MODIFY_PERSON_MPI;
         p0.setVillageName("OutOfEden");
         requestData.setPerson(p0);
         result = mpi.getData(requestTypeId, requestData);
         assertNull(result); // MODIFY PERSON returns no result object.
 
-        System.out.println("Search for residents of village Eden -- should find none at 100%.");
+        MpiTest.logger.fine("Search for residents of village Eden -- should find none at 100%.");
         p = new Person();
         p.setVillageName("Eden");
         requestData.setPerson(p);
@@ -376,7 +374,7 @@ public class MpiTest {
             }
         }
 
-        System.out.println("Search for residents of village OutOfEden -- should find one at 100%.");
+        MpiTest.logger.fine("Search for residents of village OutOfEden -- should find one at 100%.");
         p = new Person();
         p.setVillageName("OutOfEden");
         requestData.setPerson(p);
@@ -391,7 +389,7 @@ public class MpiTest {
         }
         assertEquals(1, pCount);
 
-        System.out.println("Set marital status to single.");
+        MpiTest.logger.fine("Set marital status to single.");
         p0.setMaritalStatus(Person.MaritalStatus.single);
         requestData.setPerson(p0);
         result = mpi.getData(RequestTypeId.MODIFY_PERSON_MPI, requestData);
