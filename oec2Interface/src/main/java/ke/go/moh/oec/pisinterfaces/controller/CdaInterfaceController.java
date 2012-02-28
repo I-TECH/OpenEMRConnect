@@ -70,7 +70,6 @@ public class CdaInterfaceController {
 		Properties props = new Properties();
 
 		try {
-			JavaToXML.getPropertiesFile("config.properties");
 			InputStream in = JavaToXML.getPropertiesFile("config.properties");
 			props.load(in);
 			in.close();
