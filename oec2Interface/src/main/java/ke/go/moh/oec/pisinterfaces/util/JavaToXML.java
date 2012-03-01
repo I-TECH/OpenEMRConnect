@@ -49,8 +49,6 @@ public class JavaToXML {
 							.println("File not found, default file created, check "
 									+ f.getPath()
 									+ " to edit according to your configurations");
-					FileInputStream in = new FileInputStream(f);
-					pro.load(in);
 					pro.setProperty("urlMirth", "http://localhost:8090");
 					pro.store(new FileOutputStream(propertiesPath), null);
 
