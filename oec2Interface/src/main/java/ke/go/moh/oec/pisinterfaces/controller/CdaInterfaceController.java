@@ -1,6 +1,8 @@
 package ke.go.moh.oec.pisinterfaces.controller;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 @SessionAttributes("patientId")
 public class CdaInterfaceController {
 	protected String stringUrl = null;
+        private StringBuffer result = new StringBuffer();
 	private Log log=LogFactory.getLog(CdaInterfaceController.class);
 
 	public CdaInterfaceController() {
@@ -83,10 +86,17 @@ public class CdaInterfaceController {
 			URLConnection conn = url.openConnection();
 			conn.setDoOutput(true);
 			wr = new OutputStreamWriter(conn.getOutputStream());
-			wr.write(s);
+			wr.write("query=" + s);
 			wr.flush();
 			wr.close();
-			return "redirect:sendSuccess.htm";
+
+                        BufferedReader response = new BufferedReader(new InputStreamReader(
+                                conn.getInputStream()));
+                        String respString;
+                        while ((respString = response.readLine()) != null){
+                            result.append(respString);
+                        }
+                        return "redirect:sendSuccess.htm";
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,7 +106,8 @@ public class CdaInterfaceController {
 	@RequestMapping("/sendSuccess.htm")
 	public String sendSuccess() {
 
-		return "sendSuccess";
+            // feed to jsp: result.toString();
+            return "sendSuccess";
 
 	}
 
