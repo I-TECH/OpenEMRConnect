@@ -59,4 +59,7 @@
 	<build>
 		<finalName>oec2.interface</finalName>
 	</build>
+    <properties>
+        <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
+    </properties>
 </project>
