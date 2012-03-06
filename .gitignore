@@ -41,6 +41,7 @@ Thumbs.db
 */nbproject/private/*
 */build/*
 */dist/*
+*/target/*
 
 # OpenEMRConnect log files #
 ############################
@@ -67,3 +68,4 @@ reception/*/reception_database/*
 .classpath
 .settings/
 /cpad_companion/.settings/
+/oec2Interface/target/
