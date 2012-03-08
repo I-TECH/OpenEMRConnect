@@ -66,7 +66,8 @@ public class CdaInterfaceController {
 
 	@RequestMapping(value = "/sentPatientId.htm", method = RequestMethod.POST)
 	public String onSubmit(
-			@ModelAttribute("patientIdentification") PatientIdentification patientId) {
+			@ModelAttribute("patientIdentification") PatientIdentification patientId,
+                        ModelMap model) {
 
 
 		OutputStreamWriter wr = null;
@@ -93,10 +94,17 @@ public class CdaInterfaceController {
                         BufferedReader response = new BufferedReader(new InputStreamReader(
                                 conn.getInputStream()));
                         String respString;
+                        result.setLength(0);
                         while ((respString = response.readLine()) != null){
                             result.append(respString);
                         }
-                        return "redirect:sendSuccess.htm";
+                        if (result.length() == 0) {
+                            String[] errors = new String[1];
+                            errors[0] = "No Match Found";
+                            model.addAttribute("errors", errors);
+                            return "sendPatientInfo";
+                        }
+                        return "redirect:receiveCda.htm";
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -106,7 +114,6 @@ public class CdaInterfaceController {
 	@RequestMapping("/sendSuccess.htm")
 	public String sendSuccess() {
 
-            // feed to jsp: result.toString();
             return "sendSuccess";
 
 	}
@@ -119,25 +126,36 @@ public class CdaInterfaceController {
 	 * @return
 	 */
 
-	@RequestMapping(value = "/receiveCda.htm", method = RequestMethod.POST)
-	public String receiveCda(ModelMap model, @RequestParam String[] params) {
-		model.addAttribute("params", params);
-		return "viewCda";
-
-	}
-	/**
-	 * Need to be refined after the channel is created
-	 * 
-	 * @param model
-	 * @param params
-	 * @return
-	 */
-
 	@RequestMapping(value = "/receiveCda.htm", method = RequestMethod.GET)
-	public String receiveCdaGet(ModelMap model, @RequestParam String[] params) {
-		
-		return receiveCda(model,params);
-
+	public String receiveCda(ModelMap model) {
+                this.addStyleSheet();
+                String[] params = new String[1];
+                params[0] = this.result.toString();
+                model.addAttribute("params", params);
+		return "viewCda";
 	}
 
+        /**
+         * Add the XSLT style sheet element to the CDA, which may be avaliable in this.result
+         * 
+         */
+        protected void addStyleSheet() {
+           // This points to the CDA XSL style sheet served from the root resources dir 
+           String stylelink = "<?xml-stylesheet type='text/xsl' href='xsl/WebViewLayout_CDA.xsl'?>";
+           if (this.result.length() < 1) {
+               // No CDA delivered, we're done.
+               return;
+           }
+           // Insert the style sheet element immediately following the xml header
+           int endOfHeader = this.result.indexOf(">");
+           int i = this.result.indexOf("<?xml-stylesheet", endOfHeader);
+           if (i < 0) {
+               // No style sheet element, insert ours
+               this.result.insert(endOfHeader, stylelink);
+           } else {
+               // Style sheet present - replace w/ our to be safe
+               int endOfStyle = this.result.indexOf(">", i);
+               this.result.replace(i, endOfStyle+1, stylelink);
+           }
+        }
 }
