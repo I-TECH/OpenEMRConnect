@@ -17,6 +17,7 @@ import ke.go.moh.oec.Work;
 import ke.go.moh.oec.lib.Mediator;
 
 /**
+ * This class is called up by the cds class to save changes to the cds_store (clinical document store) database.
  * @author Brian Wakhutu
  * @author Gitahi Ng'ang'a
  */

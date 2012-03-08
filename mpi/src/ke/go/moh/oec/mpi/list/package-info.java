@@ -23,7 +23,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 /**
- * Contains MPI classes to process lists of objects. Each *List class
+ * Contains MPI classes to process lists of objects. Each List class
  * needs to know how to load the list of objects into memory from the database,
  * and how to modify an element of the list and write it back to the database.
  */

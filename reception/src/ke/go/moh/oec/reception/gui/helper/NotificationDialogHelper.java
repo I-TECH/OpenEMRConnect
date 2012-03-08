@@ -40,6 +40,11 @@ import ke.go.moh.oec.reception.gui.NotificationDialog;
  *
  * @author Gitahi Ng'ang'a
  */
+/**
+ * This class contains methods to assist in dealing with Notifications / Alerts. This involves tasks
+ * such as reassigning notifications and marking them as "done". 
+ * 
+ */
 public class NotificationDialogHelper {
 
     private final NotificationDialog notificationDialog;

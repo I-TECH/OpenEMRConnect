@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import ke.go.moh.oec.lib.Mediator;
 
 /**
- *
+ * Main class for the kisumuhdss package, instantiates FindPersonResponder and Updater
  * @author EWere
  */
 public class KisumuHdss {

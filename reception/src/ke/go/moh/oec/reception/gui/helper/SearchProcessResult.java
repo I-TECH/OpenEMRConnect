@@ -28,6 +28,12 @@ package ke.go.moh.oec.reception.gui.helper;
  *
  * @author Gitahi Ng'ang'a
  */
+/**
+ * This class contains the methods SearchProcessResult, SearchServerResponse and getType. These methods
+ * enable the reception module to return data from searches depending on the type of search that has been carried
+ * out.
+ */
+
 public class SearchProcessResult {
 
     public enum Type {

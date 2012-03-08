@@ -28,6 +28,10 @@ package ke.go.moh.oec.reception.gui.helper;
  *
  * @author Gitahi Ng'ang'a
  */
+/**
+ *
+ * Used to inform whether the search has been successful or not.
+ */
 public class SuccessSignal {
 
     private boolean successful;

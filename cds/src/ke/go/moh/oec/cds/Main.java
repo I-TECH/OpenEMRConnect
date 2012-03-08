@@ -23,15 +23,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.cds;
+       
 
 import ke.go.moh.oec.lib.Mediator;
 
 /**
- *
+ * Main class of the package cds, initiates a thread i.e the programs path of execution.
  * @author Administrator
  */
 public class Main {
-
+  
     private static Mediator mediator;
 
     public static Mediator getMediator() {

@@ -35,6 +35,12 @@ import javax.swing.KeyStroke;
  *
  * @author Gitahi Ng'ang'a
  */
+/**
+ * The class DialogEscaper contains only one method addEscapeListener. addEscapeListener instantiates the 
+ * interface ActionListener which further extends the class EventListenerActionListener. ActionListener is 
+ * Invoked when an action occurs. The listener interface is for receiving action events therefore 
+ * a class that is interested in processing an action event implements this interface.
+ */
 public class DialogEscaper {
 
     public static void addEscapeListener(final JDialog dialog) {

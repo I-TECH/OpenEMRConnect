@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 import ke.go.moh.oec.lib.Mediator;
 
 /**
- *
+ * Connects to the cds(clinical document store) database, configures queries for execution.
  * @author DevWakhutu
  */
 public class Sql {

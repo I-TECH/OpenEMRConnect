@@ -31,6 +31,11 @@ import ke.go.moh.oec.fingerprintmanager.MissingFingerprintManagerImpException;
  *
  * @author Gitahi Ng'ang'a
  */
+/**
+ * Enables the Reception module to call up the fingerprintmanager package which enables interaction 
+ * between fingerprinting technology SDKs and OpenEMRConnect software modules.
+ */
+
 public class ReaderManager {
 
     public static FingerprintManager getFingerprintManager(String className) throws MissingFingerprintManagerImpException  {

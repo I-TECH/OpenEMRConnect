@@ -7,11 +7,11 @@ import ke.go.moh.oec.pisinterfaces.util.PatientIdType;
 /**
  * 
  * @author Fiston
- * 
- *         this class represent identification that has to be sent from
- *         interface to Mirth channel. It'll be marshaled to XML before being
- *         sent to URL that Mirth channel listen to.
- * 
+ */
+/**
+ * This class represents identification that has to be sent from
+ * interface to the Mirth channel. It will be marshaled to XML before being
+ * sent to URL that Mirth channel listen to. * 
  */
 @XmlRootElement
 public class PatientIdentification {

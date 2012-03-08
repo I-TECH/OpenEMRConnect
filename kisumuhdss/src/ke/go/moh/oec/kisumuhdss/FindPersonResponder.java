@@ -39,6 +39,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.*;
 
+
+/**
+ * Finds and returns the list of household members for a particular person.
+ * 
+ */
+
 public class FindPersonResponder implements IService {
 
     public Object getData(int requestTypeId, Object requestData) {
