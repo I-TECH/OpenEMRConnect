@@ -1,14 +1,28 @@
 <channel>
   <id>f5e4cd7b-86f3-4b85-ae6a-d210ba72e60e</id>
   <name>CDA query</name>
-  <description></description>
+  <description>Queries the configured &quot;cds&quot; for any CDAs associated with the given &quot;patient_clinical_id&quot;.
+
+Queries should be HTTP POSTed to this channel in XML format, using the &apos;query=&apos; parameter, such as the following:
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;patientIdentification&gt;
+    &lt;identification&gt;123abc&lt;/identification&gt;
+    &lt;identificationType&gt;HDSS&lt;/identificationType&gt;
+    &lt;requestSource&gt;EMR&lt;/requestSource&gt;
+&lt;/patientIdentification&gt;
+
+(Only the &lt;identification/&gt; element is considered in the query.)
+
+To configure the cds database name, host, port, user &amp; password, alter the connection string at the top of the one destination in this channel.
+</description>
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1330569592827</time>
+    <time>1331242226956</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>46</revision>
+  <revision>75</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -117,21 +131,27 @@ return false;</script>
         <property name="host">query</property>
         <property name="password">yourPassword</property>
         <property name="query"></property>
-        <property name="script">var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,&apos;jdbc:mysql://localhost/cds&apos;,&apos;oecuser&apos;,&apos;yourPassword&apos;);
+        <property name="script">// The cds database name, host, port, user &amp; password must be correctly configured in the following connection line:
+var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,&apos;jdbc:mysql://localhost/cds&apos;,&apos;oecuser&apos;,&apos;yourPassword&apos;);
 
-var qs = &quot;SELECT cda FROM CDA WHERE patient_clinical_id = &apos;&quot; + $(&apos;id&apos;) + &quot;&apos;&quot;;
-result = dbConn.executeCachedQuery(qs);
-result.next();
+var qs = &quot;SELECT cda FROM CDA WHERE patient_clinical_id = ?&quot;;
+var params = java.util.ArrayList()
+params.add(channelMap.get(&apos;id&apos;).toString());
+result = dbConn.executeCachedQuery(qs, params);
 
-var cda;
-try {
-	cda = result.getString(1);
-} catch (e) {
-	cda = &quot;No matching CDA found&quot;;
+// If no match is found, return the empty string
+// Multiple matches will result in concatinated CDAs
+var cda = &apos;&apos;;
+while(result.next()) {
+	cda += result.getString(1);
 }
 dbConn.close();
 
-var response = ResponseFactory.getSuccessResponse(cda)
+// This stores an HTTP 200 (success) with the body &apos;cda&apos; as 
+// set above in the response variable &quot;httpResponse&quot;, which
+// should be selected as the &quot;Respond From&quot; variable on the source
+// tab.
+var response = ResponseFactory.getSuccessResponse(cda);
 responseMap.put(&quot;httpResponse&quot;, response);
 
 
@@ -165,8 +185,8 @@ responseMap.put(&quot;httpResponse&quot;, response);
     <property name="encryptData">false</property>
     <property name="error_messages_only">false</property>
     <property name="initialState">started</property>
-    <property name="max_message_age">-1</property>
-    <property name="store_messages">false</property>
+    <property name="max_message_age">2</property>
+    <property name="store_messages">true</property>
     <property name="synchronous">true</property>
     <property name="transactional">false</property>
   </properties>
