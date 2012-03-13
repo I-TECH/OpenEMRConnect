@@ -1,0 +1,203 @@
+<channel>
+  <id>f5e4cd7b-86f3-4b85-ae6a-d210ba72e60e</id>
+  <name>CDA query</name>
+  <description>Queries the configured &quot;cds&quot; for any CDAs associated with the given &quot;patient_clinical_id&quot;.
+
+Queries should be HTTP POSTed to this channel in XML format, using the &apos;query=&apos; parameter, such as the following:
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;patientIdentification&gt;
+    &lt;identification&gt;123abc&lt;/identification&gt;
+    &lt;identificationType&gt;HDSS&lt;/identificationType&gt;
+    &lt;requestSource&gt;EMR&lt;/requestSource&gt;
+&lt;/patientIdentification&gt;
+
+(Only the &lt;identification/&gt; element is considered in the query.)
+
+To configure the cds database name, host, port, user &amp; password, alter the connection string at the top of the one destination in this channel.
+</description>
+  <enabled>true</enabled>
+  <version>2.1.1.5490</version>
+  <lastModified>
+    <time>1331242226956</time>
+    <timezone>America/Los_Angeles</timezone>
+  </lastModified>
+  <revision>75</revision>
+  <sourceConnector>
+    <name>sourceConnector</name>
+    <properties>
+      <property name="DataType">HTTP Listener</property>
+      <property name="host">0.0.0.0</property>
+      <property name="port">8090</property>
+      <property name="receiverBodyOnly">0</property>
+      <property name="receiverCharset">UTF-8</property>
+      <property name="receiverResponse">httpResponse</property>
+      <property name="receiverResponseContentType">text/plain</property>
+    </properties>
+    <transformer>
+      <steps>
+        <step>
+          <sequenceNumber>0</sequenceNumber>
+          <name>decode query XML</name>
+          <script>var query = new XML(Packages.java.net.URLDecoder.decode(msg[&apos;Parameters&apos;][&apos;query&apos;].toString()));
+
+channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);</script>
+          <type>JavaScript</type>
+          <data class="map">
+            <entry>
+              <string>Script</string>
+              <string>var query = new XML(Packages.java.net.URLDecoder.decode(msg[&apos;Parameters&apos;][&apos;query&apos;].toString()));
+
+channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);</string>
+            </entry>
+          </data>
+        </step>
+      </steps>
+      <inboundTemplate encoding="base64">PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxIdHRwUmVxdWVzdD48UmVtb3RlQWRkcmVzcz4xMjcuMC4w
+LjE8L1JlbW90ZUFkZHJlc3M+PFJlcXVlc3RVcmw+aHR0cDovL2xvY2FsaG9zdDo4MDkwLzwvUmVx
+dWVzdFVybD48TWV0aG9kPlBPU1Q8L01ldGhvZD48UmVxdWVzdFBhdGg+PC9SZXF1ZXN0UGF0aD48
+UGFyYW1ldGVycz48cXVlcnk+Jmx0Oz94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgi
+IHN0YW5kYWxvbmU9InllcyI/Jmd0OwombHQ7cGF0aWVudElkZW50aWZpY2F0aW9uJmd0OwogICAg
+Jmx0O2lkZW50aWZpY2F0aW9uJmd0OzEyMyZsdDsvaWRlbnRpZmljYXRpb24mZ3Q7CiAgICAmbHQ7
+aWRlbnRpZmljYXRpb25UeXBlJmd0O0NsaW5pY2FsSWQmbHQ7L2lkZW50aWZpY2F0aW9uVHlwZSZn
+dDsKICAgICZsdDtyZXF1ZXN0U291cmNlJmd0O1BJUyZsdDsvcmVxdWVzdFNvdXJjZSZndDsKJmx0
+Oy9wYXRpZW50SWRlbnRpZmljYXRpb24mZ3Q7CjwvcXVlcnk+PC9QYXJhbWV0ZXJzPjxIZWFkZXI+
+PEhvc3Q+bG9jYWxob3N0OjgwOTA8L0hvc3Q+PENvbnRlbnQtTGVuZ3RoPjI0NzwvQ29udGVudC1M
+ZW5ndGg+PFVzZXItQWdlbnQ+SmF2YS8xLjYuMF8yOTwvVXNlci1BZ2VudD48Q29udGVudC1UeXBl
+PmFwcGxpY2F0aW9uL3gtd3d3LWZvcm0tdXJsZW5jb2RlZDwvQ29udGVudC1UeXBlPjxDb25uZWN0
+aW9uPmtlZXAtYWxpdmU8L0Nvbm5lY3Rpb24+PEFjY2VwdD50ZXh0L2h0bWwsIGltYWdlL2dpZiwg
+aW1hZ2UvanBlZywgKjsgcT0uMiwgKi8qOyBxPS4yPC9BY2NlcHQ+PFByYWdtYT5uby1jYWNoZTwv
+UHJhZ21hPjxDYWNoZS1Db250cm9sPm5vLWNhY2hlPC9DYWNoZS1Db250cm9sPjwvSGVhZGVyPjxD
+b250ZW50PjwvQ29udGVudD48L0h0dHBSZXF1ZXN0Pgo=</inboundTemplate>
+      <outboundTemplate encoding="base64"></outboundTemplate>
+      <inboundProtocol>XML</inboundProtocol>
+      <outboundProtocol>XML</outboundProtocol>
+      <inboundProperties>
+        <property name="stripNamespaces">false</property>
+      </inboundProperties>
+      <outboundProperties>
+        <property name="stripNamespaces">false</property>
+      </outboundProperties>
+    </transformer>
+    <filter>
+      <rules>
+        <rule>
+          <sequenceNumber>0</sequenceNumber>
+          <name>Accept message if &quot;msg[&apos;Parameters&apos;][&apos;query&apos;].toString()&quot; exists</name>
+          <data class="map">
+            <entry>
+              <string>Name</string>
+              <string></string>
+            </entry>
+            <entry>
+              <string>Values</string>
+              <list/>
+            </entry>
+            <entry>
+              <string>Field</string>
+              <string>msg[&apos;Parameters&apos;][&apos;query&apos;].toString()</string>
+            </entry>
+            <entry>
+              <string>OriginalField</string>
+              <string></string>
+            </entry>
+            <entry>
+              <string>Equals</string>
+              <string>2</string>
+            </entry>
+          </data>
+          <type>Rule Builder</type>
+          <script>if(msg[&apos;Parameters&apos;][&apos;query&apos;].toString().length &gt; 0)
+{
+return true;
+}
+return false;</script>
+          <operator>NONE</operator>
+        </rule>
+      </rules>
+    </filter>
+    <transportName>HTTP Listener</transportName>
+    <mode>SOURCE</mode>
+    <enabled>true</enabled>
+    <version>2.1.1.5490</version>
+  </sourceConnector>
+  <destinationConnectors>
+    <connector>
+      <name>db query</name>
+      <properties>
+        <property name="DataType">Database Writer</property>
+        <property name="URL">jdbc:mysql://localhost/cds</property>
+        <property name="driver">com.mysql.jdbc.Driver</property>
+        <property name="host">query</property>
+        <property name="password">yourPassword</property>
+        <property name="query"></property>
+        <property name="script">// The cds database name, host, port, user &amp; password must be correctly configured in the following connection line:
+var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,&apos;jdbc:mysql://localhost/cds&apos;,&apos;oecuser&apos;,&apos;yourPassword&apos;);
+
+var qs = &quot;SELECT cda FROM CDA WHERE patient_clinical_id = ?&quot;;
+var params = java.util.ArrayList()
+params.add(channelMap.get(&apos;id&apos;).toString());
+result = dbConn.executeCachedQuery(qs, params);
+
+// If no match is found, return the empty string
+// Multiple matches will result in concatinated CDAs
+var cda = &apos;&apos;;
+while(result.next()) {
+	cda += result.getString(1);
+}
+dbConn.close();
+
+// This stores an HTTP 200 (success) with the body &apos;cda&apos; as 
+// set above in the response variable &quot;httpResponse&quot;, which
+// should be selected as the &quot;Respond From&quot; variable on the source
+// tab.
+var response = ResponseFactory.getSuccessResponse(cda);
+responseMap.put(&quot;httpResponse&quot;, response);
+
+
+</property>
+        <property name="useScript">1</property>
+        <property name="username">oecuser</property>
+      </properties>
+      <transformer>
+        <steps/>
+        <inboundProtocol>XML</inboundProtocol>
+        <outboundProtocol>XML</outboundProtocol>
+        <inboundProperties>
+          <property name="stripNamespaces">false</property>
+        </inboundProperties>
+        <outboundProperties>
+          <property name="stripNamespaces">false</property>
+        </outboundProperties>
+      </transformer>
+      <filter>
+        <rules/>
+      </filter>
+      <transportName>Database Writer</transportName>
+      <mode>DESTINATION</mode>
+      <enabled>true</enabled>
+      <version>2.1.1.5490</version>
+    </connector>
+  </destinationConnectors>
+  <properties>
+    <property name="clearGlobalChannelMap">true</property>
+    <property name="dont_store_filtered">false</property>
+    <property name="encryptData">false</property>
+    <property name="error_messages_only">false</property>
+    <property name="initialState">started</property>
+    <property name="max_message_age">2</property>
+    <property name="store_messages">true</property>
+    <property name="synchronous">true</property>
+    <property name="transactional">false</property>
+  </properties>
+  <preprocessingScript>// Modify the message variable below to pre process data
+return message;</preprocessingScript>
+  <postprocessingScript>// This script executes once after a message has been processed
+return;</postprocessingScript>
+  <deployScript>// This script executes once when the channel is deployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</deployScript>
+  <shutdownScript>// This script executes once when the channel is undeployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</shutdownScript>
+</channel>

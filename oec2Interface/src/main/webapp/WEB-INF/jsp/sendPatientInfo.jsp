@@ -18,6 +18,7 @@
 				<td>Patient Identification:</td>
 				<td><form:input path="identification" />
 				</td>
+                                <td class="error">${errors[0]}</td>
 			</tr>
 			<tr>
 

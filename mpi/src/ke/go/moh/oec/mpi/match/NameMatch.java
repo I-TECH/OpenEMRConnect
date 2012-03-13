@@ -245,18 +245,18 @@ public class NameMatch extends StringMatch {
      */
     public static Double computeScore(NameMatch n1, NameMatch n2, StringMatch.MatchType stringMatchType) {
         Double score = StringMatch.computeScore(n1, n2, stringMatchType);
-//        if (score != null && score < 1.0) {
-//            if (n1.soundexValue.equals(n2.soundexValue)
-//                    || n1.refinedSoundexValue.equals(n2.refinedSoundexValue)
-//                    || n1.metaphone1.equals(n2.metaphone1)
-//                    || n1.metaphone2.equals(n2.metaphone2)
-//                    || n1.metaphone1.equals(n2.metaphone2)
-//                    || n1.metaphone2.equals(n2.metaphone1)) {
-//                score = 0.8 + (score / 5.0);
-//            }
-//            Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
-//                    "NameMatch.computeScore({0},{1}) = {2}", new Object[]{n1.getOriginal(), n2.getOriginal(), score});
-//        }
+        if (score != null && score < 1.0) {
+            if (n1.soundexValue.equals(n2.soundexValue)
+                    || n1.refinedSoundexValue.equals(n2.refinedSoundexValue)
+                    || n1.metaphone1.equals(n2.metaphone1)
+                    || n1.metaphone2.equals(n2.metaphone2)
+                    || n1.metaphone1.equals(n2.metaphone2)
+                    || n1.metaphone2.equals(n2.metaphone1)) {
+                score = 0.8 + (score / 5.0);
+            }
+            Mediator.getLogger(NameMatch.class.getName()).log(Level.FINEST,
+                    "NameMatch.computeScore({0},{1}) = {2}", new Object[]{n1.getOriginal(), n2.getOriginal(), score});
+        }
         return score;
     }
 

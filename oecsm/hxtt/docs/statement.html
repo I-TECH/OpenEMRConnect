@@ -1,0 +1,164 @@
+<html><head><TITLE>statement.html - HXTT Access JDBC Drivers for Microsoft Access (MS Access) 95/97/2000/XP/2002/2003/2007/2010 v5.1</TITLE><meta name="keywords"  content="Access, JDBC, driver, jdbc drivers, sql, database, ResultSet, HXTT"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body> 
+<p><font size="+1"><b>Chapter 3. Statement</b></font></p>
+<p><b>Index</b>: </p>
+<ol>
+  <li><a href="#create">Creating a Statement Instance</a></li>
+  <li><a href="#query">Issuing a Query </a></li>
+  <li><a href="#update">Performing Updates</a></li>
+  <li><a href="#database">Creating and Modifying Database Objects</a></li>
+</ol>
+<p><A name=create>Creating a Statement Instance</a></p>
+<p>Once a Connection is established, it can be used to create Statements and PreparedStatements. 
+  Any time you want to issue SQL statements to the database, you require a Statement 
+  or PreparedStatement instance. To get a Statement object, you call the createStatement() 
+  method on the Connection object you have retrieved via the DriverManager.getConnection() 
+  method. Once you have a Statement object, you can execute a SELECT query by 
+  calling the executeQuery(String SQL) method with the SQL you want to use. To 
+  update data in the database use the executeUpdate(String SQL) method. This method 
+  returns the number of rows affected by the update statement. If you don't know 
+  ahead of time whether the SQL statement will be a SELECT or an UPDATE/INSERT, 
+  then you can use the execute(String SQL) method. This method will return true 
+  if the SQL query was a SELECT, or false if an UPDATE/INSERT/DELETE query. If 
+  the query was a SELECT query, you can retrieve the results by calling the getResultSet() 
+  method. If the query was an UPDATE/INSERT/DELETE query, you can retrieve the 
+  affected rows count by calling getUpdateCount() on the Statement instance. This 
+  is explained in the following sections.<br>
+</p>
+<p><A name=query>Issuing a Query</a></p>
+A simple sample can illustrates more than some words: 
+<pre>
+            String sql = "select * from test where int1>0";
+
+            Connection con = DriverManager.getConnection(url, "", "");
+
+            Statement stmt = con.createStatement();
+			
+            ResultSet rs = stmt.executeQuery(sql);
+
+            ResultSetMetaData resultSetMetaData = rs.getMetaData();
+            int iNumCols = resultSetMetaData.getColumnCount();
+            for (int i = 1; i <= iNumCols; i++) {
+                System.out.println(resultSetMetaData.getColumnLabel(i)
+                                   + "  " +
+                                   resultSetMetaData.getColumnTypeName(i));
+            }
+
+            Object colval;
+            while (rs.next()) {
+                for (int i = 1; i <= iNumCols; i++) {
+                    colval = rs.getObject(i);
+                    System.out.print(colval + "  ");
+                }
+                System.out.println();
+            }
+
+            rs.close();
+            stmt.close();
+            con.close();
+</pre>
+This example issues the same query as before but uses a PreparedStatement and a bind value in the query.
+<pre>
+            String sql = "select * from test where int1>?";
+
+            Connection con = DriverManager.getConnection(url, "", "");
+
+            PreparedStatement stmt = con.prepareStatement(sql);
+			
+            stmt.setInt(1, 0);
+
+            ResultSet rs = stmt.executeQuery();
+
+            ResultSetMetaData resultSetMetaData = rs.getMetaData();
+            int iNumCols = resultSetMetaData.getColumnCount();
+            for (int i = 1; i <= iNumCols; i++) {
+                System.out.println(resultSetMetaData.getColumnLabel(i)
+                                   + "  " +
+                                   resultSetMetaData.getColumnTypeName(i));
+            }
+
+            Object colval;
+            while (rs.next()) {
+                for (int i = 1; i <= iNumCols; i++) {
+                    colval = rs.getObject(i);
+                    System.out.print(colval + "  ");
+                }
+                System.out.println();
+            }
+
+            rs.close();
+            stmt.close();
+            con.close();
+</pre>
+<p>You can use a single Statement instance as many times as you want. You could 
+  create one as soon as you open the connection and use it for the connection's 
+  lifetime. But you have to remember that only one ResultSet can exist per Statement 
+  or PreparedStatement at a given time. When you are done using the Statement 
+  or PreparedStatement, you should close it.</p>
+<p>Before reading any values from ResultSet, you have to call next(). This returns 
+  true if there is a result, but more importantly, it prepares the row for processing. 
+  Under the JDBC specification, you should access a column only once. It is safest 
+  to stick to this rule, although the HXTT Access driver will allow you to access 
+  a column as many times as you want. You should close a ResultSet by calling 
+  close() once you have finished using it too. Once you make another query with 
+  the Statement used to create a ResultSet, the currently open ResultSet instance 
+  is closed automatically. The HXTT Access driver supports updatable result sets, 
+  but an updatable query can only span one table (i.e. no joins).<br>
+</p>
+<p>&nbsp; </p>
+<p> <A name=update>Performing Updates</a></p>
+<p>To change data (perform an INSERT, UPDATE, or DELETE), you should use the executeUpdate() 
+  method. This method is similar to the method executeQuery() used to issue a 
+  SELECT statement, but it doesn't return a ResultSet; instead it returns the 
+  number of rows affected by the INSERT, UPDATE, or DELETE statement. This example 
+  will issue a simple UPDATE statement and print out the number of rows updated. 
+</p>
+<pre>
+            String sql="update test set boolean1=not boolean1 where recno()%5=0";
+
+            Connection con = DriverManager.getConnection(url, "", "");
+
+            Statement stmt=con.createStatement();
+
+            int updateCount=stmt.executeUpdate(sql);
+            System.out.println(sql+" : "+updateCount);
+
+            stmt.close();
+            con.close();
+
+</pre>
+
+<p> <A name=database>Creating and Modifying Database Objects</a> </p>
+<p>To create, modify or drop a database object like a table, index, or view, you 
+  should use the execute() method. This method is similar to the method executeUpdate(), 
+  but it doesn't return a result. This example will drop a table. </p>
+<pre>
+            String sql="drop table test";
+
+            Connection con = DriverManager.getConnection(url, "", "");
+
+            Statement stmt=con.createStatement();
+
+            stmt.execute(sql);
+			
+            stmt.close();
+            con.close();
+</pre>
+<p>The HXTT Access driver can create, modify or drop a database object like a table, 
+  index, or view through executeUpdate(), but the returned result is unexpectable. 
+  For instance, dropping a table can return 1(only one table file), 2(two table 
+  files, or one table files and one index file), 3, 4, and so on. The returned 
+  result of executeUpdate() is valuable when it creates something with IF NOT 
+  EXISTS clause, or drops something with IF EXISTS clause. This example will drop 
+  a test table if that table exists. </p>
+<pre>
+            String sql="drop table if exists test";
+
+            Connection con = DriverManager.getConnection(url, "", "");
+
+            Statement stmt=con.createStatement();
+
+            boolean droppedFlag=stmt.executeUpdate(sql)!=0;
+			
+            stmt.close();
+            con.close();</pre>
+<div align="center"><font color="#A042FF">Copyright &copy; 1999-2011 Hongxin Technology & Trade Ltd. | All Rights Reserved. |</font> </div></body></html>
