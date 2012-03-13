@@ -24,10 +24,11 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 /**
  * 
  * @author Fiston
- * 
- *         The controller that controls all requests used by this interface.
- * 
  */
+/**
+ * The controller that controls all requests used by this interface.
+ */
+
 @Controller
 @RequestMapping("/*.htm")
 @SessionAttributes("patientId")

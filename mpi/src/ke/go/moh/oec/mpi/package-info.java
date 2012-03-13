@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1
+ * Version: MPI 1.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -24,6 +24,19 @@
  * ***** END LICENSE BLOCK ***** */
 /**
  * Contains the Master Patient Index classes.
+ * The Master Person Index (MPI) is an application that maintains a database of person identities and allows 
+ * operations on the person index using HL7 V3 PIX/PDQ messaging. It uses a MySQL database that contains person 
+ * entries with demographics and multiple identifiers.
+ * <p>
+ * Each entry contains basic identifying information for the person, such as names, date of birth, 
+ * fingerprints when available, etc. In addition, the MPI also contains additional identifiers as used by each 
+ * connected system to identify the individual.
+ * <p>
+ * This feature has been hosted in Kisumu by KEMRI/CDC and can currently be accessed by facilities via Safaricom 
+ * VPN modems. Inputs into the MPI are the client demographics and requests to modify a client’s details, the MPI 
+ * is queried by systems like the reception with requests for a clients details and outputs all the client 
+ * demographics if found. 
+ * <p>
  * This code may also be deployed as a Local Patient Index.
  */
 package ke.go.moh.oec.mpi;

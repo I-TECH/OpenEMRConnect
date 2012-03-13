@@ -33,29 +33,62 @@ public class NotifyPersonChangedTest2 {
     }
 
     public void testNotifyPersonChanged() {
+//        System.out.println("Testing Nofify Person Changed");
+//        int requestTypeId = RequestTypeId.NOTIFY_PERSON_CHANGED;
+//        PersonRequest requestData = new PersonRequest();
+//        Person p = new Person();
+//        List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
+//        PersonIdentifier personIdentifier = new PersonIdentifier();
+//        personIdentifier.setIdentifier("14080-00001");
+//        personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
+//        personIdentifierList.add(personIdentifier);
+//        p.setPersonIdentifierList(personIdentifierList);
+//        p.setFirstName("Samsom");
+//        p.setMiddleName("Kibuga");
+//        p.setBirthdate(parseDate("1956-10-11"));
+//        p.setLastName("Simwataa");
+//        p.setSex(Person.Sex.M);
+////        p.setExpectedDeliveryDate(parseDate("2011-06-02"));
+////        p.setPregnancyEndDate(parseDate("2011-06-02"));
+////        p.setPregnancyOutcome(Person.PregnancyOutcome.multipleBirths);
+////        p.setAliveStatus(Person.AliveStatus.no);
+////        p.setDeathdate(parseDate("2011-09-11"));
+//        p.setVillageName("Luak");
+//        p.setPreviousVillageName("Kogelo");
+//        p.setLastMoveDate(parseDate("2012-01-01"));
+//        Visit visit = new Visit();
+//        visit.setAddress("ke.go.moh.facility.14080.tb.reception");
+//        visit.setVisitDate(new Date());
+//        p.setLastRegularVisit(visit);
+//        requestData.setPerson(p);
+//        requestData.setDestinationName("Clinical Document Store");
+//        requestData.setDestinationAddress("ke.go.moh.facility.14080.cds");
+//        mediator.getData(requestTypeId, requestData);
+//        System.exit(0);
+        
         System.out.println("Testing Nofify Person Changed");
         int requestTypeId = RequestTypeId.NOTIFY_PERSON_CHANGED;
         PersonRequest requestData = new PersonRequest();
         Person p = new Person();
         List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
         PersonIdentifier personIdentifier = new PersonIdentifier();
-        personIdentifier.setIdentifier("14080-05284/2007");
+        personIdentifier.setIdentifier("14080-00001");
         personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
         personIdentifierList.add(personIdentifier);
         p.setPersonIdentifierList(personIdentifierList);
-        p.setFirstName("Caroline");
-        p.setMiddleName("Nasubo");
-        p.setBirthdate(parseDate("1970-06-02"));
-        p.setLastName("Nyegenye");
-        p.setSex(Person.Sex.F);
+        p.setFirstName("Samsom");
+        p.setMiddleName("Kibuga");
+        p.setBirthdate(parseDate("1956-10-11"));
+        p.setLastName("Simwataa");
+        p.setSex(Person.Sex.M);
 //        p.setExpectedDeliveryDate(parseDate("2011-06-02"));
 //        p.setPregnancyEndDate(parseDate("2011-06-02"));
 //        p.setPregnancyOutcome(Person.PregnancyOutcome.multipleBirths);
-        p.setAliveStatus(Person.AliveStatus.no);
-        p.setDeathdate(parseDate("2011-09-11"));
-        p.setVillageName("Tebs");
-        p.setPreviousVillageName("Tengecha");
-        p.setLastMoveDate(parseDate("2011-09-01"));
+//        p.setAliveStatus(Person.AliveStatus.no);
+//        p.setDeathdate(parseDate("2011-09-11"));
+        p.setVillageName("Luak");
+        p.setPreviousVillageName("Kogelo");
+        p.setLastMoveDate(parseDate("2012-01-01"));
         Visit visit = new Visit();
         visit.setAddress("ke.go.moh.facility.14080.tb.reception");
         visit.setVisitDate(new Date());
@@ -65,6 +98,7 @@ public class NotifyPersonChangedTest2 {
         requestData.setDestinationAddress("ke.go.moh.facility.14080.cds");
         mediator.getData(requestTypeId, requestData);
         System.exit(0);
+        
     }
     
     private static Date parseDate(String sDate) {

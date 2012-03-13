@@ -36,17 +36,30 @@ import javax.sound.sampled.Clip;
 /**
  * @author Scott Davis
  */
+
+/**
+ * This Class contains methods to play a sound to notify the user that an alert has been received.
+ */
+
 public class NotificationSoundPlayer {
-    //sound variables
+    /*
+     * sound variables
+     */
 
     private Clip soundClip;
     private AudioInputStream audioInputStream;
     private File soundFile;
-    //make sure this file path is correct if you'd like to hear a sound
+    /*
+     * make sure this file path is correct if you'd like to hear a sound
+     */
     private String filePath = new File("notification.wav").getAbsolutePath();
-    //timer variables for the sound
+    /*
+     * timer variables for the sound 
+     */
     private boolean ready = true;
-    // TIME_DELAY is the time that must pass before letting the sound play again.
+    /*
+     * TIME_DELAY is the time that must pass before letting the sound play again.
+     */ 
     private final int TIME_DELAY = 5000; // 5 sec 
     private static NotificationSoundPlayer instance;
 
@@ -112,8 +125,10 @@ public class NotificationSoundPlayer {
         }
 
         public void actionPerformed(ActionEvent e) {
-            //this code is called whenever the timer expires
-            // then the sound is ready to be played again
+            /*
+             * this code is called whenever the timer expires
+             * then the sound is ready to be played again
+             */ 
             ready = true;
         }
     };

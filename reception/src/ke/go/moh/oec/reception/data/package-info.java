@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1
+ * Version: data 1.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -22,34 +22,13 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.cds;
-       
-
-import ke.go.moh.oec.lib.Mediator;
-
 /**
- * Main class of the package cds, initiates a thread i.e the programs path of execution.
- * @author Administrator
+ * Contains classes for the data package. These classes are involved in the obtaining of 
+ * department data i.e the departments in the facility where the software is installed, data on the
+ * pre defined marital status to be used by the system, data on  the predefined notification types to be
+ * used by the system. Also contained are descriptions of the Signals to be sent to the RequestDispatcher 
+ * for requests to the various components of OEC. This package also has definitions for the various 
+ * pre defined types of clients that will be dealt with in the sessions. 
  */
-public class Main {
-  
-    private static Mediator mediator;
 
-    public static Mediator getMediator() {
-        return mediator;
-    }
-
-    public static void main(String[] args) {
-
-        Thread.currentThread().setName("Cds");
-        mediator = new Mediator();
-        Cds cds = new Cds();
-        Mediator.registerCallback(cds);
-        while (true) {
-            try {
-                Thread.sleep(Long.MAX_VALUE);
-            } catch (InterruptedException ex) {
-            }
-        }
-    }
-}
+package ke.go.moh.oec.reception.data;

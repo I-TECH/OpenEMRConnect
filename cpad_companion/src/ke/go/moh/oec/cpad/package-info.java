@@ -1,5 +1,5 @@
 /* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1
+ * Version: reader 1.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -22,34 +22,9 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK ***** */
-package ke.go.moh.oec.cds;
-       
-
-import ke.go.moh.oec.lib.Mediator;
-
 /**
- * Main class of the package cds, initiates a thread i.e the programs path of execution.
- * @author Administrator
+ * The CPAD companion has the task of reading the CPAD database to extract the minimum dataset 
+ * elements from the CPAD tables and generating output in the form of a Comma Separated Value (CSV) format file.  
  */
-public class Main {
-  
-    private static Mediator mediator;
 
-    public static Mediator getMediator() {
-        return mediator;
-    }
-
-    public static void main(String[] args) {
-
-        Thread.currentThread().setName("Cds");
-        mediator = new Mediator();
-        Cds cds = new Cds();
-        Mediator.registerCallback(cds);
-        while (true) {
-            try {
-                Thread.sleep(Long.MAX_VALUE);
-            } catch (InterruptedException ex) {
-            }
-        }
-    }
-}
+package ke.go.moh.oec.cpad;
