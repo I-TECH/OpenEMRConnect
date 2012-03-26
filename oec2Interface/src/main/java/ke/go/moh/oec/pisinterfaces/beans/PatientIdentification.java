@@ -15,11 +15,26 @@ import ke.go.moh.oec.pisinterfaces.util.PatientIdType;
  */
 @XmlRootElement
 public class PatientIdentification {
+        private String cdaID;
 	private String identification;
 	private String identificationType;
 	private String requestSource;
 
-	/**
+       /**
+	 * @return the cdaID, the database unique identification
+	 */
+        public String getCdaID() {
+            return cdaID;
+        }
+
+       /**
+	 * @param cdaID the database unique identification
+	 */
+        public void setCdaID(String cdaID) {
+            this.cdaID = cdaID;
+        }
+
+        /**
 	 * @return the identification
 	 */
 	public String getIdentification() {
