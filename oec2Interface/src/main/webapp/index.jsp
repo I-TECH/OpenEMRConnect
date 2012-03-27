@@ -1,2 +1,2 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<% response.sendRedirect("sentPatientId.htm"); %>
+<% response.sendRedirect("/cda/sentPatientId"); %>
