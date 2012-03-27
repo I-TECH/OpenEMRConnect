@@ -7,22 +7,34 @@ Queries should be HTTP POSTed to this channel in XML format, using the &apos;que
 
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
 &lt;patientIdentification&gt;
+    &lt;cda_id/&gt;
     &lt;identification&gt;123abc&lt;/identification&gt;
     &lt;identificationType&gt;HDSS&lt;/identificationType&gt;
     &lt;requestSource&gt;EMR&lt;/requestSource&gt;
 &lt;/patientIdentification&gt;
 
-(Only the &lt;identification/&gt; element is considered in the query.)
+(Only the &lt;cda_id/&gt; element is considered in the query if defined.  Fall back to &lt;identification/&gt; if not.)
+
+For each matching document found, they will be a &lt;record/&gt; element returned associated with their respective cda_id values in an XML document of the following structure:
+
+&lt;query_response&gt;
+  &lt;record&gt;
+    &lt;cda_id&gt;20&lt;/cda_id&gt;
+    &lt;cda&gt;[base 64 encoded CDA]&lt;/cda&gt;
+  &lt;/record&gt;
+&lt;/query_response&gt;
+
+(The CDA itself is base 64 encoded to work around any nested CDATA decryption problems.)
 
 To configure the cds database name, host, port, user &amp; password, alter the connection string at the top of the one destination in this channel.
 </description>
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1331242226956</time>
+    <time>1332460210705</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>75</revision>
+  <revision>102</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -41,6 +53,7 @@ To configure the cds database name, host, port, user &amp; password, alter the c
           <name>decode query XML</name>
           <script>var query = new XML(Packages.java.net.URLDecoder.decode(msg[&apos;Parameters&apos;][&apos;query&apos;].toString()));
 
+channelMap.put(&apos;cda_id&apos;, query[&apos;cdaID&apos;]);
 channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);</script>
           <type>JavaScript</type>
           <data class="map">
@@ -48,6 +61,7 @@ channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);</script>
               <string>Script</string>
               <string>var query = new XML(Packages.java.net.URLDecoder.decode(msg[&apos;Parameters&apos;][&apos;query&apos;].toString()));
 
+channelMap.put(&apos;cda_id&apos;, query[&apos;cdaID&apos;]);
 channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);</string>
             </entry>
           </data>
@@ -132,26 +146,52 @@ return false;</script>
         <property name="password">yourPassword</property>
         <property name="query"></property>
         <property name="script">// The cds database name, host, port, user &amp; password must be correctly configured in the following connection line:
-var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,&apos;jdbc:mysql://localhost/cds&apos;,&apos;oecuser&apos;,&apos;yourPassword&apos;);
+var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,
+                                                                &apos;jdbc:mysql://localhost/cds&apos;,
+                                                                &apos;oecuser&apos;,
+                                                                &apos;yourPassword&apos;);
+var cda_id = channelMap.get(&apos;cda_id&apos;);
+var id = channelMap.get(&apos;id&apos;);
 
-var qs = &quot;SELECT cda FROM CDA WHERE patient_clinical_id = ?&quot;;
+var column = null;
+var value = null;
+
+// We query by one column, preferring the unique cda_id (ignoring the other if set)
+if (typeof cda_id != undefined &amp;&amp; cda_id.toString().length &gt; 0) {
+	column = &apos;cda_id&apos;;
+    value = cda_id.toString();
+} else if (typeof id != undefined &amp;&amp; id.toString().length &gt; 0) {
+	column = &apos;patient_clinical_id&apos;;
+    value = id.toString();
+} else {
+    var response = ResponseFactory.getFailureResponse(&quot;Either &lt;cda_id/&gt; or &lt;identification/&gt; must be defined&quot;);
+    responseMap.put(&quot;httpResponse&quot;, response);
+    return;
+}
+
+var qs = &quot;SELECT cda_id, cda FROM CDA WHERE &quot; + column + &quot; = ?&quot;;
 var params = java.util.ArrayList()
-params.add(channelMap.get(&apos;id&apos;).toString());
+params.add(value);
 result = dbConn.executeCachedQuery(qs, params);
 
-// If no match is found, return the empty string
-// Multiple matches will result in concatinated CDAs
-var cda = &apos;&apos;;
+// Return zero or more matching CDAs in an xml doc.
+var doc = &lt;query_response/&gt;;
 while(result.next()) {
-	cda += result.getString(1);
+    var record = &lt;record/&gt;;
+	record.cda_id = result.getInt(1);
+    record.cda = FileUtil.encode(result.getString(2).getBytes());
+    doc.appendChild(record);
 }
+// This *should* provide the XML declaration, but it doesn&apos;t: doc = new XML(doc);
+// Add it by hand:
+doc = &apos;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot; ?&gt;&apos; + doc.toString()
 dbConn.close();
 
 // This stores an HTTP 200 (success) with the body &apos;cda&apos; as 
 // set above in the response variable &quot;httpResponse&quot;, which
 // should be selected as the &quot;Respond From&quot; variable on the source
 // tab.
-var response = ResponseFactory.getSuccessResponse(cda);
+var response = ResponseFactory.getSuccessResponse(doc);
 responseMap.put(&quot;httpResponse&quot;, response);
 
 

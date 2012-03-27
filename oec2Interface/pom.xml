@@ -39,7 +39,11 @@
 			<artifactId>spring-webflow</artifactId>
 			<version>1.0.6</version>
 		</dependency>
-
+        <dependency>
+          <groupId>javax.servlet</groupId>
+          <artifactId>jstl</artifactId>
+          <version>1.2</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -55,7 +59,12 @@
 			<artifactId>jsr311-api</artifactId>
 			<version>1.0</version>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.4</version>
+		</dependency>
+    </dependencies>
 	<build>
 		<finalName>oec2.interface</finalName>
         <plugins>
