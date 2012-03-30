@@ -3,6 +3,8 @@ package ke.go.moh.oec.cpad;
 
 public class HeaderData {
 	final static int MAX_SUPPORTERS = 3;
+	final static int MAX_FAMILY_MEMBERS = 8;
+	final static int FILLER_CNT = 45;
 	private class SupportData {
 	    private String supAddr[] = new String[2];
 	    private String supCity;
@@ -12,6 +14,13 @@ public class HeaderData {
 	    private String supPhone;
 	    private String supRelation;
 	    private String supState;
+	}
+	private class FamMemberData {
+	    private String relation;
+	    private String age;
+	    private String hivStatus;
+	    private String inCare;
+	    private String pid;		
 	}
     private String addr[] = new String[2];
     private String city;
@@ -28,8 +37,10 @@ public class HeaderData {
     private String phone[] = new String[3];
     private String pid;
     private String state;
+    private String sourceSystem;
 	private SupportData support[] = new SupportData[MAX_SUPPORTERS];
-	
+	private FamMemberData famMembers[] = new FamMemberData[MAX_FAMILY_MEMBERS];
+
     public String getAddr(int i) {
         return addr[i];
     }
@@ -150,6 +161,14 @@ public class HeaderData {
         state = in;
     }
 
+    public String getSourceSystem() {
+        return sourceSystem;
+    }
+
+    public void setSourceSystem(String in) {
+    	sourceSystem = in;
+    }
+
     public String getSupAddr(int i, int j) {
         return support[i].supAddr[j];
     }
@@ -214,6 +233,46 @@ public class HeaderData {
         support[i].supState = in;
     }
 
+    public String getFamMemberRelation(int i) {
+        return famMembers[i].relation;
+    }
+
+    public void setFamMemberRelation(int i, String in) {
+        famMembers[i].relation = in;
+    }
+
+    public String getFamMemberAge(int i) {
+        return famMembers[i].age;
+    }
+
+    public void setFamMemberAge(int i, String in) {
+        famMembers[i].age = in;
+    }
+
+    public String getFamMemberHivStatus(int i) {
+        return famMembers[i].hivStatus;
+    }
+
+    public void setFamMemberHivStatus(int i, String in) {
+        famMembers[i].hivStatus = in;
+    }
+
+    public String getFamMemberInCare(int i) {
+        return famMembers[i].inCare;
+    }
+
+    public void setFamMemberInCare(int i, String in) {
+        famMembers[i].inCare = in;
+    }
+
+    public String getFamMemberPid(int i) {
+        return famMembers[i].pid;
+    }
+
+    public void setFamMemberPid(int i, String in) {
+        famMembers[i].pid = in;
+    }
+
     public void reset() {
         facName = null;
         facCode = null;
@@ -236,6 +295,7 @@ public class HeaderData {
         phone[1] = null;
         phone[2] = null;
         marStatus = null;
+        sourceSystem = null;
         for (int i = 0; i < MAX_SUPPORTERS; i++) { 
         	support[i] = new SupportData();
         	support[i].supFamName[0] = null;
@@ -251,6 +311,14 @@ public class HeaderData {
         	support[i].supPhone = null;
         	support[i].supState = null;
         }
+        for (int i = 0; i < MAX_FAMILY_MEMBERS; i++) { 
+        	famMembers[i] = new FamMemberData();
+        	famMembers[i].relation = null;
+        	famMembers[i].age = null;
+        	famMembers[i].hivStatus = null;
+        	famMembers[i].inCare = null;
+        	famMembers[i].pid = null;
+        }
     }
 
     public String printHeaderDelim(String delim) {
@@ -259,6 +327,7 @@ public class HeaderData {
         			(getFacCode() == null ? "" : clean(getFacCode())) + delim +
         			(getFacCounty() == null ? "" : clean(getFacCounty())) + delim +
         			(getFacState() == null ? "" : clean(getFacState())) + delim +
+        			(getSourceSystem() == null ? "" : clean(getSourceSystem())) + delim +
         			(getPid() == null ? "" : clean(getPid())) + delim +
         			(getFamName(0) == null ? "" : clean(getFamName(0))) + delim +
         			(getFamName(1) == null ? "" : clean(getFamName(1))) + delim +
@@ -294,6 +363,21 @@ public class HeaderData {
         				(getSupPhone(i) == null ? "" : clean(getSupPhone(i)));
         	if (i < MAX_SUPPORTERS - 1) finalStr += delim;
         }
+
+        for (int i = 0; i < FILLER_CNT; i++) {
+        	finalStr += delim;
+        }
+
+        for (int i = 0; i < MAX_FAMILY_MEMBERS; i++) {
+        	finalStr += delim + delim + delim + delim + delim +
+        			    (getFamMemberRelation(i) == null ? "" : clean(getFamMemberRelation(i))) + delim +
+        				(getFamMemberAge(i) == null ? "" : clean(getFamMemberAge(i))) + delim +
+        				(getFamMemberHivStatus(i) == null ? "" : clean(getFamMemberHivStatus(i))) + delim +
+        				(getFamMemberInCare(i) == null ? "" : clean(getFamMemberInCare(i))) + delim +
+        				(getFamMemberPid(i) == null ? "" : clean(getFamMemberPid(i)));
+        	if (i < MAX_FAMILY_MEMBERS - 1) finalStr += delim;
+        }
+
         return (finalStr);
     }
 
