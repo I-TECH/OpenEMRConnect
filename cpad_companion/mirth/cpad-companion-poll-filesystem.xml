@@ -5,10 +5,10 @@
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1333066234411</time>
+    <time>1333099180718</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>548</revision>
+  <revision>558</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -18,7 +18,7 @@
       <property name="binary">0</property>
       <property name="charsetEncoding">UTF-8</property>
       <property name="checkFileAge">1</property>
-      <property name="fileAge">1000</property>
+      <property name="fileAge">5000</property>
       <property name="fileFilter">*</property>
       <property name="host">/opt/mirthconnect/appdata/cpad-incoming</property>
       <property name="moveToDirectory">/opt/mirthconnect/appdata/cpad-processed</property>
@@ -6856,7 +6856,7 @@ var result = dbConn.executeCachedQuery(&quot;SELECT cda_id FROM cda WHERE patien
 var found = false;
 var cdaId = 0;
 if (result.next()) {
-  cdaId = result.getInt(&apos;total&apos;);
+  cdaId = result.getInt(&apos;cda_id&apos;);
   if (!result.wasNull() &amp;&amp; cdaId &gt; 0) found = true;
 }
 
@@ -6866,10 +6866,19 @@ if (found) {
   params.add(&apos;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&apos; + messageObject.getTransformedData());
   params.add($(&apos;firstName&apos;));
   params.add($(&apos;lastName&apos;));
-  if ($(&apos;birthDate&apos;) == &apos;&apos;)
+  if ($(&apos;birthDate&apos;) == &apos;&apos;) {
     params.add(null);
-  else
+    params.add(null);
+  } else if ($(&apos;birthDate&apos;).length() == 4) {
     params.add($(&apos;birthDate&apos;));
+    params.add($(&apos;birthDate&apos;) + &apos;0615&apos;);
+  } else if ($(&apos;birthDate&apos;).length() == 6) {
+    params.add($(&apos;birthDate&apos;));
+    params.add($(&apos;birthDate&apos;) + &apos;15&apos;);
+  } else {
+    params.add($(&apos;birthDate&apos;));
+    params.add($(&apos;birthDate&apos;));
+  }
   params.add($(&apos;gender&apos;));
   params.add(DateUtil.getCurrentDate(&apos;yyyy-MM-dd HH:mm:ss&apos;));
   params.add($(&apos;currDT&apos;));
@@ -6877,14 +6886,14 @@ if (found) {
   params.add($(&apos;facCode&apos;));
   params.add($(&apos;sourceSystem&apos;));
   var stat = dbConn.executeUpdate(&quot;UPDATE cda SET facility_name = ?, cda = ?, first_name = ?, last_name = ?, &quot; +
-                                  &quot;birthdate = ?, gender = ?, date_stored = ?, date_generated = ? WHERE &quot; +
+                                  &quot;cda_dob = ?, moh_dob = ?, gender = ?, date_stored = ?, date_generated = ? WHERE &quot; +
                                   &quot;patient_clinical_id = ? AND facility_code = ? AND source_type = &apos;EMR&apos; &quot; +
                                   &quot;AND source_system = ?&quot;, params);
 
   // Put the cda_id into the cda_to_process table
   params = new java.util.ArrayList();
   params.add(cdaId);
-  stat = dbConn.executeUpdate(&quot;INSERT cda_to_process (cda_id) VALUES (?)&quot;, params);
+  stat = dbConn.executeUpdate(&quot;INSERT IGNORE cda_to_process (cda_id) VALUES (?)&quot;, params);
 } else {
   params.add($(&apos;pid&apos;));
   params.add($(&apos;facCode&apos;));
@@ -6892,19 +6901,28 @@ if (found) {
   params.add(&apos;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&apos; + messageObject.getTransformedData());
   params.add($(&apos;firstName&apos;));
   params.add($(&apos;lastName&apos;));
-  if ($(&apos;birthDate&apos;) == &apos;&apos;)
+  if ($(&apos;birthDate&apos;) == &apos;&apos;) {
     params.add(null);
-  else
+    params.add(null);
+  } else if ($(&apos;birthDate&apos;).length() == 4) {
     params.add($(&apos;birthDate&apos;));
+    params.add($(&apos;birthDate&apos;) + &apos;0615&apos;);
+  } else if ($(&apos;birthDate&apos;).length() == 6) {
+    params.add($(&apos;birthDate&apos;));
+    params.add($(&apos;birthDate&apos;) + &apos;15&apos;);
+  } else {
+    params.add($(&apos;birthDate&apos;));
+    params.add($(&apos;birthDate&apos;));
+  }
   params.add($(&apos;gender&apos;));
   params.add($(&apos;sourceSystem&apos;));
   params.add(DateUtil.getCurrentDate(&apos;yyyy-MM-dd HH:mm:ss&apos;));
   params.add($(&apos;currDT&apos;));
-  var stat = dbConn.executeUpdate(&quot;INSERT cda (patient_clinical_id, facility_code, facility_name, cda, first_name, last_name, birthdate, &quot; +
-                                  &quot;gender, source_type, source_system, date_stored, date_generated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, &apos;EMR&apos;, ?, ?, ?)&quot;, params);
+  var stat = dbConn.executeUpdate(&quot;INSERT cda (patient_clinical_id, facility_code, facility_name, cda, first_name, last_name, cda_dob, moh_dob, &quot; +
+                                  &quot;gender, source_type, source_system, date_stored, date_generated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, &apos;EMR&apos;, ?, ?, ?)&quot;, params);
 
   // Put the cda_id into the cda_to_process table
-  stat = dbConn.executeUpdate(&quot;INSERT cda_to_process (cda_id) VALUES (LAST_INSERT_ID())&quot;);
+  stat = dbConn.executeUpdate(&quot;INSERT IGNORE cda_to_process (cda_id) VALUES (LAST_INSERT_ID())&quot;);
 }
 
 
