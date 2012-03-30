@@ -295,11 +295,6 @@ public class CpadDataExtract {
 						header.setDob(new SimpleDateFormat(validMos ? "yyyyMM" : "yyyy").format(input.getTime() -
 								        	   ((ageYrs * new Long(YEAR_MILLIS)) +
 								        		(validMos ? ageMos * new Long(MONTH_MILLIS): 0))));
-						// Kenya MOH guidelines: if month is unknown, use June. If day is unknown, use the 15th
-						if (header.getDob().length() == 4)
-							header.setDob(header.getDob() + "0615");
-						if (header.getDob().length() == 6)
-							header.setDob(header.getDob() + "15");
 					}
 				}
 			}
