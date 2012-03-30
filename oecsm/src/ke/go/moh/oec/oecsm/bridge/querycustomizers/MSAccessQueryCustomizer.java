@@ -24,7 +24,6 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.bridge.querycustomizers;
 
-import ke.go.moh.oec.oecsm.daemon.Daemon;
 import ke.go.moh.oec.oecsm.data.Table;
 
 /**
@@ -35,13 +34,12 @@ import ke.go.moh.oec.oecsm.data.Table;
 public class MSAccessQueryCustomizer implements QueryCustomizer {
 
     public String buildCompositePrimaryKey(Table tableStructure) {
-    	String pkDelim = Daemon.getProperty("primary.key.value.delimiter");
         String compositePK = "";
         String[] pks = tableStructure.getPk().split(",");
         for (int i = 0; i < pks.length; i++) {
             compositePK = compositePK + pks[i];
             if (i != pks.length - 1) {
-                compositePK = compositePK + "& '" + pkDelim + "' &";
+                compositePK = compositePK + "&";
             }
         }
         if (pks.length == 1) { // Make sure PK values always sort as a string.

@@ -2,33 +2,22 @@
 <project default="create_run_jar" name="Create Runnable Jar for Project cpad_companion" basedir=".">
 	<property name="src.dir" value="./src" />
 	<property name="bin.dir" value="./bin" />
-	<property name="lib.dir" value="C:/Users/jsibley/jarlib" />
-	<property name="out.file" value="${bin.dir}/cpad_companion.jar" />
+	<property name="out.file" value="./${bin.dir}/cpad_companion.jar" />
     <target name="compile">
-        <mkdir dir="${bin.dir}" />
         <javac srcdir="${src.dir}"
-               destdir="${bin.dir}"
-			   classpath="${lib.dir}/commons-httpclient-3.1.jar;\
-        	              ${lib.dir}/commons-codec-1.5.jar">
-        	<exclude name="ke/go/moh/oec/cpad/CpadDataExtractFromShadow.java" />
+               destdir="./${bin.dir}">
         </javac>
     </target>
-    <target name="create_run_jar" depends="clean,compile">
+    <target name="create_run_jar" depends="compile">
         <jar destfile="${out.file}" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="ke.go.moh.oec.cpad.CpadDataExtract" />
                 <attribute name="Class-Path" value="." />
             </manifest>
-            <fileset dir="${bin.dir}" />
-            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-codec-1.5.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-httpclient-3.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-logging-4.0.6.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/mysql-connector-java-5.1.18-bin.jar"/>
+            <fileset dir="." />
         </jar>
-    	<delete dir="${bin.dir}/ke" />
     </target>
     <target name = "clean">
    		<delete file="${out.file}" />
-        <delete dir="${bin.dir}" />
   	</target>
 </project>

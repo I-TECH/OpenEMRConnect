@@ -1,39 +1,21 @@
 package ke.go.moh.oec.cpad;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.codec.binary.Base64InputStream;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpConnectionManager;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import ke.go.moh.oec.cpad.HeaderData;
 import ke.go.moh.oec.cpad.VisitData;
 
 public class CpadDataExtract {
 	final static String MONTH_MILLIS = "2629743833";
+	final static String ODBC_URL = "jdbc:odbc:cpad_companion";
+	final static String OUTPUT_FILENAME = "out.csv";
 	final static String SESQUICENTENNIAL_MILLIS = "4717440000000";
 	final static String YEAR_MILLIS = "31556925994";
-	final static int FILLER_CNT = 73;
-	final static int MAX_FAMILY_MEMBERS = 8;
+	final static int FILLER_CNT = 197;
 	final static int MAX_FAMILY_PLANNING_METHODS = 5;
 	final static int MAX_NEW_OI = 5;
 	final static int MAX_OTHER_MED = 7;
@@ -50,7 +32,6 @@ public class CpadDataExtract {
 
 	public static void main(String[] args) {
 		Connection con;
-		Connection shadowCon;
 		HeaderData header = new HeaderData();
 		VisitData visits[] = new VisitData[MAX_VISIT_CNT];
 		for (int i = 0; i < MAX_VISIT_CNT; i++) {
@@ -58,59 +39,20 @@ public class CpadDataExtract {
 		}
 		
 		try{
-			Properties companionProps = loadProperties("cpad_companion.properties");
-			Properties sourceProps = loadProperties("source_database.properties");
-			Properties shadowProps = loadProperties("shadow_database.properties");
-			OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(companionProps.getProperty("csv.output.filename")), "UTF-8");
-			Class.forName(sourceProps.getProperty("driver"));
-			con = DriverManager.getConnection(sourceProps.getProperty("url"));
+			OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(OUTPUT_FILENAME), "UTF-8");
+			Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+			con = DriverManager.getConnection(ODBC_URL);
 			Statement stmt = con.createStatement();
-			
-			// Query shadow database to determine which patients to pull records for
-			Class.forName(shadowProps.getProperty("driver"));
-			shadowCon = DriverManager.getConnection(shadowProps.getProperty("url"),
-													shadowProps.getProperty("username"),
-													shadowProps.getProperty("password"));
-			Statement shadowStmt = shadowCon.createStatement();
-			
-			// See if any transactions have happened in the time frame we're interested in for the tables we care about
-			// First, get the list of tables that we're interested in
-			String tableList = "('" + sourceProps.getProperty("tableList").replace(",", "','") + "')";
-			if ("".equals(tableList) || tableList == null)
-				logAndQuit(Level.SEVERE, "No tables listed in properties file.");
-			
-			// Next, get the date we want to use when checking for recent transactions
-			java.util.Date now = Calendar.getInstance().getTime();
-			String transSince = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-									.format(now.getTime() - new Long(companionProps.getProperty("check.interval.seconds")) * 1000);
-			if ("".equals(transSince) || transSince == null)
-				logAndQuit(Level.SEVERE, "Could not calculate date to use: " + transSince + ".");
-
-			// Finally, query the transaction_data table to get a list of patient_ids associated with the transaction(s)
-			int res = shadowStmt.executeUpdate("CREATE TEMPORARY TABLE IF NOT EXISTS pids (patient_id varchar(60000))");
-			res = shadowStmt.executeUpdate("TRUNCATE TABLE pids");
-			res = shadowStmt.executeUpdate("INSERT INTO pids " +
-										   "SELECT DISTINCT td.data FROM shadow.transaction_data td, " +
-										   "shadow.transaction tr " +
-										   "WHERE td.column_id IN " +
-										   "(SELECT id FROM shadow.column " +
-										   "WHERE name = 'patient_id' AND table_id IN " +
-										   "(SELECT id FROM shadow.table WHERE name IN " + tableList + " " + ")) " +
-										   "AND td.transaction_id = tr.id " +
-										   "AND tr.created_datetime >= '" + transSince + "'");
+			ResultSet rs = stmt.executeQuery("select count(patient_id) as total from tblpatient_information");
 			int recCnt = 0;
-			ResultSet rs = shadowStmt.executeQuery("SELECT COUNT(DISTINCT patient_id) AS total FROM pids");
 			if (rs.next()) {
 				recCnt = rs.getInt("total");
-				if (rs.wasNull() || recCnt == 0)
-					logAndQuit(Level.INFO, "No updated patient records found in the shadow database since " + transSince + ".");
 			}
+			System.out.println("Found " + recCnt + " patients");
 			
-			Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Extracting data for " + recCnt + " patient" + (recCnt == 1 ? "." : "s."));
+			rs = stmt.executeQuery("select distinct patient_id from tblpatient_information");
 
-			rs = shadowStmt.executeQuery("select distinct patient_id from pids");
-
-			PreparedStatement headerStmts[] = new PreparedStatement[6];
+			PreparedStatement headerStmts[] = new PreparedStatement[4];
 			headerStmts[0] = con.prepareStatement("select pi.patient_id, pi.first_name, pi.last_name, pi.dob, " +
 				"pi.age, pi.agemnth, pi.date_entered, s.sexname, m.maritalname " +
 				"from (tlkSex s INNER JOIN (tblpatient_information pi LEFT OUTER JOIN " +
@@ -125,17 +67,7 @@ public class CpadDataExtract {
 			    "from tbltreatment_supporter ts " +
 			    "left join tlkSupporter_relationships sr on ts.relationship = sr.relationid " +
 			    "where ts.patient_id = ?");
-			headerStmts[3] = con.prepareStatement("select fm.FmailyMemAge as age, fm.FmailyMemRel as rel1, " +
-				"sr.relationship as rel2, fm.FmailyMemHIV as hiv_status, fm.FmailyMemCare as in_care, " +
-				"fm.FmailyMemCCCN as pid " +
-				"from tblFamilyMembers fm " +
-				"left join tlkSupporter_relationships sr on fm.FmailyMemRel = sr.relationid " +
-				"where fm.patient_id = ?");
-			headerStmts[4] = con.prepareStatement("select label " +
-				"from Tbl_Values tv " +
-				"where tv.category = ? " + 
-				"and tv.[value] = ?");
-			headerStmts[5] = con.prepareStatement("select Organization, SiteCode, District, Province " +
+			headerStmts[3] = con.prepareStatement("select Organization, SiteCode, District, Province " +
 				"from tblOrganization");
 			
 			PreparedStatement visitStmts[] = new PreparedStatement[9];
@@ -159,7 +91,6 @@ public class CpadDataExtract {
 				"tlkyesno fs ON vi.fp_status = fs.yesnocode) LEFT OUTER JOIN " +
 				"tlkadherencestatus ca ON vi.cotrim_adherence = ca.adherecode) ON pi.patient_id = vi.patient_id) " +
 				"where vi.patient_id = ? " +
-				"and vi.visit_date <= now() " +
 				"order by vi.visit_date desc");
 			visitStmts[2] = con.prepareStatement("select vi.visit_date, vi.art_regimen, vi.art_other, ar.firstregimen " +
 				"from tblvisit_information vi " +
@@ -203,7 +134,7 @@ public class CpadDataExtract {
 				int pid = rs.getInt("patient_id");
 				
 				header.reset();
-				ExtractHeaderData(headerStmts, pid, header, companionProps);
+				ExtractHeaderData(headerStmts, pid, header);
 
 				for (int i = 0; i < MAX_VISIT_CNT; i++) {
 					visits[i].reset();
@@ -222,28 +153,12 @@ public class CpadDataExtract {
 					if (i < visits.length - 1) finalCsv += "\t";
 				}
 				out.write(finalCsv + "\n");
-				if (++cnt % 100 == 0) Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "(" + cnt + ")");
+				if (++cnt % 100 == 0) System.out.println("(" + cnt + ")");
 			}
+			System.out.println("Done!");
 			stmt.close();
-			shadowCon.close();
 			con.close();
 			out.close();
-
-			// Send file to remote Mirth instance if configured to do so
-			if ("remote".equalsIgnoreCase(companionProps.getProperty("mirth.location"))) {
-				if (!"".equals(companionProps.getProperty("mirth.url")) &&
-					companionProps.getProperty("mirth.url") != null) {
-					if (sendMessage(companionProps.getProperty("mirth.url"), companionProps.getProperty("csv.output.filename"))) {
-						Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File sent!");
-					} else {
-						Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File not sent!");
-					}
-				} else {
-					Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
-				}
-			}
-
-			Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Done!");
 		} catch(ClassNotFoundException e) {
 			System.out.println(e.toString());
 		} catch(SQLException e) {
@@ -253,9 +168,9 @@ public class CpadDataExtract {
 		}
 	}
 
-	private static void ExtractHeaderData(PreparedStatement stmts[], int pid, HeaderData header, Properties props) throws SQLException {
+	private static void ExtractHeaderData(PreparedStatement stmts[], int pid, HeaderData header) throws SQLException {
 		// Fill in prepared statement parameters
-		for (int i = 0; i < stmts.length - 2; i++) {
+		for (int i = 0; i < stmts.length - 1; i++) {
 			stmts[i].setInt(1, pid);
 		}
 		
@@ -282,11 +197,6 @@ public class CpadDataExtract {
 						header.setDob(new SimpleDateFormat(validMos ? "yyyyMM" : "yyyy").format(input.getTime() -
 								        	   ((ageYrs * new Long(YEAR_MILLIS)) +
 								        		(validMos ? ageMos * new Long(MONTH_MILLIS): 0))));
-						// Kenya MOH guidelines: if month is unknown, use June. If day is unknown, use the 15th
-						if (header.getDob().length() == 4)
-							header.setDob(header.getDob() + "0615");
-						if (header.getDob().length() == 6)
-							header.setDob(header.getDob() + "15");
 					}
 				}
 			}
@@ -326,54 +236,11 @@ public class CpadDataExtract {
 			i++;
 		}
 
-		// Grab family member data - from tblFamilyMembers
-		rs = stmts[3].executeQuery();
-		i = 0;
-		while (rs.next() && i < MAX_FAMILY_MEMBERS) {
-			header.setFamMemberAge(i, rs.getString("age"));
-			header.setFamMemberPid(i, rs.getString("pid"));
-			int rel = rs.getInt("rel1");
-			if (!rs.wasNull()) {
-				if (rel == OTHER_RELATIONSHIP_CODE) {
-					header.setFamMemberRelation(i, "Other");
-				} else {
-					header.setFamMemberRelation(i, rs.getString("rel2"));
-				}
-			}
-			// Lookup HIV status label from Tbl_Values, if not null
-			int z = rs.getInt("hiv_status");
-			if (!rs.wasNull()) {
-				stmts[4].setString(1, "HIVStat");
-				stmts[4].setString(2, Integer.toString(z));
-				ResultSet subRs = stmts[4].executeQuery();
-				if (subRs.next()) {
-					header.setFamMemberHivStatus(i, subRs.getString("label"));
-				}
-				subRs.close();
-			}
-			// Lookup "In Care" label from Tbl_Values, if not null
-			z = rs.getInt("in_care");
-			if (!rs.wasNull()) {
-				stmts[4].setString(1, "tlkyesno");
-				stmts[4].setString(2, Integer.toString(z));
-				ResultSet subRs = stmts[4].executeQuery();
-				if (subRs.next()) {
-					header.setFamMemberInCare(i, subRs.getString("label"));
-				}
-				subRs.close();
-			}
-			i++;
-		}
-		
 		// Set facility name and then output extracted data
-		rs = stmts[5].executeQuery();
+		rs = stmts[3].executeQuery();
 		if (rs.next()) {
-//			header.setFacName(rs.getString("Organization"));
-//			header.setFacCode(rs.getString("SiteCode"));
-			// Read organization, site code and source system from the properties file instead of from the database
-			header.setFacName(props.getProperty("site.name"));
-			header.setFacCode(props.getProperty("site.code"));
-			header.setSourceSystem(props.getProperty("source.system"));
+			header.setFacName(rs.getString("Organization"));
+			header.setFacCode(rs.getString("SiteCode"));
 			header.setFacCounty(rs.getString("District"));
 			header.setFacState(rs.getString("Province"));
 		}
@@ -596,66 +463,5 @@ public class CpadDataExtract {
 			cnt++;
 		}
 		rs.close();
-	}
-
-	private static boolean sendMessage(String url, String filename) {
-		int returnStatus = HttpStatus.SC_CREATED;
-		HttpClient httpclient = new HttpClient();
-		HttpConnectionManager connectionManager = httpclient.getHttpConnectionManager();
-		connectionManager.getParams().setSoTimeout(120000);
-
-		PostMethod httpPost = new PostMethod(url);
-		
-		RequestEntity requestEntity = null;
-		try {
-			FileInputStream message = new FileInputStream(filename);
-			Base64InputStream message64 = new Base64InputStream(message, true, -1, null);
-			requestEntity = new InputStreamRequestEntity(message64, "application/octet-stream");
-		} catch (FileNotFoundException e) {
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "File not found.", e);
-		}
-		httpPost.setRequestEntity(requestEntity);
-
-		try {
-			httpclient.executeMethod(httpPost);
-			returnStatus = httpPost.getStatusCode();
-		} catch (SocketTimeoutException e) {
-			returnStatus = HttpStatus.SC_REQUEST_TIMEOUT;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Request timed out.  Not retrying.", e);
-		} catch (HttpException e) {
-			returnStatus = HttpStatus.SC_INTERNAL_SERVER_ERROR;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "HTTP exception.", e);
-		} catch (ConnectException e) {
-			returnStatus = HttpStatus.SC_SERVICE_UNAVAILABLE;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Service unavailable.", e);
-		} catch (UnknownHostException e) {
-			returnStatus = HttpStatus.SC_NOT_FOUND;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Not found.", e);
-		} catch (IOException e) {
-			returnStatus = HttpStatus.SC_GATEWAY_TIMEOUT;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "IO exception.", e);
-		} finally {
-			httpPost.releaseConnection();
-		}
-		return returnStatus == HttpStatus.SC_OK;
-	}
-
-    private static Properties loadProperties(String propertiesFile) throws FileNotFoundException {
-        try {
-            Properties properties = new Properties();
-            File propFile = new File(propertiesFile);
-            String propFilePath = propFile.getAbsolutePath();
-            FileInputStream fis = new FileInputStream(propFilePath);
-            properties.load(fis);
-    		return properties;
-        } catch (IOException ex) {
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Properties file not found: " + propertiesFile, ex);
-            throw new FileNotFoundException("Properties file not found: " + propertiesFile);
-        }
-    }
-
-    private static void logAndQuit(Level level, String msg) {
-    	Logger.getLogger(CpadDataExtract.class.getName()).log(level, msg);
-		System.exit(0);
 	}
 }

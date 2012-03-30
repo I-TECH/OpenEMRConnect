@@ -26,8 +26,8 @@ public class VisitData {
 	private String mosOnRegimen;
 	private String nextAppt;
 	private String oiProblem[] = new String[5];
-	private String otherLabName[] = new String[2];
-	private String otherLabResult[] = new String[2];
+	private String otherLabName[] = new String[5];
+	private String otherLabResult[] = new String[5];
 	private String otherMedDosage[] = new String[8];
 	private String otherMedFreq[] = new String[8];
 	private String otherMedName[] = new String[8];
@@ -519,6 +519,12 @@ public class VisitData {
     	otherLabResult[0] = null;
     	otherLabName[1] = null;
     	otherLabResult[1] = null;
+    	otherLabName[2] = null;
+    	otherLabResult[2] = null;
+    	otherLabName[3] = null;
+    	otherLabResult[3] = null;
+    	otherLabName[4] = null;
+    	otherLabResult[4] = null;
     	referral = null;
     	atRiskPop = null;
     	disclosure = null;
@@ -613,6 +619,12 @@ public class VisitData {
     		   (getOtherLabResult(0) == null ? "" : clean(getOtherLabResult(0))) + delim +
     		   (getOtherLabName(1) == null ? "" : clean(getOtherLabName(1))) + delim +
     		   (getOtherLabResult(1) == null ? "" : clean(getOtherLabResult(1))) + delim +
+    		   (getOtherLabName(2) == null ? "" : clean(getOtherLabName(2))) + delim +
+    		   (getOtherLabResult(2) == null ? "" : clean(getOtherLabResult(2))) + delim +
+    		   (getOtherLabName(3) == null ? "" : clean(getOtherLabName(3))) + delim +
+    		   (getOtherLabResult(3) == null ? "" : clean(getOtherLabResult(3))) + delim +
+    		   (getOtherLabName(4) == null ? "" : clean(getOtherLabName(4))) + delim +
+    		   (getOtherLabResult(4) == null ? "" : clean(getOtherLabResult(4))) + delim +
     		   (getReferral() == null ? "" : clean(getReferral())) + delim +
     		   (getAtRiskPop() == null ? "" : clean(getAtRiskPop())) + delim +
     		   (getDisclosure() == null ? "" : clean(getDisclosure())) + delim +
