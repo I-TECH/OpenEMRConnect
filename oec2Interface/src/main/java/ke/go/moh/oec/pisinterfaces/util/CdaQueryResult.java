@@ -36,7 +36,7 @@ public class CdaQueryResult {
      * @param document the result document from a query request
      * @return a map of {cda_id: cda} for each cda found in the doc.
      */ 
-    public Map<String, String> parseDocument(InputStream document) {
+    public Map<String, String> parseDocument(InputStream document) throws SiteException {
 
         SAXParserFactory spf = SAXParserFactory.newInstance();
         try {
@@ -96,12 +96,8 @@ public class CdaQueryResult {
             
             saxParser.parse(document, handler);
 
-        } catch (SAXException se) {
-            se.printStackTrace();
-        } catch (ParserConfigurationException pce) {
-            pce.printStackTrace();
-        } catch (IOException ie) {
-            ie.printStackTrace();
+        } catch (Exception e) {
+            throw new SiteException("Unable to parse response CDA(s)", e);
         }
         return cdaList;
     }
