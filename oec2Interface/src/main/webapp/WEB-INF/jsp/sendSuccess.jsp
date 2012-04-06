@@ -12,7 +12,21 @@
     <p><a href="sentPatientId">New search</a></p>
     <ul>
         <c:forEach var="cda" items="${cdaList}">
-            <li><a href="viewCda/${cda.key}">${cda.key}</a></li>
+            <li>
+                <a href="viewCda/${cda.key}">
+                    <c:choose>
+                        <c:when test="${not empty cda.value.hdssId}">
+                            ${cda.value.hdssId}
+                        </c:when>
+                        <c:otherwise>
+                            ${cda.value.clinicId}
+                        </c:otherwise>
+                    </c:choose>
+                </a> 
+                ${cda.value.lastName}, ${cda.value.firstName}
+                ${cda.value.sourceSystem} ${cda.value.cdaDOB}
+                ${cda.value.gender} ${cda.value.dateGenerated}
+            </li>
         </c:forEach>
     </ul>
 </body>

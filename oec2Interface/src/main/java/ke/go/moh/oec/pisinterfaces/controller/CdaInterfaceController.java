@@ -3,6 +3,7 @@ package ke.go.moh.oec.pisinterfaces.controller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -10,9 +11,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ke.go.moh.oec.pisinterfaces.beans.CdaRecord;
 import ke.go.moh.oec.pisinterfaces.beans.PatientIdentification;
 import ke.go.moh.oec.pisinterfaces.util.CdaQueryResult;
 import ke.go.moh.oec.pisinterfaces.util.JavaToXML;
+import ke.go.moh.oec.pisinterfaces.util.SiteException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -63,23 +66,18 @@ public class CdaInterfaceController {
     @RequestMapping(value = "/sentPatientId", method = RequestMethod.POST)
     public String onSubmit(
             @ModelAttribute("patientIdentification") PatientIdentification patientId,
-            ModelMap model) {
-        try {
-            Map<String, String> resultList = executeQuery(patientId);
-            if (resultList.size() == 0) {
-                String[] errors = new String[1];
-                errors[0] = "No Match Found";
-                model.addAttribute("errors", errors);
-                return "sendPatientInfo";
-            } else {
-                // Store matching CDA docs in session
-                model.addAttribute("cdaList", resultList);
-            }
-            return "redirect:sendSuccess";
-        } catch (Exception e) {
-            e.printStackTrace();
+            ModelMap model) throws SiteException {
+        Map<String, CdaRecord> resultList = executeQuery(patientId);
+        if (resultList.size() == 0) {
+            String[] errors = new String[1];
+            errors[0] = "No Match Found";
+            model.addAttribute("errors", errors);
+            return "sendPatientInfo";
+        } else {
+            // Store matching CDA docs in session
+            model.addAttribute("cdaList", resultList);
         }
-        return "sendPatientInfo";
+        return "redirect:sendSuccess";
     }
 
     /**
@@ -92,7 +90,7 @@ public class CdaInterfaceController {
      */
     @RequestMapping(value = "/sendSuccess", method = RequestMethod.GET)
     public String sendSuccess(
-            @ModelAttribute("cdaList") Map<String, String> cdaList,
+            @ModelAttribute("cdaList") Map<String, CdaRecord> cdaList,
             ModelMap model) {
         if (cdaList == null || cdaList.size() < 1) {
             // Shouldn't be here without a result list - possible in event
@@ -116,20 +114,20 @@ public class CdaInterfaceController {
     @RequestMapping(value = "/viewCda/{cdaID}", method = RequestMethod.GET)
     public String viewCda(
             @PathVariable String cdaID,
-            @ModelAttribute("cdaList") Map<String, String> cdaList,
-            ModelMap model) {
+            @ModelAttribute("cdaList") Map<String, CdaRecord> cdaList,
+            ModelMap model) throws SiteException {
         // Check the session for the requested cda
-        String cda = null;
+        CdaRecord record = null;
         if (cdaList != null && cdaList.containsKey(cdaID)) {
-            cda = cdaList.get(cdaID);
+            record = cdaList.get(cdaID);
         } else {
             // Need to round trip to query for requested cda
             PatientIdentification pid = new PatientIdentification();
             pid.setCdaID(cdaID);
-            Map<String, String> resultList = executeQuery(pid);
-            //model.addAttribute("cdaList", resultList);
-            cda = resultList.get(cdaID);
-            if (cda == null) {
+            Map<String, CdaRecord> resultList = executeQuery(pid);
+
+            record = resultList.get(cdaID);
+            if (record == null) {
                 // No match found, redirect to search w/ error
                 String[] errors = new String[1];
                 errors[0] = "No Match Found";
@@ -137,10 +135,13 @@ public class CdaInterfaceController {
                 return "viewCda";
             }
         }
-        cda = this.addStyleSheet(new StringBuffer(cda));
+        String cda = this.addStyleSheet(new StringBuffer(record.getCDA()));
         String[] params = new String[1];
         params[0] = cda;
-        model.addAttribute("params", params);
+
+        model.addAttribute(
+                "params", params);
+
         return "viewCda";
     }
 
@@ -148,11 +149,11 @@ public class CdaInterfaceController {
      * Create the "cdaList" session bound attribute if necessary. Called by the
      * spring framework if no such named attribute can be found in the Model.
      *
-     * @return the empty (but valid) Map<String, String>
+     * @return the empty (but valid) Map<String, CdaRecord>
      */
     @ModelAttribute("cdaList")
-    public Map<String, String> createCdaList() {
-        return new HashMap<String, String>();
+    public Map<String, CdaRecord> createCdaList() {
+        return new HashMap<String, CdaRecord>();
     }
 
     /**
@@ -173,12 +174,12 @@ public class CdaInterfaceController {
      * @param cda The CDA, XML document to inject with the configured .xsl
      * @return String representation of the CDA, including the stylesheet.
      */
-    protected String addStyleSheet(StringBuffer cda) {
+    protected String addStyleSheet(StringBuffer cda) throws SiteException {
         // This points to the CDA XSL style sheet served from the root resources dir
         String stylelink = "<?xml-stylesheet type='text/xsl' href='xsl/WebViewLayout_CDA.xsl'?>";
         if (cda.length() < 1 || cda.indexOf(">") < 0) {
             // CDA doesn't look like XML, raise
-            throw new RuntimeException("Invalid document");
+            throw new SiteException("Invalid document", null);
         }
         // Insert the style sheet element immediately following the xml header
         int endOfHeader = cda.indexOf(">");
@@ -203,32 +204,44 @@ public class CdaInterfaceController {
      * @param patientId with attributes set to query.
      * @return map of <cdaId: cda xml document> for any matching CDAs found.
      */
-    private Map<String, String> executeQuery(PatientIdentification patientId) {
-        Map<String, String> results = null;
-        try {
-            OutputStreamWriter wr = null;
-            Properties props = new Properties();
+    private Map<String, CdaRecord> executeQuery(PatientIdentification patientId) 
+            throws SiteException {
+        Properties props = new Properties();
 
+        try {
             InputStream in = JavaToXML.getPropertiesFile("config.properties");
             props.load(in);
             in.close();
+        } catch (IOException ex) {
+            throw new SiteException("Unable to access configuration file", ex);
+        }
 
-            String stringUrl = props.getProperty("urlMirth");
-            String s = JavaToXML.objectToXml(patientId);
-            log.info("Message to send : \n" + s);
-            URL url = new URL(stringUrl);
-            URLConnection conn = url.openConnection();
+        String stringUrl = props.getProperty("urlMirth");
+        String s = JavaToXML.objectToXml(patientId);
+        log.info("Message to send : \n" + s);
+        URL url;
+        try {
+            url = new URL(stringUrl);
+        } catch (MalformedURLException ex) {
+            throw new SiteException("Mailformed URL from property `urlMirth`", ex);
+        }
+        URLConnection conn;
+        try {
+            conn = url.openConnection();
             conn.setDoOutput(true);
-            wr = new OutputStreamWriter(conn.getOutputStream());
+            OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write("query=" + s);
             wr.flush();
             wr.close();
-
-            CdaQueryResult cdaQueryResult = new CdaQueryResult();
-            results = cdaQueryResult.parseDocument(conn.getInputStream());
         } catch (IOException ex) {
-            Logger.getLogger(CdaInterfaceController.class.getName()).log(Level.SEVERE, null, ex);
+            throw new SiteException("External CDA Query client unavailable", ex);
         }
-        return results;
+
+        CdaQueryResult cdaQueryResult = new CdaQueryResult();
+        try {
+            return cdaQueryResult.parseDocument(conn.getInputStream());
+        } catch (IOException ex) {
+            throw new SiteException("Unable to parse CdaQuery result", ex);
+        }
     }
 }
