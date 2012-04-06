@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ke.go.moh.oec.pisinterfaces.beans.CdaRecord;
 import ke.go.moh.oec.pisinterfaces.beans.PatientIdentification;
 import ke.go.moh.oec.pisinterfaces.util.CdaQueryResult;
 import ke.go.moh.oec.pisinterfaces.util.JavaToXML;
@@ -66,7 +67,7 @@ public class CdaInterfaceController {
     public String onSubmit(
             @ModelAttribute("patientIdentification") PatientIdentification patientId,
             ModelMap model) throws SiteException {
-        Map<String, String> resultList = executeQuery(patientId);
+        Map<String, CdaRecord> resultList = executeQuery(patientId);
         if (resultList.size() == 0) {
             String[] errors = new String[1];
             errors[0] = "No Match Found";
@@ -89,7 +90,7 @@ public class CdaInterfaceController {
      */
     @RequestMapping(value = "/sendSuccess", method = RequestMethod.GET)
     public String sendSuccess(
-            @ModelAttribute("cdaList") Map<String, String> cdaList,
+            @ModelAttribute("cdaList") Map<String, CdaRecord> cdaList,
             ModelMap model) {
         if (cdaList == null || cdaList.size() < 1) {
             // Shouldn't be here without a result list - possible in event
@@ -113,20 +114,20 @@ public class CdaInterfaceController {
     @RequestMapping(value = "/viewCda/{cdaID}", method = RequestMethod.GET)
     public String viewCda(
             @PathVariable String cdaID,
-            @ModelAttribute("cdaList") Map<String, String> cdaList,
+            @ModelAttribute("cdaList") Map<String, CdaRecord> cdaList,
             ModelMap model) throws SiteException {
         // Check the session for the requested cda
-        String cda = null;
+        CdaRecord record = null;
         if (cdaList != null && cdaList.containsKey(cdaID)) {
-            cda = cdaList.get(cdaID);
+            record = cdaList.get(cdaID);
         } else {
             // Need to round trip to query for requested cda
             PatientIdentification pid = new PatientIdentification();
             pid.setCdaID(cdaID);
-            Map<String, String> resultList = executeQuery(pid);
-            //model.addAttribute("cdaList", resultList);
-            cda = resultList.get(cdaID);
-            if (cda == null) {
+            Map<String, CdaRecord> resultList = executeQuery(pid);
+
+            record = resultList.get(cdaID);
+            if (record == null) {
                 // No match found, redirect to search w/ error
                 String[] errors = new String[1];
                 errors[0] = "No Match Found";
@@ -134,7 +135,7 @@ public class CdaInterfaceController {
                 return "viewCda";
             }
         }
-        cda = this.addStyleSheet(new StringBuffer(cda));
+        String cda = this.addStyleSheet(new StringBuffer(record.getCDA()));
         String[] params = new String[1];
         params[0] = cda;
 
@@ -148,11 +149,11 @@ public class CdaInterfaceController {
      * Create the "cdaList" session bound attribute if necessary. Called by the
      * spring framework if no such named attribute can be found in the Model.
      *
-     * @return the empty (but valid) Map<String, String>
+     * @return the empty (but valid) Map<String, CdaRecord>
      */
     @ModelAttribute("cdaList")
-    public Map<String, String> createCdaList() {
-        return new HashMap<String, String>();
+    public Map<String, CdaRecord> createCdaList() {
+        return new HashMap<String, CdaRecord>();
     }
 
     /**
@@ -203,7 +204,7 @@ public class CdaInterfaceController {
      * @param patientId with attributes set to query.
      * @return map of <cdaId: cda xml document> for any matching CDAs found.
      */
-    private Map<String, String> executeQuery(PatientIdentification patientId) 
+    private Map<String, CdaRecord> executeQuery(PatientIdentification patientId) 
             throws SiteException {
         Properties props = new Properties();
 

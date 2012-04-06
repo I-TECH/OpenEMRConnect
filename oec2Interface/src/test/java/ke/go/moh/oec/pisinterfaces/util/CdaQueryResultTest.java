@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import junit.framework.TestCase;
+import ke.go.moh.oec.pisinterfaces.beans.CdaRecord;
 
 /**
  *
@@ -37,15 +38,17 @@ public class CdaQueryResultTest extends TestCase {
         try {
             CdaQueryResult instance = new CdaQueryResult();
             testFile = getClass().getResourceAsStream("/cda_query_result.xml");
-            Map <String, String> results = instance.parseDocument(testFile);
+            Map <String, CdaRecord> results = instance.parseDocument(testFile);
             assert(results.size() == 2);
             // Key should be an integer (pk) and Value in each should be a valid CDA
-            for (Map.Entry<String, String> entry : results.entrySet()){
+            for (Map.Entry<String, CdaRecord> entry : results.entrySet()){
                 int pk = Integer.parseInt(entry.getKey());
                 assert(pk >= 0);
-                String cda_doc = entry.getValue();
+                String cda_doc = entry.getValue().getCDA();
                 assertTrue(cda_doc.startsWith("<?xml version="));
-            }
+            } 
+        } catch (SiteException e) {
+            fail(e.getMessage());
         } finally {
             try {
                 testFile.close();
