@@ -17,10 +17,18 @@ Queries should be HTTP POSTed to this channel in XML format, using the &apos;que
 
 For each matching document found, they will be a &lt;record/&gt; element returned associated with their respective cda_id values in an XML document of the following structure:
 
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;
 &lt;query_response&gt;
   &lt;record&gt;
-    &lt;cda_id&gt;20&lt;/cda_id&gt;
-    &lt;cda&gt;[base 64 encoded CDA]&lt;/cda&gt;
+    &lt;cda_id&gt;1&lt;/cda_id&gt;
+    &lt;patient_clinical_id&gt;pc_id&lt;/patient_clinical_id&gt;
+    &lt;last_name&gt;xk~txIvj|r&lt;/last_name&gt;
+    &lt;first_name&gt;|jv~nu&lt;/first_name&gt;
+    &lt;source_system&gt;OldMRS&lt;/source_system&gt;
+    &lt;cda_dob&gt;19560228&lt;/cda_dob&gt;
+    &lt;gender&gt;M&lt;/gender&gt;
+    &lt;date_generated&gt;20120401&lt;/date_generated&gt;
+    &lt;cda&gt;[base64 encoded CDA]&lt;/cda&gt;
   &lt;/record&gt;
 &lt;/query_response&gt;
 
@@ -31,10 +39,10 @@ To configure the cds database name, host, port, user &amp; password, alter the c
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1332460210705</time>
+    <time>1333700098341</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>102</revision>
+  <revision>132</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -54,7 +62,8 @@ To configure the cds database name, host, port, user &amp; password, alter the c
           <script>var query = new XML(Packages.java.net.URLDecoder.decode(msg[&apos;Parameters&apos;][&apos;query&apos;].toString()));
 
 channelMap.put(&apos;cda_id&apos;, query[&apos;cdaID&apos;]);
-channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);</script>
+channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);
+channelMap.put(&apos;idType&apos;, query[&apos;identificationType&apos;]);</script>
           <type>JavaScript</type>
           <data class="map">
             <entry>
@@ -62,7 +71,8 @@ channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);</script>
               <string>var query = new XML(Packages.java.net.URLDecoder.decode(msg[&apos;Parameters&apos;][&apos;query&apos;].toString()));
 
 channelMap.put(&apos;cda_id&apos;, query[&apos;cdaID&apos;]);
-channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);</string>
+channelMap.put(&apos;id&apos;, query[&apos;identification&apos;]);
+channelMap.put(&apos;idType&apos;, query[&apos;identificationType&apos;]);</string>
             </entry>
           </data>
         </step>
@@ -152,6 +162,7 @@ var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.
                                                                 &apos;yourPassword&apos;);
 var cda_id = channelMap.get(&apos;cda_id&apos;);
 var id = channelMap.get(&apos;id&apos;);
+var idType = channelMap.get(&apos;idType&apos;);
 
 var column = null;
 var value = null;
@@ -161,7 +172,11 @@ if (typeof cda_id != undefined &amp;&amp; cda_id.toString().length &gt; 0) {
 	column = &apos;cda_id&apos;;
     value = cda_id.toString();
 } else if (typeof id != undefined &amp;&amp; id.toString().length &gt; 0) {
-	column = &apos;patient_clinical_id&apos;;
+	if (typeof idType != undefined &amp;&amp; idType.toString() == &quot;HDSS&quot;) {
+        column = &apos;hdss_id&apos;;
+    } else {
+	    column = &apos;patient_clinical_id&apos;;
+    }
     value = id.toString();
 } else {
     var response = ResponseFactory.getFailureResponse(&quot;Either &lt;cda_id/&gt; or &lt;identification/&gt; must be defined&quot;);
@@ -169,22 +184,31 @@ if (typeof cda_id != undefined &amp;&amp; cda_id.toString().length &gt; 0) {
     return;
 }
 
-var qs = &quot;SELECT cda_id, cda FROM CDA WHERE &quot; + column + &quot; = ?&quot;;
+var qs = &quot;SELECT cda_id, patient_clinical_id, hdss_id, last_name, first_name, source_system, cda_dob, gender, &quot;;
+    qs += &quot;date_generated, cda FROM cda WHERE &quot; + column + &quot; = ?&quot;;
 var params = java.util.ArrayList()
 params.add(value);
 result = dbConn.executeCachedQuery(qs, params);
 
 // Return zero or more matching CDAs in an xml doc.
 var doc = &lt;query_response/&gt;;
+
 while(result.next()) {
     var record = &lt;record/&gt;;
 	record.cda_id = result.getInt(1);
-    record.cda = FileUtil.encode(result.getString(2).getBytes());
+	if (result.getString(2)) record.patient_clinical_id = result.getString(2);
+	if (result.getString(3)) record.hdss_id = result.getString(3)
+    if (result.getString(4)) record.last_name = result.getString(4);
+	if (result.getString(5)) record.first_name = result.getString(5);
+    if (result.getString(6)) record.source_system = result.getString(6);
+	if (result.getString(7)) record.cda_dob = result.getString(7);
+    if (result.getString(8)) record.gender = result.getString(8);
+    if (result.getString(9)) record.date_generated = result.getString(9);
+    record.cda = FileUtil.encode(result.getString(10).getBytes());
     doc.appendChild(record);
 }
-// This *should* provide the XML declaration, but it doesn&apos;t: doc = new XML(doc);
-// Add it by hand:
-doc = &apos;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot; ?&gt;&apos; + doc.toString()
+
+doc = &apos;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot; ?&gt;&apos; + doc.toXMLString()
 dbConn.close();
 
 // This stores an HTTP 200 (success) with the body &apos;cda&apos; as 
@@ -192,15 +216,14 @@ dbConn.close();
 // should be selected as the &quot;Respond From&quot; variable on the source
 // tab.
 var response = ResponseFactory.getSuccessResponse(doc);
-responseMap.put(&quot;httpResponse&quot;, response);
-
-
-</property>
+responseMap.put(&quot;httpResponse&quot;, response);</property>
         <property name="useScript">1</property>
         <property name="username">oecuser</property>
       </properties>
       <transformer>
         <steps/>
+        <inboundTemplate encoding="base64"></inboundTemplate>
+        <outboundTemplate encoding="base64"></outboundTemplate>
         <inboundProtocol>XML</inboundProtocol>
         <outboundProtocol>XML</outboundProtocol>
         <inboundProperties>

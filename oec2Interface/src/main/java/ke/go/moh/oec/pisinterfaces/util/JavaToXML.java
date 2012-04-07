@@ -7,13 +7,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import ke.go.moh.oec.pisinterfaces.beans.PatientIdentification;
 
 public class JavaToXML {
-	public static String objectToXml(PatientIdentification patientIdentification) {
+	public static String objectToXml(PatientIdentification patientIdentification)
+                throws SiteException {
 		try {
 			JAXBContext context = JAXBContext
 					.newInstance(PatientIdentification.class);
@@ -24,13 +27,12 @@ public class JavaToXML {
 			m.marshal(patientIdentification, sw);
 			return sw.toString();
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new SiteException("Unable to package XML for CDA query", e);
 		}
-		return null;
-
 	}
 
-	public static InputStream getPropertiesFile(String fileName) {
+	public static InputStream getPropertiesFile(String fileName) throws SiteException {
+                String propertiesPath = null;
 		try {
 			int check = 0;
 			while (check == 0) {
@@ -41,26 +43,27 @@ public class JavaToXML {
 						.append(System.getProperty("file.separator"))
 						.append("OecConfig")
 						.append(System.getProperty("file.separator"));
-				String propertiesPath = path.toString() + fileName;
+				propertiesPath = path.toString() + fileName;
 				File f = new File(propertiesPath);
 				if (!f.exists()) {
 					check = 0;
-					System.out
-							.println("File not found, default file created, check "
-									+ f.getPath()
-									+ " to edit according to your configurations");
+                                        Logger.getLogger(JavaToXML.class.getName()).log(Level.WARNING,
+                                                "Cofig file not found, default file created, check "
+						+ f.getPath()
+						+ " to edit according to your configurations");
+
 					pro.setProperty("urlMirth", "http://localhost:8090");
 					pro.store(new FileOutputStream(propertiesPath), null);
 
 				} else {
 
-					System.out.println(f.getAbsolutePath());
 					return new FileInputStream(f);
 
 				}
 			}
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			throw new SiteException("Unable to load properties file: " +
+                                propertiesPath, e);
 		}
 		return null;
 
