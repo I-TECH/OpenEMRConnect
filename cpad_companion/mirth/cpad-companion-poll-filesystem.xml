@@ -5,10 +5,10 @@
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1333099180718</time>
+    <time>1334038104434</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>558</revision>
+  <revision>1</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -20,9 +20,9 @@
       <property name="checkFileAge">1</property>
       <property name="fileAge">5000</property>
       <property name="fileFilter">*</property>
-      <property name="host">/opt/mirthconnect/appdata/cpad-incoming</property>
-      <property name="moveToDirectory">/opt/mirthconnect/appdata/cpad-processed</property>
-      <property name="moveToErrorDirectory">/opt/mirthconnect/appdata/cpad-error</property>
+      <property name="host">/opt/mirth/current/appdata/cpad-incoming</property>
+      <property name="moveToDirectory">/opt/mirth/current/appdata/cpad-processed</property>
+      <property name="moveToErrorDirectory">/opt/mirth/current/appdata/cpad-error</property>
       <property name="moveToPattern">${ORIGINALNAME}_${date.get(&apos;yyyyMdHms&apos;)}</property>
       <property name="passive">1</property>
       <property name="password">anonymous</property>
@@ -6839,12 +6839,12 @@ cG9uZW50Pgo8L0NsaW5pY2FsRG9jdW1lbnQ+</outboundTemplate>
       <name>Insert or update CDA in CDS</name>
       <properties>
         <property name="DataType">Database Writer</property>
-        <property name="URL">jdbc:mysql://localhost:3306/cds</property>
+        <property name="URL">jdbc:mysql://host:port/dbname</property>
         <property name="driver">com.mysql.jdbc.Driver</property>
         <property name="host">query</property>
-        <property name="password">letmein123!</property>
+        <property name="password"></property>
         <property name="query"></property>
-        <property name="script">var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,&apos;jdbc:mysql://localhost:3306/cds&apos;,&apos;test_user&apos;,&apos;letmein123!&apos;);
+        <property name="script">var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,&apos;jdbc:mysql://localhost:3306/cds&apos;,&apos;oecuser&apos;,&apos;yourPassword&apos;);
 
 var params = new java.util.ArrayList();
 params.add($(&apos;pid&apos;));
@@ -6928,7 +6928,7 @@ if (found) {
 
 dbConn.close();</property>
         <property name="useScript">1</property>
-        <property name="username">test_user</property>
+        <property name="username"></property>
       </properties>
       <transformer>
         <steps>

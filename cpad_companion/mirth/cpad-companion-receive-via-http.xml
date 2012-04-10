@@ -5,10 +5,10 @@
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1332983375852</time>
+    <time>1334038321796</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>16</revision>
+  <revision>1</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -49,7 +49,7 @@
         <property name="FTPAnonymous">1</property>
         <property name="binary">0</property>
         <property name="charsetEncoding">DEFAULT_ENCODING</property>
-        <property name="host">/opt/mirthconnect/appdata/cpad-incoming</property>
+        <property name="host">/opt/mirth/current/appdata/cpad-incoming</property>
         <property name="outputAppend">0</property>
         <property name="outputPattern">CPAD_export_${date.get(&apos;yyyyMMddHHmmss&apos;)}.csv</property>
         <property name="passive">1</property>

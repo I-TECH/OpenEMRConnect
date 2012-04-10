@@ -1,0 +1,405 @@
+<channel>
+  <id>c50e8c7d-cbe6-4af1-8ee0-c72aa521f83d</id>
+  <name>CDS to Master CDS push</name>
+  <description>Poll the local CDS and push (via HTTP POST) any unprocessed cda records to the Master CDS.
+
+for each cda_id found in the cda_to_process table:
+  pull in the cda record 
+  query the LPI for the HDSS id, using the patient_clinical_id; 
+  if the patient doesn&apos;t have an HDSS id set in the LPI:
+    they don&apos;t qualify for transmission.
+    mark the record as processed and move on
+  else:
+    build an XML doc from the cda table and POST to the channel listening on the Master CDS system
+    transmit to HOST / PORT set in destination &quot;Transmit CDA&quot;
+    mark the record as processed and move on
+
+To configure the cds database name, host, port, user &amp; password, alter the settings for both the source database reader and the &apos;Mark Processed&apos; destination.
+</description>
+  <enabled>true</enabled>
+  <version>2.1.1.5490</version>
+  <lastModified>
+    <time>1334036984554</time>
+    <timezone>America/Los_Angeles</timezone>
+  </lastModified>
+  <revision>46</revision>
+  <sourceConnector>
+    <name>sourceConnector</name>
+    <properties>
+      <property name="DataType">Database Reader</property>
+      <property name="URL">jdbc:mysql://localhost:3306/cds</property>
+      <property name="ack"></property>
+      <property name="ackScript"></property>
+      <property name="driver">com.mysql.jdbc.Driver</property>
+      <property name="host">query</property>
+      <property name="password">yourPassword</property>
+      <property name="pollingFrequency">5000</property>
+      <property name="pollingType">interval</property>
+      <property name="processResultsInOrder">1</property>
+      <property name="query">SELECT cda.cda_id AS cda_cda_id, cda.patient_clinical_id AS cda_patient_clinical_id,
+ cda.facility_code AS cda_facility_code, cda.facility_name AS cda_facility_name,
+ cda.cda AS cda_cda, cda.first_name AS cda_first_name, cda.last_name AS cda_last_name,
+ cda.cda_dob AS cda_cda_dob, cda.moh_dob AS cda_moh_dob, cda.gender AS cda_gender, 
+ cda.source_type AS cda_source_type, cda.source_system AS cda_source_system, 
+ cda.date_generated AS cda_date_generated 
+FROM cda JOIN cda_to_process ON cda.cda_id = cda_to_process.cda_id;
+
+</property>
+      <property name="script"></property>
+      <property name="useAck">0</property>
+      <property name="useScript">0</property>
+      <property name="username">oecuser</property>
+    </properties>
+    <transformer>
+      <steps>
+        <step>
+          <sequenceNumber>0</sequenceNumber>
+          <name>cda_id</name>
+          <script>var mapping;try { mapping = msg[&apos;cda_cda_id&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;cda_id&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+          <type>Mapper</type>
+          <data class="map">
+            <entry>
+              <string>Variable</string>
+              <string>cda_id</string>
+            </entry>
+            <entry>
+              <string>DefaultValue</string>
+              <string></string>
+            </entry>
+            <entry>
+              <string>Mapping</string>
+              <string>msg[&apos;cda_cda_id&apos;].toString()</string>
+            </entry>
+            <entry>
+              <string>RegularExpressions</string>
+              <list/>
+            </entry>
+            <entry>
+              <string>isGlobal</string>
+              <string>channel</string>
+            </entry>
+          </data>
+        </step>
+        <step>
+          <sequenceNumber>1</sequenceNumber>
+          <name>hdss_id</name>
+          <script>// The LPI database name, host, port, user &amp; password must be correctly configured
+// in the following connection line:
+var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,
+                                                                &apos;jdbc:mysql://localhost/lpi&apos;,
+                                                                &apos;oecuser&apos;,
+                                                                &apos;yourPassword&apos;);
+
+var qs = &quot;select id1.identifier &quot; +
+         &quot;from person_identifier id1 &quot; +
+         &quot;join person_identifier id2 using (person_id) &quot; +
+         &quot;where id1.identifier_type_id = 1 &quot; +
+         &quot;and id2.identifier = ? &quot; +
+         &quot;and id2.identifier_type_id = 4;&quot;
+
+//var qs = &quot;select identifier from person_identifier where identifier_type_id = 1 &quot; +
+// &quot;and person_id = (select person_id from person_identifier where identifier = ? &quot; +
+// &quot;and identifier_type_id = 4);&quot;
+var params = java.util.ArrayList()
+params.add(msg[&apos;cda_patient_clinical_id&apos;].toString());
+result = dbConn.executeCachedQuery(qs, params);
+
+// If we found at least one, store the hdss in the channelMap, otherwise set
+// to zero for logic check in destination filters.
+
+var hdss_id = 0;
+while(result.next()) {
+    if (hdss_id != 0 &amp;&amp; hdss_id != result.getString(1)) {
+        logger.error(&quot;Patient associated with multiple HDSS ids {&apos;&quot; + hdss_id + &quot;&apos;, &apos;&quot; + result.getString(1) + &quot;&apos;&quot;)
+    }
+    hdss_id = result.getString(1);
+}
+dbConn.close();
+channelMap.put(&quot;hdss_id&quot;, hdss_id);</script>
+          <type>JavaScript</type>
+          <data class="map">
+            <entry>
+              <string>Script</string>
+              <string>// The LPI database name, host, port, user &amp; password must be correctly configured
+// in the following connection line:
+var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,
+                                                                &apos;jdbc:mysql://localhost/lpi&apos;,
+                                                                &apos;oecuser&apos;,
+                                                                &apos;yourPassword&apos;);
+
+var qs = &quot;select id1.identifier &quot; +
+         &quot;from person_identifier id1 &quot; +
+         &quot;join person_identifier id2 using (person_id) &quot; +
+         &quot;where id1.identifier_type_id = 1 &quot; +
+         &quot;and id2.identifier = ? &quot; +
+         &quot;and id2.identifier_type_id = 4;&quot;
+
+//var qs = &quot;select identifier from person_identifier where identifier_type_id = 1 &quot; +
+// &quot;and person_id = (select person_id from person_identifier where identifier = ? &quot; +
+// &quot;and identifier_type_id = 4);&quot;
+var params = java.util.ArrayList()
+params.add(msg[&apos;cda_patient_clinical_id&apos;].toString());
+result = dbConn.executeCachedQuery(qs, params);
+
+// If we found at least one, store the hdss in the channelMap, otherwise set
+// to zero for logic check in destination filters.
+
+var hdss_id = 0;
+while(result.next()) {
+    if (hdss_id != 0 &amp;&amp; hdss_id != result.getString(1)) {
+        logger.error(&quot;Patient associated with multiple HDSS ids {&apos;&quot; + hdss_id + &quot;&apos;, &apos;&quot; + result.getString(1) + &quot;&apos;&quot;)
+    }
+    hdss_id = result.getString(1);
+}
+dbConn.close();
+channelMap.put(&quot;hdss_id&quot;, hdss_id);</string>
+            </entry>
+          </data>
+        </step>
+      </steps>
+      <inboundTemplate encoding="base64">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+Cjxy
+ZXN1bHQ+CiAgICA8Y2RhX2NkYV9pZD52YWx1ZTwvY2RhX2NkYV9pZD4KICAgIDxjZGFfcGF0aWVu
+dF9jbGluaWNhbF9pZD52YWx1ZTwvY2RhX3BhdGllbnRfY2xpbmljYWxfaWQ+CiAgICA8Y2RhX2Zh
+Y2lsaXR5X2NvZGU+dmFsdWU8L2NkYV9mYWNpbGl0eV9jb2RlPgogICAgPGNkYV9mYWNpbGl0eV9u
+YW1lPnZhbHVlPC9jZGFfZmFjaWxpdHlfbmFtZT4KICAgIDxjZGFfY2RhPnZhbHVlPC9jZGFfY2Rh
+PgogICAgPGNkYV9maXJzdF9uYW1lPnZhbHVlPC9jZGFfZmlyc3RfbmFtZT4KICAgIDxjZGFfbGFz
+dF9uYW1lPnZhbHVlPC9jZGFfbGFzdF9uYW1lPgogICAgPGNkYV9jZGFfZG9iPnZhbHVlPC9jZGFf
+Y2RhX2RvYj4KICAgIDxjZGFfbW9oX2RvYj52YWx1ZTwvY2RhX21vaF9kb2I+CiAgICA8Y2RhX2dl
+bmRlcj52YWx1ZTwvY2RhX2dlbmRlcj4KICAgIDxjZGFfc291cmNlX3R5cGU+dmFsdWU8L2NkYV9z
+b3VyY2VfdHlwZT4KICAgIDxjZGFfc291cmNlX3N5c3RlbT52YWx1ZTwvY2RhX3NvdXJjZV9zeXN0
+ZW0+CiAgICA8Y2RhX2RhdGVfZ2VuZXJhdGVkPnZhbHVlPC9jZGFfZGF0ZV9nZW5lcmF0ZWQ+Cjwv
+cmVzdWx0Pgo=</inboundTemplate>
+      <outboundTemplate encoding="base64"></outboundTemplate>
+      <inboundProtocol>XML</inboundProtocol>
+      <outboundProtocol>XML</outboundProtocol>
+      <inboundProperties>
+        <property name="stripNamespaces">false</property>
+      </inboundProperties>
+      <outboundProperties>
+        <property name="stripNamespaces">false</property>
+      </outboundProperties>
+    </transformer>
+    <filter>
+      <rules/>
+    </filter>
+    <transportName>Database Reader</transportName>
+    <mode>SOURCE</mode>
+    <enabled>true</enabled>
+    <version>2.1.1.5490</version>
+  </sourceConnector>
+  <destinationConnectors>
+    <connector>
+      <name>Transmit CDA</name>
+      <properties>
+        <property name="DataType">HTTP Sender</property>
+        <property name="dispatcherAuthenticationType">Basic</property>
+        <property name="dispatcherCharset">UTF-8</property>
+        <property name="dispatcherContent">${document}</property>
+        <property name="dispatcherContentType">text/plain</property>
+        <property name="dispatcherHeaders">&lt;properties/&gt;</property>
+        <property name="dispatcherIncludeHeadersInResponse">1</property>
+        <property name="dispatcherMethod">post</property>
+        <property name="dispatcherMultipart">0</property>
+        <property name="dispatcherParameters">&lt;properties/&gt;</property>
+        <property name="dispatcherPassword"></property>
+        <property name="dispatcherReplyChannelId">sink</property>
+        <property name="dispatcherSocketTimeout">30000</property>
+        <property name="dispatcherUseAuthentication">0</property>
+        <property name="dispatcherUsername"></property>
+        <property name="host">http://localhost:9714</property>
+        <property name="queuePollInterval">200</property>
+        <property name="reconnectMillisecs">300000</property>
+        <property name="rotateQueue">0</property>
+        <property name="usePersistentQueues">1</property>
+      </properties>
+      <transformer>
+        <steps>
+          <step>
+            <sequenceNumber>0</sequenceNumber>
+            <name>Build Document</name>
+            <script>// Create XML document from the hdss_id and cda record
+
+var doc = &lt;record/&gt;;
+doc.patient_clinical_id = msg[&apos;cda_patient_clinical_id&apos;].toString();
+doc.hdss_id = $(&apos;hdss_id&apos;);
+doc.facility_code = msg[&apos;cda_facility_code&apos;].toString();
+doc.facility_name = msg[&apos;cda_facility_name&apos;].toString();
+doc.first_name = msg[&apos;cda_first_name&apos;].toString();
+doc.last_name = msg[&apos;cda_last_name&apos;].toString();
+doc.cda_dob = msg[&apos;cda_cda_dob&apos;].toString();
+doc.moh_dob = msg[&apos;cda_moh_dob&apos;].toString();
+doc.gender = msg[&apos;cda_gender&apos;].toString();
+doc.source_type = msg[&apos;cda_source_type&apos;].toString();
+doc.source_system = msg[&apos;cda_source_system&apos;].toString();
+doc.date_generated = msg[&apos;cda_date_generated&apos;].toString();
+
+var cda_text = Packages.java.lang.String(msg[&apos;cda_cda&apos;].toString());
+var encrypted_cda = FileUtil.encode(cda_text.getBytes());
+doc.cda = encrypted_cda;
+
+doc = &apos;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot; ?&gt;&apos; + doc.toString()
+channelMap.put(&apos;document&apos;, doc)</script>
+            <type>JavaScript</type>
+            <data class="map">
+              <entry>
+                <string>Script</string>
+                <string>// Create XML document from the hdss_id and cda record
+
+var doc = &lt;record/&gt;;
+doc.patient_clinical_id = msg[&apos;cda_patient_clinical_id&apos;].toString();
+doc.hdss_id = $(&apos;hdss_id&apos;);
+doc.facility_code = msg[&apos;cda_facility_code&apos;].toString();
+doc.facility_name = msg[&apos;cda_facility_name&apos;].toString();
+doc.first_name = msg[&apos;cda_first_name&apos;].toString();
+doc.last_name = msg[&apos;cda_last_name&apos;].toString();
+doc.cda_dob = msg[&apos;cda_cda_dob&apos;].toString();
+doc.moh_dob = msg[&apos;cda_moh_dob&apos;].toString();
+doc.gender = msg[&apos;cda_gender&apos;].toString();
+doc.source_type = msg[&apos;cda_source_type&apos;].toString();
+doc.source_system = msg[&apos;cda_source_system&apos;].toString();
+doc.date_generated = msg[&apos;cda_date_generated&apos;].toString();
+
+var cda_text = Packages.java.lang.String(msg[&apos;cda_cda&apos;].toString());
+var encrypted_cda = FileUtil.encode(cda_text.getBytes());
+doc.cda = encrypted_cda;
+
+doc = &apos;&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot; ?&gt;&apos; + doc.toString()
+channelMap.put(&apos;document&apos;, doc)</string>
+              </entry>
+            </data>
+          </step>
+        </steps>
+        <inboundTemplate encoding="base64">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+Cjxy
+ZXN1bHQ+CiAgICA8Y2RhX2NkYV9pZD52YWx1ZTwvY2RhX2NkYV9pZD4KICAgIDxjZGFfcGF0aWVu
+dF9jbGluaWNhbF9pZD52YWx1ZTwvY2RhX3BhdGllbnRfY2xpbmljYWxfaWQ+CiAgICA8Y2RhX2Zh
+Y2lsaXR5X2NvZGU+dmFsdWU8L2NkYV9mYWNpbGl0eV9jb2RlPgogICAgPGNkYV9mYWNpbGl0eV9u
+YW1lPnZhbHVlPC9jZGFfZmFjaWxpdHlfbmFtZT4KICAgIDxjZGFfY2RhPnZhbHVlPC9jZGFfY2Rh
+PgogICAgPGNkYV9maXJzdF9uYW1lPnZhbHVlPC9jZGFfZmlyc3RfbmFtZT4KICAgIDxjZGFfbGFz
+dF9uYW1lPnZhbHVlPC9jZGFfbGFzdF9uYW1lPgogICAgPGNkYV9jZGFfZG9iPnZhbHVlPC9jZGFf
+Y2RhX2RvYj4KICAgIDxjZGFfbW9oX2RvYj52YWx1ZTwvY2RhX21vaF9kb2I+CiAgICA8Y2RhX2dl
+bmRlcj52YWx1ZTwvY2RhX2dlbmRlcj4KICAgIDxjZGFfc291cmNlX3R5cGU+dmFsdWU8L2NkYV9z
+b3VyY2VfdHlwZT4KICAgIDxjZGFfc291cmNlX3N5c3RlbT52YWx1ZTwvY2RhX3NvdXJjZV9zeXN0
+ZW0+CiAgICA8Y2RhX2RhdGVfZ2VuZXJhdGVkPnZhbHVlPC9jZGFfZGF0ZV9nZW5lcmF0ZWQ+Cjwv
+cmVzdWx0Pgo=</inboundTemplate>
+        <outboundTemplate encoding="base64"></outboundTemplate>
+        <inboundProtocol>XML</inboundProtocol>
+        <outboundProtocol>XML</outboundProtocol>
+        <inboundProperties>
+          <property name="stripNamespaces">false</property>
+        </inboundProperties>
+        <outboundProperties>
+          <property name="stripNamespaces">true</property>
+        </outboundProperties>
+      </transformer>
+      <filter>
+        <rules>
+          <rule>
+            <sequenceNumber>0</sequenceNumber>
+            <name>Accept message if &quot;$(&apos;hdss_id&apos;)&quot; does not equal 0</name>
+            <data class="map">
+              <entry>
+                <string>Name</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Values</string>
+                <list>
+                  <string>0</string>
+                </list>
+              </entry>
+              <entry>
+                <string>Field</string>
+                <string>$(&apos;hdss_id&apos;)</string>
+              </entry>
+              <entry>
+                <string>OriginalField</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Equals</string>
+                <string>0</string>
+              </entry>
+            </data>
+            <type>Rule Builder</type>
+            <script>if($(&apos;hdss_id&apos;) != 0)
+{
+return true;
+}
+return false;</script>
+            <operator>NONE</operator>
+          </rule>
+        </rules>
+      </filter>
+      <transportName>HTTP Sender</transportName>
+      <mode>DESTINATION</mode>
+      <enabled>true</enabled>
+      <version>2.1.1.5490</version>
+    </connector>
+    <connector>
+      <name>Mark processed</name>
+      <properties>
+        <property name="DataType">Database Writer</property>
+        <property name="URL">jdbc:mysql://localhost:3306/cds</property>
+        <property name="driver">com.mysql.jdbc.Driver</property>
+        <property name="host">query</property>
+        <property name="password">yourPassword</property>
+        <property name="query">DELETE FROM cda_to_process WHERE cda_id = ${cda_id};</property>
+        <property name="script"></property>
+        <property name="useScript">0</property>
+        <property name="username">oecuser</property>
+      </properties>
+      <transformer>
+        <steps/>
+        <inboundTemplate encoding="base64">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+Cjxy
+ZXN1bHQ+CiAgICA8Y2RhX2NkYV9pZD52YWx1ZTwvY2RhX2NkYV9pZD4KICAgIDxjZGFfcGF0aWVu
+dF9jbGluaWNhbF9pZD52YWx1ZTwvY2RhX3BhdGllbnRfY2xpbmljYWxfaWQ+CiAgICA8Y2RhX2Zh
+Y2lsaXR5X2NvZGU+dmFsdWU8L2NkYV9mYWNpbGl0eV9jb2RlPgogICAgPGNkYV9mYWNpbGl0eV9u
+YW1lPnZhbHVlPC9jZGFfZmFjaWxpdHlfbmFtZT4KICAgIDxjZGFfY2RhPnZhbHVlPC9jZGFfY2Rh
+PgogICAgPGNkYV9maXJzdF9uYW1lPnZhbHVlPC9jZGFfZmlyc3RfbmFtZT4KICAgIDxjZGFfbGFz
+dF9uYW1lPnZhbHVlPC9jZGFfbGFzdF9uYW1lPgogICAgPGNkYV9jZGFfZG9iPnZhbHVlPC9jZGFf
+Y2RhX2RvYj4KICAgIDxjZGFfbW9oX2RvYj52YWx1ZTwvY2RhX21vaF9kb2I+CiAgICA8Y2RhX2dl
+bmRlcj52YWx1ZTwvY2RhX2dlbmRlcj4KICAgIDxjZGFfc291cmNlX3R5cGU+dmFsdWU8L2NkYV9z
+b3VyY2VfdHlwZT4KICAgIDxjZGFfc291cmNlX3N5c3RlbT52YWx1ZTwvY2RhX3NvdXJjZV9zeXN0
+ZW0+CiAgICA8Y2RhX2RhdGVfZ2VuZXJhdGVkPnZhbHVlPC9jZGFfZGF0ZV9nZW5lcmF0ZWQ+Cjwv
+cmVzdWx0Pgo=</inboundTemplate>
+        <outboundTemplate encoding="base64"></outboundTemplate>
+        <inboundProtocol>XML</inboundProtocol>
+        <outboundProtocol>XML</outboundProtocol>
+        <inboundProperties>
+          <property name="stripNamespaces">false</property>
+        </inboundProperties>
+        <outboundProperties>
+          <property name="stripNamespaces">false</property>
+        </outboundProperties>
+      </transformer>
+      <filter>
+        <rules/>
+      </filter>
+      <transportName>Database Writer</transportName>
+      <mode>DESTINATION</mode>
+      <enabled>true</enabled>
+      <version>2.1.1.5490</version>
+    </connector>
+  </destinationConnectors>
+  <properties>
+    <property name="clearGlobalChannelMap">true</property>
+    <property name="dont_store_filtered">false</property>
+    <property name="encryptData">false</property>
+    <property name="error_messages_only">false</property>
+    <property name="initialState">started</property>
+    <property name="max_message_age">2</property>
+    <property name="store_messages">true</property>
+    <property name="synchronous">true</property>
+    <property name="transactional">false</property>
+  </properties>
+  <preprocessingScript>// Modify the message variable below to pre process data
+return message;</preprocessingScript>
+  <postprocessingScript>// This script executes once after a message has been processed
+return;</postprocessingScript>
+  <deployScript>// This script executes once when the channel is deployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</deployScript>
+  <shutdownScript>// This script executes once when the channel is undeployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</shutdownScript>
+</channel>

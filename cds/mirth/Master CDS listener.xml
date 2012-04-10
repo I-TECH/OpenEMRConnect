@@ -1,0 +1,586 @@
+<channel>
+  <id>5aedf542-0800-4d2d-aef5-d0f9b87c4bab</id>
+  <name>Master CDS listener</name>
+  <description>Listens for HTTP POST requests containing XML as the message body, defining the CDA to insert or update in the Master CDS database.
+
+Expected XML format:
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot; ?&gt;
+&lt;record&gt;
+    &lt;patient_clinical_id&gt;pc_id&lt;/patient_clinical_id&gt;
+    &lt;hdss_id&gt;an_hdss_id&lt;/hdss_id&gt;
+    &lt;facility_code&gt;fac_code&lt;/facility_code&gt;
+    &lt;facility_name&gt;fac_name&lt;/facility_name&gt;
+    &lt;first_name&gt;John&lt;/first_name&gt;
+    &lt;last_name&gt;Doe&lt;/last_name&gt;
+    &lt;cda_dob&gt;19560228&lt;/cda_dob&gt;
+    &lt;moh_dob&gt;1956-02-28&lt;/moh_dob&gt;
+    &lt;gender&gt;M&lt;/gender&gt;
+    &lt;source_type&gt;EMR&lt;/source_type&gt;
+    &lt;source_system&gt;OldMRS&lt;/source_system&gt;
+    &lt;date_generated&gt;2012-03-31 01:37:51.0&lt;/date_generated&gt;
+    &lt;cda&gt;[base64encodedCDA]&lt;/cda&gt;
+&lt;/record&gt;</description>
+  <enabled>true</enabled>
+  <version>2.1.1.5490</version>
+  <lastModified>
+    <time>1334036281475</time>
+    <timezone>America/Los_Angeles</timezone>
+  </lastModified>
+  <revision>30</revision>
+  <sourceConnector>
+    <name>sourceConnector</name>
+    <properties>
+      <property name="DataType">HTTP Listener</property>
+      <property name="host">0.0.0.0</property>
+      <property name="port">9714</property>
+      <property name="receiverBodyOnly">1</property>
+      <property name="receiverCharset">UTF-8</property>
+      <property name="receiverResponse">None</property>
+      <property name="receiverResponseContentType">text/plain</property>
+    </properties>
+    <transformer>
+      <steps/>
+      <inboundTemplate encoding="base64"></inboundTemplate>
+      <outboundTemplate encoding="base64"></outboundTemplate>
+      <inboundProtocol>XML</inboundProtocol>
+      <outboundProtocol>XML</outboundProtocol>
+      <inboundProperties>
+        <property name="stripNamespaces">false</property>
+      </inboundProperties>
+      <outboundProperties>
+        <property name="stripNamespaces">false</property>
+      </outboundProperties>
+    </transformer>
+    <filter>
+      <rules/>
+    </filter>
+    <transportName>HTTP Listener</transportName>
+    <mode>SOURCE</mode>
+    <enabled>true</enabled>
+    <version>2.1.1.5490</version>
+  </sourceConnector>
+  <destinationConnectors>
+    <connector>
+      <name>Write to disk</name>
+      <properties>
+        <property name="DataType">File Writer</property>
+        <property name="FTPAnonymous">1</property>
+        <property name="binary">0</property>
+        <property name="charsetEncoding">DEFAULT_ENCODING</property>
+        <property name="host">/tmp</property>
+        <property name="outputAppend">0</property>
+        <property name="outputPattern">${message.id}</property>
+        <property name="passive">1</property>
+        <property name="password">anonymous</property>
+        <property name="scheme">file</property>
+        <property name="secure">1</property>
+        <property name="template">${message.transformedData}</property>
+        <property name="timeout">10000</property>
+        <property name="username">anonymous</property>
+        <property name="validateConnections">1</property>
+      </properties>
+      <transformer>
+        <steps/>
+        <inboundProtocol>XML</inboundProtocol>
+        <outboundProtocol>XML</outboundProtocol>
+        <inboundProperties>
+          <property name="stripNamespaces">true</property>
+        </inboundProperties>
+        <outboundProperties>
+          <property name="stripNamespaces">true</property>
+        </outboundProperties>
+      </transformer>
+      <filter>
+        <rules/>
+      </filter>
+      <transportName>File Writer</transportName>
+      <mode>DESTINATION</mode>
+      <enabled>false</enabled>
+      <version>2.1.1.5490</version>
+    </connector>
+    <connector>
+      <name>Persist CDA</name>
+      <properties>
+        <property name="DataType">Database Writer</property>
+        <property name="URL">jdbc:mysql://host:port/dbname</property>
+        <property name="driver">com.mysql.jdbc.Driver</property>
+        <property name="host">query</property>
+        <property name="password"></property>
+        <property name="query"></property>
+        <property name="script">// The MCDS database name, host, port, user &amp; password must be correctly configured
+// in the following connection line:
+var dbConn = DatabaseConnectionFactory.createDatabaseConnection(&apos;com.mysql.jdbc.Driver&apos;,
+                                                                &apos;jdbc:mysql://localhost/mcds&apos;,
+                                                                &apos;oecuser&apos;,
+                                                                &apos;yourPassword&apos;);
+
+var insertStatement = &quot;INSERT INTO cda (patient_clinical_id, hdss_id, facility_code, &quot; +
+  &quot;facility_name, first_name, last_name, cda_dob, moh_dob, gender, source_type, &quot; +
+  &quot;source_system, date_generated, date_stored, cda) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)&quot;;
+
+var updateStatement = &quot;UPDATE cda SET patient_clinical_id=?, hdss_id=?, facility_code=?, &quot; +
+  &quot;facility_name=?, first_name=?, last_name=?, cda_dob=?, moh_dob=?, gender=?, source_type=?, &quot; +
+  &quot;source_system=?, date_generated=?, date_stored=?, cda=? WHERE patient_clinical_id=? AND &quot;+
+  &quot;hdss_id=? AND facility_code=? AND source_system=?&quot;;
+
+var params = java.util.ArrayList()
+params.add($(&apos;patient_clinical_id&apos;));
+params.add($(&apos;hdss_id&apos;));
+params.add($(&apos;facility_code&apos;));
+params.add($(&apos;facility_name&apos;));
+params.add($(&apos;first_name&apos;));
+params.add($(&apos;last_name&apos;));
+params.add($(&apos;cda_dob&apos;));
+params.add($(&apos;moh_dob&apos;));
+params.add($(&apos;gender&apos;));
+params.add($(&apos;source_type&apos;));
+params.add($(&apos;source_system&apos;));
+params.add($(&apos;date_generated&apos;));
+params.add(DateUtil.getCurrentDate(&apos;yyyy-MM-dd HH:mm:ss&apos;));
+
+// Due to the inablity to safely nest XML, the CDA comes in base64 encoded.
+var decoded = FileUtil.decode($(&apos;b64encodedCDA&apos;));
+params.add(Packages.java.lang.String(decoded));
+
+
+try {
+  // First attempt an insert, in case of a &quot;new&quot; CDA
+  dbConn.executeUpdate(insertStatement, params);
+} catch (e) {
+
+  // Integrity error implies we need to update an existing CDA
+
+  // Add in the WHERE clause parameters, which naturally
+  // define the unique constraint.
+  params.add($(&apos;patient_clinical_id&apos;));
+  params.add($(&apos;hdss_id&apos;));
+  params.add($(&apos;facility_code&apos;));
+  params.add($(&apos;source_system&apos;));
+
+  dbConn.executeUpdate(updateStatement, params);
+}
+
+dbConn.close();</property>
+        <property name="useScript">1</property>
+        <property name="username"></property>
+      </properties>
+      <transformer>
+        <steps>
+          <step>
+            <sequenceNumber>0</sequenceNumber>
+            <name>patient_clinical_id</name>
+            <script>var mapping;try { mapping = msg[&apos;patient_clinical_id&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;patient_clinical_id&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>patient_clinical_id</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;patient_clinical_id&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>1</sequenceNumber>
+            <name>hdss_id</name>
+            <script>var mapping;try { mapping = msg[&apos;hdss_id&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;hdss_id&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>hdss_id</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;hdss_id&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>2</sequenceNumber>
+            <name>facility_code</name>
+            <script>var mapping;try { mapping = msg[&apos;facility_code&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;facility_code&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>facility_code</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;facility_code&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>3</sequenceNumber>
+            <name>facility_name</name>
+            <script>var mapping;try { mapping = msg[&apos;facility_name&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;facility_name&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>facility_name</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;facility_name&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>4</sequenceNumber>
+            <name>first_name</name>
+            <script>var mapping;try { mapping = msg[&apos;first_name&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;first_name&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>first_name</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;first_name&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>5</sequenceNumber>
+            <name>last_name</name>
+            <script>var mapping;try { mapping = msg[&apos;last_name&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;last_name&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>last_name</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;last_name&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>6</sequenceNumber>
+            <name>cda_dob</name>
+            <script>var mapping;try { mapping = msg[&apos;cda_dob&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;cda_dob&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>cda_dob</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;cda_dob&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>7</sequenceNumber>
+            <name>moh_dob</name>
+            <script>var mapping;try { mapping = msg[&apos;moh_dob&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;moh_dob&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>moh_dob</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;moh_dob&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>8</sequenceNumber>
+            <name>gender</name>
+            <script>var mapping;try { mapping = msg[&apos;gender&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;gender&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>gender</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;gender&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>9</sequenceNumber>
+            <name>source_type</name>
+            <script>var mapping;try { mapping = msg[&apos;source_type&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;source_type&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>source_type</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;source_type&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>10</sequenceNumber>
+            <name>source_system</name>
+            <script>var mapping;try { mapping = msg[&apos;source_system&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;source_system&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>source_system</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;source_system&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>11</sequenceNumber>
+            <name>date_generated</name>
+            <script>var mapping;try { mapping = msg[&apos;date_generated&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;date_generated&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>date_generated</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;date_generated&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+          <step>
+            <sequenceNumber>12</sequenceNumber>
+            <name>b64encodedCDA</name>
+            <script>var mapping;try { mapping = msg[&apos;cda&apos;].toString(); }catch (e) { logger.error(e);  mapping = &apos;&apos;;}channelMap.put(&apos;b64encodedCDA&apos;, validate( mapping , &apos;&apos;, new Array()));</script>
+            <type>Mapper</type>
+            <data class="map">
+              <entry>
+                <string>Variable</string>
+                <string>b64encodedCDA</string>
+              </entry>
+              <entry>
+                <string>DefaultValue</string>
+                <string></string>
+              </entry>
+              <entry>
+                <string>Mapping</string>
+                <string>msg[&apos;cda&apos;].toString()</string>
+              </entry>
+              <entry>
+                <string>RegularExpressions</string>
+                <list/>
+              </entry>
+              <entry>
+                <string>isGlobal</string>
+                <string>channel</string>
+              </entry>
+            </data>
+          </step>
+        </steps>
+        <inboundTemplate encoding="base64">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyIgPz4K
+PHJlY29yZD4KICAgIDxwYXRpZW50X2NsaW5pY2FsX2lkPnBjX2lkPC9wYXRpZW50X2NsaW5pY2Fs
+X2lkPgogICAgPGhkc3NfaWQ+YW5faGRzc19pZDwvaGRzc19pZD4KICAgIDxmYWNpbGl0eV9jb2Rl
+PmZhY19jb2RlPC9mYWNpbGl0eV9jb2RlPgogICAgPGZhY2lsaXR5X25hbWU+ZmFjX25hbWU8L2Zh
+Y2lsaXR5X25hbWU+CiAgICA8Zmlyc3RfbmFtZT5Kb2huPC9maXJzdF9uYW1lPgogICAgPGxhc3Rf
+bmFtZT5Eb2U8L2xhc3RfbmFtZT4KICAgIDxjZGFfZG9iPjE5NTYwMjI4PC9jZGFfZG9iPgogICAg
+PG1vaF9kb2I+MTk1Ni0wMi0yODwvbW9oX2RvYj4KICAgIDxnZW5kZXI+TTwvZ2VuZGVyPgogICAg
+PHNvdXJjZV90eXBlPkVNUjwvc291cmNlX3R5cGU+CiAgICA8c291cmNlX3N5c3RlbT5PbGRNUlM8
+L3NvdXJjZV9zeXN0ZW0+CiAgICA8ZGF0ZV9nZW5lcmF0ZWQ+MjAxMi0wMy0zMSAwMTozNzo1MS4w
+PC9kYXRlX2dlbmVyYXRlZD4KICAgIDxjZGE+W2Jhc2U2NGVuY29kZWRDREFdPC9jZGE+CjwvcmVj
+b3JkPg==</inboundTemplate>
+        <outboundTemplate encoding="base64"></outboundTemplate>
+        <inboundProtocol>XML</inboundProtocol>
+        <outboundProtocol>XML</outboundProtocol>
+        <inboundProperties>
+          <property name="stripNamespaces">false</property>
+        </inboundProperties>
+        <outboundProperties>
+          <property name="stripNamespaces">false</property>
+        </outboundProperties>
+      </transformer>
+      <filter>
+        <rules/>
+      </filter>
+      <transportName>Database Writer</transportName>
+      <mode>DESTINATION</mode>
+      <enabled>true</enabled>
+      <version>2.1.1.5490</version>
+    </connector>
+  </destinationConnectors>
+  <properties>
+    <property name="clearGlobalChannelMap">true</property>
+    <property name="dont_store_filtered">false</property>
+    <property name="encryptData">false</property>
+    <property name="error_messages_only">false</property>
+    <property name="initialState">started</property>
+    <property name="max_message_age">2</property>
+    <property name="store_messages">true</property>
+    <property name="synchronous">true</property>
+    <property name="transactional">false</property>
+  </properties>
+  <preprocessingScript>// Modify the message variable below to pre process data
+return message;</preprocessingScript>
+  <postprocessingScript>// This script executes once after a message has been processed
+return;</postprocessingScript>
+  <deployScript>// This script executes once when the channel is deployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</deployScript>
+  <shutdownScript>// This script executes once when the channel is undeployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</shutdownScript>
+</channel>
