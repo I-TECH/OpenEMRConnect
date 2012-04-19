@@ -32,6 +32,7 @@ import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import ke.go.moh.oec.IService;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -321,11 +322,30 @@ public class Mediator implements IService {
     public static Properties getProperties() {
         if (properties == null) {
             properties = new Properties();
-            String propFileName = runtimeDirectory + "openemrconnect.properties";
+            // First attempt to load from the filesystem, which will only work
+            // in a dev environment (i.e. from within the IDE), and for many, 
+            // only for runtime2 or better.
+            // On deployments, the properties file should live in the jar, and 
+            // thus require loading as a resource.
+
+            String propFileName = "/openemrconnect.properties";
             try {
-                FileInputStream fis = new FileInputStream(propFileName);
-                properties.load(fis);
-                fis.close();
+                String propPathName = runtimeDirectory + propFileName;
+                Logger.getLogger(Mediator.class.getName()).log(Level.INFO,
+                        "Attempt property load from file ''{0}''",
+                        propPathName);
+                try {
+                    FileInputStream fis = new FileInputStream(propPathName);
+                    properties.load(fis);
+                    fis.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(Mediator.class.getName()).log(Level.INFO,
+                            "Attempt property load as resource ''{0}''",
+                            propFileName);
+                    InputStream in = (Mediator.class.getResourceAsStream(propFileName));
+                    properties.load(in);
+                    in.close();
+                }
             } catch (Exception ex) {
                 Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                         "getProperty() Can''t open ''{0}'' -- Please create the properties file if it doesn''t exist and then restart the app",
