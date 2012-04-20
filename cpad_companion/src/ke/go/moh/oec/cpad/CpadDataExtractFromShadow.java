@@ -51,7 +51,7 @@ public class CpadDataExtractFromShadow extends DatabaseConnector {
 
 		try {
 			OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(OUTPUT_FILENAME), "UTF-8");
-			connectToSource();
+			connectToShadow();
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("select count(c.data) as total " +
 				"from `table` t, `column` l, `cell` c " +
