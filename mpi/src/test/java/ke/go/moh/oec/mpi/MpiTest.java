@@ -38,11 +38,7 @@ import ke.go.moh.oec.PersonResponse;
 import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonRequest;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import static org.junit.Assert.*;
 
 /**
@@ -230,6 +226,7 @@ public class MpiTest {
     /**
      * Test of getData method, of class Mpi.
      */
+    @Ignore
     @Test
     public void testFindPerson() {
         MpiTest.logger.fine("testFindPerson");
@@ -349,6 +346,7 @@ public class MpiTest {
     /**
      * Test of getData method, request type CREATE_PERSON_MPI
      */
+    @Ignore
     @Test
     public void testModifyPerson() {
         MpiTest.logger.fine("testModifyPerson");
