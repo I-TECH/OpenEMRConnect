@@ -204,7 +204,10 @@ public class Mediator implements IService {
      */
     static void setRuntimeDirectory() {
         try {
-            runtimeDirectory = "";
+            runtimeDirectory = System.getProperty("runtimeDirectory");
+            if (runtimeDirectory == null) {
+                runtimeDirectory = "";
+            }
             for (int i = 2;; i++) { // Try current directory, then "runtime2/", "runtime3/", etc.
                 RandomAccessFile raf = new RandomAccessFile(runtimeDirectory + "lockfile.lck", "rw");
                 FileChannel fc = raf.getChannel();
@@ -218,8 +221,11 @@ public class Mediator implements IService {
             Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE,
                     "Can''t lock directory {0}. please either create the directory or run the app fewer times.",
                     runtimeDirectory);
+            Logger.getLogger(Mediator.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
             System.exit(1);
         }
+        Logger.getLogger(Mediator.class.getName()).log(Level.INFO,
+            "Using runtimeDirectory {0}", runtimeDirectory);
     }
 
     static public String getRuntimeDirectory() {
@@ -322,15 +328,25 @@ public class Mediator implements IService {
     public static Properties getProperties() {
         if (properties == null) {
             properties = new Properties();
+            
+            // If a system property defining the configuration directory is
+            // available, use it.
+            String configDirectory = System.getProperty("configDirectory");
+            if (configDirectory == null) {
+                configDirectory = runtimeDirectory;
+            }
+            
             // First attempt to load from the filesystem, which will only work
             // in a dev environment (i.e. from within the IDE), and for many, 
             // only for runtime2 or better.
+
             // On deployments, the properties file should live in the jar, and 
-            // thus require loading as a resource.
+            // thus require loading as a resource (unless the system property
+            // for "configDirectory" is supplied).
 
             String propFileName = "/openemrconnect.properties";
             try {
-                String propPathName = runtimeDirectory + propFileName;
+                String propPathName = configDirectory + propFileName;
                 Logger.getLogger(Mediator.class.getName()).log(Level.INFO,
                         "Attempt property load from file ''{0}''",
                         propPathName);
