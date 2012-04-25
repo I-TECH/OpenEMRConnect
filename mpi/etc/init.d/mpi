@@ -1,0 +1,69 @@
+#! /bin/sh
+#
+# /etc/init.d/mpi -- startup script for OpenEMRConnect Master Patient Index
+#
+### BEGIN INIT INFO
+# Provides:          mpi
+# Required-Start:    $local_fs $remote_fs $network
+# Required-Stop:     $local_fs $remote_fs $network
+# Should-Start:      $named
+# Should-Stop:       $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start MPI
+# Description:       Start the OpenEMRConnect Master Patient Index
+### END INIT INFO
+
+
+NAME=mpi
+
+CONFIGDIR="/etc/OpenEMRConnect/$NAME/"
+PIDFILE="/var/run/$NAME.pid"
+RUNTIMEDIR="/var/run/$NAME/"
+LOGDIR="/var/log/$NAME"
+LOGFILE="$LOGDIR/$NAME.log"
+UBERJAR="/opt/OpenEMRConnect/$NAME/$NAME-1.0-SNAPSHOT-jar-with-dependencies.jar"
+USER=oecuser
+DAEMON="/usr/bin/java"
+DAEMON_ARGS="-DconfigDirectory=$CONFIGDIR -DruntimeDirectory=$RUNTIMEDIR -jar $UBERJAR"
+
+if [ ! -d $RUNTIMEDIR ]; then
+    mkdir $RUNTIMEDIR;
+    chown $USER $RUNTIMEDIR;
+fi
+
+if [ ! -d $LOGDIR ]; then
+    mkdir $LOGDIR;
+    chown $USER $LOGDIR;
+fi
+
+case "$1" in
+start)
+    echo -n "Starting daemon: "$NAME
+    start-stop-daemon --start --pidfile "$PIDFILE" --chuid $USER --verbose --make-pidfile --exec "$DAEMON" -- $DAEMON_ARGS >>$LOGFILE 2>&1 &
+    echo "."
+    ;;
+
+stop)
+    echo -n "Stopping daemon: "$NAME
+    start-stop-daemon --stop --pidfile "$PIDFILE" --retry=TERM/30/KILL/5
+    echo "."
+    ;;
+
+status)
+    if kill -0 `cat $PIDFILE` > /dev/null 2>&1; then
+        echo "$NAME Running"
+        exit 0
+    else
+        echo "$NAME Not running"
+        exit 1
+    fi
+;;
+
+*)
+    echo "Usage: "$1" {start|stop|status}"
+    exit 1
+
+esac
+
+exit 0
