@@ -23,7 +23,7 @@ PIDFILE="/var/run/$NAME.pid"
 RUNTIMEDIR="/var/run/$NAME/"
 LOGDIR="/var/log/$NAME"
 LOGFILE="$LOGDIR/$NAME.log"
-UBERJAR="/opt/OpenEMRConnect/$NAME/$PACKAGE-1.0-SNAPSHOT-jar-with-dependencies.jar"
+UBERJAR="/opt/OpenEMRConnect/$PACKAGE/$PACKAGE-1.0-SNAPSHOT-jar-with-dependencies.jar"
 USER=oecuser
 DAEMON="/usr/bin/java"
 DAEMON_ARGS="-DconfigDirectory=$CONFIGDIR -DruntimeDirectory=$RUNTIMEDIR -jar $UBERJAR"
