@@ -96,7 +96,7 @@ public class TransactionMiner {
         if (!recordSource.isCumulate()) {
             query += "AND t.`id` > " + retrieveLastTransactionId() + "\n";
         }
-        query += "ORDER BY t.`created_datetime` DESC\n";
+        query += "ORDER BY t.`id` DESC\n";
         if (recordSource.getLimit() >= 0) {
             query += "LIMIT " + recordSource.getLimit();
         }
