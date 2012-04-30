@@ -26,7 +26,6 @@ package ke.go.moh.oec.adt;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +51,10 @@ public class Daemon implements Runnable {
 
     private final long snooze;
     private final long lookback;
-    private final int sample;
 
-    public Daemon(long snooze, long lookback, int sample) {
+    public Daemon(long snooze, long lookback) {
         this.snooze = snooze;
         this.lookback = lookback;
-        this.sample = sample;
     }
 
     @Override
@@ -76,23 +73,10 @@ public class Daemon implements Runnable {
                 RecordMiner recordMiner = new RecordMiner();
                 Map<RecordSource, List<Record>> recordMap = recordMiner.mine(transactionMap);
                 List<LinkedRecord> linkedRecordList = new RecordLinker(recordMiner).link(recordMap);
-                RecordFormat oneLineFormat = new OneLineRecordFormat();
-                RecordCsvWriter oneLineWriter = new RecordCsvWriter(oneLineFormat);
-                int i = 0;
-                int count = linkedRecordList.size();
-                List<Integer> samplePointList = new ArrayList<Integer>();
-                for (int j = 0; j < sample; j++) {
-                    samplePointList.add((int) Math.round((Math.random() * count)));
-                }
-                for (LinkedRecord linkedRecord : linkedRecordList) {
-                    if (sample > 0) {
-                        if (samplePointList.contains(i)) {
-                            oneLineWriter.writeToCsv(linkedRecord, "Extract No. " + i + " - " + new Date().getTime());
-                        }
-                    } else {
-                        oneLineWriter.writeToCsv(linkedRecord, "Extract No. " + i + " - " + new Date().getTime());
-                    }
-                    i++;
+                if (!linkedRecordList.isEmpty()) {
+                    RecordFormat oneLineFormat = new OneLineRecordFormat();
+                    RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
+                    csvWriter.writeToCsv(linkedRecordList, "Extract No. " + new Date().getTime());
                 }
                 transactionMiner.saveLastTransactionId();
                 Thread.sleep(snooze);
