@@ -39,7 +39,16 @@ import ke.go.moh.oec.adt.data.RecordSource;
 public class OneLineRecordFormat implements RecordFormat {
 
     @Override
-    public List<String[]> format(LinkedRecord linkedRecord) {
+    public List<String[]> format(List<LinkedRecord> linkedRecordList) {
+        List<Record> recordList = new ArrayList<Record>();
+        for (LinkedRecord linkedRecord : linkedRecordList) {
+            recordList.addAll(extractRecordList(linkedRecord));
+        }
+        List<String[]> stringArrayList = FormatHelper.convertToStringArrayList(recordList);
+        return stringArrayList;
+    }
+
+    private List<Record> extractRecordList(LinkedRecord linkedRecord) {
         List<Record> recordList = new ArrayList<Record>();
         if (linkedRecord.getRecordSource().getRelationship() == RecordSource.Relationship.NONE) {
             recordList.add(linkedRecord.getRecord());
@@ -55,7 +64,6 @@ public class OneLineRecordFormat implements RecordFormat {
             }
             recordList.add(linkedRecord.getRecord());
         }
-        List<String[]> stringArrayList = FormatHelper.convertToStringArrayList(recordList);
-        return stringArrayList;
+        return recordList;
     }
 }

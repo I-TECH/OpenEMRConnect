@@ -36,7 +36,6 @@ public class Main {
     public static void main(String[] args) {
         long snooze = Integer.parseInt(ResourceManager.getSetting("snooze"));
         long lookback = Integer.parseInt(ResourceManager.getSetting("lookback"));
-        int sample = Integer.parseInt(ResourceManager.getSetting("sample"));
-        new Thread(new Daemon(snooze, lookback, sample)).start();
+        new Thread(new Daemon(snooze, lookback)).start();
     }
 }

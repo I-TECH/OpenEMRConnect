@@ -29,6 +29,7 @@ import ke.go.moh.oec.adt.data.Record;
 import au.com.bytecode.opencsv.CSVWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import ke.go.moh.oec.adt.data.LinkedRecord;
 
 /**
@@ -47,11 +48,11 @@ public class RecordCsvWriter {
         this.format = format;
     }
 
-    public void writeToCsv(LinkedRecord linkedRecord, String fileName) throws IOException {
+    public void writeToCsv(List<LinkedRecord> linkedRecordList, String fileName) throws IOException {
         CSVWriter csvWriter = null;
         try {
             csvWriter = new CSVWriter(new FileWriter(fileName + ".csv"));
-            csvWriter.writeAll(format.format(linkedRecord));
+            csvWriter.writeAll(format.format(linkedRecordList));
         } catch (IOException ex) {
             throw ex;
         } finally {

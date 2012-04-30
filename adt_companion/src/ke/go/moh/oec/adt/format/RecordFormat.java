@@ -33,7 +33,6 @@ import ke.go.moh.oec.adt.data.LinkedRecord;
  * @author Gitahi Ng'ang'a
  */
 public interface RecordFormat {
-
-   
-    List<String[]> format(LinkedRecord linkedRecord);
+    
+    List<String[]> format(List<LinkedRecord> linkedRecordList);
 }
