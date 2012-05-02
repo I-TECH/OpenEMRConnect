@@ -1,0 +1,147 @@
+<channel>
+  <id>18fe49d8-c808-444e-839e-efa7032009f3</id>
+  <name>adt-companion-receive-via-http</name>
+  <description></description>
+  <enabled>true</enabled>
+  <version>2.1.1.5490</version>
+  <lastModified>
+    <time>1335553892800</time>
+    <timezone>America/Los_Angeles</timezone>
+  </lastModified>
+  <revision>6</revision>
+  <sourceConnector>
+    <name>sourceConnector</name>
+    <properties>
+      <property name="DataType">HTTP Listener</property>
+      <property name="host">0.0.0.0</property>
+      <property name="port">8482</property>
+      <property name="receiverBodyOnly">0</property>
+      <property name="receiverCharset">UTF-8</property>
+      <property name="receiverResponse">None</property>
+      <property name="receiverResponseContentType">text/plain</property>
+    </properties>
+    <transformer>
+      <steps/>
+      <inboundTemplate encoding="base64"></inboundTemplate>
+      <outboundTemplate encoding="base64"></outboundTemplate>
+      <inboundProtocol>XML</inboundProtocol>
+      <outboundProtocol>XML</outboundProtocol>
+      <inboundProperties>
+        <property name="stripNamespaces">false</property>
+      </inboundProperties>
+      <outboundProperties>
+        <property name="stripNamespaces">false</property>
+      </outboundProperties>
+    </transformer>
+    <filter>
+      <rules/>
+    </filter>
+    <transportName>HTTP Listener</transportName>
+    <mode>SOURCE</mode>
+    <enabled>true</enabled>
+    <version>2.1.1.5490</version>
+  </sourceConnector>
+  <destinationConnectors>
+    <connector>
+      <name>Send the CSV file to the CDA generation channel</name>
+      <properties>
+        <property name="DataType">File Writer</property>
+        <property name="FTPAnonymous">1</property>
+        <property name="binary">0</property>
+        <property name="charsetEncoding">DEFAULT_ENCODING</property>
+        <property name="host">/opt/mirthconnect/appdata/adt-incoming</property>
+        <property name="outputAppend">0</property>
+        <property name="outputPattern">ADT_export_${date.get(&apos;yyyyMMddHHmmssSSS&apos;)}.csv</property>
+        <property name="passive">1</property>
+        <property name="password">anonymous</property>
+        <property name="scheme">file</property>
+        <property name="secure">1</property>
+        <property name="template">${filedata}</property>
+        <property name="timeout">10000</property>
+        <property name="username">anonymous</property>
+        <property name="validateConnections">1</property>
+      </properties>
+      <transformer>
+        <steps>
+          <step>
+            <sequenceNumber>0</sequenceNumber>
+            <name>Store attachment</name>
+            <script>// The destination template requires direct access to the file data
+// Store what was parsed into the MIMEparts in another channelMap var
+//var parts = channelMap.get(&apos;MIMEparts&apos;)
+
+// Due to the binary nature of a PDF, the filedata comes in base64 encoding.
+// Decode before writing out.
+//var decoded = FileUtil.decode(parts.cpad_csv_export.value)
+//channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded))
+//channelMap.put(&apos;filedata&apos;, parts.cpad_csv_export.value);
+
+var decoded = FileUtil.decode(msg[&apos;Content&apos;].toString());
+channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded));</script>
+            <type>JavaScript</type>
+            <data class="map">
+              <entry>
+                <string>Script</string>
+                <string>// The destination template requires direct access to the file data
+// Store what was parsed into the MIMEparts in another channelMap var
+//var parts = channelMap.get(&apos;MIMEparts&apos;)
+
+// Due to the binary nature of a PDF, the filedata comes in base64 encoding.
+// Decode before writing out.
+//var decoded = FileUtil.decode(parts.cpad_csv_export.value)
+//channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded))
+//channelMap.put(&apos;filedata&apos;, parts.cpad_csv_export.value);
+
+var decoded = FileUtil.decode(msg[&apos;Content&apos;].toString());
+channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded));</string>
+              </entry>
+            </data>
+          </step>
+        </steps>
+        <inboundTemplate encoding="base64"></inboundTemplate>
+        <outboundTemplate encoding="base64"></outboundTemplate>
+        <inboundProtocol>XML</inboundProtocol>
+        <outboundProtocol>HL7V2</outboundProtocol>
+        <inboundProperties>
+          <property name="stripNamespaces">false</property>
+        </inboundProperties>
+        <outboundProperties>
+          <property name="convertLFtoCR">true</property>
+          <property name="handleRepetitions">false</property>
+          <property name="handleSubcomponents">false</property>
+          <property name="stripNamespaces">false</property>
+          <property name="useStrictParser">false</property>
+          <property name="useStrictValidation">false</property>
+        </outboundProperties>
+      </transformer>
+      <filter>
+        <rules/>
+      </filter>
+      <transportName>File Writer</transportName>
+      <mode>DESTINATION</mode>
+      <enabled>true</enabled>
+      <version>2.1.1.5490</version>
+    </connector>
+  </destinationConnectors>
+  <properties>
+    <property name="clearGlobalChannelMap">true</property>
+    <property name="dont_store_filtered">false</property>
+    <property name="encryptData">false</property>
+    <property name="error_messages_only">false</property>
+    <property name="initialState">started</property>
+    <property name="max_message_age">-1</property>
+    <property name="store_messages">true</property>
+    <property name="synchronous">true</property>
+    <property name="transactional">false</property>
+  </properties>
+  <preprocessingScript>// Modify the message variable below to pre process data
+return message;</preprocessingScript>
+  <postprocessingScript>// This script executes once after a message has been processed
+return;</postprocessingScript>
+  <deployScript>// This script executes once when the channel is deployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</deployScript>
+  <shutdownScript>// This script executes once when the channel is undeployed
+// You only have access to the globalMap and globalChannelMap here to persist data
+return;</shutdownScript>
+</channel>
