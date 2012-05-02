@@ -44,7 +44,19 @@ public class OneLineRecordFormat implements RecordFormat {
         for (LinkedRecord linkedRecord : linkedRecordList) {
             recordList.addAll(extractRecordList(linkedRecord));
         }
-        List<String[]> stringArrayList = FormatHelper.convertToStringArrayList(recordList);
+        int recordSize = 0;
+        Record biggestRecord = null;
+        for (Record record : recordList) {
+            int rs = record.getOrdinaryCellMap().size();
+            if (rs > recordSize) {
+                recordSize = rs;
+                biggestRecord = record;
+            }
+        }
+        recordList.remove(biggestRecord);
+        List<Record> orderedRecordList = new ArrayList<Record>(recordList);
+        orderedRecordList.add(0, biggestRecord);
+        List<String[]> stringArrayList = FormatHelper.convertToStringArrayList(orderedRecordList);
         return stringArrayList;
     }
 
