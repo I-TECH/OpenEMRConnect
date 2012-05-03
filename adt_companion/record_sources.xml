@@ -49,6 +49,8 @@
             <column>ArtID</column>
             <column>DateofVisit</column>
             <column>Drugname</column>
+            <column>Dose</column>
+            <column>duration</column>
         </columns>
     </record_source>
 </record_sources>
