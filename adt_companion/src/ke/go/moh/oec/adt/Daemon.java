@@ -78,35 +78,39 @@ public class Daemon implements Runnable {
                 Date now = new Date();
                 since = new Date(now.getTime() - lookback);
             }
+            List<RecordSource> recordSourceList = new ResourceManager().loadRecordSources();
             while (true) {
-                List<RecordSource> recordSourceList = new ResourceManager().loadRecordSources();
-                TransactionMiner transactionMiner = new TransactionMiner();
-                Map<RecordSource, Map<Integer, Transaction>> transactionMap =
-                        transactionMiner.mine(recordSourceList, since);
-                RecordMiner recordMiner = new RecordMiner();
-                Map<RecordSource, List<Record>> recordMap = recordMiner.mine(transactionMap);
-                List<LinkedRecord> linkedRecordList = new RecordLinker(recordMiner).link(recordMap);
-                if (!linkedRecordList.isEmpty()) {
-                    RecordFormat oneLineFormat = new OneLineRecordFormat();
-                    RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
-                    String filename = "ADT Extract No. " + new Date().getTime();
-                    csvWriter.writeToCsv(linkedRecordList, filename);
+                if (!recordSourceList.isEmpty()) {
+                    TransactionMiner transactionMiner = new TransactionMiner();
+                    Map<RecordSource, Map<Integer, Transaction>> transactionMap =
+                            transactionMiner.mine(recordSourceList, since);
+                    if (!transactionMap.isEmpty()) {
+                        RecordMiner recordMiner = new RecordMiner();
+                        Map<RecordSource, List<Record>> recordMap = recordMiner.mine(transactionMap);
+                        List<LinkedRecord> linkedRecordList = new RecordLinker(recordMiner).link(recordMap);
+                        if (!linkedRecordList.isEmpty()) {
+                            RecordFormat oneLineFormat = new OneLineRecordFormat();
+                            RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
+                            String filename = "ADT Extract No. " + new Date().getTime();
+                            csvWriter.writeToCsv(linkedRecordList, filename);
 
-                    // Send extracted file to remote Mirth instance if so configured
-                    if ("remote".equalsIgnoreCase(ResourceManager.getSetting("mirth.location"))) {
-                        if (!"".equals(ResourceManager.getSetting("mirth.url"))
-                                && ResourceManager.getSetting("mirth.url") != null) {
-                            if (sendMessage(ResourceManager.getSetting("mirth.url"), filename + ".csv")) {
-                                Logger.getLogger(Daemon.class.getName()).log(Level.INFO, "File sent!");
-                            } else {
-                                Logger.getLogger(Daemon.class.getName()).log(Level.INFO, "File not sent!");
+                            // Send extracted file to remote Mirth instance if so configured
+                            if ("remote".equalsIgnoreCase(ResourceManager.getSetting("mirth.location"))) {
+                                if (!"".equals(ResourceManager.getSetting("mirth.url"))
+                                        && ResourceManager.getSetting("mirth.url") != null) {
+                                    if (sendMessage(ResourceManager.getSetting("mirth.url"), filename + ".csv")) {
+                                        Logger.getLogger(Daemon.class.getName()).log(Level.INFO, "File sent!");
+                                    } else {
+                                        Logger.getLogger(Daemon.class.getName()).log(Level.INFO, "File not sent!");
+                                    }
+                                } else {
+                                    Logger.getLogger(Daemon.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
+                                }
                             }
-                        } else {
-                            Logger.getLogger(Daemon.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
                         }
+                        transactionMiner.saveLastTransactionId();
                     }
                 }
-                transactionMiner.saveLastTransactionId();
                 Thread.sleep(snooze);
             }
         } catch (InterruptedException ex) {

@@ -189,8 +189,7 @@ public class ResourceManager {
         if (recordSource.getPrimaryKeyColumnMap() == null || recordSource.getPrimaryKeyColumnMap().isEmpty()) {
             throw new BadRecordSourceException("Null 'pk columns' not allowed.");
         }
-        if (recordSource.getRelationship() == RecordSource.Relationship.ONE
-                || recordSource.getRelationship() == RecordSource.Relationship.MANY) {
+        if (recordSource.getRelationship() == RecordSource.Relationship.SLAVE) {
             if (recordSource.getForeignKeyColumnMap() == null) {
                 throw new BadRecordSourceException("Null 'fk columns' not allowed for record sources related to master.");
             }
