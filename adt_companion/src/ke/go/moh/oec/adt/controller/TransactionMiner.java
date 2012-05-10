@@ -64,7 +64,7 @@ public class TransactionMiner {
                         + "VALUES('" + ResourceManager.getSetting("name") + "', " + lastTransactionId + ", " + lastTransactionId + ")";
             } else {
                 query = "UPDATE `destination`\n"
-                        + "SET `last_received_transaction_id` = " + lastTransactionId 
+                        + "SET `last_received_transaction_id` = " + lastTransactionId
                         + ", `last_processed_transaction_id` = " + lastTransactionId + "\n"
                         + "WHERE `name` = '" + ResourceManager.getSetting("name") + "'";
             }
@@ -89,12 +89,10 @@ public class TransactionMiner {
                 + "FROM `transaction` t\n"
                 + "JOIN `table` b ON b.`id` = t.`table_id`\n"
                 + "WHERE (`type` = 'INSERT' OR `type` = 'UPDATE')\n"
-                + "AND b.`name` = '" + recordSource.getTableName() + "'\n";
+                + "AND b.`name` = '" + recordSource.getTableName() + "'\n"
+                + "AND t.`id` > " + retrieveLastTransactionId() + "\n";
         if (since != null) {
             query += "AND created_datetime > '" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(since) + "'\n";
-        }
-        if (!recordSource.isCumulate()) {
-            query += "AND t.`id` > " + retrieveLastTransactionId() + "\n";
         }
         query += "ORDER BY t.`id` DESC\n";
         if (recordSource.getLimit() >= 0) {
