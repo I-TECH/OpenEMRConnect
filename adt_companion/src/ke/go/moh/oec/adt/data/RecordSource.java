@@ -37,8 +37,7 @@ public class RecordSource implements Comparable<RecordSource> {
     public enum Relationship {
 
         MASTER,
-        ONE,
-        MANY,
+        SLAVE,
         NONE
     }
     private Relationship relationship;
