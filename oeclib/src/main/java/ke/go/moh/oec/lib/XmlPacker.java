@@ -1060,7 +1060,7 @@ class XmlPacker {
     private Document packTemplate(Message m) {
         Document doc = null;
         try {
-            String templateFileName = "messages/" + m.getMessageType().getTemplateType().name() + ".xml";
+            String templateFileName = "/messages/" + m.getMessageType().getTemplateType().name() + ".xml";
             InputStream is = null;
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -1068,6 +1068,10 @@ class XmlPacker {
                 is = new ByteArrayInputStream(m.getXml().getBytes());
             } else {
                 is = XmlPacker.class.getResourceAsStream(templateFileName);
+                if (is == null) {
+                    Logger.getLogger(XmlPacker.class.getName()).log(Level.SEVERE, 
+                            "Unable to open template as resource: " + templateFileName);            
+                }
             }
             doc = db.parse(is);
         } catch (SAXException ex) {
