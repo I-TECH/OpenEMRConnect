@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <record_sources>
     <record_source>
-	<relationship>
-		master
-	</relationship>
+        <relationship>
+            master
+        </relationship>
         <order>1</order>
         <table_name>tblARTpatientMasterInformation</table_name>
         <primary_key_columns>
@@ -21,13 +21,13 @@
             <column>Firstname</column>
             <column>Surname</column>
             <column>Sex</column>
-			<column>Pregnant</column>
+            <column>Pregnant</column>
         </columns>
     </record_source>	
     <record_source>
-	<relationship>
-		many
-	</relationship>
+        <relationship>
+            slave
+        </relationship>
         <order>2</order>
         <table_name>tblARTPatientTransactions</table_name>
         <primary_key_columns>
@@ -36,7 +36,7 @@
                 <quote>false</quote>
             </primary_key_column>
         </primary_key_columns>
-        <cumulate>false</cumulate>
+        <cumulate>true</cumulate>
         <foreign_key_columns>
             <foreign_key_column>
                 <name>ArtID</name>
@@ -49,6 +49,8 @@
             <column>ArtID</column>
             <column>DateofVisit</column>
             <column>Drugname</column>
+            <column>Dose</column>
+            <column>duration</column>
         </columns>
     </record_source>
 </record_sources>

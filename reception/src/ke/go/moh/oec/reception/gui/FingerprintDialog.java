@@ -39,7 +39,6 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Fingerprint.TechnologyType;
-import ke.go.moh.oec.Fingerprint.Type;
 import ke.go.moh.oec.fingerprintmanager.FingerprintManager;
 import ke.go.moh.oec.fingerprintmanager.FingerprintManagerException;
 import ke.go.moh.oec.fingerprintmanager.FingerprintingComponent;
@@ -372,17 +371,17 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     public void addFingerprint() {
         Fingerprint fingerPrint = new Fingerprint();
         if (rightIndexRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.rightIndexFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.rightIndexFinger);
         } else if (leftIndexRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.leftIndexFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.leftIndexFinger);
         } else if (rightMiddleRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.rightMiddleFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.rightMiddleFinger);
         } else if (leftMiddleRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.leftMiddleFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.leftMiddleFinger);
         } else if (rightRingRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.rightRingFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.rightRingFinger);
         } else if (leftRingRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.leftRingFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.leftRingFinger);
         }
         for (ImagedFingerprint imagedFingerprint : imagedFingerprintCache) {
             if (imagedFingerprint.getFingerprint().getFingerprintType() == fingerPrint.getFingerprintType()) {
@@ -438,17 +437,17 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
     private void cacheImagedFingerprint() {
         Fingerprint fingerPrint = new Fingerprint();
         if (rightIndexRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.rightIndexFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.rightIndexFinger);
         } else if (leftIndexRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.leftIndexFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.leftIndexFinger);
         } else if (rightMiddleRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.rightMiddleFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.rightMiddleFinger);
         } else if (leftMiddleRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.leftMiddleFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.leftMiddleFinger);
         } else if (rightRingRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.rightRingFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.rightRingFinger);
         } else if (leftRingRadioButton.isSelected()) {
-            fingerPrint.setFingerprintType(Type.leftRingFinger);
+            fingerPrint.setFingerprintType(Fingerprint.Type.leftRingFinger);
         }
         fingerPrint.setTechnologyType(TechnologyType.griauleTemplate);
         ImagedFingerprint imagedFingerprint = new ImagedFingerprint(fingerPrint, fingerprintImagePanel.getImage(), qualityTextField.getText(), false);
@@ -473,7 +472,6 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
             } else {
                 showImage(oldImagedFingerprint.getImage(), true);
                 showQuality(oldImagedFingerprint.getQuality());
-                return;
             }
         }
     }
@@ -487,17 +485,17 @@ public class FingerprintDialog extends javax.swing.JDialog implements Fingerprin
         List<ImagedFingerprint> imagedFingerprintList = session.getImagedFingerprintList();
         Fingerprint fingerprint = new Fingerprint();
         if (rightIndexRadioButton.isSelected()) {
-            fingerprint.setFingerprintType(Type.rightIndexFinger);
+            fingerprint.setFingerprintType(Fingerprint.Type.rightIndexFinger);
         } else if (leftIndexRadioButton.isSelected()) {
-            fingerprint.setFingerprintType(Type.leftIndexFinger);
+            fingerprint.setFingerprintType(Fingerprint.Type.leftIndexFinger);
         } else if (rightMiddleRadioButton.isSelected()) {
-            fingerprint.setFingerprintType(Type.rightMiddleFinger);
+            fingerprint.setFingerprintType(Fingerprint.Type.rightMiddleFinger);
         } else if (leftMiddleRadioButton.isSelected()) {
-            fingerprint.setFingerprintType(Type.leftMiddleFinger);
+            fingerprint.setFingerprintType(Fingerprint.Type.leftMiddleFinger);
         } else if (rightRingRadioButton.isSelected()) {
-            fingerprint.setFingerprintType(Type.rightRingFinger);
+            fingerprint.setFingerprintType(Fingerprint.Type.rightRingFinger);
         } else if (leftRingRadioButton.isSelected()) {
-            fingerprint.setFingerprintType(Type.leftRingFinger);
+            fingerprint.setFingerprintType(Fingerprint.Type.leftRingFinger);
         }
         ImagedFingerprint dummy = new ImagedFingerprint(fingerprint);
         if (imagedFingerprintList.contains(dummy)) {

@@ -72,7 +72,21 @@ public class RecordLinker {
             if (slaveRecordMap.isEmpty()) {
                 linkedRecordList.addAll(doNotLinkWithMaster(masterRecordMap));
             } else {
-                linkedRecordList.addAll(linkWithMaster(masterRecordMap, slaveRecordMap));
+                //link with changed records first - this ensures all associated master records are loaded
+                List<LinkedRecord> temporaryLinkedRecordList = linkWithMaster(masterRecordMap, slaveRecordMap);
+                RecordSource slaveRecordSource = new ArrayList<RecordSource>(slaveRecordMap.keySet()).get(0);
+                //cumulate if necessary - causing linkage to occur again with slave record history included
+                if (slaveRecordSource.isCumulate()) {
+                    slaveRecordMap.clear();
+                    RecordSource masterRecordSource = new ArrayList<RecordSource>(masterRecordMap.keySet()).get(0);
+                    for (LinkedRecord masterLinkedRecord : cachedMasterLinkedRecordMap.values()) {
+                        Record masterRecord = masterLinkedRecord.getRecord();
+                        List<Record> slaveRecordList = recordMiner.mine(masterRecord, masterRecordSource, slaveRecordSource);
+                        slaveRecordMap.put(slaveRecordSource, slaveRecordList);
+                    }
+                    temporaryLinkedRecordList = linkWithMaster(masterRecordMap, slaveRecordMap);
+                }
+                linkedRecordList.addAll(temporaryLinkedRecordList);
                 linkedRecordList.addAll(getUnlinkedMasterRecords(masterRecordMap));
             }
         }

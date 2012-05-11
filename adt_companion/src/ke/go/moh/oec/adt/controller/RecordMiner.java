@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import ke.go.moh.oec.adt.data.Record;
+import ke.go.moh.oec.adt.data.TransactionType;
 
 /**
  * @date Apr 25, 2012
@@ -121,6 +122,49 @@ public class RecordMiner {
             }
         }
         return record;
+    }
+
+    public List<Record> mine(Record masterRecord, RecordSource masterRecordSource, RecordSource slaveRecordSource) throws SQLException {
+        List<Record> slaveRecordList = new ArrayList<Record>();
+        Statement statement = getConnection().createStatement();
+        ResultSet resultSet = null;
+        String query = "SELECT " + (slaveRecordSource.getLimit() > 0 ? "TOP " + slaveRecordSource.getLimit() + " " : "")
+                + getColumnNamesAsString(slaveRecordSource) + "\n"
+                + "FROM " + slaveRecordSource.getTableName() + "\n";
+        int index = 0;
+        for (Column column : masterRecord.getPrimaryKeyCellMap().keySet()) {
+            String primaryKeyValue = masterRecord.getPrimaryKeyCellMap().get(column);
+            primaryKeyValue = (column.isQuote() ? "'" + primaryKeyValue + "'" : primaryKeyValue);
+            if (index == 0) {
+                query += "WHERE " + column.getName() + " = " + primaryKeyValue + "\n";
+            } else {
+                query += "AND " + column.getName() + " = " + primaryKeyValue + "\n";
+            }
+            index++;
+        }
+        try {
+            resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                Record record = new Record();
+                record.setPrimaryKeyCellMap(masterRecord.getPrimaryKeyCellMap());
+                record.setTransactionType(TransactionType.SELECT);
+                Map<Column, String> columnMap;
+                columnMap = new LinkedHashMap<Column, String>();
+                for (Column column : slaveRecordSource.getColumnList()) {
+                    columnMap.put(column, resultSet.getString(column.getName()));
+                }
+                record.setOrdinaryCellMap(columnMap);
+                slaveRecordList.add(record);
+            }
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+            if (statement != null) {
+                statement.close();
+            }
+        }
+        return slaveRecordList;
     }
 
     private String getColumnNamesAsString(RecordSource recordSource) {
