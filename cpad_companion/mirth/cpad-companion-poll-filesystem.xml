@@ -5,10 +5,10 @@
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1334038104434</time>
+    <time>1337369514108</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>1</revision>
+  <revision>560</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -1114,7 +1114,7 @@ if (tmp[&apos;recordTarget&apos;][&apos;patientRole&apos;][&apos;telecom&apos;][
             <name>Process encounters section</name>
             <script>var maxEnc = 12;
 var idxEncBases = {
-  &apos;eid&apos;:257, &apos;date&apos;:258, &apos;type&apos;:259, &apos;clinInit&apos;:347
+  &apos;eid&apos;:258, &apos;date&apos;:259, &apos;type&apos;:260, &apos;clinInit&apos;:348
 };
 var idxEncOffset = 91;
 
@@ -1210,7 +1210,7 @@ for (var i = 0; i &lt; maxEnc; i++) {
                 <string>Script</string>
                 <string>var maxEnc = 12;
 var idxEncBases = {
-  &apos;eid&apos;:257, &apos;date&apos;:258, &apos;type&apos;:259, &apos;clinInit&apos;:347
+  &apos;eid&apos;:258, &apos;date&apos;:259, &apos;type&apos;:260, &apos;clinInit&apos;:348
 };
 var idxEncOffset = 91;
 
@@ -7937,7 +7937,7 @@ if (tmp[&apos;recordTarget&apos;][&apos;patientRole&apos;][&apos;telecom&apos;][
             <name>Process encounters section</name>
             <script>var maxEnc = 12;
 var idxEncBases = {
-  &apos;eid&apos;:257, &apos;date&apos;:258, &apos;type&apos;:259, &apos;clinInit&apos;:347
+  &apos;eid&apos;:258, &apos;date&apos;:259, &apos;type&apos;:260, &apos;clinInit&apos;:348
 };
 var idxEncOffset = 91;
 
@@ -8033,7 +8033,7 @@ for (var i = 0; i &lt; maxEnc; i++) {
                 <string>Script</string>
                 <string>var maxEnc = 12;
 var idxEncBases = {
-  &apos;eid&apos;:257, &apos;date&apos;:258, &apos;type&apos;:259, &apos;clinInit&apos;:347
+  &apos;eid&apos;:258, &apos;date&apos;:259, &apos;type&apos;:260, &apos;clinInit&apos;:348
 };
 var idxEncOffset = 91;
 

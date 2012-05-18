@@ -88,12 +88,12 @@ public class CpadDataExtract {
 				logAndQuit(Level.SEVERE, "Could not calculate date to use: " + transSince + ".");
 
 			// Finally, query the transaction_data table to get a list of patient_ids associated with the transaction(s)
-			ResultSet rs = shadowStmt.executeQuery("SELECT DISTINCT td.data AS data FROM shadow.transaction_data td, " +
-										   		   "shadow.transaction tr " +
+			ResultSet rs = shadowStmt.executeQuery("SELECT DISTINCT td.data AS data FROM transaction_data td, " +
+										   		   "transaction tr " +
 										   		   "WHERE td.column_id IN " +
-										   		   "(SELECT id FROM shadow.column " +
+										   		   "(SELECT id FROM `column` " +
 										   		   "WHERE name = 'patient_id' AND table_id IN " +
-										   		   "(SELECT id FROM shadow.table WHERE name IN " + tableList + " " + ")) " +
+										   		   "(SELECT id FROM `table` WHERE name IN " + tableList + " " + ")) " +
 										   		   "AND td.data IS NOT NULL " +
 										   		   "AND LTRIM(RTRIM(td.data)) != '' " +
 										   		   "AND td.transaction_id = tr.id " +
