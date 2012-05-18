@@ -120,7 +120,7 @@ public class TransactionMiner {
         return coalesceSameRecordTransactions(transactionMap);
     }
 
-    private void setPrimaryKeyMaps(RecordSource recordSource, Map<Integer, Transaction> transactionMap) throws SQLException {
+private void setPrimaryKeyMaps(RecordSource recordSource, Map<Integer, Transaction> transactionMap) throws SQLException {
         if (transactionMap != null && !transactionMap.isEmpty()) {
             List<Integer> keyList = new ArrayList<Integer>(transactionMap.keySet());
             int firstId = keyList.get(keyList.size() - 1);
@@ -128,12 +128,14 @@ public class TransactionMiner {
             lastTransactionId = (lastTransactionId > lastId ? lastTransactionId : lastId);
             Statement statement = null;
             ResultSet resultSet = null;
-            String query = "SELECT c.`name` AS `column_name`, t.`data` AS `column_value`, t.`transaction_id`\n"
+            String query = "SELECT c.`name` AS `column_name`, t.`data` AS `column_value`, t.`transaction_id`, t.`transaction_id`, b.`name`\n"
                     + "FROM `transaction_data` t\n"
                     + "JOIN `column` c ON c.`id` = t.`column_id`\n"
+                    + "JOIN `table` b ON b.`id` = c.`table_id`\n"
                     + "WHERE t.`transaction_id`\n"
                     + "BETWEEN " + firstId + " AND " + lastId + "\n"
                     + "AND c.`name`IN (" + concatenatePkColumns(recordSource.getPrimaryKeyColumnMap().keySet()) + ")\n"
+                    + "AND b.`name` = '" + recordSource.getTableName() + "'\n"
                     + "ORDER BY t.`transaction_id`";
             try {
                 statement = getConnection().createStatement();
@@ -145,8 +147,11 @@ public class TransactionMiner {
                     String primaryKeyColumnValue = resultSet.getString("column_value");
                     while (resultSet.next()) {
                         int txId = resultSet.getInt("transaction_id");
-                        if (txId != transactionId) {
+                        if (txId != transactionId) {//211691//185730
                             transaction = transactionMap.get(transactionId);
+                            if (transaction == null) {
+                                transaction = transactionMap.get(txId);
+                            }
                             addPrimaryKey(transaction, recordSource, primaryKeyColumnName, primaryKeyColumnValue);
                             primaryKeyColumnName = resultSet.getString("column_name");
                             primaryKeyColumnValue = resultSet.getString("column_value");

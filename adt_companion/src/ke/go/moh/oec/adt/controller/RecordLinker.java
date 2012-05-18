@@ -79,11 +79,12 @@ public class RecordLinker {
                 if (slaveRecordSource.isCumulate()) {
                     slaveRecordMap.clear();
                     RecordSource masterRecordSource = new ArrayList<RecordSource>(masterRecordMap.keySet()).get(0);
+                    List<Record> slaveRecordList = new ArrayList<Record>();
                     for (LinkedRecord masterLinkedRecord : cachedMasterLinkedRecordMap.values()) {
                         Record masterRecord = masterLinkedRecord.getRecord();
-                        List<Record> slaveRecordList = recordMiner.mine(masterRecord, masterRecordSource, slaveRecordSource);
-                        slaveRecordMap.put(slaveRecordSource, slaveRecordList);
+                        slaveRecordList.addAll(recordMiner.mine(masterRecord, masterRecordSource, slaveRecordSource));
                     }
+                    slaveRecordMap.put(slaveRecordSource, slaveRecordList);
                     temporaryLinkedRecordList = linkWithMaster(masterRecordMap, slaveRecordMap);
                 }
                 linkedRecordList.addAll(temporaryLinkedRecordList);
