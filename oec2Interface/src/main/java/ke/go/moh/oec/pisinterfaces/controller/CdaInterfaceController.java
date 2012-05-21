@@ -28,11 +28,10 @@ import org.springframework.web.bind.annotation.*;
  *
  * The controller that controls all requests used by this interface.
  *
- * In order to handle ReSTful URLs (such as "/viewCda/{cdaID}"), it is necessary
- * to serve from a non-root context. See the web.xml file for path info.
  *
  */
 @Controller
+@RequestMapping("/*.htm")
 @SessionAttributes({"patientId", "cdaList"})
 public class CdaInterfaceController {
 
@@ -47,7 +46,7 @@ public class CdaInterfaceController {
      * @param model
      * @return String naming the .jsp page to display
      */
-    @RequestMapping(value = "/sentPatientId", method = RequestMethod.GET)
+    @RequestMapping(value = "/sentPatientId.htm", method = RequestMethod.GET)
     public String showUserForm(ModelMap model) {
         PatientIdentification patientId = new PatientIdentification();
         model.addAttribute(patientId);
@@ -63,7 +62,7 @@ public class CdaInterfaceController {
      * @param patientId
      * @return String naming the .jsp page to display
      */
-    @RequestMapping(value = "/sentPatientId", method = RequestMethod.POST)
+    @RequestMapping(value = "/sentPatientId.htm", method = RequestMethod.POST)
     public String onSubmit(
             @ModelAttribute("patientIdentification") PatientIdentification patientId,
             ModelMap model) throws SiteException {
@@ -77,7 +76,7 @@ public class CdaInterfaceController {
             // Store matching CDA docs in session
             model.addAttribute("cdaList", resultList);
         }
-        return "redirect:sendSuccess";
+        return "redirect:sendSuccess.htm";
     }
 
     /**
@@ -88,7 +87,7 @@ public class CdaInterfaceController {
      * @param model
      * @return String naming the .jsp page to display
      */
-    @RequestMapping(value = "/sendSuccess", method = RequestMethod.GET)
+    @RequestMapping(value = "/sendSuccess.htm", method = RequestMethod.GET)
     public String sendSuccess(
             @ModelAttribute("cdaList") Map<String, CdaRecord> cdaList,
             ModelMap model) {
@@ -103,7 +102,7 @@ public class CdaInterfaceController {
     }
 
     /**
-     * ReSTful view controller to display a single CDA. Looks first to the
+     * View controller to display a single CDA. Looks first to the
      * session for the requested cdaID, making a round trip to the external
      * query service only when necessary.
      *
@@ -111,9 +110,9 @@ public class CdaInterfaceController {
      * @param model
      * @return String naming the .jsp page to display
      */
-    @RequestMapping(value = "/viewCda/{cdaID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/viewCda.htm", method = RequestMethod.GET)
     public String viewCda(
-            @PathVariable String cdaID,
+            @RequestParam String cdaID,
             @ModelAttribute("cdaList") Map<String, CdaRecord> cdaList,
             ModelMap model) throws SiteException {
         // Check the session for the requested cda
@@ -132,7 +131,7 @@ public class CdaInterfaceController {
                 String[] errors = new String[1];
                 errors[0] = "No Match Found";
                 model.addAttribute("errors", errors);
-                return "viewCda";
+                return "sendSuccess";
             }
         }
         String cda = this.addStyleSheet(new StringBuffer(record.getCDA()));
