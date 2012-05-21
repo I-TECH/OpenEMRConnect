@@ -9,11 +9,11 @@
 </head>
 <body>
     <c:if test="${not empty errors}">${errors[0]}</c:if>
-    <p><a href="sentPatientId">New search</a></p>
+    <p><a href="sentPatientId.htm">New search</a></p>
     <ul>
         <c:forEach var="cda" items="${cdaList}">
             <li>
-                <a href="viewCda/${cda.key}">
+                <a href="viewCda.htm?cdaID=${cda.key}">
                     <c:choose>
                         <c:when test="${not empty cda.value.hdssId}">
                             ${cda.value.hdssId}

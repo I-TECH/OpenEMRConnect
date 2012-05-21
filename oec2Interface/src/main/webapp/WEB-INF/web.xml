@@ -16,6 +16,6 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>dispatcher</servlet-name>
-		<url-pattern>/cda/*</url-pattern>
+		<url-pattern>*.htm</url-pattern>
 	</servlet-mapping>
 </web-app>
