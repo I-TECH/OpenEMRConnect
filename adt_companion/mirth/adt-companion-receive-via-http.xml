@@ -5,10 +5,10 @@
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1335553892800</time>
+    <time>1337624217783</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>6</revision>
+  <revision>12</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -77,7 +77,13 @@
 //channelMap.put(&apos;filedata&apos;, parts.cpad_csv_export.value);
 
 var decoded = FileUtil.decode(msg[&apos;Content&apos;].toString());
-channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded));</script>
+var decoded2 = &quot;&quot;;
+if (Packages.java.lang.String(decoded).substring(0, 70).match(/[a-zA-Z0-9\+\/]{70}/) != null) {
+  decoded2 = FileUtil.decode(Packages.java.lang.String(decoded));
+} else {
+  decoded2 = decoded;
+}
+channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded2));</script>
             <type>JavaScript</type>
             <data class="map">
               <entry>
@@ -93,7 +99,13 @@ channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded));</scrip
 //channelMap.put(&apos;filedata&apos;, parts.cpad_csv_export.value);
 
 var decoded = FileUtil.decode(msg[&apos;Content&apos;].toString());
-channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded));</string>
+var decoded2 = &quot;&quot;;
+if (Packages.java.lang.String(decoded).substring(0, 70).match(/[a-zA-Z0-9\+\/]{70}/) != null) {
+  decoded2 = FileUtil.decode(Packages.java.lang.String(decoded));
+} else {
+  decoded2 = decoded;
+}
+channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded2));</string>
               </entry>
             </data>
           </step>
