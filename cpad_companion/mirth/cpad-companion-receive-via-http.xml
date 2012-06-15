@@ -5,10 +5,10 @@
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1337624206830</time>
+    <time>1339793708176</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>20</revision>
+  <revision>24</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -78,7 +78,10 @@
 
 var decoded = FileUtil.decode(msg[&apos;Content&apos;].toString());
 var decoded2 = &quot;&quot;;
-if (Packages.java.lang.String(decoded).substring(0, 70).match(/[a-zA-Z0-9\+\/]{70}/) != null) {
+var testStr = Packages.java.lang.String(decoded).length() &gt; 70 ? Packages.java.lang.String(decoded).substring(0, 70) : Packages.java.lang.String(decoded);
+var testStrLen = testStr.length();
+var base64RegEx = new RegExp(&apos;^[A-Za-z0-9\+\/=]{&apos; + testStrLen + &apos;}$&apos;);
+if (base64RegEx.test(testStr)) {
   decoded2 = FileUtil.decode(Packages.java.lang.String(decoded));
 } else {
   decoded2 = decoded;
@@ -100,7 +103,10 @@ channelMap.put(&apos;filedata&apos;, Packages.java.lang.String(decoded2));</scri
 
 var decoded = FileUtil.decode(msg[&apos;Content&apos;].toString());
 var decoded2 = &quot;&quot;;
-if (Packages.java.lang.String(decoded).substring(0, 70).match(/[a-zA-Z0-9\+\/]{70}/) != null) {
+var testStr = Packages.java.lang.String(decoded).length() &gt; 70 ? Packages.java.lang.String(decoded).substring(0, 70) : Packages.java.lang.String(decoded);
+var testStrLen = testStr.length();
+var base64RegEx = new RegExp(&apos;^[A-Za-z0-9\+\/=]{&apos; + testStrLen + &apos;}$&apos;);
+if (base64RegEx.test(testStr)) {
   decoded2 = FileUtil.decode(Packages.java.lang.String(decoded));
 } else {
   decoded2 = decoded;
