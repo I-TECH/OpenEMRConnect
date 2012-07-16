@@ -59,13 +59,13 @@ public class SourceDataMiner extends DatabaseConnector {
         SourceResultSet srs = null;
         try {
             String compositePK = getQueryCustomizer().buildCompositePrimaryKey(table);
-            String sql = "SELECT " + compositePK + " AS PK";
-            String prefx = getQueryCustomizer().getOpenningSafetyPad();
+            String sql = "SELECT ASC(" + compositePK + ") AS ASCII_ID, " + compositePK + " AS PK";
+            String prefix = getQueryCustomizer().getOpenningSafetyPad();
             String suffix = getQueryCustomizer().getClosingSafetyPad();
             for (Column column : table.getColumnList()) {
-                sql += ", " + prefx + column.getName() + suffix + " AS C" + column.getId();
+                sql += ", " + prefix + column.getName() + suffix + " AS C" + column.getId();
             }
-            sql += " FROM " + prefx + table.getName() + suffix + " ORDER BY " + compositePK;
+            sql += " FROM " + prefix + table.getName() + suffix + " ORDER BY 1 ASC, " + compositePK + "ASC";
             ResultSet rs = statement.executeQuery(sql);
             srs = new SourceResultSet(rs);
         } finally {
