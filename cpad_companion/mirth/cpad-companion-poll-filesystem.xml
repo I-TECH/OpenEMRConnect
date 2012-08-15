@@ -5,10 +5,10 @@
   <enabled>true</enabled>
   <version>2.1.1.5490</version>
   <lastModified>
-    <time>1337369514108</time>
+    <time>1338404471412</time>
     <timezone>America/Los_Angeles</timezone>
   </lastModified>
-  <revision>560</revision>
+  <revision>563</revision>
   <sourceConnector>
     <name>sourceConnector</name>
     <properties>
@@ -4408,104 +4408,124 @@ var idxFamilyBases = {
 };
 var idxFamOffset = 10;
 
-var relationLookup = {
-  &apos;Father&apos;:{
-    &apos;code&apos;:&apos;FTH&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Father&apos;
-  },
-  &apos;Mother&apos;:{
-    &apos;code&apos;:&apos;MTH&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Mother&apos;
-  },
-  &apos;Wife&apos;:{
-    &apos;code&apos;:&apos;WIFE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Wife&apos;
-  },
-  &apos;Husband&apos;:{
-    &apos;code&apos;:&apos;HUSB&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Husband&apos;
-  },
-  &apos;Daughter&apos;:{
-    &apos;code&apos;:&apos;DAU&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Daughter&apos;
-  },
-  &apos;Son&apos;:{
-    &apos;code&apos;:&apos;SON&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Son&apos;
-  },
-  &apos;Sister&apos;:{
-    &apos;code&apos;:&apos;SIS&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Sister&apos;
-  },
-  &apos;Brother&apos;:{
-    &apos;code&apos;:&apos;BRO&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Brother&apos;
-  },
-  &apos;Cousin&apos;:{
-    &apos;code&apos;:&apos;COUSN&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Cousin&apos;
-  },
-  &apos;Nephew&apos;:{
-    &apos;code&apos;:&apos;NEPHEW&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Nephew&apos;
-  },
-  &apos;Niece&apos;:{
-    &apos;code&apos;:&apos;NIECE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Niece&apos;
-  },
-  &apos;Aunt&apos;:{
-    &apos;code&apos;:&apos;AUNT&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Aunt&apos;
-  },
-  &apos;Uncle&apos;:{
-    &apos;code&apos;:&apos;UNCLE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Uncle&apos;
-  },
-  &apos;Workmate&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
-  },
-  &apos;Employer&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
-  },
-  &apos;Other&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+// This function will attempt to lookup a given relation name and return an object containing:
+// 1) the HL7 FamilyMember code (if a match is found, else FRND)
+// 2) the HL7 FamilyMember code system name
+// 3) the HL7 FamilyMember code system oid
+// 4) the HL7 FamilyMember display name (if match is found, else &apos;Unrelated Friend&apos;)
+function lookupRel(rel) {
+  var relationLookup = {
+    &apos;Father&apos;:{
+      &apos;code&apos;:&apos;FTH&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Father&apos;
+    },
+    &apos;Mother&apos;:{
+      &apos;code&apos;:&apos;MTH&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Mother&apos;
+    },
+    &apos;Wife&apos;:{
+      &apos;code&apos;:&apos;WIFE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Wife&apos;
+    },
+    &apos;Husband&apos;:{
+      &apos;code&apos;:&apos;HUSB&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Husband&apos;
+    },
+    &apos;Daughter&apos;:{
+      &apos;code&apos;:&apos;DAU&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Daughter&apos;
+    },
+    &apos;Son&apos;:{
+      &apos;code&apos;:&apos;SON&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Son&apos;
+    },
+    &apos;Sister&apos;:{
+      &apos;code&apos;:&apos;SIS&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Sister&apos;
+    },
+    &apos;Brother&apos;:{
+      &apos;code&apos;:&apos;BRO&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Brother&apos;
+    },
+    &apos;Cousin&apos;:{
+      &apos;code&apos;:&apos;COUSN&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Cousin&apos;
+    },
+    &apos;Nephew&apos;:{
+      &apos;code&apos;:&apos;NEPHEW&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Nephew&apos;
+    },
+    &apos;Niece&apos;:{
+      &apos;code&apos;:&apos;NIECE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Niece&apos;
+    },
+    &apos;Aunt&apos;:{
+      &apos;code&apos;:&apos;AUNT&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Aunt&apos;
+    },
+    &apos;Uncle&apos;:{
+      &apos;code&apos;:&apos;UNCLE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Uncle&apos;
+    },
+    &apos;Workmate&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    },
+    &apos;Employer&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    },
+    &apos;Other&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    }
+  };
+
+  if (relationLookup[rel]) {
+    var retObj = relationLookup[rel];
+  } else {
+    var retObj = {
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    };
   }
-};
+
+  return (retObj);
+}
 
 var textTmpl = tmp[&apos;component&apos;][&apos;structuredBody&apos;][&apos;component&apos;][6][&apos;section&apos;][&apos;text&apos;].copy();
 var entryTmpl = tmp[&apos;component&apos;][&apos;structuredBody&apos;][&apos;component&apos;][6][&apos;section&apos;][&apos;entry&apos;].copy();
@@ -4547,9 +4567,9 @@ for (var i = 0; i &lt; maxFamMembers; i++) {
     // Populate entry elements
     var relLookup = &apos;&apos;;
     if (trim(rel) != &quot;&quot; &amp;&amp; rel != null) {
-      relLookup = relationLookup[trim(rel)];
+      relLookup = lookupRel(trim(rel));
     } else {
-      relLookup = relationLookup[&apos;Other (specify)&apos;];
+      relLookup = lookupRel(&apos;Other&apos;);
     }
     tmpEntry[&apos;organizer&apos;][&apos;subject&apos;][&apos;relatedSubject&apos;][&apos;code&apos;][&apos;@code&apos;] = relLookup[&apos;code&apos;];
     tmpEntry[&apos;organizer&apos;][&apos;subject&apos;][&apos;relatedSubject&apos;][&apos;code&apos;][&apos;@displayName&apos;] = relLookup[&apos;displayName&apos;];
@@ -4617,104 +4637,124 @@ var idxFamilyBases = {
 };
 var idxFamOffset = 10;
 
-var relationLookup = {
-  &apos;Father&apos;:{
-    &apos;code&apos;:&apos;FTH&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Father&apos;
-  },
-  &apos;Mother&apos;:{
-    &apos;code&apos;:&apos;MTH&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Mother&apos;
-  },
-  &apos;Wife&apos;:{
-    &apos;code&apos;:&apos;WIFE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Wife&apos;
-  },
-  &apos;Husband&apos;:{
-    &apos;code&apos;:&apos;HUSB&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Husband&apos;
-  },
-  &apos;Daughter&apos;:{
-    &apos;code&apos;:&apos;DAU&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Daughter&apos;
-  },
-  &apos;Son&apos;:{
-    &apos;code&apos;:&apos;SON&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Son&apos;
-  },
-  &apos;Sister&apos;:{
-    &apos;code&apos;:&apos;SIS&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Sister&apos;
-  },
-  &apos;Brother&apos;:{
-    &apos;code&apos;:&apos;BRO&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Brother&apos;
-  },
-  &apos;Cousin&apos;:{
-    &apos;code&apos;:&apos;COUSN&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Cousin&apos;
-  },
-  &apos;Nephew&apos;:{
-    &apos;code&apos;:&apos;NEPHEW&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Nephew&apos;
-  },
-  &apos;Niece&apos;:{
-    &apos;code&apos;:&apos;NIECE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Niece&apos;
-  },
-  &apos;Aunt&apos;:{
-    &apos;code&apos;:&apos;AUNT&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Aunt&apos;
-  },
-  &apos;Uncle&apos;:{
-    &apos;code&apos;:&apos;UNCLE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Uncle&apos;
-  },
-  &apos;Workmate&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
-  },
-  &apos;Employer&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
-  },
-  &apos;Other&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+// This function will attempt to lookup a given relation name and return an object containing:
+// 1) the HL7 FamilyMember code (if a match is found, else FRND)
+// 2) the HL7 FamilyMember code system name
+// 3) the HL7 FamilyMember code system oid
+// 4) the HL7 FamilyMember display name (if match is found, else &apos;Unrelated Friend&apos;)
+function lookupRel(rel) {
+  var relationLookup = {
+    &apos;Father&apos;:{
+      &apos;code&apos;:&apos;FTH&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Father&apos;
+    },
+    &apos;Mother&apos;:{
+      &apos;code&apos;:&apos;MTH&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Mother&apos;
+    },
+    &apos;Wife&apos;:{
+      &apos;code&apos;:&apos;WIFE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Wife&apos;
+    },
+    &apos;Husband&apos;:{
+      &apos;code&apos;:&apos;HUSB&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Husband&apos;
+    },
+    &apos;Daughter&apos;:{
+      &apos;code&apos;:&apos;DAU&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Daughter&apos;
+    },
+    &apos;Son&apos;:{
+      &apos;code&apos;:&apos;SON&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Son&apos;
+    },
+    &apos;Sister&apos;:{
+      &apos;code&apos;:&apos;SIS&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Sister&apos;
+    },
+    &apos;Brother&apos;:{
+      &apos;code&apos;:&apos;BRO&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Brother&apos;
+    },
+    &apos;Cousin&apos;:{
+      &apos;code&apos;:&apos;COUSN&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Cousin&apos;
+    },
+    &apos;Nephew&apos;:{
+      &apos;code&apos;:&apos;NEPHEW&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Nephew&apos;
+    },
+    &apos;Niece&apos;:{
+      &apos;code&apos;:&apos;NIECE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Niece&apos;
+    },
+    &apos;Aunt&apos;:{
+      &apos;code&apos;:&apos;AUNT&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Aunt&apos;
+    },
+    &apos;Uncle&apos;:{
+      &apos;code&apos;:&apos;UNCLE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Uncle&apos;
+    },
+    &apos;Workmate&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    },
+    &apos;Employer&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    },
+    &apos;Other&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    }
+  };
+
+  if (relationLookup[rel]) {
+    var retObj = relationLookup[rel];
+  } else {
+    var retObj = {
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    };
   }
-};
+
+  return (retObj);
+}
 
 var textTmpl = tmp[&apos;component&apos;][&apos;structuredBody&apos;][&apos;component&apos;][6][&apos;section&apos;][&apos;text&apos;].copy();
 var entryTmpl = tmp[&apos;component&apos;][&apos;structuredBody&apos;][&apos;component&apos;][6][&apos;section&apos;][&apos;entry&apos;].copy();
@@ -4756,9 +4796,9 @@ for (var i = 0; i &lt; maxFamMembers; i++) {
     // Populate entry elements
     var relLookup = &apos;&apos;;
     if (trim(rel) != &quot;&quot; &amp;&amp; rel != null) {
-      relLookup = relationLookup[trim(rel)];
+      relLookup = lookupRel(trim(rel));
     } else {
-      relLookup = relationLookup[&apos;Other (specify)&apos;];
+      relLookup = lookupRel(&apos;Other&apos;);
     }
     tmpEntry[&apos;organizer&apos;][&apos;subject&apos;][&apos;relatedSubject&apos;][&apos;code&apos;][&apos;@code&apos;] = relLookup[&apos;code&apos;];
     tmpEntry[&apos;organizer&apos;][&apos;subject&apos;][&apos;relatedSubject&apos;][&apos;code&apos;][&apos;@displayName&apos;] = relLookup[&apos;displayName&apos;];
@@ -11231,104 +11271,124 @@ var idxFamilyBases = {
 };
 var idxFamOffset = 10;
 
-var relationLookup = {
-  &apos;Father&apos;:{
-    &apos;code&apos;:&apos;FTH&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Father&apos;
-  },
-  &apos;Mother&apos;:{
-    &apos;code&apos;:&apos;MTH&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Mother&apos;
-  },
-  &apos;Wife&apos;:{
-    &apos;code&apos;:&apos;WIFE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Wife&apos;
-  },
-  &apos;Husband&apos;:{
-    &apos;code&apos;:&apos;HUSB&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Husband&apos;
-  },
-  &apos;Daughter&apos;:{
-    &apos;code&apos;:&apos;DAU&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Daughter&apos;
-  },
-  &apos;Son&apos;:{
-    &apos;code&apos;:&apos;SON&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Son&apos;
-  },
-  &apos;Sister&apos;:{
-    &apos;code&apos;:&apos;SIS&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Sister&apos;
-  },
-  &apos;Brother&apos;:{
-    &apos;code&apos;:&apos;BRO&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Brother&apos;
-  },
-  &apos;Cousin&apos;:{
-    &apos;code&apos;:&apos;COUSN&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Cousin&apos;
-  },
-  &apos;Nephew&apos;:{
-    &apos;code&apos;:&apos;NEPHEW&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Nephew&apos;
-  },
-  &apos;Niece&apos;:{
-    &apos;code&apos;:&apos;NIECE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Niece&apos;
-  },
-  &apos;Aunt&apos;:{
-    &apos;code&apos;:&apos;AUNT&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Aunt&apos;
-  },
-  &apos;Uncle&apos;:{
-    &apos;code&apos;:&apos;UNCLE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Uncle&apos;
-  },
-  &apos;Workmate&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
-  },
-  &apos;Employer&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
-  },
-  &apos;Other&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+// This function will attempt to lookup a given relation name and return an object containing:
+// 1) the HL7 FamilyMember code (if a match is found, else FRND)
+// 2) the HL7 FamilyMember code system name
+// 3) the HL7 FamilyMember code system oid
+// 4) the HL7 FamilyMember display name (if match is found, else &apos;Unrelated Friend&apos;)
+function lookupRel(rel) {
+  var relationLookup = {
+    &apos;Father&apos;:{
+      &apos;code&apos;:&apos;FTH&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Father&apos;
+    },
+    &apos;Mother&apos;:{
+      &apos;code&apos;:&apos;MTH&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Mother&apos;
+    },
+    &apos;Wife&apos;:{
+      &apos;code&apos;:&apos;WIFE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Wife&apos;
+    },
+    &apos;Husband&apos;:{
+      &apos;code&apos;:&apos;HUSB&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Husband&apos;
+    },
+    &apos;Daughter&apos;:{
+      &apos;code&apos;:&apos;DAU&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Daughter&apos;
+    },
+    &apos;Son&apos;:{
+      &apos;code&apos;:&apos;SON&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Son&apos;
+    },
+    &apos;Sister&apos;:{
+      &apos;code&apos;:&apos;SIS&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Sister&apos;
+    },
+    &apos;Brother&apos;:{
+      &apos;code&apos;:&apos;BRO&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Brother&apos;
+    },
+    &apos;Cousin&apos;:{
+      &apos;code&apos;:&apos;COUSN&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Cousin&apos;
+    },
+    &apos;Nephew&apos;:{
+      &apos;code&apos;:&apos;NEPHEW&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Nephew&apos;
+    },
+    &apos;Niece&apos;:{
+      &apos;code&apos;:&apos;NIECE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Niece&apos;
+    },
+    &apos;Aunt&apos;:{
+      &apos;code&apos;:&apos;AUNT&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Aunt&apos;
+    },
+    &apos;Uncle&apos;:{
+      &apos;code&apos;:&apos;UNCLE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Uncle&apos;
+    },
+    &apos;Workmate&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    },
+    &apos;Employer&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    },
+    &apos;Other&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    }
+  };
+
+  if (relationLookup[rel]) {
+    var retObj = relationLookup[rel];
+  } else {
+    var retObj = {
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    };
   }
-};
+
+  return (retObj);
+}
 
 var textTmpl = tmp[&apos;component&apos;][&apos;structuredBody&apos;][&apos;component&apos;][6][&apos;section&apos;][&apos;text&apos;].copy();
 var entryTmpl = tmp[&apos;component&apos;][&apos;structuredBody&apos;][&apos;component&apos;][6][&apos;section&apos;][&apos;entry&apos;].copy();
@@ -11370,9 +11430,9 @@ for (var i = 0; i &lt; maxFamMembers; i++) {
     // Populate entry elements
     var relLookup = &apos;&apos;;
     if (trim(rel) != &quot;&quot; &amp;&amp; rel != null) {
-      relLookup = relationLookup[trim(rel)];
+      relLookup = lookupRel(trim(rel));
     } else {
-      relLookup = relationLookup[&apos;Other (specify)&apos;];
+      relLookup = lookupRel(&apos;Other&apos;);
     }
     tmpEntry[&apos;organizer&apos;][&apos;subject&apos;][&apos;relatedSubject&apos;][&apos;code&apos;][&apos;@code&apos;] = relLookup[&apos;code&apos;];
     tmpEntry[&apos;organizer&apos;][&apos;subject&apos;][&apos;relatedSubject&apos;][&apos;code&apos;][&apos;@displayName&apos;] = relLookup[&apos;displayName&apos;];
@@ -11440,104 +11500,124 @@ var idxFamilyBases = {
 };
 var idxFamOffset = 10;
 
-var relationLookup = {
-  &apos;Father&apos;:{
-    &apos;code&apos;:&apos;FTH&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Father&apos;
-  },
-  &apos;Mother&apos;:{
-    &apos;code&apos;:&apos;MTH&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Mother&apos;
-  },
-  &apos;Wife&apos;:{
-    &apos;code&apos;:&apos;WIFE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Wife&apos;
-  },
-  &apos;Husband&apos;:{
-    &apos;code&apos;:&apos;HUSB&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Husband&apos;
-  },
-  &apos;Daughter&apos;:{
-    &apos;code&apos;:&apos;DAU&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Daughter&apos;
-  },
-  &apos;Son&apos;:{
-    &apos;code&apos;:&apos;SON&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Son&apos;
-  },
-  &apos;Sister&apos;:{
-    &apos;code&apos;:&apos;SIS&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Sister&apos;
-  },
-  &apos;Brother&apos;:{
-    &apos;code&apos;:&apos;BRO&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Brother&apos;
-  },
-  &apos;Cousin&apos;:{
-    &apos;code&apos;:&apos;COUSN&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Cousin&apos;
-  },
-  &apos;Nephew&apos;:{
-    &apos;code&apos;:&apos;NEPHEW&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Nephew&apos;
-  },
-  &apos;Niece&apos;:{
-    &apos;code&apos;:&apos;NIECE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Niece&apos;
-  },
-  &apos;Aunt&apos;:{
-    &apos;code&apos;:&apos;AUNT&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Aunt&apos;
-  },
-  &apos;Uncle&apos;:{
-    &apos;code&apos;:&apos;UNCLE&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Uncle&apos;
-  },
-  &apos;Workmate&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
-  },
-  &apos;Employer&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
-  },
-  &apos;Other&apos;:{
-    &apos;code&apos;:&apos;FRND&apos;,
-    &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
-    &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
-    &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+// This function will attempt to lookup a given relation name and return an object containing:
+// 1) the HL7 FamilyMember code (if a match is found, else FRND)
+// 2) the HL7 FamilyMember code system name
+// 3) the HL7 FamilyMember code system oid
+// 4) the HL7 FamilyMember display name (if match is found, else &apos;Unrelated Friend&apos;)
+function lookupRel(rel) {
+  var relationLookup = {
+    &apos;Father&apos;:{
+      &apos;code&apos;:&apos;FTH&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Father&apos;
+    },
+    &apos;Mother&apos;:{
+      &apos;code&apos;:&apos;MTH&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Mother&apos;
+    },
+    &apos;Wife&apos;:{
+      &apos;code&apos;:&apos;WIFE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Wife&apos;
+    },
+    &apos;Husband&apos;:{
+      &apos;code&apos;:&apos;HUSB&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Husband&apos;
+    },
+    &apos;Daughter&apos;:{
+      &apos;code&apos;:&apos;DAU&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Daughter&apos;
+    },
+    &apos;Son&apos;:{
+      &apos;code&apos;:&apos;SON&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Son&apos;
+    },
+    &apos;Sister&apos;:{
+      &apos;code&apos;:&apos;SIS&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Sister&apos;
+    },
+    &apos;Brother&apos;:{
+      &apos;code&apos;:&apos;BRO&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Brother&apos;
+    },
+    &apos;Cousin&apos;:{
+      &apos;code&apos;:&apos;COUSN&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Cousin&apos;
+    },
+    &apos;Nephew&apos;:{
+      &apos;code&apos;:&apos;NEPHEW&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Nephew&apos;
+    },
+    &apos;Niece&apos;:{
+      &apos;code&apos;:&apos;NIECE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Niece&apos;
+    },
+    &apos;Aunt&apos;:{
+      &apos;code&apos;:&apos;AUNT&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Aunt&apos;
+    },
+    &apos;Uncle&apos;:{
+      &apos;code&apos;:&apos;UNCLE&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Uncle&apos;
+    },
+    &apos;Workmate&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    },
+    &apos;Employer&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    },
+    &apos;Other&apos;:{
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    }
+  };
+
+  if (relationLookup[rel]) {
+    var retObj = relationLookup[rel];
+  } else {
+    var retObj = {
+      &apos;code&apos;:&apos;FRND&apos;,
+      &apos;codeSystemName&apos;:&apos;HL7 FamilyMember&apos;,
+      &apos;codeSystemOid&apos;:&apos;2.16.840.1.113883.5.111&apos;,
+      &apos;displayName&apos;:&apos;Unrelated Friend&apos;
+    };
   }
-};
+
+  return (retObj);
+}
 
 var textTmpl = tmp[&apos;component&apos;][&apos;structuredBody&apos;][&apos;component&apos;][6][&apos;section&apos;][&apos;text&apos;].copy();
 var entryTmpl = tmp[&apos;component&apos;][&apos;structuredBody&apos;][&apos;component&apos;][6][&apos;section&apos;][&apos;entry&apos;].copy();
@@ -11579,9 +11659,9 @@ for (var i = 0; i &lt; maxFamMembers; i++) {
     // Populate entry elements
     var relLookup = &apos;&apos;;
     if (trim(rel) != &quot;&quot; &amp;&amp; rel != null) {
-      relLookup = relationLookup[trim(rel)];
+      relLookup = lookupRel(trim(rel));
     } else {
-      relLookup = relationLookup[&apos;Other (specify)&apos;];
+      relLookup = lookupRel(&apos;Other&apos;);
     }
     tmpEntry[&apos;organizer&apos;][&apos;subject&apos;][&apos;relatedSubject&apos;][&apos;code&apos;][&apos;@code&apos;] = relLookup[&apos;code&apos;];
     tmpEntry[&apos;organizer&apos;][&apos;subject&apos;][&apos;relatedSubject&apos;][&apos;code&apos;][&apos;@displayName&apos;] = relLookup[&apos;displayName&apos;];
