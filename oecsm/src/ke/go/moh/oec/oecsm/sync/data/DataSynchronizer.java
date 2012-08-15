@@ -69,34 +69,36 @@ public class DataSynchronizer extends DatabaseConnector {
             SourceResultSet sourceRs = sourceDataMiner.mine(table);
             ShadowResultSet shadowRs = shadowDataMiner.mine(table);
 
+            sourceRsHasRecords = sourceRs.next();
+            shadowRsHasRecords = shadowRs.next();
 
-
-            sourceRsHasRecords = sourceRs.next(); // Advance to the first sourceRs row of the table if available.
-            shadowRsHasRecords = shadowRs.next(); // Advance to the first shadowRs row of the table if available.
-
-
+            String tempSourcePk = null;
+            boolean sourceRsMovedNext = true;
             while (sourceRsHasRecords || shadowRsHasRecords) {
-                //We filter by which ResultSet contains any rows just so we are not trying to read
-                //out of an empty ResultSet
                 if (sourceRsHasRecords && !shadowRsHasRecords) {
-                    //This IS an insert
                     String sourcePk = sourceRs.getString("PK");
                     insert(table, sourcePk, sourceRs);
                 } else if (!sourceRsHasRecords && shadowRsHasRecords) {
-                    //This IS a delete
                     delete(table, shadowRs);
                 } else if (sourceRsHasRecords && shadowRsHasRecords) {
-                    //  This MAY BE  an insert, a delete or an update so we do a merge comparison between the two ResultSets
-                    String sourcePk = sourceRs.getString("PK");
-
+                    String sourcePk;
+                    if (!sourceRsMovedNext) {
+                        sourcePk = tempSourcePk;
+                    } else {
+                        sourcePk = sourceRs.getString("PK");
+                    }
+                    tempSourcePk = sourcePk;
 
                     String shadowPk = shadowRs.getCell("PK").getData();
                     if (sourcePk.compareTo(shadowPk) < 0) {
                         insert(table, sourcePk, sourceRs);
+                        sourceRsMovedNext = true;
                     } else if (sourcePk.compareTo(shadowPk) > 0) {
                         delete(table, shadowRs);
+                        sourceRsMovedNext = false;
                     } else if (sourcePk.compareTo(shadowPk) == 0) {
                         update(table, sourcePk, sourceRs, shadowRs);
+                        sourceRsMovedNext = true;
                     }
                 }
             }
@@ -105,6 +107,10 @@ public class DataSynchronizer extends DatabaseConnector {
         }
         sourceDataMiner.finish();
         shadowDataMiner.finish();
+    }
+
+    private String curePk(String pk) {
+        return pk.replace(" ", "#").replace("-", "_").replace(".", "?");
     }
 
     private void insert(Table table, String sourcePk, SourceResultSet sourceRs) throws SQLException {

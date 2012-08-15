@@ -58,13 +58,12 @@ public class ShadowDataMiner extends DatabaseConnector {
     public ShadowResultSet mine(Table table) throws InaccessibleConfigurationFileException, SQLException, DriverNotFoundException {
         ShadowResultSet srs = null;
         try {
-            String compositePK = getQueryCustomizer().buildCompositePrimaryKey(table);
             String sql = "SELECT `cell`.`ID`, `cell`.`PRIMARY_KEY_VALUE`, `cell`.`DATA`, `cell`.`COLUMN_ID` FROM `cell` WHERE `COLUMN_ID` IN (";
             for (Column c : table.getColumnList()) {
                 sql += c.getId() + ", "; // Add anyway, but the final one will be stripped.
             }
             sql = sql.substring(0, sql.length() - 2); // Strip the final ", ".
-            sql += ") ORDER BY `cell`.`PRIMARY_KEY_VALUE`";
+            sql += ") ORDER BY ASCII(`cell`.`PRIMARY_KEY_VALUE`), `cell`.`PRIMARY_KEY_VALUE` ASC";
             ResultSet rs = statement.executeQuery(sql);
             srs = new ShadowResultSet(rs);
         } finally {

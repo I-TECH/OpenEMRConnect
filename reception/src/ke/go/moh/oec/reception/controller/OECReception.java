@@ -155,71 +155,75 @@ public class OECReception {
      * @return  
      */
     public static PersonIdentifier createPersonIdentifier(String clinicId) {
-        if (clinicId != null && !clinicId.isEmpty()) {
-            if (OECReception.isNumber(clinicId, 5)) {
-                PersonIdentifier personIdentifier = new PersonIdentifier();
-                personIdentifier.setIdentifier(facilityCode() + "-"
-                        + padWithZeros(Integer.parseInt(clinicId), 5));
-                personIdentifier.setIdentifierType(PersonIdentifier.Type.cccUniqueId);
-                return personIdentifier;
-            }
-            if (clinicId.contains("/") && !clinicId.contains("-") && clinicId.split("/").length == 2) {
-                String parts[] = clinicId.split("/");
-                String patientNumber = parts[0];
-                String year = parts[1];
-                if (isNumber(patientNumber, 5)) {
-                    int yr = 0;
-                    if (isNumber(year, 4)) {
-                        yr = qualifyYear(Integer.parseInt(year));
-                    }
-                    int yrToday = new GregorianCalendar().get(Calendar.YEAR);
-                    if (yr > 2000 && yr <= yrToday) {
-                        PersonIdentifier personIdentifier = new PersonIdentifier();
-                        personIdentifier.setIdentifier(facilityCode() + "-"
-                                + padWithZeros(Integer.parseInt(patientNumber), 5)
-                                + "/" + yr);
-                        personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
-                        return personIdentifier;
-                    }
-                }
-            }
-            if (clinicId.contains("-") && clinicId.split("-").length == 2) {
-                String[] mainParts = clinicId.split("-");
-                String facilityPart = mainParts[0];
-                if (facilityPart.length() == 5 && isNumber(facilityPart, 5)) {
-                    String patientPart = mainParts[1];
-                    if (!patientPart.contains("/")) {
-                        if (OECReception.isNumber(patientPart, 5)) {
-                            PersonIdentifier personIdentifier = new PersonIdentifier();
-                            personIdentifier.setIdentifier(facilityPart + "-"
-                                    + padWithZeros(Integer.parseInt(patientPart), 5));
-                            personIdentifier.setIdentifierType(PersonIdentifier.Type.cccUniqueId);
-                            return personIdentifier;
-                        }
-                    } else if (patientPart.contains("/") && patientPart.split("/").length == 2) {
-                        String parts[] = patientPart.split("/");
-                        String patientNumber = parts[0];
-                        String year = parts[1];
-                        if (isNumber(patientNumber, 5)) {
-                            int yr = 0;
-                            if (isNumber(year, 4)) {
-                                yr = qualifyYear(Integer.parseInt(year));
-                            }
-                            int yrToday = new GregorianCalendar().get(Calendar.YEAR);
-                            if (yr > 2000 && yr <= yrToday) {
-                                PersonIdentifier personIdentifier = new PersonIdentifier();
-                                personIdentifier.setIdentifier(facilityPart + "-"
-                                        + padWithZeros(Integer.parseInt(patientNumber), 5)
-                                        + "/" + yr);
-                                personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
-                                return personIdentifier;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+        PersonIdentifier personIdentifier = new PersonIdentifier();
+        personIdentifier.setIdentifier(clinicId);
+        personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
+        return personIdentifier;
+//        if (clinicId != null && !clinicId.isEmpty()) {
+//            if (OECReception.isNumber(clinicId, 5)) {
+//                PersonIdentifier personIdentifier = new PersonIdentifier();
+//                personIdentifier.setIdentifier(facilityCode() + "-"
+//                        + padWithZeros(Integer.parseInt(clinicId), 5));
+//                personIdentifier.setIdentifierType(PersonIdentifier.Type.cccUniqueId);
+//                return personIdentifier;
+//            }
+//            if (clinicId.contains("/") && !clinicId.contains("-") && clinicId.split("/").length == 2) {
+//                String parts[] = clinicId.split("/");
+//                String patientNumber = parts[0];
+//                String year = parts[1];
+//                if (isNumber(patientNumber, 5)) {
+//                    int yr = 0;
+//                    if (isNumber(year, 4)) {
+//                        yr = qualifyYear(Integer.parseInt(year));
+//                    }
+//                    int yrToday = new GregorianCalendar().get(Calendar.YEAR);
+//                    if (yr > 2000 && yr <= yrToday) {
+//                        PersonIdentifier personIdentifier = new PersonIdentifier();
+//                        personIdentifier.setIdentifier(facilityCode() + "-"
+//                                + padWithZeros(Integer.parseInt(patientNumber), 5)
+//                                + "/" + yr);
+//                        personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
+//                        return personIdentifier;
+//                    }
+//                }
+//            }
+//            if (clinicId.contains("-") && clinicId.split("-").length == 2) {
+//                String[] mainParts = clinicId.split("-");
+//                String facilityPart = mainParts[0];
+//                if (facilityPart.length() == 5 && isNumber(facilityPart, 5)) {
+//                    String patientPart = mainParts[1];
+//                    if (!patientPart.contains("/")) {
+//                        if (OECReception.isNumber(patientPart, 5)) {
+//                            PersonIdentifier personIdentifier = new PersonIdentifier();
+//                            personIdentifier.setIdentifier(facilityPart + "-"
+//                                    + padWithZeros(Integer.parseInt(patientPart), 5));
+//                            personIdentifier.setIdentifierType(PersonIdentifier.Type.cccUniqueId);
+//                            return personIdentifier;
+//                        }
+//                    } else if (patientPart.contains("/") && patientPart.split("/").length == 2) {
+//                        String parts[] = patientPart.split("/");
+//                        String patientNumber = parts[0];
+//                        String year = parts[1];
+//                        if (isNumber(patientNumber, 5)) {
+//                            int yr = 0;
+//                            if (isNumber(year, 4)) {
+//                                yr = qualifyYear(Integer.parseInt(year));
+//                            }
+//                            int yrToday = new GregorianCalendar().get(Calendar.YEAR);
+//                            if (yr > 2000 && yr <= yrToday) {
+//                                PersonIdentifier personIdentifier = new PersonIdentifier();
+//                                personIdentifier.setIdentifier(facilityPart + "-"
+//                                        + padWithZeros(Integer.parseInt(patientNumber), 5)
+//                                        + "/" + yr);
+//                                personIdentifier.setIdentifierType(PersonIdentifier.Type.cccLocalId);
+//                                return personIdentifier;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return null;
     }
 
     private OECReception() {
