@@ -24,7 +24,7 @@ CREATE TABLE `address` (
   `address_id` int(11) NOT NULL AUTO_INCREMENT,
   `address` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`address_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 /*Data for the table `address` */
 
@@ -81,7 +81,7 @@ CREATE TABLE `fingerprint_technology_type` (
   `sdk_version` varchar(50) DEFAULT NULL,
   `fingerprint_reader_brand_name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`fingerprint_technology_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 /*Data for the table `fingerprint_technology_type` */
 
@@ -96,7 +96,7 @@ CREATE TABLE `fingerprint_type` (
   `hand_name` varchar(15) DEFAULT NULL,
   `finger_name` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`fingerprint_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 /*Data for the table `fingerprint_type` */
 
@@ -110,7 +110,7 @@ CREATE TABLE `identifier_type` (
   `identifier_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `identifier_type_name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`identifier_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 /*Data for the table `identifier_type` */
 
@@ -124,7 +124,7 @@ CREATE TABLE `marital_status_type` (
   `marital_status_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `marital_status_name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`marital_status_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 /*Data for the table `marital_status_type` */
 
@@ -151,9 +151,9 @@ CREATE TABLE `person` (
   `fathers_first_name` varchar(15) DEFAULT NULL,
   `fathers_middle_name` varchar(15) DEFAULT NULL,
   `fathers_last_name` varchar(15) DEFAULT NULL,
-  `compoundhead_first_name` varchar(15) DEFAULT NULL,
-  `compoundhead_middle_name` varchar(15) DEFAULT NULL,
-  `compoundhead_last_name` varchar(15) DEFAULT NULL,
+  `compoundhead_first_name` varchar(50) DEFAULT NULL,
+  `compoundhead_middle_name` varchar(50) DEFAULT NULL,
+  `compoundhead_last_name` varchar(50) DEFAULT NULL,
   `village_id` int(11) DEFAULT NULL,
   `marital_status` int(11) DEFAULT NULL,
   `consent_signed` tinyint(1) DEFAULT NULL,
@@ -321,7 +321,7 @@ CREATE TABLE `visit_type` (
   `visit_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `visit_type_name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`visit_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 /*Data for the table `visit_type` */
 
