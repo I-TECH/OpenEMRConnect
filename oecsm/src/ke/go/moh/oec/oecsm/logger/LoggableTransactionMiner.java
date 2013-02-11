@@ -41,7 +41,7 @@ import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
 
 /**
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  *
  * @date Sep 9, 2010 
  */

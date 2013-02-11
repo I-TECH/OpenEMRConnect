@@ -30,12 +30,12 @@ import ke.go.moh.oec.oecsm.data.Table;
 /**
  * @date Aug 21, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class MSAccessQueryCustomizer implements QueryCustomizer {
 
     public String buildCompositePrimaryKey(Table tableStructure) {
-    	String pkDelim = Daemon.getProperty("primary.key.value.delimiter");
+        String pkDelim = Daemon.getProperty("primary.key.value.delimiter");
         String compositePK = "";
         String[] pks = tableStructure.getPk().split(",");
         for (int i = 0; i < pks.length; i++) {
@@ -47,8 +47,15 @@ public class MSAccessQueryCustomizer implements QueryCustomizer {
         if (pks.length == 1) { // Make sure PK values always sort as a string.
             compositePK = "CStr(" + compositePK + ")";
         }
-//        System.out.println(compositePK);
         return compositePK;
+    }
+
+    public String buildAsciiCompositePrimaryKey(Table table) {
+        return "ASC(" + buildCompositePrimaryKey(table) + ")";
+    }
+
+    public String buildAsciiCompositePrimaryKey(String compositePk) {
+        return "ASC(" + compositePk + ")";
     }
 
     public String getOpenningSafetyPad() {

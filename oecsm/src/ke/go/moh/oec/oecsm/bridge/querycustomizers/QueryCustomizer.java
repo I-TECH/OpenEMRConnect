@@ -29,11 +29,15 @@ import ke.go.moh.oec.oecsm.data.Table;
 /**
  * @date Aug 21, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public interface QueryCustomizer {
 
     String buildCompositePrimaryKey(Table table);
+    
+    String buildAsciiCompositePrimaryKey(Table table);
+    
+    String buildAsciiCompositePrimaryKey(String compositePk);
 
     String getOpenningSafetyPad();
 

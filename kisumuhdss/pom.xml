@@ -22,19 +22,33 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <version>10.8.2.2</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>oeclib</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>derby</artifactId>
+          <groupId>org.apache.derby</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
       <version>5.1.19</version>
+      <type>jar</type>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>oeclib</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.8.2.2</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>jtds</groupId>
+      <artifactId>jtds-connector</artifactId>
+      <version>1.2.5</version>
+      <type>jar</type>
     </dependency>
   </dependencies>
   <build>

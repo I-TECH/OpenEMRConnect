@@ -46,8 +46,9 @@ import ke.go.moh.oec.RequestTypeId;
 import ke.go.moh.oec.lib.Mediator;
 
 /**
- * Looks for all new transactions from the shadow database, updates the MPI accordingly.
- * 
+ * Looks for all new transactions from the shadow database, updates the MPI
+ * accordingly.
+ *
  * @author Jim Grace
  */
 public class Updater {
@@ -68,11 +69,10 @@ public class Updater {
         private String value;
 
         /**
-         * Constructs a row of transaction detail.
-         * A transaction detail consists of a (name, value) pair, with the
-         * name of the database column to be inserted/updated
-         * and value it will contain.
-         * 
+         * Constructs a row of transaction detail. A transaction detail consists
+         * of a (name, value) pair, with the name of the database column to be
+         * inserted/updated and value it will contain.
+         *
          * @param name name of database column to be inserted/updated
          * @param value value of that database column
          */
@@ -83,9 +83,9 @@ public class Updater {
     }
 
     /**
-     * Creates and initializes an instance of the updater class.
-     * Creates connections to the shadow database to be used for finding new
-     * shadow transactions and transaction details.
+     * Creates and initializes an instance of the updater class. Creates
+     * connections to the shadow database to be used for finding new shadow
+     * transactions and transaction details.
      */
     public Updater() {
         try {
@@ -102,8 +102,8 @@ public class Updater {
     }
 
     /**
-     * Executes a SQL query on a database connection.
-     * Logs the query using a caller-supplied logging level.
+     * Executes a SQL query on a database connection. Logs the query using a
+     * caller-supplied logging level.
      *
      * @param sql the SQL query.
      * @return results of the query, as a ResultSet.
@@ -153,11 +153,12 @@ public class Updater {
     }
 
     /**
-     * Find the last transaction ID that we processed in the past.
-     * If there is no record of what we processed in the past, set the
-     * last transaction ID to 0 in the database and return 0.
-     * 
-     * @return ID of the last transaction we processed in the past, or 0 if none.
+     * Find the last transaction ID that we processed in the past. If there is
+     * no record of what we processed in the past, set the last transaction ID
+     * to 0 in the database and return 0.
+     *
+     * @return ID of the last transaction we processed in the past, or 0 if
+     * none.
      */
     private int getLastReceivedTransaction() {
         if (lastReceivedTransaction < 0) {
@@ -181,9 +182,10 @@ public class Updater {
     }
 
     /**
-     * Looks for all new transactions from the shadow database, updates the MPI accordingly.
-     * 
-     * @throws SQLException 
+     * Looks for all new transactions from the shadow database, updates the MPI
+     * accordingly.
+     *
+     * @throws SQLException
      */
     public void updateAllTransactions() throws SQLException {
         int trans = getLastReceivedTransaction();
@@ -227,10 +229,11 @@ public class Updater {
     }
 
     /**
-     * Processes a single transaction and, if successful,
-     * updates the last_received_transaction_id in the database.
-     * 
-     * @param transactionType Type of the transaction, "INSERT", "UPDATE", or "DELETE".
+     * Processes a single transaction and, if successful, updates the
+     * last_received_transaction_id in the database.
+     *
+     * @param transactionType Type of the transaction, "INSERT", "UPDATE", or
+     * "DELETE".
      * @param hdssId HDSS ID of the person this transaction is for.
      * @param rowList List of transaction row details (column name/value pairs).
      * @param transactionId ID of the transaction we are processing.
@@ -252,22 +255,21 @@ public class Updater {
     }
 
     /**
-     * Processes a single new transaction from the shadow database and requests the MPI
-     * to make the change.
-     * <p>
-     * There is some special logic to handle the case where the UPDATE statement is
-     * updating a non-null value to a null value. In this case, we want to pack the
-     * person object with a special value indicating that the field was present but null.
-     * For strings, this special value is the empty string "". For dates, this special
-     * value is January 1, 0001.
-     * <p>
-     * For enums, there is no such special value. At the time this code was written,
-     * the only enums that are in the HDSS database to be updated in the MPI are
-     * sex and marital status. It is not expected that these would ever be changed
-     * in the HDSS database to null. Note that pregnancy status does not need this
-     * special value, because it is not stored in the MPI.
-     * 
-     * @param transactionType Type of the transaction, "INSERT", "UPDATE", or "DELETE".
+     * Processes a single new transaction from the shadow database and requests
+     * the MPI to make the change. <p> There is some special logic to handle the
+     * case where the UPDATE statement is updating a non-null value to a null
+     * value. In this case, we want to pack the person object with a special
+     * value indicating that the field was present but null. For strings, this
+     * special value is the empty string "". For dates, this special value is
+     * January 1, 0001. <p> For enums, there is no such special value. At the
+     * time this code was written, the only enums that are in the HDSS database
+     * to be updated in the MPI are sex and marital status. It is not expected
+     * that these would ever be changed in the HDSS database to null. Note that
+     * pregnancy status does not need this special value, because it is not
+     * stored in the MPI.
+     *
+     * @param transactionType Type of the transaction, "INSERT", "UPDATE", or
+     * "DELETE".
      * @param hdssId HDSS ID of the person this transaction is for.
      * @param rowList List of transaction row details (column name/value pairs).
      * @return true if we succeeded, otherwise false.
@@ -451,13 +453,14 @@ public class Updater {
     }
 
     /**
-     * Parses a date and time in MySQL string format into a <code>Date</code>
+     * Parses a date and time in MySQL string format into a
+     * <code>Date</code>
      *
      * @param sDateTime contains date and time
-     * @return the date and time in <code>Date</code> format
-     * If the date and time string was null, returns null.
-     * If the date and time string was empty, returns January 1, 0001.
-     * This is done so there can be a special value if the date is present but empty.
+     * @return the date and time in <code>Date</code> format If the date and
+     * time string was null, returns null. If the date and time string was
+     * empty, returns January 1, 0001. This is done so there can be a special
+     * value if the date is present but empty.
      */
     private Date parseDate(String sDateTime) {
         Date returnDateTime = null;
@@ -479,8 +482,8 @@ public class Updater {
      * Parses a hexadecimal-encoded string into a binary byte array.
      *
      * @param hex the hexadecimal string to unpack
-     * @return the resulting binary byte array.
-     * Returns null if the hex string was null or empty.
+     * @return the resulting binary byte array. Returns null if the hex string
+     * was null or empty.
      */
     private byte[] parseHex(String hex) {
         byte[] bytes = null;

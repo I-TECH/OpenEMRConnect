@@ -344,7 +344,7 @@ public class Mediator implements IService {
             // thus require loading as a resource (unless the system property
             // for "configDirectory" is supplied).
 
-            String propFileName = "/openemrconnect.properties";
+            String propFileName = "openemrconnect.properties";
             try {
                 String propPathName = configDirectory + propFileName;
                 Logger.getLogger(Mediator.class.getName()).log(Level.INFO,
