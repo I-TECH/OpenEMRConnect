@@ -24,11 +24,10 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.sync.schema;
 
-import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.util.Arrays;
 import java.sql.SQLException;
+import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Database;
 import ke.go.moh.oec.oecsm.data.Table;
@@ -38,7 +37,7 @@ import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
 /**
  * @date Aug 13, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class SourceSchemaMiner extends DatabaseConnector {
 
@@ -65,7 +64,7 @@ public class SourceSchemaMiner extends DatabaseConnector {
             for (int i = 0; i < tableListArray.length; i++) {
                 //if (tableListArray[i].indexOf(tableList)>-1) {
                 //System.out.println("table " + tableListArray[i].toString());
-                setupTable(database, tableListArray[i].toString(), "TABLE");
+                setupTable(database, tableListArray[i].toString(), tableTypes);
                 //i = i + 1;
             }
 

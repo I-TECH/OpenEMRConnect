@@ -27,7 +27,7 @@ package ke.go.moh.oec.oecsm.data;
 /**
  * @date Sep 13, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public interface SchemaTransactionTarget {
 

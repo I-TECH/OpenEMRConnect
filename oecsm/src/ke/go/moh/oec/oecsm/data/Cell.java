@@ -27,7 +27,7 @@ package ke.go.moh.oec.oecsm.data;
 /**
  * @date Aug 19, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class Cell implements Comparable<Cell> {
 

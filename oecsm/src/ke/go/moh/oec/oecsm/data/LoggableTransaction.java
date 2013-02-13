@@ -28,7 +28,7 @@ import java.util.List;
 import ke.go.moh.oec.oecsm.bridge.Transaction;
 
 /**
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  *
  * @date Sep 10, 2010
  */

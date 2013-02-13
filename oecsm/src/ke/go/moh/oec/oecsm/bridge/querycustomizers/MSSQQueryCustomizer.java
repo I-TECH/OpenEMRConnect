@@ -29,7 +29,7 @@ import ke.go.moh.oec.oecsm.data.Table;
 /**
  * @date Aug 21, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class MSSQQueryCustomizer implements QueryCustomizer {
 
@@ -43,6 +43,14 @@ public class MSSQQueryCustomizer implements QueryCustomizer {
             }
         }
         return compositePK;
+    }
+
+    public String buildAsciiCompositePrimaryKey(Table table) {
+        return "ASCII(" + buildCompositePrimaryKey(table) + ")";
+    }
+
+    public String buildAsciiCompositePrimaryKey(String compositePk) {
+        return "ASCII(" + compositePk + ")";
     }
 
     public String getOpenningSafetyPad() {

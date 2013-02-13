@@ -46,7 +46,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  *
  * @date Sep 8, 2010
  */
