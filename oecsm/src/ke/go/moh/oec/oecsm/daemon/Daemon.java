@@ -42,7 +42,7 @@ import ke.go.moh.oec.oecsm.sync.schema.SchemaSynchronizer;
 /**
  * @date Aug 19, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class Daemon extends Thread {
 

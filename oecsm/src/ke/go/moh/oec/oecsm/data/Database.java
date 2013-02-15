@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * @date Aug 13, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class Database implements SchemaTransactionTarget, Comparable<Database> {
 

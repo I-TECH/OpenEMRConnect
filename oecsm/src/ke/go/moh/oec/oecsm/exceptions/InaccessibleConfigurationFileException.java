@@ -29,7 +29,7 @@ import java.io.IOException;
 /**
  * @date Aug 13, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class InaccessibleConfigurationFileException extends IOException {
 

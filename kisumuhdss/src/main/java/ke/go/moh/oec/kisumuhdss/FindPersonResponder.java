@@ -38,8 +38,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ke.go.moh.oec.*;
+import ke.go.moh.oec.lib.Mediator;
 
 public class FindPersonResponder implements IService {
+
+    String sourceDriver = Mediator.getProperty("Source.driver");
+    String sourceUrl = Mediator.getProperty("Source.url");
+    String sourceUsername = Mediator.getProperty("Source.username");
+    String sourcePassword = Mediator.getProperty("Source.password");
+    String hhMemberFunction = Mediator.getProperty("Source.individualHouseholdMembersFunction");
 
     public Object getData(int requestTypeId, Object requestData) {
 //        if (requestTypeId == RequestTypeId.FIND_PERSON_HDSS) {
@@ -72,18 +79,16 @@ public class FindPersonResponder implements IService {
             //Connect Database
             try {
                 try {
-                    Class.forName("net.sourceforge.jtds.jdbc.Driver");
+                    Class.forName(sourceDriver);
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                String connectionUrl = "jdbc:jtds:sqlserver://localhost:1435/hdss;";
-                Connection conn = DriverManager.getConnection(connectionUrl, "sa", "2806");
-                PreparedStatement sql = null;
+                String connectionUrl = sourceUrl;
+                Connection conn = DriverManager.getConnection(connectionUrl, sourceUsername, sourcePassword);
                 //Set Query To Run
-                sql = conn.prepareStatement("SELECT * FROM [dbo].[getMembersinIndividualHousehold] ('" + hdssID + "')");
-                ResultSet rs = null;
+                PreparedStatement sql = conn.prepareStatement("SELECT * FROM " + hhMemberFunction + " ('" + hdssID + "')");
                 //Execute Query
-                rs = sql.executeQuery(); //excute query
+                ResultSet rs = sql.executeQuery(); //excute query
                 while (rs.next()) {
                     //For Each HouseHold Member Add To The List
                     RelatedPerson rp = new RelatedPerson();

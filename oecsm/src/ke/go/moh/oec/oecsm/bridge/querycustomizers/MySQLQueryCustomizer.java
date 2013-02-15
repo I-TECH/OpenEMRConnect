@@ -29,7 +29,7 @@ import ke.go.moh.oec.oecsm.data.Table;
 /**
  * @date Aug 21, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class MySQLQueryCustomizer implements QueryCustomizer {
 
@@ -46,6 +46,14 @@ public class MySQLQueryCustomizer implements QueryCustomizer {
             }
         }
         return compositePK;
+    }
+
+    public String buildAsciiCompositePrimaryKey(Table table) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String buildAsciiCompositePrimaryKey(String compositePk) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public String getOpenningSafetyPad() {

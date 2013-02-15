@@ -24,20 +24,20 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.sync.data;
 
-import ke.go.moh.oec.oecsm.sync.data.resultsets.SourceResultSet;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Table;
-import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
+import ke.go.moh.oec.oecsm.sync.data.resultsets.SourceResultSet;
 
 /**
  * @date Aug 19, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class SourceDataMiner extends DatabaseConnector {
 
@@ -59,7 +59,8 @@ public class SourceDataMiner extends DatabaseConnector {
         SourceResultSet srs = null;
         try {
             String compositePK = getQueryCustomizer().buildCompositePrimaryKey(table);
-            String sql = "SELECT ASC(" + compositePK + ") AS ASCII_ID, " + compositePK + " AS PK";
+            String asciiCompositePK = getQueryCustomizer().buildAsciiCompositePrimaryKey(compositePK);
+            String sql = "SELECT " + asciiCompositePK + " AS ASCII_ID, " + compositePK + " AS PK";
             String prefix = getQueryCustomizer().getOpenningSafetyPad();
             String suffix = getQueryCustomizer().getClosingSafetyPad();
             for (Column column : table.getColumnList()) {

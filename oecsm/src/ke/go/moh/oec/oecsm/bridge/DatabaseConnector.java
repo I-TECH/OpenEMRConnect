@@ -34,17 +34,17 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ke.go.moh.oec.oecsm.bridge.querycustomizers.QueryCustomizer;
 import ke.go.moh.oec.oecsm.bridge.querycustomizers.MSAccessQueryCustomizer;
 import ke.go.moh.oec.oecsm.bridge.querycustomizers.MSSQQueryCustomizer;
 import ke.go.moh.oec.oecsm.bridge.querycustomizers.MySQLQueryCustomizer;
+import ke.go.moh.oec.oecsm.bridge.querycustomizers.QueryCustomizer;
 import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
 
 /**
  * @date Aug 17, 2010
  *
- * @author JGitahi
+ * @author Gitahi Ng'ang'a
  */
 public class DatabaseConnector {
 
