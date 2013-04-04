@@ -91,9 +91,10 @@ public class Daemon implements Runnable {
                         if (!linkedRecordList.isEmpty()) {
                             RecordFormat oneLineFormat = new OneLineRecordFormat();
                             RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
-                            String filename = "ADT Extract No. " + new Date().getTime();
-                            csvWriter.writeToCsv(linkedRecordList, filename);
-
+                            String filename = ResourceManager.getSetting("outputfilename") + new Date().getTime()
+                                    + ResourceManager.getSetting("outputfileextension");
+                            csvWriter.writeToCsv(linkedRecordList, ResourceManager.getSetting("outputdir"), filename);
+                            
                             // Send extracted file to remote Mirth instance if so configured
                             if ("remote".equalsIgnoreCase(ResourceManager.getSetting("mirth.location"))) {
                                 if (!"".equals(ResourceManager.getSetting("mirth.url"))
