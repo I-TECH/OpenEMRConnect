@@ -74,18 +74,19 @@ public class RecordLinker {
             } else {
                 //link with changed records first - this ensures all associated master records are loaded
                 List<LinkedRecord> temporaryLinkedRecordList = linkWithMaster(masterRecordMap, slaveRecordMap);
-                RecordSource slaveRecordSource = new ArrayList<RecordSource>(slaveRecordMap.keySet()).get(0);
-                //cumulate if necessary - causing linkage to occur again with slave record history included
-                if (slaveRecordSource.isCumulate()) {
-                    slaveRecordMap.clear();
-                    RecordSource masterRecordSource = new ArrayList<RecordSource>(masterRecordMap.keySet()).get(0);
-                    List<Record> slaveRecordList = new ArrayList<Record>();
-                    for (LinkedRecord masterLinkedRecord : cachedMasterLinkedRecordMap.values()) {
-                        Record masterRecord = masterLinkedRecord.getRecord();
-                        slaveRecordList.addAll(recordMiner.mine(masterRecord, masterRecordSource, slaveRecordSource));
+                for (RecordSource slaveRecordSource : new ArrayList<RecordSource>(slaveRecordMap.keySet())) {
+                    //cumulate if necessary - causing linkage to occur again with slave record history included
+                    if (slaveRecordSource.isCumulate()) {
+                        slaveRecordMap.clear();
+                        RecordSource masterRecordSource = new ArrayList<RecordSource>(masterRecordMap.keySet()).get(0);
+                        List<Record> slaveRecordList = new ArrayList<Record>();
+                        for (LinkedRecord masterLinkedRecord : cachedMasterLinkedRecordMap.values()) {
+                            Record masterRecord = masterLinkedRecord.getRecord();
+                            slaveRecordList.addAll(recordMiner.mine(masterRecord, masterRecordSource, slaveRecordSource));
+                        }
+                        slaveRecordMap.put(slaveRecordSource, slaveRecordList);
+                        temporaryLinkedRecordList = linkWithMaster(masterRecordMap, slaveRecordMap);
                     }
-                    slaveRecordMap.put(slaveRecordSource, slaveRecordList);
-                    temporaryLinkedRecordList = linkWithMaster(masterRecordMap, slaveRecordMap);
                 }
                 linkedRecordList.addAll(temporaryLinkedRecordList);
                 linkedRecordList.addAll(getUnlinkedMasterRecords(masterRecordMap));

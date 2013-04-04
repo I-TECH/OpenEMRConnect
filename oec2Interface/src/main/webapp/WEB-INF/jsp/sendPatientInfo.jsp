@@ -2,59 +2,59 @@
 
 <html>
 
-<head>
+    <head>
 
-<title>Patient Request Form</title>
-</head>
+        <title>Patient Request Form</title>
+    </head>
 
-<body>
+    <body>
 
-	<form:form method="POST" commandName="patientIdentification">
+        <form:form method="POST" commandName="patientIdentification">
 
-		<table>
+            <table>
 
-			<tr>
+                <tr>
 
-				<td>Patient Identification:</td>
-				<td><form:input path="identification" />
-				</td>
-                                <td class="error">${errors[0]}</td>
-			</tr>
-			<tr>
+                    <td>Patient Identification:</td>
+                    <td><form:input path="identification" />
+                    </td>
+                    <td class="error">${errors[0]}</td>
+                </tr>
+                <tr>
 
-				<td>Type of the Id</td>
-				<td><form:select path="identificationType">
+                    <td>Type of the Id</td>
+                    <td><form:select path="identificationType">
 
-						<form:option value="0" label="Select" />
+                            <form:option value="0" label="Select" />
 
-						<form:option value="1" label="ClinicalId" />
+                            <form:option value="1" label="ClinicalId" />
 
-						<form:option value="2" label="HDSS" />
+                            <form:option value="2" label="HDSS" />
 
 
-					</form:select>
-				</td>
-			</tr>
-			<tr>
+                        </form:select>
+                    </td>
+                </tr>
+                <tr>
 
-				<td>Source :</td>
+                    <td>Source :</td>
 
-				<td><form:radiobutton path="RequestSource" value="PIS"
-						label="PIS" /> <form:radiobutton path="RequestSource" value="EMR"
-						label="EMR" /></td>
+                    <td><form:radiobutton path="RequestSource" value="PIS"
+                                      label="PIS" /> <form:radiobutton path="RequestSource" value="EMR"
+                                      label="EMR" /></td>
 
-			</tr>
-			<tr>
+                </tr>
+                <tr>
 
-				<td colspan="2"><input type="submit">
-				</td>
+                    <td colspan="2"><input type="submit">
+                    </td>
 
-			</tr>
+                </tr>
 
-		</table>
+            </table>
 
-	</form:form>
+        </form:form>
 
-</body>
+    </body>
 
 </html>
