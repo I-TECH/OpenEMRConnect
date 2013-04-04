@@ -66,7 +66,7 @@ public class SourceDataMiner extends DatabaseConnector {
             for (Column column : table.getColumnList()) {
                 sql += ", " + prefix + column.getName() + suffix + " AS C" + column.getId();
             }
-            sql += " FROM " + prefix + table.getName() + suffix + " ORDER BY 1 ASC, " + compositePK + "ASC";
+            sql += " FROM " + prefix + table.getName() + suffix + " ORDER BY 1 ASC, " + compositePK + " ASC";
             ResultSet rs = statement.executeQuery(sql);
             srs = new SourceResultSet(rs);
         } finally {
