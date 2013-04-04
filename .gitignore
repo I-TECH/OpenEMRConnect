@@ -24,10 +24,11 @@ bin/
 *.tar
 *.zip
 
-# Logs and databases #
+# Logs, databases and csv output #
 ######################
 *.log
 *.sqlite
+*.csv
 
 # OS generated files #
 ######################
