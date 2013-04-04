@@ -27,6 +27,7 @@ package ke.go.moh.oec.adt.controller;
 import ke.go.moh.oec.adt.format.RecordFormat;
 import ke.go.moh.oec.adt.data.Record;
 import au.com.bytecode.opencsv.CSVWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -48,13 +49,28 @@ public class RecordCsvWriter {
         this.format = format;
     }
 
-    public void writeToCsv(List<LinkedRecord> linkedRecordList, String fileName) throws IOException {
+    public void writeToCsv(List<LinkedRecord> linkedRecordList, String outputDir, String fileName) throws IOException {
         CSVWriter csvWriter = null;
         try {
-            csvWriter = new CSVWriter(new FileWriter(fileName + ".csv"));
+            String fullFileName = fileName;
+            if (outputDir != null) {
+                File outputDirFile = new File(outputDir);
+                if (!outputDirFile.exists()) {
+                    System.out.println("Output directory '" + outputDir + "' does not exists. Attempting to create it...");
+                    if (!outputDirFile.mkdirs()) {
+                        System.out.println("Failed to create output directory '" + outputDir 
+                                + "'. Output file will be placed in the application path.");
+                    } else {
+                        System.out.println("Succeeded to create output directory '" + outputDir +"'.");
+                        fullFileName = outputDir + "\\" + fileName;
+                    }
+                } else {
+                    fullFileName = outputDir + "\\" + fileName;
+                }
+            }
+            System.out.println("Full file name: " + fullFileName);
+            csvWriter = new CSVWriter(new FileWriter(new File(fullFileName)));
             csvWriter.writeAll(format.format(linkedRecordList));
-        } catch (IOException ex) {
-            throw ex;
         } finally {
             if (csvWriter != null) {
                 csvWriter.close();
