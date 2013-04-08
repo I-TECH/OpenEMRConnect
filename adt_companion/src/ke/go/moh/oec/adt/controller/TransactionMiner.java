@@ -214,7 +214,7 @@ private void setPrimaryKeyMaps(RecordSource recordSource, Map<Integer, Transacti
         ResultSet resultSet = null;
         String query = "SELECT `last_processed_transaction_id`\n"
                 + "FROM `destination`\n"
-                + "WHERE `name` = 'ADT COMPANION'";
+                + "WHERE `name` = '" + ResourceManager.getSetting("name") + "'";
         try {
             statement = getConnection().createStatement();
             resultSet = statement.executeQuery(query);
