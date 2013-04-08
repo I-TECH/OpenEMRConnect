@@ -77,6 +77,8 @@ public class FindPersonResponder implements IService {
             String hdssID = hdssPersonIdentifier.getIdentifier(); //get HDSS ID Of the Individual
             List<RelatedPerson> relatedPersonList = new ArrayList<RelatedPerson>();
             //Connect Database
+            Connection conn = null;
+            PreparedStatement sql = null;
             try {
                 try {
                     Class.forName(sourceDriver);
@@ -84,9 +86,9 @@ public class FindPersonResponder implements IService {
                     Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 String connectionUrl = sourceUrl;
-                Connection conn = DriverManager.getConnection(connectionUrl, sourceUsername, sourcePassword);
+                conn = DriverManager.getConnection(connectionUrl, sourceUsername, sourcePassword);
                 //Set Query To Run
-                PreparedStatement sql = conn.prepareStatement("SELECT * FROM " + hhMemberFunction + " ('" + hdssID + "')");
+                sql = conn.prepareStatement("SELECT * FROM " + hhMemberFunction + " ('" + hdssID + "')");
                 //Execute Query
                 ResultSet rs = sql.executeQuery(); //excute query
                 while (rs.next()) {
@@ -117,6 +119,17 @@ public class FindPersonResponder implements IService {
             } catch (SQLException ex) {
                 //status = false;
                 Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    if (conn != null) {
+                        conn.close();
+                    }
+                    if (sql != null) {
+                        sql.close();
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         } else {
             Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE,
