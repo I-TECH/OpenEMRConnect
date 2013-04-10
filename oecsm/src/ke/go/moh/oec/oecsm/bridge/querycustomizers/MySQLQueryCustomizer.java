@@ -49,11 +49,11 @@ public class MySQLQueryCustomizer implements QueryCustomizer {
     }
 
     public String buildAsciiCompositePrimaryKey(Table table) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "ASCII(" + buildCompositePrimaryKey(table) + ")";
     }
 
     public String buildAsciiCompositePrimaryKey(String compositePk) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "ASCII(" + compositePk + ")";
     }
 
     public String getOpenningSafetyPad() {

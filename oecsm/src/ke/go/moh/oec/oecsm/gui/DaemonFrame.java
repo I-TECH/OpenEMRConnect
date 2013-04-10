@@ -657,8 +657,9 @@ public class DaemonFrame extends javax.swing.JFrame {
         drivers.add(new Driver("MySQL JDBC Driver", "com.mysql.jdbc.Driver", "jdbc:mysql://host:port/database"));
         drivers.add(new Driver("MSSQL Server JDBC Driver", "net.sourceforge.jtds.jdbc.Driver", "jdbc:jtds:sqlserver://host:port/database"));
         drivers.add(new Driver("PostgreSQL JDBC Driver", "org.postgresql.Driver", "jdbc:postgresql://host:port/database"));
-        drivers.add(new Driver("MS Access JDBC-ODBC Bridge", "sun.jdbc.odbc.JdbcOdbcDriver", "jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=C:\\database folder\\database.mdb"));
-        drivers.add(new Driver("MS Access JDBC Driver", "com.hxtt.sql.access.AccessDriver", "jdbc:Access:///database folder"));
+        drivers.add(new Driver("MS Access JDBC-ODBC Bridge [With DSN]", "sun.jdbc.odbc.JdbcOdbcDriver", "jdbc:odbc:dsn"));
+        drivers.add(new Driver("MS Access JDBC-ODBC Bridge [Without DSN]", "sun.jdbc.odbc.JdbcOdbcDriver", "jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=C:\\database folder\\database.mdb"));
+        drivers.add(new Driver("MS Access JDBC Driver [HXTT]", "com.hxtt.sql.access.AccessDriver", "jdbc:Access:///database folder"));
         return drivers;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
