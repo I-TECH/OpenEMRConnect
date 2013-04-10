@@ -28,7 +28,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 
 public class CpadDataExtract {
-    
+
     final static String MONTH_MILLIS = "2629743833";
     final static String SESQUICENTENNIAL_MILLIS = "4717440000000";
     final static String YEAR_MILLIS = "31556925994";
@@ -48,7 +48,7 @@ public class CpadDataExtract {
     final static int OTHER_RELATIONSHIP_CODE = 16;
     final static int OTHER_SIDE_EFFECTS_CODE = 88;
     static Properties companionProps;
-    
+
     public static void main(String[] args) {
         try {
             companionProps = loadProperties("cpad_companion.properties");
@@ -69,9 +69,9 @@ public class CpadDataExtract {
                     }
                 }
             } else {
-                logAndQuit(Level.SEVERE, "Scheduler method could not be determoned. "
+                log(Level.SEVERE, "Scheduler method could not be determoned. "
                         + "Check the value set for the property [scheduler.method] in the cpad_companion.properties file. "
-                        + "It should either be set to 'interval' or 'timeofday'.");
+                        + "It should either be set to 'interval' or 'timeofday'.", 1);
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, null, ex);
@@ -79,7 +79,7 @@ public class CpadDataExtract {
             Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public static void work() {
         OutputStreamWriter out = null;
         Connection con = null;
@@ -91,7 +91,7 @@ public class CpadDataExtract {
         for (int i = 0; i < MAX_VISIT_CNT; i++) {
             visits[i] = new VisitData();
         }
-        
+
         try {
             Properties sourceProps = loadProperties("source_database.properties");
             Properties shadowProps = loadProperties("shadow_database.properties");
@@ -111,7 +111,7 @@ public class CpadDataExtract {
             // First, get the list of tables that we're interested in
             String tableList = "('" + sourceProps.getProperty("tableList").replace(",", "','") + "')";
             if ("".equals(tableList) || tableList == null) {
-                logAndQuit(Level.SEVERE, "No tables listed in properties file.");
+                log(Level.SEVERE, "No tables listed in properties file.", 1);
             }
 
             // Next, get the date we want to use when checking for recent transactions
@@ -119,7 +119,7 @@ public class CpadDataExtract {
             String transSince = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                     .format(now.getTime() - new Long(companionProps.getProperty("check.interval.seconds")) * 1000);
             if ("".equals(transSince) || transSince == null) {
-                logAndQuit(Level.SEVERE, "Could not calculate date to use: " + transSince + ".");
+                log(Level.SEVERE, "Could not calculate date to use: " + transSince + ".", 1);
             }
 
             // Finally, query the transaction_data table to get a list of patient_ids associated with the transaction(s)
@@ -133,7 +133,7 @@ public class CpadDataExtract {
                     + "AND LTRIM(RTRIM(td.data)) != '' "
                     + "AND td.transaction_id = tr.id "
                     + "AND tr.created_datetime >= '" + transSince + "'");
-            
+
             ArrayList<String> shadowPids = new ArrayList<String>();
             while (rs.next()) {
                 shadowPids.add(rs.getString("data").replace(".0", ""));
@@ -146,21 +146,22 @@ public class CpadDataExtract {
             while (rs.next()) {
                 cpadPids.add(rs.getString("patient_id").replace(".0", ""));
             }
-            
+
+            ArrayList<String> cpadPidsToRemove = new ArrayList<String>();
             for (int i = 0; i < cpadPids.size(); i++) {
                 if (!shadowPids.contains(cpadPids.get(i))) {
-                    cpadPids.remove(cpadPids.get(i));
-                    System.out.println("i = " + i);
+                    cpadPidsToRemove.add(cpadPids.get(i));
                 }
             }
-            
+            cpadPids.removeAll(cpadPidsToRemove);
+
             int recCnt = cpadPids.size();
             if (recCnt == 0) {
-                logAndQuit(Level.INFO, "No updated patient records found in the shadow database since " + transSince + ".");
+                log(Level.INFO, "No updated patient records found in the shadow database since " + transSince + ".", false);
             }
-            
+
             Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Extracting data for " + recCnt + " patient" + (recCnt == 1 ? "." : "s."));
-            
+
             PreparedStatement headerStmts[] = new PreparedStatement[6];
             headerStmts[0] = con.prepareStatement("select pi.patient_id, pi.first_name, pi.last_name, pi.dob, "
                     + "pi.age, pi.agemnth, pi.date_entered, s.sexname, m.maritalname "
@@ -188,7 +189,7 @@ public class CpadDataExtract {
                     + "and tv.[value] = ?");
             headerStmts[5] = con.prepareStatement("select Organization, SiteCode, District, Province "
                     + "from tblOrganization");
-            
+
             PreparedStatement visitStmts[] = new PreparedStatement[9];
             visitStmts[0] = con.prepareStatement("select count(visit_id) as visits from tblvisit_information where patient_id = ?");
             visitStmts[1] = con.prepareStatement("select top " + MAX_VISIT_CNT + " vi.visit_id, vi.visit_date, vi.weight, vi.height, "
@@ -248,19 +249,19 @@ public class CpadDataExtract {
                     + "from Tbl_Values tv "
                     + "where tv.category = 'VisitType' "
                     + "and tv.[value] = ?");
-            
+
             int cnt = 0;
             for (int a = 0; a < cpadPids.size(); a++) {
                 int pid = Integer.parseInt(cpadPids.get(a));
-                
+
                 header.reset();
                 ExtractHeaderData(headerStmts, pid, header, companionProps);
-                
+
                 for (int i = 0; i < MAX_VISIT_CNT; i++) {
                     visits[i].reset();
                 }
                 ExtractVisitData(visitStmts, pid, visits);
-                
+
                 String finalCsv = "";
                 finalCsv += header.printHeaderDelim("\t");
                 finalCsv += "\t";
@@ -292,7 +293,7 @@ public class CpadDataExtract {
                     Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
                 }
             }
-            
+
             Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Done!");
         } catch (ClassNotFoundException e) {
             System.out.println(e.toString());
@@ -323,7 +324,7 @@ public class CpadDataExtract {
             }
         }
     }
-    
+
     private static void ExtractHeaderData(PreparedStatement stmts[], int pid, HeaderData header, Properties props) throws SQLException {
         // Fill in prepared statement parameters
         for (int i = 0; i < stmts.length - 2; i++) {
@@ -443,10 +444,10 @@ public class CpadDataExtract {
             header.setFacCounty(rs.getString("District"));
             header.setFacState(rs.getString("Province"));
         }
-        
+
         rs.close();
     }
-    
+
     private static void ExtractVisitData(PreparedStatement stmts[], int pid, VisitData[] visits) throws SQLException {
         int visitCnt = 0;
         ResultSet subRs = null;
@@ -465,7 +466,7 @@ public class CpadDataExtract {
         if (visitCnt == 0) {
             return;
         }
-        
+
         rs = stmts[1].executeQuery();
         int cnt = 0;
         while (rs.next() && cnt < MAX_VISIT_CNT) {
@@ -667,15 +668,15 @@ public class CpadDataExtract {
         }
         rs.close();
     }
-    
+
     private static boolean sendMessage(String url, String filename) {
         int returnStatus = HttpStatus.SC_CREATED;
         HttpClient httpclient = new HttpClient();
         HttpConnectionManager connectionManager = httpclient.getHttpConnectionManager();
         connectionManager.getParams().setSoTimeout(120000);
-        
+
         PostMethod httpPost = new PostMethod(url);
-        
+
         RequestEntity requestEntity = null;
         try {
             FileInputStream message = new FileInputStream(filename);
@@ -685,7 +686,7 @@ public class CpadDataExtract {
             Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "File not found.", e);
         }
         httpPost.setRequestEntity(requestEntity);
-        
+
         try {
             httpclient.executeMethod(httpPost);
             returnStatus = httpPost.getStatusCode();
@@ -709,7 +710,7 @@ public class CpadDataExtract {
         }
         return returnStatus == HttpStatus.SC_OK;
     }
-    
+
     private static Properties loadProperties(String propertiesFile) throws FileNotFoundException {
         try {
             Properties properties = new Properties();
@@ -723,9 +724,19 @@ public class CpadDataExtract {
             throw new FileNotFoundException("Properties file not found: " + propertiesFile);
         }
     }
-    
-    private static void logAndQuit(Level level, String msg) {
+
+    private static void log(Level level, String msg, int exitCode) {
+        log(level, msg, true, exitCode);
+    }
+
+    private static void log(Level level, String msg, boolean quit) {
+        log(level, msg, quit, 0);
+    }
+
+    private static void log(Level level, String msg, boolean quit, int exitCode) {
         Logger.getLogger(CpadDataExtract.class.getName()).log(level, msg);
-        System.exit(0);
+        if (quit) {
+            System.exit(exitCode);
+        }
     }
 }
