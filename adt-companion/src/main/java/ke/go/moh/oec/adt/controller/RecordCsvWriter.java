@@ -59,13 +59,13 @@ public class RecordCsvWriter {
             if (outputDir != null) {
                 File outputDirFile = new File(outputDir);
                 if (!outputDirFile.exists()) {
-                    Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Attempting to create missing directory {0}...",
+                    Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Attempting to create missing directory {0}...",
                             outputDir);
                     if (!outputDirFile.mkdirs()) {
-                        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Failed to create missing directory {0}. "
+                        Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Failed to create missing directory {0}. "
                                 + "Output will be placed in application path instead.", outputDir);
                     } else {
-                        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Succeeded to create missing directory {0}.", outputDir);
+                        Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Succeeded to create missing directory {0}.", outputDir);
                     }
                 } else {
                     fullFileName = outputDir + "\\" + fileName;

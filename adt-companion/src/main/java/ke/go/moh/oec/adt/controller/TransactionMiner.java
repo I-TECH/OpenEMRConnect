@@ -36,6 +36,7 @@ import ke.go.moh.oec.adt.data.RecordSource;
 import ke.go.moh.oec.adt.data.Transaction;
 import ke.go.moh.oec.adt.data.TransactionType;
 import ke.go.moh.oec.adt.exceptions.BadRecordSourceException;
+import ke.go.moh.oec.lib.Mediator;
 
 /**
  * @date Apr 25, 2012
@@ -74,7 +75,7 @@ public class TransactionMiner {
             try {
                 statement = getConnection().createStatement();
                 statement.executeUpdate(query);
-                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Saved last_transaction_id = {0}.", lastTransactionId);
+                Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Saved last_transaction_id = {0}.", lastTransactionId);
             } catch (SQLException ex) {
                 throw ex;
             } finally {
