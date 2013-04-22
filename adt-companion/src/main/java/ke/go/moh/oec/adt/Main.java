@@ -36,6 +36,8 @@ import ke.go.moh.oec.lib.Mediator;
 public class Main {
 
     public static void main(String[] args) {
+        //Initialize Mediator so that it sets up logging facilities.
+        new Mediator();
         long snooze = Integer.parseInt(ResourceManager.getSetting("snooze"));
         long lookback = Integer.parseInt(ResourceManager.getSetting("lookback"));
         Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Starting service...");
