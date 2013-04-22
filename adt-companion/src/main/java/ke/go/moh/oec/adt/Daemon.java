@@ -80,23 +80,23 @@ public class Daemon implements Runnable {
             }
             List<RecordSource> recordSourceList = new ResourceManager().loadRecordSources();
             while (true) {
-                Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Service running...");
+                Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "Service running...");
                 if (!recordSourceList.isEmpty()) {
-                    Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Mining transactions...");
+                    Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "Mining transactions...");
                     TransactionMiner transactionMiner = new TransactionMiner();
                     Map<RecordSource, Map<Integer, Transaction>> transactionMap =
                             transactionMiner.mine(recordSourceList, since);
                     int transactionCount = countTransactions(transactionMap);
                     if (transactionCount != 0) {
-                        Mediator.getLogger(Main.class.getName()).log(Level.FINE, "{0} transactions found.", transactionCount);
-                        Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Mining records...");
+                        Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "{0} transactions found.", transactionCount);
+                        Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "Mining records...");
                         RecordMiner recordMiner = new RecordMiner();
                         Map<RecordSource, List<Record>> recordMap = recordMiner.mine(transactionMap);
                         int recordCount = countRecords(recordMap);
-                        Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Linking {0} records...", recordCount);
+                        Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "Linking {0} records...", recordCount);
                         List<LinkedRecord> linkedRecordList = new RecordLinker(recordMiner).link(recordMap);
                         if (!linkedRecordList.isEmpty()) {
-                            Mediator.getLogger(Main.class.getName()).log(Level.FINE, "{0} records linked.", linkedRecordList.size());
+                            Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "{0} records linked.", linkedRecordList.size());
                             RecordFormat oneLineFormat = new OneLineRecordFormat();
                             RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
                             String filename = ResourceManager.getSetting("outputfilename") + new Date().getTime()
@@ -117,31 +117,37 @@ public class Daemon implements Runnable {
                                 }
                             }
                         } else {
-                            Mediator.getLogger(Main.class.getName()).log(Level.FINE, "No records linked.");
+                            Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "No records linked.");
                         }
                         transactionMiner.saveLastTransactionId();
-                        Mediator.getLogger(Main.class.getName()).log(Level.INFO,"Done!");
+                        Mediator.getLogger(Daemon.class.getName()).log(Level.INFO,"Done!");
                     } else {
-                        Mediator.getLogger(Main.class.getName()).log(Level.FINE, "No transactions found.");
+                        Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "No transactions found.");
                     }
                 } else {
-                    Mediator.getLogger(Main.class.getName()).log(Level.FINE, "No record sources found.");
+                    Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "No record sources found.");
                 }
                 Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Suspending service for {0} seconds...", snooze / 1000);
                 Thread.sleep(snooze);
             }
         } catch (InterruptedException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         } catch (BadRecordSourceException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         } catch (ParserConfigurationException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         } catch (SAXException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         } catch (IOException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         } catch (SQLException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
     }
 

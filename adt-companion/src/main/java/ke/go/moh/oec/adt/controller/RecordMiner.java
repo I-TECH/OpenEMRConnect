@@ -33,8 +33,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import ke.go.moh.oec.adt.data.Record;
 import ke.go.moh.oec.adt.data.TransactionType;
+import ke.go.moh.oec.lib.Mediator;
 
 /**
  * @date Apr 25, 2012
@@ -97,6 +99,7 @@ public class RecordMiner {
         record.setTransactionType(transaction.getType());
         try {
             resultSet = statement.executeQuery(query);
+            Mediator.getLogger(RecordMiner.class.getName()).log(Level.FINER, query);
             Map<Column, String> columnMap;
             if (resultSet.next()) {
                 columnMap = new LinkedHashMap<Column, String>();
@@ -144,6 +147,7 @@ public class RecordMiner {
         }
         try {
             resultSet = statement.executeQuery(query);
+            Mediator.getLogger(RecordMiner.class.getName()).log(Level.FINER, query);
             while (resultSet.next()) {
                 Record record = new Record();
                 record.setPrimaryKeyCellMap(masterRecord.getPrimaryKeyCellMap());

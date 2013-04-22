@@ -59,23 +59,23 @@ public class RecordCsvWriter {
             if (outputDir != null) {
                 File outputDirFile = new File(outputDir);
                 if (!outputDirFile.exists()) {
-                    Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Attempting to create missing directory {0}...",
+                    Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Attempting to create missing directory {0}...",
                             outputDir);
                     if (!outputDirFile.mkdirs()) {
-                        Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Failed to create missing directory {0}. "
+                        Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Failed to create missing directory {0}. "
                                 + "Output will be placed in application path instead.", outputDir);
                     } else {
-                        Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Succeeded to create missing directory {0}.", outputDir);
+                        Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Succeeded to create missing directory {0}.", outputDir);
                     }
                 } else {
                     fullFileName = outputDir + "\\" + fileName;
                 }
             }
-            Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Writing output for {0} records to file [{1}]...", 
+            Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.INFO, "Writing output for {0} records to file [{1}]...", 
                     new Object[]{linkedRecordList.size(), fullFileName});
             csvWriter = new CSVWriter(new FileWriter(new File(fullFileName)));
             csvWriter.writeAll(format.format(linkedRecordList));
-            Mediator.getLogger(Main.class.getName()).log(Level.INFO,"Finished writing output");
+            Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.INFO,"Finished writing output");
         } finally {
             if (csvWriter != null) {
                 csvWriter.close();

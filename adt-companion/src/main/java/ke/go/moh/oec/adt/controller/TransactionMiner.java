@@ -29,8 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import ke.go.moh.oec.adt.Main;
 import ke.go.moh.oec.adt.data.Column;
 import ke.go.moh.oec.adt.data.RecordSource;
 import ke.go.moh.oec.adt.data.Transaction;
@@ -65,17 +63,18 @@ public class TransactionMiner {
             int lastTxId = retrieveLastTransactionId();
             if (lastTxId == -1) {
                 query = "INSERT INTO `destination`(`name`, `last_received_transaction_id`, `last_processed_transaction_id`)\n"
-                        + "VALUES('" + ResourceManager.getSetting("name") + "', " + lastTransactionId + ", " + lastTransactionId + ")";
+                        + "VALUES('" + ResourceManager.getSetting("Instance.Name") + "', " + lastTransactionId + ", " + lastTransactionId + ")";
             } else {
                 query = "UPDATE `destination`\n"
                         + "SET `last_received_transaction_id` = " + lastTransactionId
                         + ", `last_processed_transaction_id` = " + lastTransactionId + "\n"
-                        + "WHERE `name` = '" + ResourceManager.getSetting("name") + "'";
+                        + "WHERE `name` = '" + ResourceManager.getSetting("Instance.Name") + "'";
             }
             try {
                 statement = getConnection().createStatement();
                 statement.executeUpdate(query);
-                Mediator.getLogger(Main.class.getName()).log(Level.FINE, "Saved last_transaction_id = {0}.", lastTransactionId);
+                Mediator.getLogger(TransactionMiner.class.getName()).log(Level.FINER, query);
+                Mediator.getLogger(TransactionMiner.class.getName()).log(Level.FINE, "Saved last_transaction_id = {0}.", lastTransactionId);
             } catch (SQLException ex) {
                 throw ex;
             } finally {
@@ -106,6 +105,7 @@ public class TransactionMiner {
         try {
             statement = getConnection().createStatement();
             resultSet = statement.executeQuery(query);
+            Mediator.getLogger(TransactionMiner.class.getName()).log(Level.FINER, query);
             while (resultSet.next()) {
                 Transaction transaction = new Transaction(resultSet.getInt("id"), resultSet.getString("table_name"),
                         TransactionType.valueOf(resultSet.getString("type")));
@@ -145,6 +145,7 @@ private void setPrimaryKeyMaps(RecordSource recordSource, Map<Integer, Transacti
             try {
                 statement = getConnection().createStatement();
                 resultSet = statement.executeQuery(query);
+                Mediator.getLogger(TransactionMiner.class.getName()).log(Level.FINER, query);
                 Transaction transaction = null;
                 if (resultSet.next()) {
                     int transactionId = resultSet.getInt("transaction_id");
@@ -219,10 +220,11 @@ private void setPrimaryKeyMaps(RecordSource recordSource, Map<Integer, Transacti
         ResultSet resultSet = null;
         String query = "SELECT `last_processed_transaction_id`\n"
                 + "FROM `destination`\n"
-                + "WHERE `name` = '" + ResourceManager.getSetting("name") + "'";
+                + "WHERE `name` = '" + ResourceManager.getSetting("Instance.Name") + "'";
         try {
             statement = getConnection().createStatement();
             resultSet = statement.executeQuery(query);
+            Mediator.getLogger(TransactionMiner.class.getName()).log(Level.FINER, query);
             if (resultSet.next()) {
                 lastTxId = resultSet.getInt("last_processed_transaction_id");
             }
@@ -249,6 +251,7 @@ private void setPrimaryKeyMaps(RecordSource recordSource, Map<Integer, Transacti
         try {
             statement = getConnection().createStatement();
             resultSet = statement.executeQuery(query);
+            Mediator.getLogger(TransactionMiner.class.getName()).log(Level.FINER, query);
             if (resultSet.next()) {
                 List<String> truePrimaryKeyList = Arrays.asList(resultSet.getString("primary_keys").split(","));
                 int configuredPkCount = recordSource.getPrimaryKeyColumnMap().size();

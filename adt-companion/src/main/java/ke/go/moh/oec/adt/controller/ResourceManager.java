@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -102,12 +103,17 @@ public class ResourceManager {
 
     private static Connection createDatabaseConnection(String name) throws SQLException {
         Connection connection = null;
-        if (name.equals("source")) {
-            connection = DriverManager.getConnection(Mediator.getProperty("source.url"),
-                    Mediator.getProperty("source.username"), Mediator.getProperty("source.password"));
-        } else if (name.equals("shadow")) {
-            connection = DriverManager.getConnection(Mediator.getProperty("shadow.url"),
-                    Mediator.getProperty("shadow.username"), Mediator.getProperty("shadow.password"));
+        try {
+            if (name.equals("source")) {
+                connection = DriverManager.getConnection(Mediator.getProperty("source.url"),
+                        Mediator.getProperty("source.username"), Mediator.getProperty("source.password"));
+            } else if (name.equals("shadow")) {
+                Class.forName(Mediator.getProperty("shadow.driver"));
+                connection = DriverManager.getConnection(Mediator.getProperty("shadow.url"),
+                        Mediator.getProperty("shadow.username"), Mediator.getProperty("shadow.password"));
+            }
+        } catch (ClassNotFoundException cnfe) {
+            Mediator.getLogger(ResourceManager.class.getName()).log(Level.SEVERE, null, cnfe);
         }
         return connection;
     }
