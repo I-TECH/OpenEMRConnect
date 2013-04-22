@@ -25,8 +25,8 @@
 package ke.go.moh.oec.adt;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import ke.go.moh.oec.adt.controller.ResourceManager;
+import ke.go.moh.oec.lib.Mediator;
 
 /**
  * @date Apr 26, 2012
@@ -38,7 +38,7 @@ public class Main {
     public static void main(String[] args) {
         long snooze = Integer.parseInt(ResourceManager.getSetting("snooze"));
         long lookback = Integer.parseInt(ResourceManager.getSetting("lookback"));
-        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Starting service...");
+        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Starting service...");
         new Thread(new Daemon(snooze, lookback)).start();
     }
 }

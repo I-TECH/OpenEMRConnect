@@ -30,11 +30,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import ke.go.moh.oec.adt.Main;
 import ke.go.moh.oec.adt.data.LinkedRecord;
 import ke.go.moh.oec.adt.data.Record;
 import ke.go.moh.oec.adt.format.RecordFormat;
+import ke.go.moh.oec.lib.Mediator;
 
 /**
  * This class provides a mechanism by which a list of {@link Record}s can be
@@ -59,23 +59,23 @@ public class RecordCsvWriter {
             if (outputDir != null) {
                 File outputDirFile = new File(outputDir);
                 if (!outputDirFile.exists()) {
-                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Attempting to create missing directory [{0}]...",
+                    Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Attempting to create missing directory {0}...",
                             outputDir);
                     if (!outputDirFile.mkdirs()) {
-                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Failed to create missing directory [{0}]. "
+                        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Failed to create missing directory {0}. "
                                 + "Output will be placed in application path instead.", outputDir);
                     } else {
-                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Succeeded to create missing directory [{0}].", outputDir);
+                        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Succeeded to create missing directory {0}.", outputDir);
                     }
                 } else {
                     fullFileName = outputDir + "\\" + fileName;
                 }
             }
-            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Writing output for [{0}] records to file [{1}]...", 
+            Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Writing output for {0} records to file [{1}]...", 
                     new Object[]{linkedRecordList.size(), fullFileName});
             csvWriter = new CSVWriter(new FileWriter(new File(fullFileName)));
             csvWriter.writeAll(format.format(linkedRecordList));
-            Logger.getLogger(Main.class.getName()).log(Level.INFO,"Done!");
+            Mediator.getLogger(Main.class.getName()).log(Level.INFO,"Finished writing output");
         } finally {
             if (csvWriter != null) {
                 csvWriter.close();

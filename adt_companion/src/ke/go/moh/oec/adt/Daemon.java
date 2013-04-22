@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import ke.go.moh.oec.adt.controller.*;
 import ke.go.moh.oec.adt.data.LinkedRecord;
@@ -45,6 +44,7 @@ import ke.go.moh.oec.adt.data.Transaction;
 import ke.go.moh.oec.adt.exceptions.BadRecordSourceException;
 import ke.go.moh.oec.adt.format.OneLineRecordFormat;
 import ke.go.moh.oec.adt.format.RecordFormat;
+import ke.go.moh.oec.lib.Mediator;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
@@ -80,21 +80,23 @@ public class Daemon implements Runnable {
             }
             List<RecordSource> recordSourceList = new ResourceManager().loadRecordSources();
             while (true) {
-                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Service running...");
+                Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Service running...");
                 if (!recordSourceList.isEmpty()) {
-                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Mining transactions...");
+                    Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Mining transactions...");
                     TransactionMiner transactionMiner = new TransactionMiner();
                     Map<RecordSource, Map<Integer, Transaction>> transactionMap =
                             transactionMiner.mine(recordSourceList, since);
-                    if (!transactionMap.isEmpty()) {
-                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "[{0}] transactions found.", transactionMap.size());
-                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Mining records...");
+                    int transactionCount = countTransactions(transactionMap);
+                    if (transactionCount != 0) {
+                        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "{0} transactions found.", transactionCount);
+                        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Mining records...");
                         RecordMiner recordMiner = new RecordMiner();
                         Map<RecordSource, List<Record>> recordMap = recordMiner.mine(transactionMap);
-                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Linking records...");
+                        int recordCount = countRecords(recordMap);
+                        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Linking {0} records...", recordCount);
                         List<LinkedRecord> linkedRecordList = new RecordLinker(recordMiner).link(recordMap);
                         if (!linkedRecordList.isEmpty()) {
-                            Logger.getLogger(Main.class.getName()).log(Level.INFO, "[{0}] records found.", linkedRecordList.size());
+                            Mediator.getLogger(Main.class.getName()).log(Level.INFO, "{0} records linked.", linkedRecordList.size());
                             RecordFormat oneLineFormat = new OneLineRecordFormat();
                             RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
                             String filename = ResourceManager.getSetting("outputfilename") + new Date().getTime()
@@ -106,39 +108,63 @@ public class Daemon implements Runnable {
                                 if (!"".equals(ResourceManager.getSetting("mirth.url"))
                                         && ResourceManager.getSetting("mirth.url") != null) {
                                     if (sendMessage(ResourceManager.getSetting("mirth.url"), filename + ".csv")) {
-                                        Logger.getLogger(Daemon.class.getName()).log(Level.INFO, "File sent!");
+                                        Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "File sent!");
                                     } else {
-                                        Logger.getLogger(Daemon.class.getName()).log(Level.INFO, "File not sent!");
+                                        Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "File not sent!");
                                     }
                                 } else {
-                                    Logger.getLogger(Daemon.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
+                                    Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
                                 }
                             }
+                        } else {
+                            Mediator.getLogger(Main.class.getName()).log(Level.INFO, "No records linked.");
                         }
                         transactionMiner.saveLastTransactionId();
+                        Mediator.getLogger(Main.class.getName()).log(Level.INFO,"Done!");
                     } else {
-                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "No transactions found.");
+                        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "No transactions found.");
                     }
                 } else {
-                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "No record sources found.");
+                    Mediator.getLogger(Main.class.getName()).log(Level.INFO, "No record sources found.");
                 }
-                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Suspending service...");
+                Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Suspending service for {0} seconds...", snooze / 1000);
                 Thread.sleep(snooze);
-                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Service suspended for [{0}] seconds.", snooze / 1000);
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
         } catch (BadRecordSourceException ex) {
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private int countTransactions(Map<RecordSource, Map<Integer, Transaction>> transactionMap) {
+        int transactionCount = 0;
+        for (RecordSource rs : transactionMap.keySet()) {
+            Map<Integer, Transaction> tm = transactionMap.get(rs);
+            if (tm != null) {
+                transactionCount += tm.size();
+            }
+        }
+        return transactionCount;
+    }
+
+    private int countRecords(Map<RecordSource, List<Record>> recordMap) {
+        int recordCount = 0;
+        for (RecordSource rs : recordMap.keySet()) {
+            List<Record> rl = recordMap.get(rs);
+            if (rl != null) {
+                recordCount += rl.size();
+            }
+        }
+        return recordCount;
     }
 
     private static boolean sendMessage(String url, String filename) {
@@ -155,7 +181,7 @@ public class Daemon implements Runnable {
             Base64InputStream message64 = new Base64InputStream(message, true, -1, null);
             requestEntity = new InputStreamRequestEntity(message64, "application/octet-stream");
         } catch (FileNotFoundException e) {
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, "File not found.", e);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, "File not found.", e);
             return false;
         }
         httpPost.setRequestEntity(requestEntity);
@@ -164,19 +190,19 @@ public class Daemon implements Runnable {
             returnStatus = httpPost.getStatusCode();
         } catch (SocketTimeoutException e) {
             returnStatus = HttpStatus.SC_REQUEST_TIMEOUT;
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, "Request timed out.  Not retrying.", e);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, "Request timed out.  Not retrying.", e);
         } catch (HttpException e) {
             returnStatus = HttpStatus.SC_INTERNAL_SERVER_ERROR;
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, "HTTP exception.  Not retrying.", e);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, "HTTP exception.  Not retrying.", e);
         } catch (ConnectException e) {
             returnStatus = HttpStatus.SC_SERVICE_UNAVAILABLE;
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, "Service unavailable.  Not retrying.", e);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, "Service unavailable.  Not retrying.", e);
         } catch (UnknownHostException e) {
             returnStatus = HttpStatus.SC_NOT_FOUND;
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, "Not found.  Not retrying.", e);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, "Not found.  Not retrying.", e);
         } catch (IOException e) {
             returnStatus = HttpStatus.SC_GATEWAY_TIMEOUT;
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, "IO exception.  Not retrying.", e);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, "IO exception.  Not retrying.", e);
         } finally {
             httpPost.releaseConnection();
         }
