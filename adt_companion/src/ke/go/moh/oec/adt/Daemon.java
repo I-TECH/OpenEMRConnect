@@ -80,21 +80,27 @@ public class Daemon implements Runnable {
             }
             List<RecordSource> recordSourceList = new ResourceManager().loadRecordSources();
             while (true) {
+                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Service running...");
                 if (!recordSourceList.isEmpty()) {
+                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Mining transactions...");
                     TransactionMiner transactionMiner = new TransactionMiner();
                     Map<RecordSource, Map<Integer, Transaction>> transactionMap =
                             transactionMiner.mine(recordSourceList, since);
                     if (!transactionMap.isEmpty()) {
+                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "[{0}] transactions found.", transactionMap.size());
+                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Mining records...");
                         RecordMiner recordMiner = new RecordMiner();
                         Map<RecordSource, List<Record>> recordMap = recordMiner.mine(transactionMap);
+                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Linking records...");
                         List<LinkedRecord> linkedRecordList = new RecordLinker(recordMiner).link(recordMap);
                         if (!linkedRecordList.isEmpty()) {
+                            Logger.getLogger(Main.class.getName()).log(Level.INFO, "[{0}] records found.", linkedRecordList.size());
                             RecordFormat oneLineFormat = new OneLineRecordFormat();
                             RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
                             String filename = ResourceManager.getSetting("outputfilename") + new Date().getTime()
                                     + ResourceManager.getSetting("outputfileextension");
                             csvWriter.writeToCsv(linkedRecordList, ResourceManager.getSetting("outputdir"), filename);
-                            
+
                             // Send extracted file to remote Mirth instance if so configured
                             if ("remote".equalsIgnoreCase(ResourceManager.getSetting("mirth.location"))) {
                                 if (!"".equals(ResourceManager.getSetting("mirth.url"))
@@ -110,9 +116,15 @@ public class Daemon implements Runnable {
                             }
                         }
                         transactionMiner.saveLastTransactionId();
+                    } else {
+                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "No transactions found.");
                     }
+                } else {
+                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "No record sources found.");
                 }
+                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Suspending service...");
                 Thread.sleep(snooze);
+                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Service suspended for [{0}] seconds.", snooze / 1000);
             }
         } catch (InterruptedException ex) {
             Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);

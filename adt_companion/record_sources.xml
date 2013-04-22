@@ -5,11 +5,11 @@
             master
         </relationship>
         <order>1</order>
-        <table_name>tblpatient_information</table_name>
+        <table_name>tblARTpatientMasterInformation</table_name>
         <primary_key_columns>
             <primary_key_column>
-                <name>patient_id</name>
-                <quote>false</quote>
+                <name>ArtID</name>
+                <quote>true</quote>
             </primary_key_column>
         </primary_key_columns>
         <foreign_key_columns>
@@ -17,11 +17,11 @@
         <cumulate>false</cumulate>
         <limit>-1</limit>
         <columns>
-            <column>patient_id</column>
-            <column>first_name</column>
-            <column>last_name</column>
-            <column>sex</column>
-            <column>age</column>
+            <column>ArtID</column>
+            <column>Firstname</column>
+            <column>Surname</column>
+            <column>Sex</column>
+            <column>Pregnant</column>
         </columns>
     </record_source>	
     <record_source>
@@ -29,57 +29,28 @@
             slave
         </relationship>
         <order>2</order>
-        <table_name>tblvisit_information</table_name>
+        <table_name>tblARTPatientTransactions</table_name>
         <primary_key_columns>
             <primary_key_column>
-                <name>visit_id</name>
+                <name>PatientTranNo</name>
                 <quote>false</quote>
             </primary_key_column>
         </primary_key_columns>
         <cumulate>true</cumulate>
         <foreign_key_columns>
             <foreign_key_column>
-                <name>patient_id</name>
+                <name>ArtID</name>
                 <quote>true</quote>
             </foreign_key_column>
         </foreign_key_columns>
         <limit>-1</limit>
         <columns>
-            <column>visit_id</column>
-            <column>patient_id</column>
-            <column>visit_date</column>
-            <column>weight</column>
-            <column>height</column>
-            <column>pregnancy</column>
-        </columns>
-    </record_source>
-    <record_source>
-        <relationship>
-            slave
-        </relationship>
-        <order>3</order>
-        <table_name>tbladdress</table_name>
-        <primary_key_columns>
-            <primary_key_column>
-                <name>address_id</name>
-                <quote>false</quote>
-            </primary_key_column>
-        </primary_key_columns>
-        <cumulate>true</cumulate>
-        <foreign_key_columns>
-            <foreign_key_column>
-                <name>patient_id</name>
-                <quote>true</quote>
-            </foreign_key_column>
-        </foreign_key_columns>
-        <limit>-1</limit>
-        <columns>
-            <column>address_id</column>
-            <column>patient_id</column>
-            <column>postal_address</column>
-            <column>telephone</column>
-            <column>district</column>
-            <column>location</column>
+            <column>PatientTranNo</column>
+            <column>ArtID</column>
+            <column>DateofVisit</column>
+            <column>Drugname</column>
+            <column>Dose</column>
+            <column>duration</column>
         </columns>
     </record_source>
 </record_sources>

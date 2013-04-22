@@ -24,6 +24,8 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.adt;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import ke.go.moh.oec.adt.controller.ResourceManager;
 
 /**
@@ -36,6 +38,7 @@ public class Main {
     public static void main(String[] args) {
         long snooze = Integer.parseInt(ResourceManager.getSetting("snooze"));
         long lookback = Integer.parseInt(ResourceManager.getSetting("lookback"));
+        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Starting service...");
         new Thread(new Daemon(snooze, lookback)).start();
     }
 }

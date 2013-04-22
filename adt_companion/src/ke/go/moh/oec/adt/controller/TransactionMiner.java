@@ -28,6 +28,9 @@ import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import ke.go.moh.oec.adt.Main;
 import ke.go.moh.oec.adt.data.Column;
 import ke.go.moh.oec.adt.data.RecordSource;
 import ke.go.moh.oec.adt.data.Transaction;
@@ -71,6 +74,7 @@ public class TransactionMiner {
             try {
                 statement = getConnection().createStatement();
                 statement.executeUpdate(query);
+                Logger.getLogger(Main.class.getName()).log(Level.INFO, "Saved last_transaction_id = {0}.", lastTransactionId);
             } catch (SQLException ex) {
                 throw ex;
             } finally {

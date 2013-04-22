@@ -24,14 +24,17 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.adt.controller;
 
-import ke.go.moh.oec.adt.format.RecordFormat;
-import ke.go.moh.oec.adt.data.Record;
 import au.com.bytecode.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import ke.go.moh.oec.adt.Main;
 import ke.go.moh.oec.adt.data.LinkedRecord;
+import ke.go.moh.oec.adt.data.Record;
+import ke.go.moh.oec.adt.format.RecordFormat;
 
 /**
  * This class provides a mechanism by which a list of {@link Record}s can be
@@ -56,21 +59,23 @@ public class RecordCsvWriter {
             if (outputDir != null) {
                 File outputDirFile = new File(outputDir);
                 if (!outputDirFile.exists()) {
-                    System.out.println("Output directory '" + outputDir + "' does not exists. Attempting to create it...");
+                    Logger.getLogger(Main.class.getName()).log(Level.INFO, "Attempting to create missing directory [{0}]...",
+                            outputDir);
                     if (!outputDirFile.mkdirs()) {
-                        System.out.println("Failed to create output directory '" + outputDir 
-                                + "'. Output file will be placed in the application path.");
+                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Failed to create missing directory [{0}]. "
+                                + "Output will be placed in application path instead.", outputDir);
                     } else {
-                        System.out.println("Succeeded to create output directory '" + outputDir +"'.");
-                        fullFileName = outputDir + "\\" + fileName;
+                        Logger.getLogger(Main.class.getName()).log(Level.INFO, "Succeeded to create missing directory [{0}].", outputDir);
                     }
                 } else {
                     fullFileName = outputDir + "\\" + fileName;
                 }
             }
-            System.out.println("Full file name: " + fullFileName);
+            Logger.getLogger(Main.class.getName()).log(Level.INFO, "Writing output for [{0}] records to file [{1}]...", 
+                    new Object[]{linkedRecordList.size(), fullFileName});
             csvWriter = new CSVWriter(new FileWriter(new File(fullFileName)));
             csvWriter.writeAll(format.format(linkedRecordList));
+            Logger.getLogger(Main.class.getName()).log(Level.INFO,"Done!");
         } finally {
             if (csvWriter != null) {
                 csvWriter.close();
