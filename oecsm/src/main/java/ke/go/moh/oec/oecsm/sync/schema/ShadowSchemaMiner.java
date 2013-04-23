@@ -24,10 +24,12 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.sync.schema;
 
-import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
+import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Database;
 import ke.go.moh.oec.oecsm.data.Table;
@@ -65,6 +67,7 @@ public class ShadowSchemaMiner extends DatabaseConnector {
         Statement statement = connection.createStatement();
         String sql = "SELECT `database`.`ID`, `database`.`NAME` FROM `database` WHERE `database`.`NAME` = '" + database + "'";
         ResultSet rs = statement.executeQuery(sql);
+        Mediator.getLogger(ShadowSchemaMiner.class.getName()).log(Level.FINEST, sql);
         if (rs.next()) {
             db = new Database(rs.getInt("ID"), rs.getString("NAME"));
         }
@@ -75,7 +78,9 @@ public class ShadowSchemaMiner extends DatabaseConnector {
 
     private void populateTableList(Database db, boolean replicable) throws SQLException {
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT `table`.`ID`, `table`.`NAME`, `PRIMARY_KEYS` FROM `table` WHERE `table`.`DATABASE_ID` = " + db.getId() + "");
+        String sql = "SELECT `table`.`ID`, `table`.`NAME`, `PRIMARY_KEYS` FROM `table` WHERE `table`.`DATABASE_ID` = \" + db.getId() + \"";
+        ResultSet rs = statement.executeQuery(sql);
+        Mediator.getLogger(ShadowSchemaMiner.class.getName()).log(Level.FINEST, sql);
         while (rs.next()) {
             Table table = new Table(rs.getInt("ID"), rs.getString("NAME"), rs.getString("PRIMARY_KEYS"));
             table.setDatabase(db);
@@ -92,7 +97,9 @@ public class ShadowSchemaMiner extends DatabaseConnector {
 
     private void populateColumnList(Table table) throws SQLException {
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT `column`.`ID`, `column`.`NAME`, `column`.`ORDINAL_POSITION`, `column`.`DATA_TYPE`, `column`.`SIZE`, `column`.`REPLICABLE` FROM `column` WHERE `column`.`TABLE_ID` = " + table.getId() + "");
+        String sql = "SELECT `column`.`ID`, `column`.`NAME`, `column`.`ORDINAL_POSITION`, `column`.`DATA_TYPE`, `column`.`SIZE`, `column`.`REPLICABLE` FROM `column` WHERE `column`.`TABLE_ID` = \" + table.getId() + \"";
+        ResultSet rs = statement.executeQuery(sql);
+        Mediator.getLogger(ShadowSchemaMiner.class.getName()).log(Level.FINEST, sql);
         while (rs.next()) {
             Column column = new Column(rs.getInt("ID"), rs.getString("NAME"), rs.getInt("ORDINAL_POSITION"), rs.getString("DATA_TYPE"), rs.getInt("SIZE"), rs.getBoolean("REPLICABLE"));
             column.setTable(table);
@@ -104,7 +111,9 @@ public class ShadowSchemaMiner extends DatabaseConnector {
 
     private void populateReplicableColumnList(Table table) throws SQLException {
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT `column`.`ID`, `column`.`NAME`, `column`.`ORDINAL_POSITION`, `column`.`DATA_TYPE`, `column`.`SIZE`, `column`.`REPLICABLE` FROM `column` WHERE `column`.`TABLE_ID` = " + table.getId() + " AND REPLICABLE = TRUE");
+        String sql = "SELECT `column`.`ID`, `column`.`NAME`, `column`.`ORDINAL_POSITION`, `column`.`DATA_TYPE`, `column`.`SIZE`, `column`.`REPLICABLE` FROM `column` WHERE `column`.`TABLE_ID` = " + table.getId() + " AND REPLICABLE = TRUE";
+        ResultSet rs = statement.executeQuery(sql);
+        Mediator.getLogger(ShadowSchemaMiner.class.getName()).log(Level.FINEST, sql);
         while (rs.next()) {
             Column cs = new Column(rs.getInt("ID"), rs.getString("NAME"), rs.getInt("ORDINAL_POSITION"), rs.getString("DATA_TYPE"), rs.getInt("SIZE"), rs.getBoolean("REPLICABLE"));
             cs.setTable(table);

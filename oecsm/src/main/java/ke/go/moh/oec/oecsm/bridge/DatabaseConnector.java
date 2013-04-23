@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.bridge.querycustomizers.MSAccessQueryCustomizer;
 import ke.go.moh.oec.oecsm.bridge.querycustomizers.MSSQQueryCustomizer;
 import ke.go.moh.oec.oecsm.bridge.querycustomizers.MySQLQueryCustomizer;
@@ -109,7 +110,7 @@ public class DatabaseConnector {
                 tableTypes = "TABLE"; // Default: get all tables in the source database.
             }
         } catch (IOException ex) {
-            Logger.getLogger(DatabaseConnector.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DatabaseConnector.class.getName()).log(Level.SEVERE, null, ex);
             throw new InaccessibleConfigurationFileException(ex);
         }
 
@@ -119,7 +120,7 @@ public class DatabaseConnector {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DatabaseConnector.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DatabaseConnector.class.getName()).log(Level.SEVERE, null, ex);
             throw new DriverNotFoundException(ex);
         }
     }

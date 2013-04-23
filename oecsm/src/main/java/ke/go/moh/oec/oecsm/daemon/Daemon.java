@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
 import ke.go.moh.oec.oecsm.gui.DaemonFrame;
@@ -110,7 +111,7 @@ public class Daemon extends Thread {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
             daemonFrame.getOutputTextArea().append(ex.getMessage() + "\n");
         }
     }
@@ -125,30 +126,7 @@ public class Daemon extends Thread {
             try {
                 Thread.sleep(15000);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
+                Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
             }
-    }
-
-    public static String getProperty(String propertyName) {
-        if (properties == null) {
-            properties = new Properties();
-            final String propertiesFileName = "oecsm.properties";
-            File propFile = new File(propertiesFileName);
-            String propFilePath = propFile.getAbsolutePath();
-            try {
-                FileInputStream fis = new FileInputStream(propFilePath);
-                properties.load(fis);
-            } catch (Exception e) {
-                /*
-                 * We somehow failed to open our default propoerties file.
-                 * This should not happen. It should always be there.
-                 */
-                Logger.getLogger(DaemonManager.class.getName()).log(Level.SEVERE,
-                        "getProperty() Can''t open ''{0}'' -- Please create the properties file if it doesn''t exist and then restart the app",
-                        propFilePath);
-                System.exit(1);
-            }
-        }
-        return properties.getProperty(propertyName);
     }
 }

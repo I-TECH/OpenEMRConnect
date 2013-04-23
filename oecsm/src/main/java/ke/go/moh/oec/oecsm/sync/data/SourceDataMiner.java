@@ -27,6 +27,8 @@ package ke.go.moh.oec.oecsm.sync.data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Table;
@@ -68,6 +70,7 @@ public class SourceDataMiner extends DatabaseConnector {
             }
             sql += " FROM " + prefix + table.getName() + suffix + " ORDER BY 1 ASC, " + compositePK + " ASC";
             ResultSet rs = statement.executeQuery(sql);
+            Mediator.getLogger(SourceDataMiner.class.getName()).log(Level.FINEST, sql);
             srs = new SourceResultSet(rs);
         } finally {
         }

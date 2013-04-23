@@ -32,6 +32,7 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.gui.DaemonFrame;
 
 /**
@@ -45,6 +46,8 @@ public class DaemonManager {
     private static Daemon daemon = null;
 
     public static void main(String[] args) {
+        //Initialize mediator to set up logging and http facilities
+        new Mediator();
         DaemonManager daemonManager = new DaemonManager();
         DaemonManager.startDaemon();
         daemonFrame.getOutputTextArea().append("OECSM Daemon started.\n");
@@ -52,15 +55,15 @@ public class DaemonManager {
     }
 
     private static void startDaemon() {
-        int pollingTime = 10000;
-        String timeOfDay = "00:00";
+        int pollingTime;
+        String timeOfDay;
         try {
-            String pollingMethod = Daemon.getProperty("scheduler.method");
+            String pollingMethod = Mediator.getProperty("scheduler.method");
             if (pollingMethod.equalsIgnoreCase("interval")) {
-                pollingTime = Integer.parseInt(Daemon.getProperty("scheduler.interval"));
+                pollingTime = Integer.parseInt(Mediator.getProperty("scheduler.interval"));
                 daemon = new Daemon(pollingTime, daemonFrame);
             } else if (pollingMethod.equalsIgnoreCase("timeOfDay")) {
-                timeOfDay = Daemon.getProperty("scheduler.timeOfDay");
+                timeOfDay = Mediator.getProperty("scheduler.timeOfDay");
                 daemon = new Daemon(timeOfDay, daemonFrame);
             }
             daemon.setDaemon(true);

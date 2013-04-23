@@ -24,15 +24,17 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.sync.data;
 
-import ke.go.moh.oec.oecsm.sync.data.resultsets.ShadowResultSet;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
+import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Table;
-import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
+import ke.go.moh.oec.oecsm.sync.data.resultsets.ShadowResultSet;
 
 /**
  * @date Aug 19, 2010
@@ -65,6 +67,7 @@ public class ShadowDataMiner extends DatabaseConnector {
             sql = sql.substring(0, sql.length() - 2); // Strip the final ", ".
             sql += ") ORDER BY ASCII(`cell`.`PRIMARY_KEY_VALUE`), `cell`.`PRIMARY_KEY_VALUE` ASC";
             ResultSet rs = statement.executeQuery(sql);
+            Mediator.getLogger(ShadowDataMiner.class.getName()).log(Level.FINEST, sql);
             srs = new ShadowResultSet(rs);
         } finally {
         }

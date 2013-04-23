@@ -24,7 +24,7 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.bridge.querycustomizers;
 
-import ke.go.moh.oec.oecsm.daemon.Daemon;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.data.Table;
 
 /**
@@ -35,7 +35,7 @@ import ke.go.moh.oec.oecsm.data.Table;
 public class MSAccessQueryCustomizer implements QueryCustomizer {
 
     public String buildCompositePrimaryKey(Table tableStructure) {
-        String pkDelim = Daemon.getProperty("primary.key.value.delimiter");
+        String pkDelim = Mediator.getProperty("primary.key.value.delimiter");
         String compositePK = "";
         String[] pks = tableStructure.getPk().split(",");
         for (int i = 0; i < pks.length; i++) {

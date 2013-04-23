@@ -39,6 +39,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.daemon.DaemonManager;
 import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 
@@ -140,14 +141,14 @@ public class DaemonFrame extends javax.swing.JFrame {
             getSourceProperties();
             getShadowProperties();
         } catch (ClassNotFoundException ex) {
-            Logger logger = Logger.getLogger(DaemonFrame.class.getName());
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger logger = Mediator.getLogger(DaemonFrame.class.getName());
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -598,9 +599,9 @@ public class DaemonFrame extends javax.swing.JFrame {
             sourceUsernameTextField.setText(sourceProperties.getProperty("username"));
             sourcePasswordField.setText(sourceProperties.getProperty("password"));
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -614,9 +615,9 @@ public class DaemonFrame extends javax.swing.JFrame {
             shadowUsernameTextField.setText(shadowProperties.getProperty("username"));
             shadowPasswordField.setText(shadowProperties.getProperty("password"));
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -630,9 +631,9 @@ public class DaemonFrame extends javax.swing.JFrame {
             sourceProperties.setProperty("password", sourcePasswordField.getText());
             sourceProperties.store(new FileOutputStream("source_database.properties"), "");
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -646,9 +647,9 @@ public class DaemonFrame extends javax.swing.JFrame {
             sourceProperties.setProperty("password", shadowPasswordField.getText());
             sourceProperties.store(new FileOutputStream("shadow_database.properties"), "");
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

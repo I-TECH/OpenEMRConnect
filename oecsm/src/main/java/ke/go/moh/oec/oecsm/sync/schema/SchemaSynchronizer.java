@@ -27,16 +27,18 @@ package ke.go.moh.oec.oecsm.sync.schema;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import ke.go.moh.oec.oecsm.data.TransactionType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.bridge.TransactionConverter;
 import ke.go.moh.oec.oecsm.data.Column;
 import ke.go.moh.oec.oecsm.data.Database;
 import ke.go.moh.oec.oecsm.data.SchemaTransaction;
 import ke.go.moh.oec.oecsm.data.Table;
+import ke.go.moh.oec.oecsm.data.TransactionType;
 import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
 
@@ -54,6 +56,7 @@ public class SchemaSynchronizer extends DatabaseConnector {
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
             for (SchemaTransaction schemaTransaction : schemaTransactionList) {
+                Mediator.getLogger(SchemaSynchronizer.class.getName()).log(Level.FINEST, TransactionConverter.convertToSQL(schemaTransaction));
                 System.out.println(TransactionConverter.convertToSQL(schemaTransaction));
                 if (statement.executeUpdate(TransactionConverter.convertToSQL(schemaTransaction), Statement.RETURN_GENERATED_KEYS) == 1) {
                     ResultSet rs = statement.getGeneratedKeys();

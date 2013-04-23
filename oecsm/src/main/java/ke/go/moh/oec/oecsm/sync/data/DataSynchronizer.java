@@ -24,29 +24,29 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.sync.data;
 
-import ke.go.moh.oec.oecsm.sync.data.resultsets.SourceResultSet;
-import ke.go.moh.oec.oecsm.sync.data.resultsets.ShadowResultSet;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import ke.go.moh.oec.oecsm.data.DataTransaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
 import ke.go.moh.oec.oecsm.bridge.Transaction;
 import ke.go.moh.oec.oecsm.bridge.TransactionConverter;
 import ke.go.moh.oec.oecsm.data.Cell;
 import ke.go.moh.oec.oecsm.data.Column;
+import ke.go.moh.oec.oecsm.data.DataTransaction;
 import ke.go.moh.oec.oecsm.data.Database;
 import ke.go.moh.oec.oecsm.data.LoggableTransaction;
 import ke.go.moh.oec.oecsm.data.LoggableTransactionDatum;
 import ke.go.moh.oec.oecsm.data.Table;
+import ke.go.moh.oec.oecsm.data.TransactionType;
 import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;
+import ke.go.moh.oec.oecsm.sync.data.resultsets.ShadowResultSet;
+import ke.go.moh.oec.oecsm.sync.data.resultsets.SourceResultSet;
 import ke.go.moh.oec.oecsm.sync.schema.ShadowSchemaMiner;
-import ke.go.moh.oec.oecsm.data.TransactionType;
 
 /**
  * @date Aug 19, 2010
@@ -221,7 +221,7 @@ public class DataSynchronizer extends DatabaseConnector {
             connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
             for (Transaction dataTransaction : dataTransactionList) {
-                System.out.println(TransactionConverter.convertToSQL(dataTransaction));
+                Mediator.getLogger(DataSynchronizer.class.getName()).log(Level.FINEST, TransactionConverter.convertToSQL(dataTransaction));
                 if (statement.executeUpdate(TransactionConverter.convertToSQL(dataTransaction), Statement.RETURN_GENERATED_KEYS) == 1) {
                     if (dataTransaction.getClass() == LoggableTransaction.class) {
                         ResultSet rs = statement.getGeneratedKeys();
@@ -230,7 +230,7 @@ public class DataSynchronizer extends DatabaseConnector {
                             loggableTransaction.setId(rs.getInt(1));
                         }
                         for (LoggableTransactionDatum loggableTransactionDatum : loggableTransaction.getLoggableTransactionDatumList()) {
-                            System.out.println(TransactionConverter.convertToSQL(loggableTransactionDatum));
+                            Mediator.getLogger(DataSynchronizer.class.getName()).log(Level.FINEST, TransactionConverter.convertToSQL(loggableTransactionDatum));
                             statement.executeUpdate(TransactionConverter.convertToSQL(loggableTransactionDatum));
                         }
                     }
@@ -239,7 +239,7 @@ public class DataSynchronizer extends DatabaseConnector {
             connection.commit();
             statement.close();
         } catch (Exception ex) {
-            Logger.getLogger(DataSynchronizer.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(DataSynchronizer.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             disconnectFromShadow();
         }
