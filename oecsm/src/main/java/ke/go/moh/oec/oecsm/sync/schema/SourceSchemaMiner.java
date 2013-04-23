@@ -62,10 +62,7 @@ public class SourceSchemaMiner extends DatabaseConnector {
             //String tablename;
             String[] tableListArray = tableList.split(",");
             for (int i = 0; i < tableListArray.length; i++) {
-                //if (tableListArray[i].indexOf(tableList)>-1) {
-                //System.out.println("table " + tableListArray[i].toString());
                 setupTable(database, tableListArray[i].toString(), tableTypes);
-                //i = i + 1;
             }
 
         } else {
@@ -80,18 +77,6 @@ public class SourceSchemaMiner extends DatabaseConnector {
             tableRs.close();
         }
     }
-//    private void populateTableList(Database database) throws SQLException {
-//        String[] tableTypeArray = tableTypes.split(",");
-//        ResultSet tableRs = databaseMetaData.getTables(null, schemaPattern, "%", tableTypeArray);
-//        //look for a property in the source_database.properties file for a custom list of tables to scan
-//        if (tableList != null) {
-//            String[] tableListArray = tableList.split(",");
-//            
-//            while (tableRs.next()) {
-//                setupTable(database, tableRs.getString("TABLE_NAME"), tableRs.getString("TABLE_TYPE"));
-//            }
-//        }
-//    }
 
     private void setupTable(Database database, String tableName, String tableType) throws SQLException {
         Table ts = new Table(tableName);
@@ -138,17 +123,14 @@ public class SourceSchemaMiner extends DatabaseConnector {
     //This method is specifically for Ms Access databases. Extracting Primary keys from an access database;
     private String extractAccessPrimaryKeys(Table tableStructure) throws SQLException {
         String primaryKeys = "";
-//        String multiplePks = "";
         ResultSet pkRs = databaseMetaData.getIndexInfo(null, null, tableStructure.getName(), true, true);
         while (pkRs.next()) {
             String idx = pkRs.getString(6);
             if (idx != null) {
                 if (idx.equalsIgnoreCase("PrimaryKey")) {
                     primaryKeys = primaryKeys + pkRs.getString("COLUMN_NAME") + ",";
-//                    multiplePks = primaryKeys + pkRs.getString(9);
                 }
             }
-//            System.out.println( "Table Name : " +tableStructure.getName() + "  PK :" + primaryKeys);
         }
         pkRs.close();
         return primaryKeys;

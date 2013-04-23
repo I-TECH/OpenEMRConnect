@@ -52,10 +52,10 @@ public class SourceDataMiner extends DatabaseConnector {
 
     /**
      * Gets all the rows from a source table, returned as a ResultSet
-     * 
+     *
      * @param table
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public SourceResultSet mine(Table table) throws SQLException {
         SourceResultSet srs = null;
@@ -69,8 +69,8 @@ public class SourceDataMiner extends DatabaseConnector {
                 sql += ", " + prefix + column.getName() + suffix + " AS C" + column.getId();
             }
             sql += " FROM " + prefix + table.getName() + suffix + " ORDER BY 1 ASC, " + compositePK + " ASC";
-            ResultSet rs = statement.executeQuery(sql);
             Mediator.getLogger(SourceDataMiner.class.getName()).log(Level.FINEST, sql);
+            ResultSet rs = statement.executeQuery(sql);
             srs = new SourceResultSet(rs);
         } finally {
         }

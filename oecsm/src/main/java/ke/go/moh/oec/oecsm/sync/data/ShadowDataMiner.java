@@ -66,8 +66,8 @@ public class ShadowDataMiner extends DatabaseConnector {
             }
             sql = sql.substring(0, sql.length() - 2); // Strip the final ", ".
             sql += ") ORDER BY ASCII(`cell`.`PRIMARY_KEY_VALUE`), `cell`.`PRIMARY_KEY_VALUE` ASC";
-            ResultSet rs = statement.executeQuery(sql);
             Mediator.getLogger(ShadowDataMiner.class.getName()).log(Level.FINEST, sql);
+            ResultSet rs = statement.executeQuery(sql);
             srs = new ShadowResultSet(rs);
         } finally {
         }

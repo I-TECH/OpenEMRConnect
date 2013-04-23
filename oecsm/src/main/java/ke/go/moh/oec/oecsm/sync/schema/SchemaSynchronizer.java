@@ -57,7 +57,6 @@ public class SchemaSynchronizer extends DatabaseConnector {
             Statement statement = connection.createStatement();
             for (SchemaTransaction schemaTransaction : schemaTransactionList) {
                 Mediator.getLogger(SchemaSynchronizer.class.getName()).log(Level.FINEST, TransactionConverter.convertToSQL(schemaTransaction));
-                System.out.println(TransactionConverter.convertToSQL(schemaTransaction));
                 if (statement.executeUpdate(TransactionConverter.convertToSQL(schemaTransaction), Statement.RETURN_GENERATED_KEYS) == 1) {
                     ResultSet rs = statement.getGeneratedKeys();
                     if (rs.next()) {

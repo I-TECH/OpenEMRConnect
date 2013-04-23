@@ -32,6 +32,7 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.gui.DaemonFrame;
 
@@ -90,7 +91,7 @@ public class DaemonManager {
 
     private void minimizeToTray() {
         if (!SystemTray.isSupported()) {
-            System.out.println("SystemTray is not supported");
+            Mediator.getLogger(DaemonManager.class.getName()).log(Level.INFO, "SystemTray is not supported");
             return;
         }
         final PopupMenu popup = new PopupMenu();
@@ -116,7 +117,7 @@ public class DaemonManager {
         try {
             tray.add(trayIcon);
         } catch (AWTException ex) {
-            System.out.println(ex.toString() + " TrayIcon could not be added.");
+            Mediator.getLogger(DaemonManager.class.getName()).log(Level.INFO, null, ex);
         }
     }
     ActionListener exitListener = new ActionListener() {
