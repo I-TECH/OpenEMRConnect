@@ -17,7 +17,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import ke.go.moh.oec.lib.Mediator;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.httpclient.HttpClient;
@@ -48,16 +47,14 @@ public class CpadDataExtract {
     final static int OTHER_POOR_ADHERENCE_CODE = 13;
     final static int OTHER_RELATIONSHIP_CODE = 16;
     final static int OTHER_SIDE_EFFECTS_CODE = 88;
-    static Properties companionProps;
 
     public static void main(String[] args) {
         try {
             //Initialize Mediator so that it sets up logging facilities.
             new Mediator();
-            companionProps = loadProperties("cpad_companion.properties");
-            String method = companionProps.getProperty("scheduler.method");
-            int interval = Integer.parseInt(companionProps.getProperty("scheduler.interval"));
-            String timeOfDay = companionProps.getProperty("scheduler.timeOfDay");
+            String method = Mediator.getProperty("scheduler.method");
+            int interval = Integer.parseInt(Mediator.getProperty("scheduler.interval"));
+            String timeOfDay = Mediator.getProperty("scheduler.timeOfDay");
             if ("interval".equalsIgnoreCase(method)) {
                 while (true) {
                     CpadDataExtract.work();
@@ -73,8 +70,6 @@ public class CpadDataExtract {
                 }
             }
         } catch (InterruptedException ex) {
-            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
             Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -92,23 +87,21 @@ public class CpadDataExtract {
         }
 
         try {
-            Properties sourceProps = loadProperties("source_database.properties");
-            Properties shadowProps = loadProperties("shadow_database.properties");
-            out = new OutputStreamWriter(new FileOutputStream(companionProps.getProperty("csv.output.filename")), "UTF-8");
-            Class.forName(sourceProps.getProperty("driver"));
-            con = DriverManager.getConnection(sourceProps.getProperty("url"));
+            out = new OutputStreamWriter(new FileOutputStream(Mediator.getProperty("mirth.outputfilename")), "UTF-8");
+            Class.forName(Mediator.getProperty("source.driver"));
+            con = DriverManager.getConnection(Mediator.getProperty("source.url"));
             stmt = con.createStatement();
 
             // Query shadow database to determine which patients to pull records for
-            Class.forName(shadowProps.getProperty("driver"));
-            shadowCon = DriverManager.getConnection(shadowProps.getProperty("url"),
-                    shadowProps.getProperty("username"),
-                    shadowProps.getProperty("password"));
+            Class.forName(Mediator.getProperty("shadow.driver"));
+            shadowCon = DriverManager.getConnection(Mediator.getProperty("shadow.url"),
+                    Mediator.getProperty("shadow.username"),
+                    Mediator.getProperty("shadow.password"));
             shadowStmt = shadowCon.createStatement();
 
             // See if any transactions have happened in the time frame we're interested in for the tables we care about
             // First, get the list of tables that we're interested in
-            String tableList = "('" + sourceProps.getProperty("tableList").replace(",", "','") + "')";
+            String tableList = "('" + Mediator.getProperty("source.tableList").replace(",", "','") + "')";
             if ("".equals(tableList) || tableList == null) {
                 log(Level.SEVERE, "No tables listed in properties file.", 1);
             }
@@ -116,7 +109,7 @@ public class CpadDataExtract {
             // Next, get the date we want to use when checking for recent transactions
             java.util.Date now = Calendar.getInstance().getTime();
             String transSince = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                    .format(now.getTime() - new Long(companionProps.getProperty("check.interval.seconds")) * 1000);
+                    .format(now.getTime() - new Long(Mediator.getProperty("scheduler.lookback")) * 1000);
             if ("".equals(transSince) || transSince == null) {
                 log(Level.SEVERE, "Could not calculate date to use: " + transSince + ".", 1);
             }
@@ -254,7 +247,7 @@ public class CpadDataExtract {
                 int pid = Integer.parseInt(cpadPids.get(a));
 
                 header.reset();
-                ExtractHeaderData(headerStmts, pid, header, companionProps);
+                ExtractHeaderData(headerStmts, pid, header);
 
                 for (int i = 0; i < MAX_VISIT_CNT; i++) {
                     visits[i].reset();
@@ -280,10 +273,10 @@ public class CpadDataExtract {
                 }
             }
             // Send file to remote Mirth instance if configured to do so
-            if ("remote".equalsIgnoreCase(companionProps.getProperty("mirth.location"))) {
-                if (!"".equals(companionProps.getProperty("mirth.url"))
-                        && companionProps.getProperty("mirth.url") != null) {
-                    if (sendMessage(companionProps.getProperty("mirth.url"), companionProps.getProperty("csv.output.filename"))) {
+            if ("remote".equalsIgnoreCase(Mediator.getProperty("mirth.location"))) {
+                if (!"".equals(Mediator.getProperty("mirth.url"))
+                        && Mediator.getProperty("mirth.url") != null) {
+                    if (sendMessage(Mediator.getProperty("mirth.url"), Mediator.getProperty("mirth.outputfilename"))) {
                         Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File sent!");
                     } else {
                         Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File not sent!");
@@ -324,7 +317,7 @@ public class CpadDataExtract {
         }
     }
 
-    private static void ExtractHeaderData(PreparedStatement stmts[], int pid, HeaderData header, Properties props) throws SQLException {
+    private static void ExtractHeaderData(PreparedStatement stmts[], int pid, HeaderData header) throws SQLException {
         // Fill in prepared statement parameters
         for (int i = 0; i < stmts.length - 2; i++) {
             stmts[i].setInt(1, pid);
@@ -437,9 +430,9 @@ public class CpadDataExtract {
 //			header.setFacName(rs.getString("Organization"));
 //			header.setFacCode(rs.getString("SiteCode"));
             // Read organization, site code and source system from the properties file instead of from the database
-            header.setFacName(props.getProperty("site.name"));
-            header.setFacCode(props.getProperty("site.code"));
-            header.setSourceSystem(props.getProperty("source.system"));
+            header.setFacName(Mediator.getProperty("site.name"));
+            header.setFacCode(Mediator.getProperty("site.code"));
+            header.setSourceSystem(Mediator.getProperty("source.system"));
             header.setFacCounty(rs.getString("District"));
             header.setFacState(rs.getString("Province"));
         }
