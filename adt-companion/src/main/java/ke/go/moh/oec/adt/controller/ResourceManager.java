@@ -105,6 +105,7 @@ public class ResourceManager {
         Connection connection = null;
         try {
             if (name.equals("source")) {
+                Class.forName(Mediator.getProperty("source.driver"));
                 connection = DriverManager.getConnection(Mediator.getProperty("source.url"),
                         Mediator.getProperty("source.username"), Mediator.getProperty("source.password"));
             } else if (name.equals("shadow")) {
