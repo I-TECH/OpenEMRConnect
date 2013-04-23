@@ -110,7 +110,7 @@ public class CpadDataExtract {
             // Next, get the date we want to use when checking for recent transactions
             java.util.Date now = Calendar.getInstance().getTime();
             String transSince = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                    .format(now.getTime() - new Long(Mediator.getProperty("scheduler.lookback")) * 1000);
+                    .format(now.getTime() - new Long(Mediator.getProperty("scheduler.lookback")));
             if ("".equals(transSince) || transSince == null) {
                 log(Level.SEVERE, "Could not calculate date to use: " + transSince + ".", 1);
             }
