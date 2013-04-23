@@ -33,18 +33,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import ke.go.moh.oec.lib.Mediator;
-import ke.go.moh.oec.oecsm.daemon.DaemonManager;
 import ke.go.moh.oec.oecsm.bridge.DatabaseConnector;
+import ke.go.moh.oec.oecsm.daemon.DaemonManager;
 
 /**
- *@date Sep 13, 2010
+ * @date Sep 13, 2010
  *
  * @author jgitahi
  */
@@ -91,6 +90,13 @@ public class DaemonFrame extends javax.swing.JFrame {
         }
 
         @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 73 * hash + (this.name != null ? this.name.hashCode() : 0);
+            return hash;
+        }
+
+        @Override
         public boolean equals(Object obj) {
             if (obj == null) {
                 return false;
@@ -103,13 +109,6 @@ public class DaemonFrame extends javax.swing.JFrame {
                 return false;
             }
             return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 5;
-            hash = 83 * hash + (this.name != null ? this.name.hashCode() : 0);
-            return hash;
         }
 
         @Override
@@ -141,7 +140,6 @@ public class DaemonFrame extends javax.swing.JFrame {
             getSourceProperties();
             getShadowProperties();
         } catch (ClassNotFoundException ex) {
-            Logger logger = Mediator.getLogger(DaemonFrame.class.getName());
             Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
             Mediator.getLogger(DaemonFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -372,7 +370,7 @@ public class DaemonFrame extends javax.swing.JFrame {
                             .addComponent(shadowPasswordField, javax.swing.GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
                             .addComponent(shadowUsernameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, shadowDatabasePanelLayout.createSequentialGroup()
-                                .addComponent(shadowDriverComboBox, 0, 0, Short.MAX_VALUE)
+                                .addComponent(shadowDriverComboBox, 0, 1, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(shadowUrlTemplateButton))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, shadowDatabasePanelLayout.createSequentialGroup()
@@ -582,7 +580,6 @@ public class DaemonFrame extends javax.swing.JFrame {
 
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
-
             public void run() {
                 new DaemonFrame().setVisible(true);
             }
@@ -658,8 +655,7 @@ public class DaemonFrame extends javax.swing.JFrame {
         drivers.add(new Driver("MySQL JDBC Driver", "com.mysql.jdbc.Driver", "jdbc:mysql://host:port/database"));
         drivers.add(new Driver("MSSQL Server JDBC Driver", "net.sourceforge.jtds.jdbc.Driver", "jdbc:jtds:sqlserver://host:port/database"));
         drivers.add(new Driver("PostgreSQL JDBC Driver", "org.postgresql.Driver", "jdbc:postgresql://host:port/database"));
-        drivers.add(new Driver("MS Access JDBC-ODBC Bridge [With DSN]", "sun.jdbc.odbc.JdbcOdbcDriver", "jdbc:odbc:dsn"));
-        drivers.add(new Driver("MS Access JDBC-ODBC Bridge [Without DSN]", "sun.jdbc.odbc.JdbcOdbcDriver", "jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=C:\\database folder\\database.mdb"));
+        drivers.add(new Driver("MS Access JDBC-ODBC Bridge", "sun.jdbc.odbc.JdbcOdbcDriver", "jdbc:odbc:driver={Microsoft Access Driver (*.mdb)};DBQ=directory\\database.mdb"));
         drivers.add(new Driver("MS Access JDBC Driver [HXTT]", "com.hxtt.sql.access.AccessDriver", "jdbc:Access:///database folder"));
         return drivers;
     }
