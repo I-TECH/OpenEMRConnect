@@ -39,10 +39,12 @@ public class Main {
         try {
             //Initialize Mediator so that it sets up logging facilities.
             new Mediator();
-            long snooze = Integer.parseInt(ResourceManager.getSetting("snooze"));
-            long lookback = Integer.parseInt(ResourceManager.getSetting("lookback"));
+            String method = ResourceManager.getSetting("scheduler.method");
+            long interval = Integer.parseInt(ResourceManager.getSetting("scheduler.interval"));
+            String timeOfDay = ResourceManager.getSetting("scheduler.timeOfDay");
+            long lookback = Integer.parseInt(ResourceManager.getSetting("scheduler.lookback"));
             Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Starting service...");
-            new Thread(new Daemon(snooze, lookback)).start();
+            new Thread(new Daemon(method, interval, timeOfDay, lookback)).start();
         } catch (Exception ex) {
             Mediator.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getMessage());
         }

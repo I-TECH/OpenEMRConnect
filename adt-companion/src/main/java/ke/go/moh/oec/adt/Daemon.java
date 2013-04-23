@@ -31,6 +31,8 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -62,11 +64,15 @@ import org.xml.sax.SAXException;
  */
 public class Daemon implements Runnable {
 
-    private final long snooze;
+    private final String method;
+    private final long interval;
+    private final String timeOfDay;
     private final long lookback;
 
-    public Daemon(long snooze, long lookback) {
-        this.snooze = snooze;
+    public Daemon(String method, long interval, String timeOfDay, long lookback) {
+        this.method = method;
+        this.interval = interval;
+        this.timeOfDay = timeOfDay;
         this.lookback = lookback;
     }
 
@@ -79,56 +85,19 @@ public class Daemon implements Runnable {
                 since = new Date(now.getTime() - lookback);
             }
             List<RecordSource> recordSourceList = new ResourceManager().loadRecordSources();
-            while (true) {
-                Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "Service running...");
-                if (!recordSourceList.isEmpty()) {
-                    Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "Mining transactions...");
-                    TransactionMiner transactionMiner = new TransactionMiner();
-                    Map<RecordSource, Map<Integer, Transaction>> transactionMap =
-                            transactionMiner.mine(recordSourceList, since);
-                    int transactionCount = countTransactions(transactionMap);
-                    if (transactionCount != 0) {
-                        Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "{0} transactions found.", transactionCount);
-                        Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "Mining records...");
-                        RecordMiner recordMiner = new RecordMiner();
-                        Map<RecordSource, List<Record>> recordMap = recordMiner.mine(transactionMap);
-                        int recordCount = countRecords(recordMap);
-                        Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "Linking {0} records...", recordCount);
-                        List<LinkedRecord> linkedRecordList = new RecordLinker(recordMiner).link(recordMap);
-                        if (!linkedRecordList.isEmpty()) {
-                            Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "{0} records linked.", linkedRecordList.size());
-                            RecordFormat oneLineFormat = new OneLineRecordFormat();
-                            RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
-                            String filename = ResourceManager.getSetting("outputfilename") + new Date().getTime()
-                                    + ResourceManager.getSetting("outputfileextension");
-                            csvWriter.writeToCsv(linkedRecordList, ResourceManager.getSetting("outputdir"), filename);
-
-                            // Send extracted file to remote Mirth instance if so configured
-                            if ("remote".equalsIgnoreCase(ResourceManager.getSetting("mirth.location"))) {
-                                if (!"".equals(ResourceManager.getSetting("mirth.url"))
-                                        && ResourceManager.getSetting("mirth.url") != null) {
-                                    if (sendMessage(ResourceManager.getSetting("mirth.url"), filename + ".csv")) {
-                                        Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "File sent!");
-                                    } else {
-                                        Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "File not sent!");
-                                    }
-                                } else {
-                                    Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
-                                }
-                            }
-                        } else {
-                            Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "No records linked.");
-                        }
-                        transactionMiner.saveLastTransactionId();
-                        Mediator.getLogger(Daemon.class.getName()).log(Level.INFO,"Done!");
-                    } else {
-                        Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "No transactions found.");
-                    }
-                } else {
-                    Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "No record sources found.");
+            if ("interval".equalsIgnoreCase(method)) {
+                while (true) {
+                    work(recordSourceList, since);
+                    Thread.sleep(interval);
                 }
-                Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Suspending service for {0} seconds...", snooze / 1000);
-                Thread.sleep(snooze);
+            } else {
+                DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+                while (true) {
+                    String currentTime = dateFormat.format(new Date());
+                    if (currentTime.equalsIgnoreCase(timeOfDay)) {
+                        work(recordSourceList, since);
+                    }
+                }
             }
         } catch (InterruptedException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
@@ -149,6 +118,57 @@ public class Daemon implements Runnable {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
+    }
+
+    private void work(List<RecordSource> recordSourceList, Date since) throws SQLException, BadRecordSourceException, IOException {
+        Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "Service running...");
+        if (!recordSourceList.isEmpty()) {
+            Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "Mining transactions...");
+            TransactionMiner transactionMiner = new TransactionMiner();
+            Map<RecordSource, Map<Integer, Transaction>> transactionMap =
+                    transactionMiner.mine(recordSourceList, since);
+            int transactionCount = countTransactions(transactionMap);
+            if (transactionCount != 0) {
+                Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "{0} transactions found.", transactionCount);
+                Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "Mining records...");
+                RecordMiner recordMiner = new RecordMiner();
+                Map<RecordSource, List<Record>> recordMap = recordMiner.mine(transactionMap);
+                int recordCount = countRecords(recordMap);
+                Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "Linking {0} records...", recordCount);
+                List<LinkedRecord> linkedRecordList = new RecordLinker(recordMiner).link(recordMap);
+                if (!linkedRecordList.isEmpty()) {
+                    Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "{0} records linked.", linkedRecordList.size());
+                    RecordFormat oneLineFormat = new OneLineRecordFormat();
+                    RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
+                    String filename = ResourceManager.getSetting("outputfilename") + new Date().getTime()
+                            + ResourceManager.getSetting("outputfileextension");
+                    csvWriter.writeToCsv(linkedRecordList, ResourceManager.getSetting("outputdir"), filename);
+
+                    // Send extracted file to remote Mirth instance if so configured
+                    if ("remote".equalsIgnoreCase(ResourceManager.getSetting("mirth.location"))) {
+                        if (!"".equals(ResourceManager.getSetting("mirth.url"))
+                                && ResourceManager.getSetting("mirth.url") != null) {
+                            if (sendMessage(ResourceManager.getSetting("mirth.url"), filename + ".csv")) {
+                                Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "File sent!");
+                            } else {
+                                Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "File not sent!");
+                            }
+                        } else {
+                            Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
+                        }
+                    }
+                } else {
+                    Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "No records linked.");
+                }
+                transactionMiner.saveLastTransactionId();
+                Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "Done!");
+            } else {
+                Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "No transactions found.");
+            }
+        } else {
+            Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "No record sources found.");
+        }
+        Mediator.getLogger(Main.class.getName()).log(Level.INFO, "Suspending service for {0} seconds...", interval / 1000);
     }
 
     private int countTransactions(Map<RecordSource, Map<Integer, Transaction>> transactionMap) {
