@@ -24,15 +24,12 @@
  * ***** END LICENSE BLOCK ***** */
 package ke.go.moh.oec.oecsm.daemon;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import ke.go.moh.oec.lib.Mediator;
 import ke.go.moh.oec.oecsm.exceptions.DriverNotFoundException;
 import ke.go.moh.oec.oecsm.exceptions.InaccessibleConfigurationFileException;

@@ -69,12 +69,13 @@ public class CpadDataExtract {
                     }
                 }
             }
-        } catch (InterruptedException ex) {
+        } catch (Exception ex) {
             Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
     }
 
-    public static void work() {
+    public static void work() throws SQLException, IOException, ClassNotFoundException {
         OutputStreamWriter out = null;
         Connection con = null;
         Connection shadowCon = null;
@@ -287,12 +288,6 @@ public class CpadDataExtract {
             }
 
             Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Done!");
-        } catch (ClassNotFoundException e) {
-            System.out.println(e.toString());
-        } catch (SQLException e) {
-            System.out.println(e.toString());
-        } catch (IOException e) {
-            System.out.println(e.toString());
         } finally {
             try {
                 if (out != null) {

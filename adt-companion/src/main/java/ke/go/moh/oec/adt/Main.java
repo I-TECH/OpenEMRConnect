@@ -47,6 +47,7 @@ public class Main {
             new Thread(new Daemon(method, interval, timeOfDay, lookback)).start();
         } catch (Exception ex) {
             Mediator.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getMessage());
+            System.exit(1);
         }
     }
 }
