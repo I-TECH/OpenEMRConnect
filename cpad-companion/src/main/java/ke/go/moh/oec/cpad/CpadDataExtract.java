@@ -18,6 +18,7 @@ import java.util.GregorianCalendar;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ke.go.moh.oec.lib.Mediator;
 import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpConnectionManager;
@@ -51,16 +52,18 @@ public class CpadDataExtract {
 
     public static void main(String[] args) {
         try {
+            //Initialize Mediator so that it sets up logging facilities.
+            new Mediator();
             companionProps = loadProperties("cpad_companion.properties");
             String method = companionProps.getProperty("scheduler.method");
             int interval = Integer.parseInt(companionProps.getProperty("scheduler.interval"));
             String timeOfDay = companionProps.getProperty("scheduler.timeOfDay");
-            if ("interval".equalsIgnoreCase("interval")) {
+            if ("interval".equalsIgnoreCase(method)) {
                 while (true) {
                     CpadDataExtract.work();
                     Thread.sleep(interval);
                 }
-            } else if ("timeofday".equalsIgnoreCase("interval")) {
+            } else {
                 DateFormat sdf = new SimpleDateFormat("HH:mm");
                 String currentTime = sdf.format(new java.util.Date());
                 while (true) {
@@ -68,15 +71,11 @@ public class CpadDataExtract {
                         CpadDataExtract.work();
                     }
                 }
-            } else {
-                log(Level.SEVERE, "Scheduler method could not be determoned. "
-                        + "Check the value set for the property [scheduler.method] in the cpad_companion.properties file. "
-                        + "It should either be set to 'interval' or 'timeofday'.", 1);
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, null, ex);
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -160,7 +159,7 @@ public class CpadDataExtract {
                 log(Level.INFO, "No updated patient records found in the shadow database since " + transSince + ".", false);
             }
 
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Extracting data for {0} patient{1}", new Object[]{recCnt, recCnt == 1 ? "." : "s."});
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Extracting data for {0} patient{1}", new Object[]{recCnt, recCnt == 1 ? "." : "s."});
 
             PreparedStatement headerStmts[] = new PreparedStatement[6];
             headerStmts[0] = con.prepareStatement("select pi.patient_id, pi.first_name, pi.last_name, pi.dob, "
@@ -277,7 +276,7 @@ public class CpadDataExtract {
                 }
                 out.write(finalCsv + "\n");
                 if (++cnt % 100 == 0) {
-                    Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "({0})", cnt);
+                    Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "({0})", cnt);
                 }
             }
             // Send file to remote Mirth instance if configured to do so
@@ -285,16 +284,16 @@ public class CpadDataExtract {
                 if (!"".equals(companionProps.getProperty("mirth.url"))
                         && companionProps.getProperty("mirth.url") != null) {
                     if (sendMessage(companionProps.getProperty("mirth.url"), companionProps.getProperty("csv.output.filename"))) {
-                        Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File sent!");
+                        Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File sent!");
                     } else {
-                        Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File not sent!");
+                        Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File not sent!");
                     }
                 } else {
-                    Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
+                    Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "No URL provided for remote Mirth instance.  The file was not sent!");
                 }
             }
 
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Done!");
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Done!");
         } catch (ClassNotFoundException e) {
             System.out.println(e.toString());
         } catch (SQLException e) {
@@ -319,7 +318,7 @@ public class CpadDataExtract {
                     shadowStmt.close();
                 }
             } catch (Exception ex) {
-                Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE,
+                Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE,
                         "Exception thrown when attempting to dispose resources! {0}", ex.getMessage());
             }
         }
@@ -683,7 +682,7 @@ public class CpadDataExtract {
             Base64InputStream message64 = new Base64InputStream(message, true, -1, null);
             requestEntity = new InputStreamRequestEntity(message64, "application/octet-stream");
         } catch (FileNotFoundException e) {
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "File not found.", e);
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "File not found.", e);
         }
         httpPost.setRequestEntity(requestEntity);
 
@@ -692,19 +691,19 @@ public class CpadDataExtract {
             returnStatus = httpPost.getStatusCode();
         } catch (SocketTimeoutException e) {
             returnStatus = HttpStatus.SC_REQUEST_TIMEOUT;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Request timed out.  Not retrying.", e);
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Request timed out.  Not retrying.", e);
         } catch (HttpException e) {
             returnStatus = HttpStatus.SC_INTERNAL_SERVER_ERROR;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "HTTP exception.", e);
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "HTTP exception.", e);
         } catch (ConnectException e) {
             returnStatus = HttpStatus.SC_SERVICE_UNAVAILABLE;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Service unavailable.", e);
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Service unavailable.", e);
         } catch (UnknownHostException e) {
             returnStatus = HttpStatus.SC_NOT_FOUND;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Not found.", e);
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Not found.", e);
         } catch (IOException e) {
             returnStatus = HttpStatus.SC_GATEWAY_TIMEOUT;
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "IO exception.", e);
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "IO exception.", e);
         } finally {
             httpPost.releaseConnection();
         }
@@ -720,7 +719,7 @@ public class CpadDataExtract {
             properties.load(fis);
             return properties;
         } catch (IOException ex) {
-            Logger.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Properties file not found: " + propertiesFile, ex);
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.SEVERE, "Properties file not found: " + propertiesFile, ex);
             throw new FileNotFoundException("Properties file not found: " + propertiesFile);
         }
     }
@@ -734,7 +733,7 @@ public class CpadDataExtract {
     }
 
     private static void log(Level level, String msg, boolean quit, int exitCode) {
-        Logger.getLogger(CpadDataExtract.class.getName()).log(level, msg);
+        Mediator.getLogger(CpadDataExtract.class.getName()).log(level, msg);
         if (quit) {
             System.exit(exitCode);
         }
