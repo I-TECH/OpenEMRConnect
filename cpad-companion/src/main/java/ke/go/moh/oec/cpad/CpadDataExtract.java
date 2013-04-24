@@ -4,10 +4,8 @@ import au.com.bytecode.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -50,11 +48,17 @@ public class CpadDataExtract {
     final static int OTHER_POOR_ADHERENCE_CODE = 13;
     final static int OTHER_RELATIONSHIP_CODE = 16;
     final static int OTHER_SIDE_EFFECTS_CODE = 88;
+    private static int outputRecordLimit = 100;
 
     public static void main(String[] args) {
         try {
             //Initialize Mediator so that it sets up logging facilities.
             new Mediator();
+            try {
+                outputRecordLimit = Integer.parseInt(Mediator.getProperty("outputrecordlimit"));
+            } catch (Exception ex) {
+                Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "The outputrecordlimit property is missing, unspecified or not a number. The default value of 100 will be used.", ex);
+            }
             String method = Mediator.getProperty("scheduler.method");
             int interval = Integer.parseInt(Mediator.getProperty("scheduler.interval"));
             String timeOfDay = Mediator.getProperty("scheduler.timeOfDay");
@@ -286,17 +290,21 @@ public class CpadDataExtract {
                     }
                 }
 
-                String[] sarray = finalCsv.split("\t");
-                recordList.add(sarray);
+                String[] record = finalCsv.split("\t");
+                recordList.add(record);
 
-                if (++cnt % 100 == 0) {
+                if (++cnt % outputRecordLimit == 0 || (a == cpadPids.size() - 1)) {
                     Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "({0})", cnt);
+                    int recordCount = outputRecordLimit;
+                    if (cnt % outputRecordLimit != 0) {
+                        recordCount = cnt % outputRecordLimit;
+                    }
+                    csvWriter = new CSVWriter(new FileWriter(new File(createFileName(recordCount))), '\t');
+                    csvWriter.writeAll(recordList);
+                    recordList.clear();
                 }
             }
-            
-            csvWriter = new CSVWriter(new FileWriter(new File(Mediator.getProperty("outputfilename"))), '\t');
-            csvWriter.writeAll(recordList);
-            
+
             // Send file to remote Mirth instance if configured to do so
             if ("remote".equalsIgnoreCase(Mediator.getProperty("mirth.location"))) {
                 if (!"".equals(Mediator.getProperty("mirth.url"))
@@ -334,6 +342,29 @@ public class CpadDataExtract {
                         "Exception thrown when attempting to dispose resources! {0}", ex.getMessage());
             }
         }
+    }
+
+    private static String createFileName(int recordCount) {
+        String fileName = Mediator.getProperty("outputfilename") + " - " + new java.util.Date().getTime() 
+                + " (" + recordCount + " records)" + Mediator.getProperty("outputfileextension");
+        String outputDir = Mediator.getProperty("outputdir");
+        String fullFileName = fileName;
+        if (outputDir != null) {
+            File outputDirFile = new File(outputDir);
+            if (!outputDirFile.exists()) {
+                Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.FINE, "Attempting to create missing directory {0}...",
+                        outputDir);
+                if (!outputDirFile.mkdirs()) {
+                    Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.FINE, "Failed to create missing directory {0}. "
+                            + "Output will be placed in application path instead.", outputDir);
+                } else {
+                    Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.FINE, "Succeeded to create missing directory {0}.", outputDir);
+                }
+            } else {
+                fullFileName = outputDir + "\\" + fileName;
+            }
+        }
+        return fullFileName;
     }
 
     private static void ExtractHeaderData(PreparedStatement stmts[], int pid, HeaderData header) throws SQLException {

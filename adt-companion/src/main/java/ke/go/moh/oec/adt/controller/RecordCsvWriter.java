@@ -28,9 +28,9 @@ import au.com.bytecode.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import ke.go.moh.oec.adt.Main;
 import ke.go.moh.oec.adt.data.LinkedRecord;
 import ke.go.moh.oec.adt.data.Record;
 import ke.go.moh.oec.adt.format.RecordFormat;
@@ -52,34 +52,51 @@ public class RecordCsvWriter {
         this.format = format;
     }
 
-    public void writeToCsv(List<LinkedRecord> linkedRecordList, String outputDir, String fileName) throws IOException {
+    public void writeToCsv(List<LinkedRecord> linkedRecordList, String outputDir, String fileName,
+            String fileExtension, int recordsPerFile) throws IOException {
         CSVWriter csvWriter = null;
         try {
-            String fullFileName = fileName;
-            if (outputDir != null) {
-                File outputDirFile = new File(outputDir);
-                if (!outputDirFile.exists()) {
-                    Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Attempting to create missing directory {0}...",
-                            outputDir);
-                    if (!outputDirFile.mkdirs()) {
-                        Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Failed to create missing directory {0}. "
-                                + "Output will be placed in application path instead.", outputDir);
-                    } else {
-                        Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Succeeded to create missing directory {0}.", outputDir);
+            List<LinkedRecord> tempLinkedRecordList = new ArrayList<LinkedRecord>();
+            int i = 0;
+            for (LinkedRecord linkedRecord : linkedRecordList) {
+                tempLinkedRecordList.add(linkedRecord);
+                if (i % recordsPerFile == 0 || i == (linkedRecordList.size() - 1)) {
+                    int recordCount = recordsPerFile;
+                    if (i % recordsPerFile != 0) {
+                        recordCount = i % recordsPerFile;
                     }
-                } else {
-                    fullFileName = outputDir + "\\" + fileName;
+                    csvWriter = new CSVWriter(new FileWriter(new File(createFileName(outputDir, fileName, fileExtension, recordCount))));
+                    csvWriter.writeAll(format.format(tempLinkedRecordList));
+                    tempLinkedRecordList.clear();
                 }
+                i++;
             }
-            Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.INFO, "Writing output for {0} records to file [{1}]...", 
-                    new Object[]{linkedRecordList.size(), fullFileName});
-            csvWriter = new CSVWriter(new FileWriter(new File(fullFileName)));
-            csvWriter.writeAll(format.format(linkedRecordList));
-            Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.INFO,"Finished writing output");
+            Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.INFO, "Finished writing output");
         } finally {
             if (csvWriter != null) {
                 csvWriter.close();
             }
         }
+    }
+
+    private String createFileName(String outputDir, String fileName, String extension, int recordCount) {
+        String fullFileName = fileName + new java.util.Date().getTime()
+                + " (" + recordCount + " records)" + extension;
+        if (outputDir != null) {
+            File outputDirFile = new File(outputDir);
+            if (!outputDirFile.exists()) {
+                Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Attempting to create missing directory {0}...",
+                        outputDir);
+                if (!outputDirFile.mkdirs()) {
+                    Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Failed to create missing directory {0}. "
+                            + "Output will be placed in application path instead.", outputDir);
+                } else {
+                    Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Succeeded to create missing directory {0}.", outputDir);
+                }
+            } else {
+                fullFileName = outputDir + "\\" + fileName;
+            }
+        }
+        return fullFileName;
     }
 }

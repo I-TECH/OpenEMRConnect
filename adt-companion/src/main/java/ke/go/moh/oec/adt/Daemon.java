@@ -140,15 +140,23 @@ public class Daemon implements Runnable {
                     Mediator.getLogger(Daemon.class.getName()).log(Level.FINE, "{0} records linked.", linkedRecordList.size());
                     RecordFormat oneLineFormat = new OneLineRecordFormat();
                     RecordCsvWriter csvWriter = new RecordCsvWriter(oneLineFormat);
-                    String filename = ResourceManager.getSetting("outputfilename") + new Date().getTime()
-                            + ResourceManager.getSetting("outputfileextension");
-                    csvWriter.writeToCsv(linkedRecordList, ResourceManager.getSetting("outputdir"), filename);
+
+                    int recordsPerFile = 100;
+                    try {
+                        recordsPerFile = Integer.parseInt(Mediator.getProperty("outputrecordlimit"));
+                    } catch (Exception ex) {
+                        Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "The outputrecordlimit property is missing, "
+                                + "unspecified or not a number. The default value of 100 will be used.", ex);
+                    }
+
+                    csvWriter.writeToCsv(linkedRecordList, ResourceManager.getSetting("outputdir"), ResourceManager.getSetting("outputfilename"),
+                            ResourceManager.getSetting("outputfileextension"), recordsPerFile);
 
                     // Send extracted file to remote Mirth instance if so configured
                     if ("remote".equalsIgnoreCase(ResourceManager.getSetting("mirth.location"))) {
                         if (!"".equals(ResourceManager.getSetting("mirth.url"))
                                 && ResourceManager.getSetting("mirth.url") != null) {
-                            if (sendMessage(ResourceManager.getSetting("mirth.url"), filename + ".csv")) {
+                            if (sendMessage(ResourceManager.getSetting("mirth.url"), ResourceManager.getSetting("outputfilename") + ".csv")) {
                                 Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "File sent!");
                             } else {
                                 Mediator.getLogger(Daemon.class.getName()).log(Level.INFO, "File not sent!");
