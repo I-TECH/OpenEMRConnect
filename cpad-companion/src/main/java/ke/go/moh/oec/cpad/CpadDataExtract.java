@@ -1,9 +1,11 @@
 package ke.go.moh.oec.cpad;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.ConnectException;
@@ -15,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import ke.go.moh.oec.lib.Mediator;
@@ -76,19 +79,19 @@ public class CpadDataExtract {
     }
 
     public static void work() throws SQLException, IOException, ClassNotFoundException {
-        OutputStreamWriter out = null;
+        CSVWriter csvWriter = null;
         Connection con = null;
         Connection shadowCon = null;
         Statement stmt = null;
         Statement shadowStmt = null;
         HeaderData header = new HeaderData();
+
         VisitData visits[] = new VisitData[MAX_VISIT_CNT];
         for (int i = 0; i < MAX_VISIT_CNT; i++) {
             visits[i] = new VisitData();
         }
 
         try {
-            out = new OutputStreamWriter(new FileOutputStream(Mediator.getProperty("mirth.outputfilename")), "UTF-8");
             Class.forName(Mediator.getProperty("source.driver"));
             con = DriverManager.getConnection(Mediator.getProperty("source.url"));
             stmt = con.createStatement();
@@ -113,10 +116,13 @@ public class CpadDataExtract {
                     .format(now.getTime() - new Long(Mediator.getProperty("scheduler.lookback")));
             if ("".equals(transSince) || transSince == null) {
                 log(Level.SEVERE, "Could not calculate date to use: " + transSince + ".", 1);
+            } else {
+                Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO,
+                        "About to start mining transactions since {0}", transSince);
             }
 
             // Finally, query the transaction_data table to get a list of patient_ids associated with the transaction(s)
-            ResultSet rs = shadowStmt.executeQuery("SELECT DISTINCT td.data AS data FROM transaction_data td, "
+            String sql1 = "SELECT DISTINCT td.data AS data FROM transaction_data td, "
                     + "transaction tr "
                     + "WHERE td.column_id IN "
                     + "(SELECT id FROM `column` "
@@ -125,7 +131,11 @@ public class CpadDataExtract {
                     + "AND td.data IS NOT NULL "
                     + "AND LTRIM(RTRIM(td.data)) != '' "
                     + "AND td.transaction_id = tr.id "
-                    + "AND tr.created_datetime >= '" + transSince + "'");
+                    + "AND tr.created_datetime >= '" + transSince + "'";
+
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.FINE, sql1);
+
+            ResultSet rs = shadowStmt.executeQuery(sql1);
 
             ArrayList<String> shadowPids = new ArrayList<String>();
             while (rs.next()) {
@@ -133,8 +143,12 @@ public class CpadDataExtract {
             }
 
             // Need to make sure the patient_ids found in shadow still exist in C-PAD
-            rs = stmt.executeQuery("SELECT DISTINCT patient_id FROM tblpatient_information "
-                    + "WHERE patient_id IS NOT NULL");
+            String sql2 = "SELECT DISTINCT patient_id FROM tblpatient_information "
+                    + "WHERE patient_id IS NOT NULL";
+
+            Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.FINE, sql2);
+
+            rs = stmt.executeQuery(sql2);
             ArrayList<String> cpadPids = new ArrayList<String>();
             while (rs.next()) {
                 cpadPids.add(rs.getString("patient_id").replace(".0", ""));
@@ -150,7 +164,9 @@ public class CpadDataExtract {
 
             int recCnt = cpadPids.size();
             if (recCnt == 0) {
-                log(Level.INFO, "No updated patient records found in the shadow database since " + transSince + ".", false);
+                Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "No updated patient records found in the shadow database since {0}.", transSince);
+            } else {
+                Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "{0} updated patient records found since {1}", new Object[]{recCnt, transSince});
             }
 
             Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Extracting data for {0} patient{1}", new Object[]{recCnt, recCnt == 1 ? "." : "s."});
@@ -244,6 +260,7 @@ public class CpadDataExtract {
                     + "and tv.[value] = ?");
 
             int cnt = 0;
+            List<String[]> recordList = new ArrayList<String[]>();
             for (int a = 0; a < cpadPids.size(); a++) {
                 int pid = Integer.parseInt(cpadPids.get(a));
 
@@ -268,16 +285,23 @@ public class CpadDataExtract {
                         finalCsv += "\t";
                     }
                 }
-                out.write(finalCsv + "\n");
+
+                String[] sarray = finalCsv.split("\t");
+                recordList.add(sarray);
+
                 if (++cnt % 100 == 0) {
                     Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "({0})", cnt);
                 }
             }
+            
+            csvWriter = new CSVWriter(new FileWriter(new File(Mediator.getProperty("outputfilename"))), '\t');
+            csvWriter.writeAll(recordList);
+            
             // Send file to remote Mirth instance if configured to do so
             if ("remote".equalsIgnoreCase(Mediator.getProperty("mirth.location"))) {
                 if (!"".equals(Mediator.getProperty("mirth.url"))
                         && Mediator.getProperty("mirth.url") != null) {
-                    if (sendMessage(Mediator.getProperty("mirth.url"), Mediator.getProperty("mirth.outputfilename"))) {
+                    if (sendMessage(Mediator.getProperty("mirth.url"), Mediator.getProperty("outputfilename"))) {
                         Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File sent!");
                     } else {
                         Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "File not sent!");
@@ -290,8 +314,8 @@ public class CpadDataExtract {
             Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.INFO, "Done!");
         } finally {
             try {
-                if (out != null) {
-                    out.close();
+                if (csvWriter != null) {
+                    csvWriter.close();
                 }
                 if (con != null) {
                     con.close();
