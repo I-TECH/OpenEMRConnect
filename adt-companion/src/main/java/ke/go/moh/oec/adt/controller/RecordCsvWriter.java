@@ -65,8 +65,13 @@ public class RecordCsvWriter {
                     if (i % recordsPerFile != 0) {
                         recordCount = i % recordsPerFile;
                     }
-                    csvWriter = new CSVWriter(new FileWriter(new File(createFileName(outputDir, fileName, fileExtension, recordCount))));
+                    String filePath = createFileName(outputDir, fileName, fileExtension, recordCount);
+                    Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "About to write {0} record(s) to {1}",
+                            new Object[]{recordCount, filePath});
+                    csvWriter = new CSVWriter(new FileWriter(new File(filePath)));
                     csvWriter.writeAll(format.format(tempLinkedRecordList));
+                    Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Finished writing {0} record(s) to {1}",
+                            new Object[]{recordCount, filePath});
                     tempLinkedRecordList.clear();
                 }
                 i++;

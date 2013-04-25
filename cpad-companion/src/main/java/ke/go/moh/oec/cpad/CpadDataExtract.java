@@ -299,8 +299,13 @@ public class CpadDataExtract {
                     if (cnt % outputRecordLimit != 0) {
                         recordCount = cnt % outputRecordLimit;
                     }
-                    csvWriter = new CSVWriter(new FileWriter(new File(createFileName(recordCount))), '\t');
+                    String filePath = createFileName(recordCount);
+                    Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.FINE, "About to write {0} record(s) to {1}",
+                            new Object[]{recordCount, filePath});
+                    csvWriter = new CSVWriter(new FileWriter(new File(filePath)), '\t');
                     csvWriter.writeAll(recordList);
+                    Mediator.getLogger(CpadDataExtract.class.getName()).log(Level.FINE, "Finished writing {0} record(s) to {1}",
+                            new Object[]{recordCount, filePath});
                     recordList.clear();
                 }
             }
@@ -345,7 +350,7 @@ public class CpadDataExtract {
     }
 
     private static String createFileName(int recordCount) {
-        String fileName = Mediator.getProperty("outputfilename") + " - " + new java.util.Date().getTime() 
+        String fileName = Mediator.getProperty("outputfilename") + " - " + new java.util.Date().getTime()
                 + " (" + recordCount + " records)" + Mediator.getProperty("outputfileextension");
         String outputDir = Mediator.getProperty("outputdir");
         String fullFileName = fileName;
