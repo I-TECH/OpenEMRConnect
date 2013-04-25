@@ -77,6 +77,7 @@ public class FindPersonResponder implements IService {
             //Connect Database
             Connection conn = null;
             PreparedStatement sql = null;
+            ResultSet rs = null;
             try {
                 try {
                     Class.forName(sourceDriver);
@@ -88,7 +89,7 @@ public class FindPersonResponder implements IService {
                 //Set Query To Run
                 sql = conn.prepareStatement("SELECT * FROM " + hhMemberFunction + " ('" + hdssID + "')");
                 //Execute Query
-                ResultSet rs = sql.executeQuery(); //excute query
+                rs = sql.executeQuery(); //excute query
                 while (rs.next()) {
                     //For Each HouseHold Member Add To The List
                     RelatedPerson rp = new RelatedPerson();
@@ -119,11 +120,14 @@ public class FindPersonResponder implements IService {
                 Mediator.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 try {
-                    if (conn != null) {
-                        conn.close();
-                    }
                     if (sql != null) {
                         sql.close();
+                    }
+                    if (rs != null) {
+                        rs.close();
+                    }
+                    if (conn != null) {
+                        conn.close();
                     }
                 } catch (SQLException ex) {
                     Mediator.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);

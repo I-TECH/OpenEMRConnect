@@ -58,7 +58,7 @@ public class KisumuHdss {
             try {
                 if ("interval".equalsIgnoreCase(method)) {
                     while (true) {
-                        Mediator.getLogger(KisumuHdss.class.getName()).log(Level.INFO, "Starting update service.");
+                        Mediator.getLogger(KisumuHdss.class.getName()).log(Level.INFO, "Resuming update service.");
                         updater.updateAllTransactions();
                         Mediator.getLogger(KisumuHdss.class.getName()).log(Level.INFO, "Done updating!");
                         Mediator.getLogger(KisumuHdss.class.getName()).log(Level.INFO, "Suspending update service for {0} seconds.",
