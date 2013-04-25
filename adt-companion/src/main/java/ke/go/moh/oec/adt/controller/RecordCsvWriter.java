@@ -57,10 +57,10 @@ public class RecordCsvWriter {
         CSVWriter csvWriter = null;
         try {
             List<LinkedRecord> tempLinkedRecordList = new ArrayList<LinkedRecord>();
-            int i = 0;
+            int i = 1;
             for (LinkedRecord linkedRecord : linkedRecordList) {
                 tempLinkedRecordList.add(linkedRecord);
-                if (i % recordsPerFile == 0 || i == (linkedRecordList.size() - 1)) {
+                if (i % recordsPerFile == 0 || i == (linkedRecordList.size())) {
                     int recordCount = recordsPerFile;
                     if (i % recordsPerFile != 0) {
                         recordCount = i % recordsPerFile;
@@ -80,7 +80,7 @@ public class RecordCsvWriter {
     }
 
     private String createFileName(String outputDir, String fileName, String extension, int recordCount) {
-        String fullFileName = fileName + new java.util.Date().getTime()
+        String fullFileName = fileName + " - " + new java.util.Date().getTime()
                 + " (" + recordCount + " records)" + extension;
         if (outputDir != null) {
             File outputDirFile = new File(outputDir);
@@ -94,7 +94,7 @@ public class RecordCsvWriter {
                     Mediator.getLogger(RecordCsvWriter.class.getName()).log(Level.FINE, "Succeeded to create missing directory {0}.", outputDir);
                 }
             } else {
-                fullFileName = outputDir + "\\" + fileName;
+                fullFileName = outputDir + "\\" + fullFileName;
             }
         }
         return fullFileName;
