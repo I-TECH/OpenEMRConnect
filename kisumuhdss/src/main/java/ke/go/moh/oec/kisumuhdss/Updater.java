@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
 import ke.go.moh.oec.PersonIdentifier;
@@ -95,7 +94,7 @@ public class Updater {
             connTransaction = DriverManager.getConnection(url, username, password);
             connTransactionId = DriverManager.getConnection(url, username, password);
         } catch (Exception ex) {
-            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE,
+            Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE,
                     "Can''t connect to the database -- Please check the database and try again.", ex);
             System.exit(1);
         }
@@ -121,7 +120,7 @@ public class Updater {
             statement.setFetchSize(Integer.MIN_VALUE);
             rs = statement.executeQuery(sql);
         } catch (SQLException ex) {
-            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE,
+            Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE,
                     "Error executing SQL Query " + sql, ex);
             System.exit(1);
         }
@@ -145,7 +144,7 @@ public class Updater {
             stmt.close();
             Mediator.getLogger(Updater.class.getName()).log(Level.FINE, "{0} rows updated.", updateCount);
         } catch (SQLException ex) {
-            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE,
+            Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE,
                     "Error executing SQL statement " + sql, ex);
             System.exit(1);
         }
@@ -175,7 +174,7 @@ public class Updater {
                 }
                 rs.close();
             } catch (SQLException ex) {
-                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return lastReceivedTransaction;
@@ -276,7 +275,7 @@ public class Updater {
      */
     private boolean updateTransaction(String transactionType, String hdssId, List<Row> rowList) {
         Person p = new Person();
-        int requestTypeId = 0;
+        int requestTypeId;
         if (transactionType.equals("INSERT")) {
             requestTypeId = RequestTypeId.CREATE_PERSON_MPI;
         } else if (transactionType.equals("UPDATE")) {
@@ -287,7 +286,7 @@ public class Updater {
             requestTypeId = RequestTypeId.MODIFY_PERSON_MPI;
         } else {
             //this should never happen and should be logged as an error
-            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, "Unknown transaction type [{0}] "
+            Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, "Unknown transaction type [{0}] "
                     + "exists in the shadow database", transactionType);
             return false;
         }
@@ -425,24 +424,6 @@ public class Updater {
         return returnStatus;
     }
 
-//    private Person getPersonFromMpi(String hdssId) {
-//        Person p = new Person();
-//        List<PersonIdentifier> personIdentifierList = new ArrayList<PersonIdentifier>();
-//        PersonIdentifier pi = new PersonIdentifier();
-//        pi.setIdentifier(hdssId);
-//        pi.setIdentifierType(PersonIdentifier.Type.kisumuHdssId);
-//        personIdentifierList.add(pi);
-//        p.setPersonIdentifierList(personIdentifierList);
-//        PersonResponse pr = requestMpi(p, RequestTypeId.FIND_PERSON_MPI);
-//        Person returnPerson = null;
-//        if (pr != null) {
-//            List<Person> personList = pr.getPersonList();
-//            if (personList != null && personList.size() > 0) {
-//                returnPerson = personList.get(0);
-//            }
-//        }
-//        return returnPerson;
-//    }
     private PersonResponse requestMpi(Person p, int requestTypeId) {
         PersonRequest personRequest = new PersonRequest();
         personRequest.setPerson(p);
@@ -472,7 +453,7 @@ public class Updater {
                     returnDateTime = SIMPLE_DATE_TIME_FORMAT.parse(sDateTime);
                 }
             } catch (ParseException ex) {
-                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+                Mediator.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return returnDateTime;

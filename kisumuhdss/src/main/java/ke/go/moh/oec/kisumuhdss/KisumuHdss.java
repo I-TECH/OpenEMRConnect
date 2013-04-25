@@ -25,8 +25,9 @@
 package ke.go.moh.oec.kisumuhdss;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import ke.go.moh.oec.lib.Mediator;
 
 /**
@@ -45,30 +46,44 @@ public class KisumuHdss {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        FindPersonResponder fpr = new FindPersonResponder();
-        Mediator.registerCallback(fpr);
-        String driverName = Mediator.getProperty("Shadow.driver");
         try {
+            FindPersonResponder fpr = new FindPersonResponder();
+            Mediator.registerCallback(fpr);
+            String driverName = Mediator.getProperty("Shadow.driver");
+            String method = Mediator.getProperty("scheduler.method");
+            long interval = Integer.parseInt(Mediator.getProperty("scheduler.interval"));
+            String timeOfDay = Mediator.getProperty("scheduler.timeOfDay");
             Class.forName(driverName).newInstance();
-        } catch (Exception ex) {
-            Logger.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE,
-                    "Can''t load JDBC driver " + driverName, ex);
-            System.exit(1);
-        }
-
-        Updater updater = new Updater();
-        while (true) {
+            Updater updater = new Updater();
             try {
-                updater.updateAllTransactions();
-                if (1 > 2) {
-                    throw new SQLException();
+                if ("interval".equalsIgnoreCase(method)) {
+                    while (true) {
+                        Mediator.getLogger(KisumuHdss.class.getName()).log(Level.INFO, "Starting update service.");
+                        updater.updateAllTransactions();
+                        Mediator.getLogger(KisumuHdss.class.getName()).log(Level.INFO, "Done updating!");
+                        Mediator.getLogger(KisumuHdss.class.getName()).log(Level.INFO, "Suspending update service for {0} seconds.",
+                                interval / 1000);
+                        Thread.sleep(interval);
+                    }
+                } else {
+                    DateFormat sdf = new SimpleDateFormat("HH:mm");
+                    String currentTime = sdf.format(new java.util.Date());
+                    while (true) {
+                        if (currentTime.equalsIgnoreCase(timeOfDay)) {
+                            Mediator.getLogger(KisumuHdss.class.getName()).log(Level.INFO, "Starting update service.");
+                            updater.updateAllTransactions();
+                            Mediator.getLogger(KisumuHdss.class.getName()).log(Level.INFO, "Done updating!");
+                        }
+                    }
                 }
-                Thread.sleep(10 * 1000);
             } catch (SQLException ex) {
-                Logger.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE, null, ex);
+                Mediator.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
-                Logger.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE, null, ex);
+                Mediator.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } catch (Exception ex) {
+            Mediator.getLogger(KisumuHdss.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
     }
 }
