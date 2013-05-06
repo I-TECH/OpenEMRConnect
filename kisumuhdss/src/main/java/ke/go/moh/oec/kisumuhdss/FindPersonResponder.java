@@ -36,7 +36,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import ke.go.moh.oec.*;
 import ke.go.moh.oec.lib.Mediator;
 
@@ -49,17 +48,16 @@ public class FindPersonResponder implements IService {
     String hhMemberFunction = Mediator.getProperty("Source.individualHouseholdMembersFunction");
 
     public Object getData(int requestTypeId, Object requestData) {
-//        if (requestTypeId == RequestTypeId.FIND_PERSON_HDSS) {
         PersonResponse pr = new PersonResponse();
         if (requestData == null) {
-            Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE,
+            Mediator.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE,
                     "getData() called with null requestData");
             return null;
         }
         PersonRequest req = (PersonRequest) requestData;
         Person person = req.getPerson();
         if (person == null) {
-            Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE,
+            Mediator.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE,
                     "getData() called with null Person");
             return null;
         }
@@ -79,18 +77,19 @@ public class FindPersonResponder implements IService {
             //Connect Database
             Connection conn = null;
             PreparedStatement sql = null;
+            ResultSet rs = null;
             try {
                 try {
                     Class.forName(sourceDriver);
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
+                    Mediator.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 String connectionUrl = sourceUrl;
                 conn = DriverManager.getConnection(connectionUrl, sourceUsername, sourcePassword);
                 //Set Query To Run
                 sql = conn.prepareStatement("SELECT * FROM " + hhMemberFunction + " ('" + hdssID + "')");
                 //Execute Query
-                ResultSet rs = sql.executeQuery(); //excute query
+                rs = sql.executeQuery(); //excute query
                 while (rs.next()) {
                     //For Each HouseHold Member Add To The List
                     RelatedPerson rp = new RelatedPerson();
@@ -118,29 +117,27 @@ public class FindPersonResponder implements IService {
                 pr.setPersonList(personList);
             } catch (SQLException ex) {
                 //status = false;
-                Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
+                Mediator.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 try {
-                    if (conn != null) {
-                        conn.close();
-                    }
                     if (sql != null) {
                         sql.close();
                     }
+                    if (rs != null) {
+                        rs.close();
+                    }
+                    if (conn != null) {
+                        conn.close();
+                    }
                 } catch (SQLException ex) {
-                    Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
+                    Mediator.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         } else {
-            Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE,
+            Mediator.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE,
                     "getData() called with Person without HDSS ID");
             return null;
         }
         return pr;
-//        } else {
-//            Logger.getLogger(FindPersonResponder.class.getName()).log(Level.SEVERE,
-//                    "getData() called with unepxected requestTypeId {0}", requestTypeId);
-//            return null;
-//        }
     }
 }
