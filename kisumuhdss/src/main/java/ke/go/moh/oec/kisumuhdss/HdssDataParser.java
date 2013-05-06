@@ -25,9 +25,9 @@
 package ke.go.moh.oec.kisumuhdss;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import ke.go.moh.oec.Fingerprint;
 import ke.go.moh.oec.Person;
+import ke.go.moh.oec.lib.Mediator;
 
 /**
  * Parses (and cleans) HDSS values to values expected by the MPI
@@ -83,7 +83,7 @@ public class HdssDataParser {
             } else if (s.compareTo("SINLBR") == 0) {
                 p = Person.PregnancyOutcome.singleBirth;
             } else {
-                Logger.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
+                Mediator.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
                         "Unexpected pregnancy outcome value from HDSS ID {0}: ''{1}''",
                         new Object[]{hdssId, s});
             }
@@ -124,7 +124,7 @@ public class HdssDataParser {
             } else if (mtal.compareTo("DON'T KNOW") == 0) {
                 m = Person.MaritalStatus.widowed;
             } else {
-                Logger.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
+                Mediator.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
                         "Unexpected marital status from HDSS ID {0}: ''{1}''",
                         new Object[]{hdssId, mtalVal});
             }
@@ -154,7 +154,7 @@ public class HdssDataParser {
             } else if (s.compareTo("M") == 0) {
                 sex = Person.Sex.M;
             } else {
-                Logger.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
+                Mediator.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
                         "Unexpected sex value from HDSS ID {0}: ''{1}''",
                         new Object[]{hdssId, s});
             }
@@ -190,7 +190,7 @@ public class HdssDataParser {
             } else if (s.compareTo("LEFT LITTLE") == 0) {
                 type = Fingerprint.Type.leftLittleFinger;
             } else {
-                Logger.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
+                Mediator.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
                         "Unexpected fingerprint type value from HDSS ID {0}: ''{1}''",
                         new Object[]{hdssId, s});
             }
@@ -212,7 +212,7 @@ public class HdssDataParser {
             if (s.compareTo("GrFinger") == 0) {
                 technologyType = Fingerprint.TechnologyType.griauleTemplate;
             } else {
-                Logger.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
+                Mediator.getLogger(HdssDataParser.class.getName()).log(Level.WARNING,
                         "Unexpected fingerprint technology value from HDSS ID {0}: ''{1}''",
                         new Object[]{hdssId, s});
             }
