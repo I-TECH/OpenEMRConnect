@@ -101,7 +101,6 @@ public class Daemon implements Runnable {
             }
         } catch (InterruptedException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
         } catch (BadRecordSourceException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
@@ -113,10 +112,8 @@ public class Daemon implements Runnable {
             System.exit(1);
         } catch (IOException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
         } catch (SQLException ex) {
             Mediator.getLogger(Daemon.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
         }
     }
 
