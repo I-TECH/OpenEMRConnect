@@ -45,10 +45,9 @@
       <type>jar</type>
     </dependency>
     <dependency>
-      <groupId>jtds</groupId>
-      <artifactId>jtds-connector</artifactId>
-      <version>1.2.5</version>
-      <type>jar</type>
+      <groupId>net.sourceforge.jtds</groupId>
+      <artifactId>jtds</artifactId>
+      <version>1.3.0</version>
     </dependency>
   </dependencies>
   <build>
