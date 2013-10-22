@@ -70,3 +70,9 @@ reception/*/reception_database/*
 .settings/
 /cpad_companion/.settings/
 /oec2Interface/target/
+
+### IntelliJ Idea ###
+*.iml
+*.ipr
+*.iws
+.idea/
