@@ -76,3 +76,5 @@ reception/*/reception_database/*
 *.ipr
 *.iws
 .idea/
+/maven/fingerprintmanager/target/
+/maven/reception/target/
