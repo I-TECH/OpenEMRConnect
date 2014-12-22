@@ -29,6 +29,7 @@ bin/
 *.log
 *.sqlite
 *.csv
+*.log.*
 
 # OS generated files #
 ######################
@@ -43,6 +44,7 @@ Thumbs.db
 */build/*
 */dist/*
 */target/*
+*nbactions.xml*
 
 # OpenEMRConnect log files #
 ############################
