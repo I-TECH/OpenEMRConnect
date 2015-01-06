@@ -63,16 +63,16 @@ public class GriauleFingerprintManager implements IFingerEventListener,
     }
 
     private void initialize() throws MissingFingerprintManagerImpException {
-//        try {
-//            matchingContext = new MatchingContext();
-//            //GrFingerJava.installLicense("ZMFAG-PKWUK-CABDA-KSDJF");
-//            //TODO: Investigate why this line sometimes hangs
-//            GrFingerJava.initializeCapture(this);
-//            showMessage("Waiting for device.");
-//        } catch (GrFingerJavaException ex) {
-//            showMessage(ex.getMessage());
-//            throw new MissingFingerprintManagerImpException(ex.getMessage());
-//        }
+        try {
+            matchingContext = new MatchingContext();
+            //GrFingerJava.installLicense("ZMFAG-PKWUK-CABDA-KSDJF");
+            //TODO: Investigate why this line sometimes hangs
+            GrFingerJava.initializeCapture(this);
+            showMessage("Waiting for device.");
+        } catch (GrFingerJavaException ex) {
+            showMessage(ex.getMessage());
+            throw new MissingFingerprintManagerImpException(ex.getMessage());
+        }
     }
 
     @Override
