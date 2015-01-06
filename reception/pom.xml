@@ -36,6 +36,27 @@
             <artifactId>beansbinding</artifactId>
             <version>1.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>ke.co.idadi</groupId>
+            <artifactId>griaulefingerprintmanager</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ke.co.idadi</groupId>
+                    <artifactId>fingerprintmanager</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>griaule</groupId>
+                    <artifactId>griaule</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>gria</groupId>
+            <artifactId>griaule</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

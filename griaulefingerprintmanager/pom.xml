@@ -11,6 +11,12 @@
             <artifactId>fingerprintmanager</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>griaule</groupId>
+            <artifactId>griaule</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
