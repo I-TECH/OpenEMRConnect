@@ -64,8 +64,10 @@ public class GriauleFingerprintManager implements IFingerEventListener,
 
     private void initialize() throws MissingFingerprintManagerImpException {
         try {
+            String dir = System.getProperty("user.dir");
+            GrFingerJava.setLicenseDirectory(new File(dir));
+            GrFingerJava.installLicense("RXFAI-LOUMO-BHIIG-NNDIF");
             matchingContext = new MatchingContext();
-            //GrFingerJava.installLicense("ZMFAG-PKWUK-CABDA-KSDJF");
             //TODO: Investigate why this line sometimes hangs
             GrFingerJava.initializeCapture(this);
             showMessage("Waiting for device.");
